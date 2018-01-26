@@ -771,6 +771,14 @@ public class Game extends Canvas implements Runnable {
 		return animationTimer1;
 	}
 	
+	public boolean isPaused(){
+		return paused;
+	}
+	
+	public boolean soundFXPlaying(){
+		return soundFXBoolean;
+	}
+	
 	public BufferedImage getSpriteSheet(){
 		return spriteSheet;
 	}
