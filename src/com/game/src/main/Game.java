@@ -386,16 +386,18 @@ public class Game extends Canvas implements Runnable {
 				if(!paused){
 					this.soundFXClip2SoundLoop.stop();
 					soundFXClip1Reset = false;
-					this.marioStarSoundLoop.loop();
 					if (soundTimerSet == false){
+						this.marioStarSoundLoop.play();
+						this.marioStarSoundLoop.loop();
 						soundTimer += 11;
 						soundTimerSet = true;
+						
 					}
 					marioHasBeenInvincible = true;
 				}
 
 				else if(paused == true && soundTimerSet == false){
-					transparentBlocksAnim.drawAnimation(g,p.getX(), p.getY(), 0);
+					transparentBlocksAnim.drawAnimation(g, p.getX(), p.getY(), 0);
 					//add visual effect
 					if(!soundFXClip1Reset){
 						this.soundFXClip2SoundLoop.play();
