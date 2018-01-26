@@ -166,7 +166,7 @@ public class Player extends GameObject implements EntityA{
 	
 	public void render(Graphics g){
 		if(velY < 0 && game.animationTimer1 == 0){													//CHANGE ANIMATIONS HERE!
-			if(marioInvincible == true){
+			if(marioInvincible == true && !game.isPaused()){
 				if(random == 3|| random == 2 || random == 1)
 					starAnim1.drawAnimation(g, x, y, 0);
 				else if(random == 6|| random == 5 || random == 4)
@@ -178,7 +178,7 @@ public class Player extends GameObject implements EntityA{
 				anim.drawAnimation(g, x, y, 0);
 		}
 		else if(velX < 0 && game.animationTimer1 == 0){												//CHANGE ANIMATIONS HERE!
-			if(marioInvincible == true){
+			if(marioInvincible == true && !game.isPaused()){
 				if(random == 3|| random == 2 || random == 1)
 					starAnim1l.drawAnimation(g, x, y, 0);
 				else if(random == 6|| random == 5 || random == 4)
@@ -192,7 +192,7 @@ public class Player extends GameObject implements EntityA{
 				animl.drawAnimation(g, x, y, 0);
 		}
 		else if(velX > 0 && game.animationTimer1 == 0){												//CHANGE ANIMATIONS HERE!
-			if(marioInvincible == true){
+			if(marioInvincible == true && !game.isPaused()){
 				if(random == 3 || random == 2 || random == 1)
 					starAnim1r.drawAnimation(g, x, y, 0);
 				else if(random == 6 || random == 5 || random == 4)
@@ -206,7 +206,7 @@ public class Player extends GameObject implements EntityA{
 				animr.drawAnimation(g, x, y, 0);
 		}
 		else if(velY > 0 && game.animationTimer1 == 0){												//CHANGE ANIMATIONS HERE!
-			if(marioInvincible == true){
+			if(marioInvincible == true && !game.isPaused()){
 				if(random == 3 || random == 2 || random == 1)
 					starAnim1d.drawAnimation(g, x, y, 0);
 				else if(random == 6 || random == 5 || random == 4)
@@ -218,7 +218,7 @@ public class Player extends GameObject implements EntityA{
 				animd.drawAnimation(g, x, y, 0);
 		}
 		else{
-			if(marioInvincible == true){
+			if(marioInvincible == true && !game.isPaused()){
 				if(random == 3|| random == 2 || random == 1)
 					starAnim1.drawAnimation(g, x, y, 0);
 				else if(random == 6|| random == 5 || random == 4)
