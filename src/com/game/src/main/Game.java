@@ -81,8 +81,6 @@ public class Game extends Canvas implements Runnable {
 	public boolean runningTimerActivated = false;
 	private boolean soundSet = false;
 	private boolean soundTimerSet = false;
-	private double soundTimer = 0;
-	private double soundStartTime = 0;
 	private long soundFXTimer = 0;
 	private boolean soundFXBoolean = false;
 	private boolean soundFXClip1Reset = false;
@@ -244,7 +242,6 @@ public class Game extends Canvas implements Runnable {
 				updates = 0;
 				frames = 0;
 				myTime++;
-				soundTimer--;
 			}
 			
 		}
@@ -314,18 +311,14 @@ public class Game extends Canvas implements Runnable {
 						this.gameSoundLoop.play();
 						this.gameSoundLoop.loop();
 						this.gameSoundLoop.setSoundLoopBoolean(true);
-						soundTimer = 87;
 						soundSet = true;
-						soundStartTime = myTime;
 						//set up timer
 					}
 					else{
 						this.gameSoundLoop2.play();
 						this.gameSoundLoop2.loop();
 						this.gameSoundLoop2.setSoundLoopBoolean(true);
-						soundTimer = 109;
 						soundSet = true;
-						soundStartTime = myTime;
 						//set up timer
 					}
 				}//REPEAT THIS AT THE END OF STATE.GAME
@@ -336,7 +329,6 @@ public class Game extends Canvas implements Runnable {
 				if(soundFXBoolean == true){
 					paused = true;
 					soundFXTimer = System.currentTimeMillis() + 500;
-					soundTimer = soundTimer + 0.50;
 					soundFXBoolean = false;
 				}
 
@@ -373,7 +365,6 @@ public class Game extends Canvas implements Runnable {
 				if(soundFXBoolean == false){
 					paused = true;
 					soundFXTimer = System.currentTimeMillis() + 990;
-					soundTimer = soundTimer + 0.99;
 					soundFXBoolean = true;
 				}
 
@@ -385,7 +376,6 @@ public class Game extends Canvas implements Runnable {
 					if (soundTimerSet == false){
 						this.marioStarSoundLoop.play();
 						this.marioStarSoundLoop.loop();
-						soundTimer += 11;
 						soundTimerSet = true;
 						
 					}
@@ -401,13 +391,10 @@ public class Game extends Canvas implements Runnable {
 					}
 					this.soundFXClip2SoundLoop.loop();
 				}
-			}
-			System.out.println((int)this.gameSoundLoop2.getLongFramePosition() + " " + this.gameSoundLoop2.getFrameLength());
-			//System.out.println(soundTimer);
-			//if(soundTimer <= 0){														//Setting up next song to play after a song ends
+			}					
+																				//Setting up next song to play after a song ends
 			if(((int)this.gameSoundLoop.getLongFramePosition() >= this.gameSoundLoop.getFrameLength()-(441*4) && this.gameSoundLoop.getSoundLoopBoolean() == true && State == STATE.GAME) || 
 				  ((int)this.gameSoundLoop2.getLongFramePosition() >= this.gameSoundLoop2.getFrameLength()-(441*4) && this.gameSoundLoop2.getSoundLoopBoolean() == true && State == STATE.GAME)){	
-				System.out.println("here");
 				if(this.gameSoundLoop.getSoundLoopBoolean() == true){
 					this.gameSoundLoop.stop();
 					this.gameSoundLoop.setSoundLoopBoolean(false);
@@ -424,18 +411,14 @@ public class Game extends Canvas implements Runnable {
 						this.gameSoundLoop.loop();
 						this.gameSoundLoop.setFramePosition(0);
 						this.gameSoundLoop.setSoundLoopBoolean(true);
-						soundTimer = 87;
 						soundSet = true;
-						soundStartTime = myTime;
 						//set up timer
 					}
 					else{
 						this.gameSoundLoop2.loop();
 						this.gameSoundLoop2.setFramePosition(0);
 						this.gameSoundLoop2.setSoundLoopBoolean(true);
-						soundTimer = 109;
 						soundSet = true;
-						soundStartTime = myTime;
 						//set up timer
 					}
 				}
