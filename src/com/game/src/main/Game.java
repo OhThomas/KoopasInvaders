@@ -334,14 +334,18 @@ public class Game extends Canvas implements Runnable {
 
 				if(System.currentTimeMillis() > soundFXTimer)							//checking if paused for soundFX Timer
 					paused = false;
-				
+				//SLIDING PROBLEM HERE FROM FPS
 				if(!paused){
 					this.soundFXClip1SoundLoop.stop();
 					soundFXClip1Reset = false;
-					if(this.gameSoundLoop.getSoundLoopBoolean() == true)
+					if(this.gameSoundLoop.getSoundLoopBoolean() == true && this.soundFXClip1SoundLoop.getSoundLoopBoolean() == true){
 						this.gameSoundLoop.loop();
-					if(this.gameSoundLoop2.getSoundLoopBoolean() == true)
+						this.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
+					}
+					if(this.gameSoundLoop2.getSoundLoopBoolean() == true && this.soundFXClip1SoundLoop.getSoundLoopBoolean() == true){
 						this.gameSoundLoop2.loop();
+						this.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
+					}
 					if(soundTimerSet == true)
 						soundTimerSet = false;
 			}
@@ -349,11 +353,12 @@ public class Game extends Canvas implements Runnable {
 					transparentBlocksAnim.drawAnimation(g,p.getX(), p.getY(), 0);
 					//add visual effect
 					if(!soundFXClip1Reset){
+						this.soundFXClip1SoundLoop.setSoundLoopBoolean(true);
 						this.soundFXClip1SoundLoop.play();
 						soundFXClip1Reset = true;
 					}
 					this.soundFXClip1SoundLoop.loop();
-				}
+				}//SLIDING PROBLEM HERE FROM FPS
 			}
 			if(p.getMarioInvincible() == true){											//Setting up Star Sound
 				
@@ -430,6 +435,8 @@ public class Game extends Canvas implements Runnable {
 			else if(runningTimerActivated == false)
 				runningTimer = 0;
 			if(slowingDownTimer > 0){
+
+				System.out.println(slowingDownTimer);
 				if (xLBoolean == true){
 					p.setVelX(-5);
 					slowingDownTimer = 0;
@@ -641,7 +648,6 @@ public class Game extends Canvas implements Runnable {
 		} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
 			p.setVelX(0);
 			xLBoolean = false;
-			runningTimerActivated = false;
 			if(xRBoolean == true){
 				p.setVelX(5);
 				runningTimerActivated = true;
@@ -652,6 +658,7 @@ public class Game extends Canvas implements Runnable {
 					slowingDownTimer = 400;
 					slowingDown = -1.73;
 					p.setVelX(slowingDown);
+					runningTimerActivated = false;
 				}
 			}
 		} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
@@ -664,7 +671,6 @@ public class Game extends Canvas implements Runnable {
 		} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
 			p.setVelX(0);
 			xRBoolean = false;
-			runningTimerActivated = false;
 			if(xLBoolean == true){
 				p.setVelX(-5);
 				runningTimerActivated = true;
@@ -675,6 +681,7 @@ public class Game extends Canvas implements Runnable {
 					slowingDownTimer = 400;
 					slowingDown = 1.73;
 					p.setVelX(slowingDown);
+					runningTimerActivated = false;
 				}
 			}
 		} else if(key == KeyEvent.VK_SPACE){
