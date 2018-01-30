@@ -1,3 +1,3 @@
 # Koopas Invaders
 
-Currently working on setting up music.
+Currently working on fixing sliding run after mario gets a star (not working right now). 
