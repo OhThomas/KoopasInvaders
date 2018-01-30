@@ -9,11 +9,12 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * Handles playing, stopping, and looping of sounds for the game.
- * @author Tyler Thomas
+ * @author Tyler Thomas @edited by Thomas Rader
  *
  */
 public class SoundLoops {
     private Clip clip;
+    private boolean SoundLoopBoolean = false;
     public SoundLoops(String fileName) {
         // specify the sound to play
         // (assuming the sound can be played by the audio system)
@@ -63,5 +64,22 @@ public class SoundLoops {
     public void loopSegment(int x, int y){
     	clip.setLoopPoints(x, y);
     	//clip.loop(x);
+    }
+    public long getLongFramePosition(){
+    	long framePosition = clip.getLongFramePosition();
+    	return framePosition;
+    }
+    public void setFramePosition(int frames){
+    	clip.setFramePosition(frames);
+    }
+    public int getFrameLength(){
+    	int frameLength = clip.getFrameLength();
+    	return frameLength;
+    }
+    public void setSoundLoopBoolean(boolean SoundLoopBoolean){
+    	this.SoundLoopBoolean = SoundLoopBoolean;
+    }
+    public boolean getSoundLoopBoolean(){
+    	return SoundLoopBoolean;
     }
     }
