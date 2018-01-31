@@ -2,4 +2,4 @@
 
 Currently adding music in between menu and game
 
-![alt text](https://github.com/OhThomas/KoopasInvaders/tree/test1/res/koopasinvaderstitlebigger.png)
+![ScreenShot](https://github.com/OhThomas/KoopasInvaders/blob/test1/res/koopasinvaderstitlebigger.png)
