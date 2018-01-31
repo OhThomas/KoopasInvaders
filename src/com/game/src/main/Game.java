@@ -69,7 +69,7 @@ public class Game extends Canvas implements Runnable {
 	private int numberOfFireBallsShot = 0;
 	private int numberOfFireBallsShotDecoy = 0;
 	private double slowingDown = 0;
-	private int slowingDownTimer = 0;
+	private long slowingDownTimerLong = 0;
 	public boolean slowingDownActivatedl = false;
 	public boolean slowingDownActivatedr = false;
 	public boolean enemyHitRightBarrier = false;
@@ -77,8 +77,9 @@ public class Game extends Canvas implements Runnable {
 	public boolean gameOverSoundBoolean = false;
 	public double enemySpeedIncrease = 0.5;
 	public int animationTimer1 = 0;
-	public int runningTimer = 0;
-	public boolean runningTimerActivated = false;
+	private long runningTimerLong = 0;
+	private boolean runningTimerActivated = false;
+	private boolean runningTimerActivatedResponse = false;
 	private boolean soundSet = false;
 	private boolean soundTimerSet = false;
 	private long soundFXTimer = 0;
@@ -105,7 +106,6 @@ public class Game extends Canvas implements Runnable {
 	private HUD hud;
 	private Menu menu;
 	private GameOver gameOver;
-	private SoundEffect soundEffect;
 	private BasicBlocks bb;													//BLOCKS
 	
 	private BufferedImage title = null;
@@ -157,7 +157,6 @@ public class Game extends Canvas implements Runnable {
 		bb = new BasicBlocks();												//BLOCKS
 		c = new Controller(tex, this);
 		p = new Player(Game.WIDTH,(Game.HEIGHT * SCALE) - MARIO_HEIGHT,tex,this,c);
-		//SoundEffect.init();
 		hud = new HUD();
 		menu = new Menu();
 		
@@ -294,6 +293,8 @@ public class Game extends Canvas implements Runnable {
 			State = STATE.GAMEOVER;
 		//State = STATE.GAME;
 		if(State == STATE.GAME){
+			//System.out.println("This is current time: " + System.currentTimeMillis());
+			//System.out.println("This is slowingDownTimerLong: " + slowingDownTimerLong);
 			if(marioHasBeenInvincible == false){					//Setting up music
 				if(this.menuSoundLoop.getSoundLoopBoolean() == true){
 					this.menuSoundLoop.stop();
@@ -303,7 +304,7 @@ public class Game extends Canvas implements Runnable {
 					this.menuSoundLoop2.stop();
 					this.menuSoundLoop2.setSoundLoopBoolean(false);
 				}
-				//REPEAT THIS AT THE END OF STATE.GAME
+				
 				if(soundSet == false){	
 					Random rand = new Random();
 					soundRandomizer = rand.nextInt(3);
@@ -312,16 +313,14 @@ public class Game extends Canvas implements Runnable {
 						this.gameSoundLoop.loop();
 						this.gameSoundLoop.setSoundLoopBoolean(true);
 						soundSet = true;
-						//set up timer
 					}
 					else{
 						this.gameSoundLoop2.play();
 						this.gameSoundLoop2.loop();
 						this.gameSoundLoop2.setSoundLoopBoolean(true);
 						soundSet = true;
-						//set up timer
 					}
-				}//REPEAT THIS AT THE END OF STATE.GAME
+				}
 			}
 			if(p.getMarioInvincible() == false && marioHasBeenInvincible == true){		//Setting up SoundFX in between Audio Clips
 				this.marioStarSoundLoop.stop();
@@ -334,7 +333,7 @@ public class Game extends Canvas implements Runnable {
 
 				if(System.currentTimeMillis() > soundFXTimer)							//checking if paused for soundFX Timer
 					paused = false;
-				//SLIDING PROBLEM HERE FROM FPS
+				
 				if(!paused){
 					this.soundFXClip1SoundLoop.stop();
 					soundFXClip1Reset = false;
@@ -358,7 +357,7 @@ public class Game extends Canvas implements Runnable {
 						soundFXClip1Reset = true;
 					}
 					this.soundFXClip1SoundLoop.loop();
-				}//SLIDING PROBLEM HERE FROM FPS
+				}
 			}
 			if(p.getMarioInvincible() == true){											//Setting up Star Sound
 				
@@ -417,48 +416,47 @@ public class Game extends Canvas implements Runnable {
 						this.gameSoundLoop.setFramePosition(0);
 						this.gameSoundLoop.setSoundLoopBoolean(true);
 						soundSet = true;
-						//set up timer
 					}
 					else{
 						this.gameSoundLoop2.loop();
 						this.gameSoundLoop2.setFramePosition(0);
 						this.gameSoundLoop2.setSoundLoopBoolean(true);
 						soundSet = true;
-						//set up timer
 					}
 				}
 					
 			}
 			if(runningTimerActivated == true){											//Checking to see if mario should be in running slide animation
-				runningTimer++;
+				runningTimerLong = System.currentTimeMillis();
+				runningTimerActivated = false;
+				runningTimerActivatedResponse = true;
 			}
-			else if(runningTimerActivated == false)
-				runningTimer = 0;
-			if(slowingDownTimer > 0){
-
-				System.out.println(slowingDownTimer);
+			//else if(runningTimerActivated == false)
+				//runningTimerLong = 0;
+			if(System.currentTimeMillis() >= slowingDownTimerLong){
+				slowingDownTimerLong = 0;
+			}
+			if(slowingDownTimerLong > System.currentTimeMillis()){
 				if (xLBoolean == true){
 					p.setVelX(-5);
-					slowingDownTimer = 0;
+					slowingDownTimerLong = 0;
 					slowingDownActivatedl = false;
 					slowingDownActivatedr = false;
 				}
 				if (xRBoolean == true){
 					p.setVelX(5);
-					slowingDownTimer = 0;
+					slowingDownTimerLong = 0;
 					slowingDownActivatedl = false;
 					slowingDownActivatedr = false;
 				}
-				slowingDownTimer--;
 				//slowingDown+= 0.13;
 				p.setVelX(slowingDown);
 			}
-			else if(slowingDownTimer == 0 && slowingDownActivatedl == true || slowingDownActivatedr == true){
+			else if(slowingDownTimerLong == 0 && slowingDownActivatedl == true || slowingDownActivatedr == true){
 				p.setVelX(0);
 				slowingDownActivatedl = false;
 				slowingDownActivatedr = false;
 			}
-			//AudioPlayer.player.start(gameAudioStream);
 			//SPAWN ENEMIES
 			/*
 			if (spawnDone == false){													//Spawning enemies
@@ -509,7 +507,7 @@ public class Game extends Canvas implements Runnable {
 							Random rand = new Random();
 							int i = rand.nextInt(20000);
 							if(i == 1 && ec.size() < 6){
-								//c.addEntity(new BulletBill(eb.getLast().getX(),eb.getLast().getY() - 32,tex, this));
+								c.addEntity(new BulletBill(eb.getLast().getX(),eb.getLast().getY() - 32,tex, this));
 							}
 							
 							//SPAWN GREEN SHELLS
@@ -547,7 +545,6 @@ public class Game extends Canvas implements Runnable {
 			}
 		}else if(State == STATE.MENU){													//Menu
 			//menu.render(g);
-			//AudioPlayer.player.start(menuAudioStream);
 			if(menuSoundSet == false){
 				Random rand = new Random();
 				menuSoundLoopRandomizer = rand.nextInt(2);
@@ -580,8 +577,6 @@ public class Game extends Canvas implements Runnable {
 				this.gameOverSoundLoop.play();
 				gameOverSoundBoolean = true;
 			}
-			//AudioPlayer.player.stop(gameAudioStream); 
-			//this.gameAudioStream.close();
 			numberOfFireBallsShot = numberOfFireBallsShot - numberOfFireBallsShotDecoy;
 			
 			g.drawImage(gameOverTitle, 170, 100, null);									//Buttons
@@ -609,20 +604,22 @@ public class Game extends Canvas implements Runnable {
 		} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
 			p.setVelX(-5);
 			xLBoolean = true;
-			runningTimerActivated = true;
-			slowingDownTimer = 0;
+			slowingDownTimerLong = 0;
 			slowingDownActivatedl = false;
 			slowingDownActivatedr = false;
+			if(runningTimerActivatedResponse == false)
+				runningTimerActivated = true;
 		} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
 			//p.setVelY(5);
 			//yDBoolean = true;
 		} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
 			p.setVelX(5);
 			xRBoolean = true;
-			runningTimerActivated = true;
-			slowingDownTimer = 0;
+			slowingDownTimerLong = 0;
 			slowingDownActivatedl = false;
 			slowingDownActivatedr = false;
+			if(runningTimerActivatedResponse == false)
+				runningTimerActivated = true;
 		}
 		if (key == KeyEvent.VK_SPACE && !isShooting){											//Fireballs
 			isShooting = true;
@@ -653,14 +650,17 @@ public class Game extends Canvas implements Runnable {
 				runningTimerActivated = true;
 			}
 			else{
-				if(runningTimer > 666){														//This activates sliding animation for left side
+				if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for left side
 					slowingDownActivatedl = true;
-					slowingDownTimer = 400;
+					slowingDownTimerLong = System.currentTimeMillis() + 200;
 					slowingDown = -1.73;
 					p.setVelX(slowingDown);
-					runningTimerActivated = false;
+					runningTimerLong = 0;
+					runningTimerActivatedResponse = false;
 				}
 			}
+
+			runningTimerActivatedResponse = false;
 		} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
 			/*
 			p.setVelY(0);
@@ -676,14 +676,17 @@ public class Game extends Canvas implements Runnable {
 				runningTimerActivated = true;
 			}
 			else{
-				if(runningTimer > 666){														//This activates sliding animation for right side
+				if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for right side
 					slowingDownActivatedr = true;
-					slowingDownTimer = 400;
+					slowingDownTimerLong = System.currentTimeMillis() + 200;
 					slowingDown = 1.73;
 					p.setVelX(slowingDown);
-					runningTimerActivated = false;
+					runningTimerLong = 0;
+					runningTimerActivatedResponse = false;
 				}
 			}
+
+			runningTimerActivatedResponse = false;
 		} else if(key == KeyEvent.VK_SPACE){
 			isShooting = false;
 		}
@@ -717,19 +720,11 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops soundFXClip1SoundLoop = new SoundLoops(soundFXClip1);
 		SoundLoops soundFXClip2SoundLoop = new SoundLoops(soundFXClip2);
 		
-		// open the sound file as a Java input stream
-		//InputStream gameStream = new FileInputStream(gameAudioFile);
-		// create an audiostream from the inputstream
-		//AudioStream gameAudioStream = new AudioStream(gameStream);
-		// play the audio clip with the audioplayer class
-		
-		
 		Game game = new Game();																						//Setting up Game
 		
 		game.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		game.setMaximumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		game.setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-		//game.gameAudioStream = gameAudioStream;
 		game.menuSoundLoop = menuSoundLoop;
 		game.menuSoundLoop2 = menuSoundLoop2;
 		game.gameSoundLoop = gameSoundLoop;
