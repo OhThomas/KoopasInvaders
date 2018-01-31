@@ -20,8 +20,6 @@ import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.libs.Animation;
 
-import sun.audio.AudioStream;
-
 public class Game extends Canvas implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
@@ -54,7 +52,6 @@ public class Game extends Canvas implements Runnable {
 	Animation transparentBlocksAnim;
 	
 	private boolean shootingStarFrameStop = false;
-	private boolean shootingStarActivation = false;
 	private boolean xLBoolean = false;
 	private boolean xRBoolean = false;
 	private boolean yUBoolean = false;
@@ -89,7 +86,6 @@ public class Game extends Canvas implements Runnable {
 	private int menuSoundLoopRandomizer = 0;
 	private boolean menuSoundSet = false;
 	
-	AudioStream gameAudioStream;
 	SoundLoops menuSoundLoop;
 	SoundLoops menuSoundLoop2;
 	SoundLoops gameSoundLoop;
@@ -293,8 +289,6 @@ public class Game extends Canvas implements Runnable {
 			State = STATE.GAMEOVER;
 		//State = STATE.GAME;
 		if(State == STATE.GAME){
-			//System.out.println("This is current time: " + System.currentTimeMillis());
-			//System.out.println("This is slowingDownTimerLong: " + slowingDownTimerLong);
 			if(marioHasBeenInvincible == false){					//Setting up music
 				if(this.menuSoundLoop.getSoundLoopBoolean() == true){
 					this.menuSoundLoop.stop();
@@ -433,7 +427,7 @@ public class Game extends Canvas implements Runnable {
 			}
 			//else if(runningTimerActivated == false)
 				//runningTimerLong = 0;
-			if(System.currentTimeMillis() >= slowingDownTimerLong){
+			if(slowingDownTimerLong <= System.currentTimeMillis() && slowingDownTimerLong != 0){
 				slowingDownTimerLong = 0;
 			}
 			if(slowingDownTimerLong > System.currentTimeMillis()){
