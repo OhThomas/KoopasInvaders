@@ -80,21 +80,18 @@ public class Game extends Canvas implements Runnable {
 	private boolean soundSet = false;
 	private boolean soundTimerSet = false;
 	private long soundFXTimer = 0;
+	private boolean soundFXisPlaying = false;
 	private boolean soundFXBoolean = false;
 	private boolean soundFXClip1Reset = false;
 	private int soundRandomizer = 0;
 	private int menuSoundLoopRandomizer = 0;
 	private boolean menuSoundSet = false;
-	
-	SoundLoops menuSoundLoop;
-	SoundLoops menuSoundLoop2;
-	SoundLoops gameSoundLoop;
-	SoundLoops gameSoundLoop2;
+	LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
 	SoundLoops gameOverSoundLoop;
 	SoundLoops marioStarSoundLoop;
 	SoundLoops soundFXClip1SoundLoop;
 	SoundLoops soundFXClip2SoundLoop;
-	Clip menuLoop;
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -290,30 +287,18 @@ public class Game extends Canvas implements Runnable {
 		//State = STATE.GAME;
 		if(State == STATE.GAME){
 			if(marioHasBeenInvincible == false){					//Setting up music
-				if(this.menuSoundLoop.getSoundLoopBoolean() == true){
-					this.menuSoundLoop.stop();
-					this.menuSoundLoop.setSoundLoopBoolean(false);
-				}
-				else if(this.menuSoundLoop2.getSoundLoopBoolean() == true){
-					this.menuSoundLoop2.stop();
-					this.menuSoundLoop2.setSoundLoopBoolean(false);
+				if(this.menuSoundLoops.get(this.menuSoundLoopRandomizer).getSoundLoopBoolean() == true){
+					this.menuSoundLoops.get(this.menuSoundLoopRandomizer).stop();
+					this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
 				}
 				
 				if(soundSet == false){	
 					Random rand = new Random();
-					soundRandomizer = rand.nextInt(3);
-					if (soundRandomizer == 0){
-						this.gameSoundLoop.play();
-						this.gameSoundLoop.loop();
-						this.gameSoundLoop.setSoundLoopBoolean(true);
-						soundSet = true;
-					}
-					else{
-						this.gameSoundLoop2.play();
-						this.gameSoundLoop2.loop();
-						this.gameSoundLoop2.setSoundLoopBoolean(true);
-						soundSet = true;
-					}
+					soundRandomizer = rand.nextInt(2);
+					this.gameSoundLoops.get(soundRandomizer).play();
+					this.gameSoundLoops.get(soundRandomizer).loop();
+					this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+					soundSet = true;
 				}
 			}
 			if(p.getMarioInvincible() == false && marioHasBeenInvincible == true){		//Setting up SoundFX in between Audio Clips
@@ -323,24 +308,22 @@ public class Game extends Canvas implements Runnable {
 					paused = true;
 					soundFXTimer = System.currentTimeMillis() + 500;
 					soundFXBoolean = false;
+					soundFXisPlaying = true;
 				}
 
-				if(System.currentTimeMillis() > soundFXTimer)							//checking if paused for soundFX Timer
+				if(System.currentTimeMillis() > soundFXTimer && soundTimerSet == true){							//checking if paused for soundFX Timer
 					paused = false;
+					soundFXisPlaying = false;
+				}
 				
-				if(!paused){
+				if(!paused && soundTimerSet == true){
 					this.soundFXClip1SoundLoop.stop();
 					soundFXClip1Reset = false;
-					if(this.gameSoundLoop.getSoundLoopBoolean() == true && this.soundFXClip1SoundLoop.getSoundLoopBoolean() == true){
-						this.gameSoundLoop.loop();
+					if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true && this.soundFXClip1SoundLoop.getSoundLoopBoolean() == true){
+						this.gameSoundLoops.get(this.soundRandomizer).loop();
 						this.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
 					}
-					if(this.gameSoundLoop2.getSoundLoopBoolean() == true && this.soundFXClip1SoundLoop.getSoundLoopBoolean() == true){
-						this.gameSoundLoop2.loop();
-						this.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
-					}
-					if(soundTimerSet == true)
-						soundTimerSet = false;
+					soundTimerSet = false;
 			}
 				else if(paused == true && soundTimerSet == true){
 					transparentBlocksAnim.drawAnimation(g,p.getX(), p.getY(), 0);
@@ -355,28 +338,26 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(p.getMarioInvincible() == true){											//Setting up Star Sound
 				
-				if(this.gameSoundLoop.getSoundLoopBoolean() == true)
-					this.gameSoundLoop.stop();
-				if(this.gameSoundLoop2.getSoundLoopBoolean() == true)
-					this.gameSoundLoop2.stop();
+				if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true)
+					this.gameSoundLoops.get(this.soundRandomizer).stop();
 				
 				if(soundFXBoolean == false){
 					paused = true;
 					soundFXTimer = System.currentTimeMillis() + 990;
 					soundFXBoolean = true;
+					soundFXisPlaying = true;
 				}
 
-				if(System.currentTimeMillis() > soundFXTimer)							//checking if paused for soundFX Timer
+				if(System.currentTimeMillis() > soundFXTimer && soundFXisPlaying == true){							//checking if paused for soundFX Timer
 					paused = false;
-				if(!paused){
+					soundFXisPlaying = false;
+				}
+				if(!paused && soundTimerSet == false){
 					this.soundFXClip2SoundLoop.stop();
 					soundFXClip1Reset = false;
-					if (soundTimerSet == false){
-						this.marioStarSoundLoop.play();
-						this.marioStarSoundLoop.loop();
-						soundTimerSet = true;
-						
-					}
+					this.marioStarSoundLoop.play();
+					this.marioStarSoundLoop.loop();
+					soundTimerSet = true;
 					marioHasBeenInvincible = true;
 				}
 
@@ -391,32 +372,19 @@ public class Game extends Canvas implements Runnable {
 				}
 			}					
 																				//Setting up next song to play after a song ends
-			if(((int)this.gameSoundLoop.getLongFramePosition() >= this.gameSoundLoop.getFrameLength()-(441*4) && this.gameSoundLoop.getSoundLoopBoolean() == true && State == STATE.GAME) || 
-				  ((int)this.gameSoundLoop2.getLongFramePosition() >= this.gameSoundLoop2.getFrameLength()-(441*4) && this.gameSoundLoop2.getSoundLoopBoolean() == true && State == STATE.GAME)){	
-				if(this.gameSoundLoop.getSoundLoopBoolean() == true){
-					this.gameSoundLoop.stop();
-					this.gameSoundLoop.setSoundLoopBoolean(false);
-				}
-				if(this.gameSoundLoop2.getSoundLoopBoolean() == true){
-					this.gameSoundLoop2.stop();
-					this.gameSoundLoop2.setSoundLoopBoolean(false);
+			if(((int)this.gameSoundLoops.get(this.soundRandomizer).getLongFramePosition() >= this.gameSoundLoops.get(this.soundRandomizer).getFrameLength()-(441*4) && this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true && State == STATE.GAME)){	
+				if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
+					this.gameSoundLoops.get(this.soundRandomizer).stop();
+					this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				}
 				soundSet = false;
 				if(soundSet == false){	
 					Random rand = new Random();
-					soundRandomizer = rand.nextInt(3);
-					if (soundRandomizer == 0){
-						this.gameSoundLoop.loop();
-						this.gameSoundLoop.setFramePosition(0);
-						this.gameSoundLoop.setSoundLoopBoolean(true);
-						soundSet = true;
-					}
-					else{
-						this.gameSoundLoop2.loop();
-						this.gameSoundLoop2.setFramePosition(0);
-						this.gameSoundLoop2.setSoundLoopBoolean(true);
-						soundSet = true;
-					}
+					soundRandomizer = rand.nextInt(2);
+					this.gameSoundLoops.get(soundRandomizer).loop();
+					this.gameSoundLoops.get(soundRandomizer).setFramePosition(0);
+					this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+					soundSet = true;
 				}
 					
 			}
@@ -425,8 +393,6 @@ public class Game extends Canvas implements Runnable {
 				runningTimerActivated = false;
 				runningTimerActivatedResponse = true;
 			}
-			//else if(runningTimerActivated == false)
-				//runningTimerLong = 0;
 			if(slowingDownTimerLong <= System.currentTimeMillis() && slowingDownTimerLong != 0){
 				slowingDownTimerLong = 0;
 			}
@@ -542,18 +508,9 @@ public class Game extends Canvas implements Runnable {
 			if(menuSoundSet == false){
 				Random rand = new Random();
 				menuSoundLoopRandomizer = rand.nextInt(2);
-				if(menuSoundLoopRandomizer == 0){
-					this.menuSoundLoop.loop();
-					this.menuSoundLoop.setSoundLoopBoolean(true);
-					this.menuSoundLoop2.setSoundLoopBoolean(false);
-					menuSoundSet = true;
-				}
-				else{
-					this.menuSoundLoop2.loop();
-					this.menuSoundLoop2.setSoundLoopBoolean(true);
-					this.menuSoundLoop.setSoundLoopBoolean(false);
-					menuSoundSet = true;
-				}
+				this.menuSoundLoops.get(menuSoundLoopRandomizer).loop();
+				this.menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+				menuSoundSet = true;
 			}
 			g.drawImage(title, 70, 100, null);
 			g.drawImage(playTitle, Game.WIDTH / 2 + 120, 200, null);
@@ -562,10 +519,10 @@ public class Game extends Canvas implements Runnable {
 		}else if (State == STATE.GAMEOVER){												//GameOver
 			//wait a lil bit
 			//bs.show();
-			if(this.gameSoundLoop.getSoundLoopBoolean() == true)
-				this.gameSoundLoop.stop();
-			if(this.gameSoundLoop2.getSoundLoopBoolean() == true)
-				this.gameSoundLoop2.stop();
+			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
+				this.gameSoundLoops.get(this.soundRandomizer).stop();
+				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+			}
 
 			if(gameOverSoundBoolean == false){
 				this.gameOverSoundLoop.play();
@@ -621,6 +578,22 @@ public class Game extends Canvas implements Runnable {
 				c.addEntity(new Fireball(p.getX(),p.getY() + 32,tex, this));
 				animationTimer1 = 10;
 				numberOfFireBallsShot++;
+			}
+		}
+		if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_P){
+			if(paused == false && soundFXisPlaying == false){
+				if(p.getMarioInvincible() == true)
+					this.marioStarSoundLoop.stop();
+				else
+					this.gameSoundLoops.get(soundRandomizer).stop();
+				paused = true;
+			}
+			else if(paused == true && soundFXisPlaying == false){
+				if(p.getMarioInvincible() == true)
+					this.marioStarSoundLoop.loop();
+				else
+					this.gameSoundLoops.get(soundRandomizer).loop();
+				paused = false;
 			}
 		}
 		}
@@ -719,15 +692,14 @@ public class Game extends Canvas implements Runnable {
 		game.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		game.setMaximumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		game.setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-		game.menuSoundLoop = menuSoundLoop;
-		game.menuSoundLoop2 = menuSoundLoop2;
-		game.gameSoundLoop = gameSoundLoop;
-		game.gameSoundLoop2 = gameSoundLoop2;
+		game.menuSoundLoops.add(menuSoundLoop);
+		game.menuSoundLoops.add(menuSoundLoop2);
+		game.gameSoundLoops.add(gameSoundLoop);
+		game.gameSoundLoops.add(gameSoundLoop2);
 		game.marioStarSoundLoop = marioStarSoundLoop;
 		game.soundFXClip1SoundLoop = soundFXClip1SoundLoop;
 		game.soundFXClip2SoundLoop = soundFXClip2SoundLoop;
-		game.gameOverSoundLoop = gameOverSoundLoop;//CREATE BOOLEANS TO PLAY SOUND ONCE
-		//CREATE INTEGERS WITH APPROPRIATE TIME LENGTH FOR EACH SONG TO PLAY FROM SELECTION OF SONGS AT RANDOM
+		game.gameOverSoundLoop = gameOverSoundLoop;
 		
 		JFrame frame = new JFrame(game.TITLE);
 		frame.add(game);
@@ -756,8 +728,8 @@ public class Game extends Canvas implements Runnable {
 		return paused;
 	}
 	
-	public boolean soundFXPlaying(){
-		return soundFXBoolean;
+	public boolean soundFXisPlaying(){
+		return soundFXisPlaying;
 	}
 	
 	public BufferedImage getSpriteSheet(){

@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -15,6 +16,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class SoundLoops {
     private Clip clip;
     private boolean SoundLoopBoolean = false;
+	private FloatControl gainControl;
+	private float volume;
     public SoundLoops(String fileName) {
         // specify the sound to play
         // (assuming the sound can be played by the audio system)
@@ -26,6 +29,7 @@ public class SoundLoops {
              // load the sound into memory (a Clip)
                 clip = AudioSystem.getClip();
                 clip.open(sound);
+        		gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             }
             else {
                 throw new RuntimeException("Sound: file not found: " + fileName);
@@ -64,6 +68,14 @@ public class SoundLoops {
     public void loopSegment(int x, int y){
     	clip.setLoopPoints(x, y);
     	//clip.loop(x);
+    }
+    public void reduceSound(){
+    	this.volume -= 5.0f;
+    	this.gainControl.setValue(volume);
+    }
+    public void increaseSound(){
+    	this.volume += 5.0f;
+    	this.gainControl.setValue(volume);
     }
     public long getLongFramePosition(){
     	long framePosition = clip.getLongFramePosition();
