@@ -80,6 +80,9 @@ public class Game extends Canvas implements Runnable {
 	private boolean soundSet = false;
 	private boolean soundTimerSet = false;
 	private long soundFXTimer = 0;
+	private long pauseSoundFXTimer = 0;
+	private long visualPauseTimer = 0;
+	private boolean userHasPaused = false;
 	private boolean soundFXisPlaying = false;
 	private boolean soundFXBoolean = false;
 	private boolean soundFXClip1Reset = false;
@@ -92,6 +95,7 @@ public class Game extends Canvas implements Runnable {
 	SoundLoops marioStarSoundLoop;
 	SoundLoops soundFXClip1SoundLoop;
 	SoundLoops soundFXClip2SoundLoop;
+	SoundLoops pauseSoundFXSoundLoop;
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -300,6 +304,11 @@ public class Game extends Canvas implements Runnable {
 					this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
 					soundSet = true;
 				}
+				if(System.currentTimeMillis() > pauseSoundFXTimer && pauseSoundFXSoundLoop.getSoundLoopBoolean() == true){
+					paused = false;
+					pauseSoundFXSoundLoop.setSoundLoopBoolean(false);
+					this.gameSoundLoops.get(soundRandomizer).loop();
+				}
 			}
 			if(p.getMarioInvincible() == false && marioHasBeenInvincible == true){		//Setting up SoundFX in between Audio Clips
 				this.marioStarSoundLoop.stop();
@@ -311,6 +320,12 @@ public class Game extends Canvas implements Runnable {
 					soundFXisPlaying = true;
 				}
 
+				if(System.currentTimeMillis() > pauseSoundFXTimer && pauseSoundFXSoundLoop.getSoundLoopBoolean() == true){
+					paused = false;
+					pauseSoundFXSoundLoop.setSoundLoopBoolean(false);
+					this.gameSoundLoops.get(soundRandomizer).loop();
+				}
+				
 				if(System.currentTimeMillis() > soundFXTimer && soundTimerSet == true){							//checking if paused for soundFX Timer
 					paused = false;
 					soundFXisPlaying = false;
@@ -348,6 +363,12 @@ public class Game extends Canvas implements Runnable {
 					soundFXisPlaying = true;
 				}
 
+				if(System.currentTimeMillis() > pauseSoundFXTimer && pauseSoundFXSoundLoop.getSoundLoopBoolean() == true){
+					paused = false;
+					pauseSoundFXSoundLoop.setSoundLoopBoolean(false);
+					this.marioStarSoundLoop.loop();
+				}
+				
 				if(System.currentTimeMillis() > soundFXTimer && soundFXisPlaying == true){							//checking if paused for soundFX Timer
 					paused = false;
 					soundFXisPlaying = false;
@@ -448,10 +469,22 @@ public class Game extends Canvas implements Runnable {
 				spawnDone4 = true;
 			}
 			//SPAWN ENEMIES FINISHED
-			bb.draw(g2d);													//BLOCKS
-			p.render(g);
-			c.render(g);
-			g.drawImage(marioLives, 0, (Game.HEIGHT * 2), null);
+			if(!userHasPaused){
+				bb.draw(g2d);													//BLOCKS
+				p.render(g);
+				c.render(g);
+				g.drawImage(marioLives, 0, (Game.HEIGHT * 2), null);
+			}
+			if(userHasPaused){
+				if((System.currentTimeMillis() % 500 == 0) && System.currentTimeMillis() > visualPauseTimer)
+					visualPauseTimer = System.currentTimeMillis() + 500;
+				if(visualPauseTimer > System.currentTimeMillis() || pauseSoundFXTimer > System.currentTimeMillis()){
+					bb.draw(g2d);													//BLOCKS
+					p.render(g);
+					c.render(g);
+					g.drawImage(marioLives, 0, (Game.HEIGHT * 2), null);
+				}
+			}
 			
 				//if (i == rand.nextInt())
 					if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false){								
@@ -574,7 +607,7 @@ public class Game extends Canvas implements Runnable {
 		}
 		if (key == KeyEvent.VK_SPACE && !isShooting){											//Fireballs
 			isShooting = true;
-			if(ea.isEmpty()){
+			if(ea.isEmpty() && !paused){
 				c.addEntity(new Fireball(p.getX(),p.getY() + 32,tex, this));
 				animationTimer1 = 10;
 				numberOfFireBallsShot++;
@@ -586,14 +619,24 @@ public class Game extends Canvas implements Runnable {
 					this.marioStarSoundLoop.stop();
 				else
 					this.gameSoundLoops.get(soundRandomizer).stop();
+				this.pauseSoundFXSoundLoop.setFramePosition(0);
+				this.pauseSoundFXSoundLoop.play();
+				pauseSoundFXTimer = System.currentTimeMillis() + 685;
 				paused = true;
+				userHasPaused = true;
 			}
 			else if(paused == true && soundFXisPlaying == false){
-				if(p.getMarioInvincible() == true)
+				if(pauseSoundFXTimer < System.currentTimeMillis()){
+				/*if(p.getMarioInvincible() == true)
 					this.marioStarSoundLoop.loop();
 				else
 					this.gameSoundLoops.get(soundRandomizer).loop();
-				paused = false;
+				paused = false;*/
+				this.pauseSoundFXSoundLoop.play();
+				pauseSoundFXTimer = System.currentTimeMillis() + 685;
+				this.pauseSoundFXSoundLoop.setSoundLoopBoolean(true);
+				}
+				userHasPaused = false;
 			}
 		}
 		}
@@ -678,6 +721,7 @@ public class Game extends Canvas implements Runnable {
 		String marioStarAudioFile = "res/Sounds/SFX/mariowhistle.wav";
 		String soundFXClip1 = "res/Sounds/SFX/riseupacoustic1cWAVE.wav";
 		String soundFXClip2 = "res/Sounds/SFX/MariopowerupSFX.wav";
+		String pauseSoundFXFile = "res/Sounds/SFX/smb_pause.wav";
 		SoundLoops menuSoundLoop = new SoundLoops(menuAudioFile);
 		SoundLoops menuSoundLoop2 = new SoundLoops(menuAudioFile2);
 		SoundLoops gameSoundLoop = new SoundLoops(gameAudioFile);
@@ -686,6 +730,7 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops marioStarSoundLoop = new SoundLoops(marioStarAudioFile);
 		SoundLoops soundFXClip1SoundLoop = new SoundLoops(soundFXClip1);
 		SoundLoops soundFXClip2SoundLoop = new SoundLoops(soundFXClip2);
+		SoundLoops pauseSoundFXSoundLoop = new SoundLoops(pauseSoundFXFile);
 		
 		Game game = new Game();																						//Setting up Game
 		
@@ -699,6 +744,7 @@ public class Game extends Canvas implements Runnable {
 		game.marioStarSoundLoop = marioStarSoundLoop;
 		game.soundFXClip1SoundLoop = soundFXClip1SoundLoop;
 		game.soundFXClip2SoundLoop = soundFXClip2SoundLoop;
+		game.pauseSoundFXSoundLoop = pauseSoundFXSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		
 		JFrame frame = new JFrame(game.TITLE);
