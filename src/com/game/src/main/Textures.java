@@ -25,6 +25,7 @@ public class Textures {
 	public BufferedImage[] bulletBillD = new BufferedImage[17];
 	public BufferedImage[] bulletBillDL = new BufferedImage[10];
 	public BufferedImage[] bulletBillDR = new BufferedImage[10];
+	public BufferedImage[] marioEntrance = new BufferedImage[21];
 	public BufferedImage[] transparentBlocks = new BufferedImage[3];
 	public BufferedImage gameover;
 	
@@ -47,6 +48,7 @@ public class Textures {
 	private SpriteSheet bulletBillSprites;
 	private SpriteSheet marioPlayerAnimationsSprites;
 	private SpriteSheet marioSlowingDownSprites;
+	private SpriteSheet fullMarioSprites;
 	private SpriteSheet transparentBlocksSprites;
 	
 	public Textures(Game game){
@@ -58,6 +60,7 @@ public class Textures {
 		bulletBillSprites = new SpriteSheet(game.getBulletBillSpriteSheet());
 		marioPlayerAnimationsSprites = new SpriteSheet(game.getMarioPlayerStarAnimations());
 		marioSlowingDownSprites = new SpriteSheet(game.getMarioSlowingDownSprites());
+		fullMarioSprites = new SpriteSheet(game.getFullMarioSpriteSheet());
 		transparentBlocksSprites = new SpriteSheet(game.getTransparentBlocks());
 		
 		getTextures();
@@ -288,6 +291,28 @@ public class Textures {
 		
 		bulletBillDR[8] = bulletBillSprites.grabSmallImage(9, 3, 16, 16);
 		bulletBillDR[9] = bulletBillSprites.grabSmallImage(10, 3, 16, 16);
+		
+		marioEntrance[0] = fullMarioSprites.grabExactImage(129, 0, 14, 19);
+		marioEntrance[1] = fullMarioSprites.grabExactImage(169, 0, 14, 19);
+		marioEntrance[2] = fullMarioSprites.grabExactImage(89, 0, 14, 19);
+		marioEntrance[3] = fullMarioSprites.grabExactImage(209, 0, 14, 19);
+		marioEntrance[4] = fullMarioSprites.grabExactImage(249, 0, 14, 19);
+		marioEntrance[5] = fullMarioSprites.grabExactImage(24, 760, 16, 20);
+		marioEntrance[6] = fullMarioSprites.grabExactImage(324, 760, 16, 20);
+		marioEntrance[7] = fullMarioSprites.grabExactImage(54, 760, 16, 20);
+		marioEntrance[8] = fullMarioSprites.grabExactImage(84, 760, 16, 20);
+		marioEntrance[9] = fullMarioSprites.grabExactImage(231, 755, 21, 29);
+		marioEntrance[10] = fullMarioSprites.grabExactImage(171, 755, 21, 29);
+		marioEntrance[11] = fullMarioSprites.grabExactImage(8, 156, 16, 28);
+		marioEntrance[12] = fullMarioSprites.grabExactImage(169, 436, 15, 28);
+		marioEntrance[13] = fullMarioSprites.grabExactImage(8, 196, 17, 27);
+		marioEntrance[14] = fullMarioSprites.grabExactImage(48, 196, 16, 28);
+		marioEntrance[15] = fullMarioSprites.grabExactImage(232, 715, 20, 29);
+		marioEntrance[16] = fullMarioSprites.grabExactImage(204, 715, 16, 29);
+		marioEntrance[17] = fullMarioSprites.grabExactImage(172, 715, 20, 29);
+		marioEntrance[18] = fullMarioSprites.grabExactImage(264, 715, 16, 29);
+		marioEntrance[19] = fullMarioSprites.grabExactImage(144, 715, 16, 29);
+		marioEntrance[20] = fullMarioSprites.grabExactImage(288, 436, 16, 28);
 		
 		transparentBlocks[0] = transparentBlocksSprites.grabExactImage(40, 210, 16, 28);
 		transparentBlocks[1] = transparentBlocksSprites.grabExactImage(140, 210, 16, 28);

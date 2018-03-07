@@ -94,4 +94,13 @@ public class SoundLoops {
     public boolean getSoundLoopBoolean(){
     	return SoundLoopBoolean;
     }
+    public boolean soundPlaying(){
+    	return clip.isActive();
+    }
+    public boolean endsSoon(){
+    	if((int)clip.getLongFramePosition() >= clip.getFrameLength()-(441*4))
+    		return true;
+    	else
+    		return false;
+    }
     }

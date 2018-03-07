@@ -45,6 +45,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage bulletBillSpriteSheet = null;
 	private BufferedImage marioPlayerStarAnimations = null;
 	private BufferedImage marioSlowingDownSprites = null;
+	private BufferedImage fullMarioSpriteSheet = null;
 	private BufferedImage transparentBlocks = null;
 	
 	Animation starAnim;
@@ -80,22 +81,33 @@ public class Game extends Canvas implements Runnable {
 	private boolean soundSet = false;
 	private boolean soundTimerSet = false;
 	private long soundFXTimer = 0;
+	private long transitionTimer = 0;
+	private long gameStartSoundTimer = 0;
 	private long pauseSoundFXTimer = 0;
 	private long visualPauseTimer = 0;
+	private long marioDancePosePauseTimer = 0;
+	private long marioGrowthPosePauseTimer = 0;
+	private long marioLetsGoPauseTimer = 0;
 	private boolean userHasPaused = false;
 	private boolean soundFXisPlaying = false;
 	private boolean soundFXBoolean = false;
 	private boolean soundFXClip1Reset = false;
+	private boolean marioDancePosePause = false;
+	private boolean marioGrowthPosePause = false;
+	private boolean marioLetsGoPause = false;
 	private int soundRandomizer = 0;
 	private int menuSoundLoopRandomizer = 0;
 	private boolean menuSoundSet = false;
 	LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> marioDanceSoundLoops = new LinkedList<SoundLoops>();
 	SoundLoops gameOverSoundLoop;
 	SoundLoops marioStarSoundLoop;
 	SoundLoops soundFXClip1SoundLoop;
 	SoundLoops soundFXClip2SoundLoop;
 	SoundLoops pauseSoundFXSoundLoop;
+	SoundLoops marioSpinningSoundLoop;
+	SoundLoops marioLetsGoSoundLoop;
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -120,6 +132,7 @@ public class Game extends Canvas implements Runnable {
 	
 	public static enum STATE{
 		MENU,
+		TRANSITION,
 		GAME,
 		PAUSE,
 		GAMEOVER
@@ -140,6 +153,7 @@ public class Game extends Canvas implements Runnable {
 			bulletBillSpriteSheet = loader.loadImage("/bulletbillspritesheet.png");
 			marioPlayerStarAnimations = loader.loadImage("/marioplayerstaranimations.png");
 			marioSlowingDownSprites = loader.loadImage("/firemarioslidingeffect.png");
+			fullMarioSpriteSheet = loader.loadImage("/mario.png");
 			title = loader.loadImage("/koopasinvaderstitlebigger.png");
 			gameOverTitle = loader.loadImage("/gameover1bigger.png");
 			playTitle = loader.loadImage("/newplaybutton.png");
@@ -294,6 +308,7 @@ public class Game extends Canvas implements Runnable {
 				if(this.menuSoundLoops.get(this.menuSoundLoopRandomizer).getSoundLoopBoolean() == true){
 					this.menuSoundLoops.get(this.menuSoundLoopRandomizer).stop();
 					this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
+					menuSoundSet = false;
 				}
 				
 				if(soundSet == false){	
@@ -549,12 +564,63 @@ public class Game extends Canvas implements Runnable {
 			g.drawImage(playTitle, Game.WIDTH / 2 + 120, 200, null);
 			g.drawImage(helpTitle, Game.WIDTH / 2 + 120, 300, null);
 			g.drawImage(exitTitle, Game.WIDTH / 2 + 120, 400, null);
+		}else if (State == STATE.TRANSITION){
+			if(this.menuSoundLoops.get(this.menuSoundLoopRandomizer).getSoundLoopBoolean() == true){
+				this.menuSoundLoops.get(this.menuSoundLoopRandomizer).stop();
+				this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
+				menuSoundSet = false;
+			}
+			p.render(g);
+			if(p.isSpinningAnimationFinished() == false && this.marioSpinningSoundLoop.getSoundLoopBoolean() == false){
+				this.marioSpinningSoundLoop.play();
+				this.marioSpinningSoundLoop.setSoundLoopBoolean(true);
+			}
+			else if (p.isSpinningAnimationFinished() == true && p.isDancingAnimationFinished() == false){
+				if(this.marioSpinningSoundLoop.getSoundLoopBoolean() == true)
+					this.marioSpinningSoundLoop.setSoundLoopBoolean(false);
+				if(p.getDanceProgressionCount() == 0){//just here to use both manual and progression w/o sound cuts so I can use either one later
+					if(p.marioEntranceDancingAnim.getCount() >= 0 && p.isDancingInProgress() == false)//manual progression
+						this.marioDanceSoundLoops.get(p.getDanceProgressionCount()).play();
+				}
+				else if (p.getDanceProgressionCount() < 26){
+					if(p.getDanceProgressionCount() < 26 && this.marioDanceSoundLoops.get(p.getDanceProgressionCount()-1).endsSoon() == true)//progression without cuts in sound
+						this.marioDanceSoundLoops.get(p.getDanceProgressionCount()).play();
+				}
+				else if(p.marioEntranceDancingAnim.getCount() == 26 && marioDancePosePause == false){
+					p.marioEntranceDancingAnim.setCount(0);
+					p.marioEntranceSpinningAnim.setCount(0);
+					marioDancePosePauseTimer = System.currentTimeMillis() + 600;
+					marioDancePosePause = true;
+				}
+				if(marioDancePosePause == true && marioDancePosePauseTimer < System.currentTimeMillis())
+					marioDancePosePause = false;
+			}
+			else if(p.isDancingAnimationFinished() == true && p.isGrowingAnimationFinished() == false && this.soundFXClip2SoundLoop.getSoundLoopBoolean() == false){
+				this.soundFXClip2SoundLoop.play();
+				this.soundFXClip2SoundLoop.setSoundLoopBoolean(true);
+			}
+			else if(p.isGrowingAnimationFinished() == true){
+				if(marioGrowthPosePauseTimer == 0 && marioGrowthPosePause == false){
+					marioGrowthPosePauseTimer = System.currentTimeMillis() + 1300;
+					marioGrowthPosePause = true;
+				}
+				else if(marioGrowthPosePauseTimer < System.currentTimeMillis() && marioGrowthPosePause == true){
+					marioLetsGoPauseTimer = System.currentTimeMillis() + 100;
+					marioLetsGoPause = true;
+					marioGrowthPosePause = false;
+				}
+				if(marioLetsGoPause == true && marioLetsGoPauseTimer < System.currentTimeMillis()){
+					this.marioLetsGoSoundLoop.play();
+					marioLetsGoPause = false;
+				}
+			}
 		}else if (State == STATE.GAMEOVER){												//GameOver
 			//wait a lil bit
 			//bs.show();
 			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+				soundSet = false;
 			}
 
 			if(gameOverSoundBoolean == false){
@@ -722,6 +788,34 @@ public class Game extends Canvas implements Runnable {
 		String soundFXClip1 = "res/Sounds/SFX/riseupacoustic1cWAVE.wav";
 		String soundFXClip2 = "res/Sounds/SFX/MariopowerupSFX.wav";
 		String pauseSoundFXFile = "res/Sounds/SFX/smb_pause.wav";
+		String marioSpinningFile = "res/Sounds/SFX/smw_feather_get.wav";
+		String marioLetsGoFile = "res/Sounds/SFX/mk64_mario02.wav";
+		String marioDanceSoundFXFile1 = "res/Sounds/SFX/DanceSFX/mariodancepart1.wav";
+		String marioDanceSoundFXFile2 = "res/Sounds/SFX/DanceSFX/mariodancepart2.wav";
+		String marioDanceSoundFXFile3 = "res/Sounds/SFX/DanceSFX/mariodancepart3.wav";
+		String marioDanceSoundFXFile4 = "res/Sounds/SFX/DanceSFX/mariodancepart4.wav";
+		String marioDanceSoundFXFile5 = "res/Sounds/SFX/DanceSFX/mariodancepart5.wav";
+		String marioDanceSoundFXFile6 = "res/Sounds/SFX/DanceSFX/mariodancepart6.wav";
+		String marioDanceSoundFXFile7 = "res/Sounds/SFX/DanceSFX/mariodancepart7.wav";
+		String marioDanceSoundFXFile8 = "res/Sounds/SFX/DanceSFX/mariodancepart8.wav";
+		String marioDanceSoundFXFile9 = "res/Sounds/SFX/DanceSFX/mariodancepart9.wav";
+		String marioDanceSoundFXFile10 = "res/Sounds/SFX/DanceSFX/mariodancepart10.wav";
+		String marioDanceSoundFXFile11 = "res/Sounds/SFX/DanceSFX/mariodancepart11.wav";
+		String marioDanceSoundFXFile12 = "res/Sounds/SFX/DanceSFX/mariodancepart12.wav";
+		String marioDanceSoundFXFile13 = "res/Sounds/SFX/DanceSFX/mariodancepart13.wav";
+		String marioDanceSoundFXFile14 = "res/Sounds/SFX/DanceSFX/mariodancepart14.wav";
+		String marioDanceSoundFXFile15 = "res/Sounds/SFX/DanceSFX/mariodancepart15.wav";
+		String marioDanceSoundFXFile16 = "res/Sounds/SFX/DanceSFX/mariodancepart16.wav";
+		String marioDanceSoundFXFile17 = "res/Sounds/SFX/DanceSFX/mariodancepart17.wav";
+		String marioDanceSoundFXFile18 = "res/Sounds/SFX/DanceSFX/mariodancepart18.wav";
+		String marioDanceSoundFXFile19 = "res/Sounds/SFX/DanceSFX/mariodancepart19.wav";
+		String marioDanceSoundFXFile20 = "res/Sounds/SFX/DanceSFX/mariodancepart20.wav";
+		String marioDanceSoundFXFile21 = "res/Sounds/SFX/DanceSFX/mariodancepart21.wav";
+		String marioDanceSoundFXFile22 = "res/Sounds/SFX/DanceSFX/mariodancepart22.wav";
+		String marioDanceSoundFXFile23 = "res/Sounds/SFX/DanceSFX/mariodancepart23.wav";
+		String marioDanceSoundFXFile24 = "res/Sounds/SFX/DanceSFX/mariodancepart24.wav";
+		String marioDanceSoundFXFile25 = "res/Sounds/SFX/DanceSFX/mariodancepart25.wav";
+		String marioDanceSoundFXFile26 = "res/Sounds/SFX/DanceSFX/mariodancepart26.wav";
 		SoundLoops menuSoundLoop = new SoundLoops(menuAudioFile);
 		SoundLoops menuSoundLoop2 = new SoundLoops(menuAudioFile2);
 		SoundLoops gameSoundLoop = new SoundLoops(gameAudioFile);
@@ -731,6 +825,34 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops soundFXClip1SoundLoop = new SoundLoops(soundFXClip1);
 		SoundLoops soundFXClip2SoundLoop = new SoundLoops(soundFXClip2);
 		SoundLoops pauseSoundFXSoundLoop = new SoundLoops(pauseSoundFXFile);
+		SoundLoops marioSpinningSoundLoop = new SoundLoops(marioSpinningFile);
+		SoundLoops marioLetsGoSoundLoop = new SoundLoops(marioLetsGoFile);
+		SoundLoops marioDanceSoundFXSoundLoop1 = new SoundLoops(marioDanceSoundFXFile1);
+		SoundLoops marioDanceSoundFXSoundLoop2 = new SoundLoops(marioDanceSoundFXFile2);
+		SoundLoops marioDanceSoundFXSoundLoop3 = new SoundLoops(marioDanceSoundFXFile3);
+		SoundLoops marioDanceSoundFXSoundLoop4 = new SoundLoops(marioDanceSoundFXFile4);
+		SoundLoops marioDanceSoundFXSoundLoop5 = new SoundLoops(marioDanceSoundFXFile5);
+		SoundLoops marioDanceSoundFXSoundLoop6 = new SoundLoops(marioDanceSoundFXFile6);
+		SoundLoops marioDanceSoundFXSoundLoop7 = new SoundLoops(marioDanceSoundFXFile7);
+		SoundLoops marioDanceSoundFXSoundLoop8 = new SoundLoops(marioDanceSoundFXFile8);
+		SoundLoops marioDanceSoundFXSoundLoop9 = new SoundLoops(marioDanceSoundFXFile9);
+		SoundLoops marioDanceSoundFXSoundLoop10 = new SoundLoops(marioDanceSoundFXFile10);
+		SoundLoops marioDanceSoundFXSoundLoop11 = new SoundLoops(marioDanceSoundFXFile11);
+		SoundLoops marioDanceSoundFXSoundLoop12 = new SoundLoops(marioDanceSoundFXFile12);
+		SoundLoops marioDanceSoundFXSoundLoop13 = new SoundLoops(marioDanceSoundFXFile13);
+		SoundLoops marioDanceSoundFXSoundLoop14 = new SoundLoops(marioDanceSoundFXFile14);
+		SoundLoops marioDanceSoundFXSoundLoop15 = new SoundLoops(marioDanceSoundFXFile15);
+		SoundLoops marioDanceSoundFXSoundLoop16 = new SoundLoops(marioDanceSoundFXFile16);
+		SoundLoops marioDanceSoundFXSoundLoop17 = new SoundLoops(marioDanceSoundFXFile17);
+		SoundLoops marioDanceSoundFXSoundLoop18 = new SoundLoops(marioDanceSoundFXFile18);
+		SoundLoops marioDanceSoundFXSoundLoop19 = new SoundLoops(marioDanceSoundFXFile19);
+		SoundLoops marioDanceSoundFXSoundLoop20 = new SoundLoops(marioDanceSoundFXFile20);
+		SoundLoops marioDanceSoundFXSoundLoop21 = new SoundLoops(marioDanceSoundFXFile21);
+		SoundLoops marioDanceSoundFXSoundLoop22 = new SoundLoops(marioDanceSoundFXFile22);
+		SoundLoops marioDanceSoundFXSoundLoop23 = new SoundLoops(marioDanceSoundFXFile23);
+		SoundLoops marioDanceSoundFXSoundLoop24 = new SoundLoops(marioDanceSoundFXFile24);
+		SoundLoops marioDanceSoundFXSoundLoop25 = new SoundLoops(marioDanceSoundFXFile25);
+		SoundLoops marioDanceSoundFXSoundLoop26 = new SoundLoops(marioDanceSoundFXFile26);
 		
 		Game game = new Game();																						//Setting up Game
 		
@@ -741,10 +863,38 @@ public class Game extends Canvas implements Runnable {
 		game.menuSoundLoops.add(menuSoundLoop2);
 		game.gameSoundLoops.add(gameSoundLoop);
 		game.gameSoundLoops.add(gameSoundLoop2);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop1);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop2);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop3);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop4);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop5);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop6);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop7);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop8);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop9);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop10);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop11);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop12);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop13);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop14);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop15);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop16);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop17);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop18);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop19);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop20);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop21);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop22);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop23);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop24);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop25);
+		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop26);
 		game.marioStarSoundLoop = marioStarSoundLoop;
 		game.soundFXClip1SoundLoop = soundFXClip1SoundLoop;
 		game.soundFXClip2SoundLoop = soundFXClip2SoundLoop;
 		game.pauseSoundFXSoundLoop = pauseSoundFXSoundLoop;
+		game.marioSpinningSoundLoop = marioSpinningSoundLoop;
+		game.marioLetsGoSoundLoop = marioLetsGoSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		
 		JFrame frame = new JFrame(game.TITLE);
@@ -777,6 +927,32 @@ public class Game extends Canvas implements Runnable {
 	public boolean soundFXisPlaying(){
 		return soundFXisPlaying;
 	}
+
+	
+	public boolean isMarioDancePosePause() {
+		return marioDancePosePause;
+	}
+
+	public void setMarioDancePosePause(boolean marioDancePosePause) {
+		this.marioDancePosePause = marioDancePosePause;
+	}
+
+	public long getMarioGrowthPosePauseTimer() {
+		return marioGrowthPosePauseTimer;
+	}
+
+	public void setMarioGrowthPosePauseTimer(long marioGrowthPosePauseTimer) {
+		this.marioGrowthPosePauseTimer = marioGrowthPosePauseTimer;
+	}
+
+	public boolean isMarioGrowthPosePause() {
+		return marioGrowthPosePause;
+	}
+
+	public void setMarioGrowthPosePause(boolean marioGrowthPosePause) {
+		this.marioGrowthPosePause = marioGrowthPosePause;
+	}
+
 	
 	public BufferedImage getSpriteSheet(){
 		return spriteSheet;
@@ -808,6 +984,10 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getMarioSlowingDownSprites(){
 		return marioSlowingDownSprites;
+	}
+
+	public BufferedImage getFullMarioSpriteSheet(){
+		return fullMarioSpriteSheet;
 	}
 	
 	public BufferedImage getTransparentBlocks(){

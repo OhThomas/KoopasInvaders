@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import com.game.src.main.Game.STATE;
 import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
@@ -21,11 +22,27 @@ public class Player extends GameObject implements EntityA{
 	
 	private Textures tex;
 	private BufferedImage player;
+	private BufferedImage playerSmall;
+	private BufferedImage playerSmallDancePose;
+	private BufferedImage playerGrowthPose;
 	private BufferedImage player2;
 	private BufferedImage player3;
+	private boolean playerEntranceSpinningSetup = false;
+	private boolean playerEntranceDancingSetup = false;
+	private boolean playerEntranceGrowingSetup = false;
+	private boolean playerEntranceTurningAroundSetup = false;
+	private boolean firstTimeAnimationRun = false;
+
+	private boolean spinningAnimationFinished = false;
+	private boolean dancingAnimationFinished = false;
+	private boolean growingAnimationFinished = false;
+	private boolean turningAroundAnimationFinished = false;
+	private boolean dancingInProgress = false;
 	private boolean marioInvincible = false;	//To make Player invincible w/ star
 	private int timer1 = 100;					//Timer for how long Player is invincible
 	private int timer2 = 0;
+	private int danceProgressionCount = 0;
+	private long animationTimer1 = 0;
 	Random r = new Random();
 	int random = r.nextInt((9-1)+1) + 1;		//int randomNum = rand.nextInt((max - min) + 1) + min;
 	
@@ -49,6 +66,10 @@ public class Player extends GameObject implements EntityA{
 	Animation starAnim3l;
 	Animation starAnim3r;
 	Animation starAnim3d;
+	Animation marioEntranceSpinningAnim;
+	Animation marioEntranceDancingAnim;
+	Animation marioEntranceGrowingAnim;
+	Animation marioEntranceTurningAroundAnim;
 	
 	public Player(double x, double y, Textures tex, Game game, Controller controller){
 		super(x,y);
@@ -58,6 +79,9 @@ public class Player extends GameObject implements EntityA{
 		
 		SpriteSheet ss = new SpriteSheet(game.getSpriteSheet());
 		player = ss.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSmall = tex.marioEntrance[0];
+		playerSmallDancePose = tex.marioEntrance[5];
+		playerGrowthPose = tex.marioEntrance[9];
 		player2 = tex.marioStar2[0];
 		player3 = tex.marioStar3[0];
 		
@@ -83,6 +107,31 @@ public class Player extends GameObject implements EntityA{
 		starAnim3l = new Animation(6, tex.marioStar3[4],tex.marioStar3[5],tex.marioStar3[6],tex.marioStar3[7]);
 		starAnim3r = new Animation(6, tex.marioStar3[8],tex.marioStar3[9],tex.marioStar3[10],tex.marioStar3[11]);
 		starAnim3d = new Animation(6, tex.marioStar3[12],tex.marioStar3[13],tex.marioStar3[14],tex.marioStar3[15]);
+		
+		marioEntranceSpinningAnim = new Animation(1, tex.marioEntrance[0],tex.marioEntrance[1],tex.marioEntrance[2],
+				tex.marioEntrance[3],tex.marioEntrance[4],tex.marioEntrance[0],
+				tex.marioEntrance[1],tex.marioEntrance[2],tex.marioEntrance[3],
+				tex.marioEntrance[4],tex.marioEntrance[0],tex.marioEntrance[1],
+				tex.marioEntrance[2],tex.marioEntrance[3],tex.marioEntrance[4],tex.marioEntrance[0]);
+		
+		marioEntranceDancingAnim = new Animation(1, tex.marioEntrance[5],tex.marioEntrance[6],tex.marioEntrance[7],
+				tex.marioEntrance[8],tex.marioEntrance[5],tex.marioEntrance[6],
+				tex.marioEntrance[7],tex.marioEntrance[8],tex.marioEntrance[5],
+				tex.marioEntrance[6],tex.marioEntrance[7],tex.marioEntrance[8],
+				tex.marioEntrance[5],tex.marioEntrance[6],tex.marioEntrance[7],
+				tex.marioEntrance[8],tex.marioEntrance[5],tex.marioEntrance[6],
+				tex.marioEntrance[7],tex.marioEntrance[8],tex.marioEntrance[5],
+				tex.marioEntrance[6],tex.marioEntrance[7],tex.marioEntrance[8],
+				tex.marioEntrance[6],tex.marioEntrance[5]);
+		
+		marioEntranceGrowingAnim = new Animation(1, tex.marioEntrance[9],tex.marioEntrance[6],tex.marioEntrance[10],
+				tex.marioEntrance[8],tex.marioEntrance[9],tex.marioEntrance[6],
+				tex.marioEntrance[10],tex.marioEntrance[8],tex.marioEntrance[9],tex.marioEntrance[9]);
+		
+		marioEntranceTurningAroundAnim = new Animation(1, tex.marioEntrance[9],tex.marioEntrance[10],
+				tex.marioEntrance[11],tex.marioEntrance[12],tex.marioEntrance[13],tex.marioEntrance[14],
+				tex.marioEntrance[15],tex.marioEntrance[16],tex.marioEntrance[17],tex.marioEntrance[17],
+				tex.marioEntrance[18],tex.marioEntrance[19],tex.marioEntrance[20],tex.marioEntrance[20]);
 	}
 	
 	public void tick(){
@@ -165,7 +214,73 @@ public class Player extends GameObject implements EntityA{
 	}
 	
 	public void render(Graphics g){
-		if(velY < 0 && game.animationTimer1 == 0){													//CHANGE ANIMATIONS HERE!
+		if(game.State == STATE.TRANSITION){
+			if(spinningAnimationFinished == false){
+				if(playerEntranceSpinningSetup == false)
+					g.drawImage(playerSmall, (int)x, (int)y, null);
+				marioEntranceSpinningAnim.drawAnimation(g, x, y, 0);
+				if(System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis()){
+					animationTimer1 = System.currentTimeMillis();
+					marioEntranceSpinningAnim.runAnimation();
+					if(playerEntranceSpinningSetup == false)
+						playerEntranceSpinningSetup = true;
+				}
+				if(marioEntranceSpinningAnim.getCount() > 15)//|| if sfx ends
+					spinningAnimationFinished = true;
+			}
+			else if(dancingAnimationFinished == false){
+				if(playerEntranceDancingSetup == false)
+					g.drawImage(playerSmallDancePose,(int)x, (int)y, null);
+				marioEntranceDancingAnim.drawAnimation(g, x, y, 0);
+				if(danceProgressionCount < 26 && game.marioDanceSoundLoops.get(danceProgressionCount).soundPlaying() == true){
+					dancingInProgress = true;
+					marioEntranceDancingAnim.runAnimation();
+					marioEntranceDancingAnim.runAnimation();
+					if(playerEntranceDancingSetup == false && marioEntranceDancingAnim.getCount() == 1)
+						playerEntranceDancingSetup = true;
+					danceProgressionCount = danceProgressionCount + 1;
+				}
+				if(danceProgressionCount > 0){
+					if(game.marioDanceSoundLoops.get(danceProgressionCount-1).soundPlaying() == false)
+						dancingInProgress = false;
+				}
+				if(game.marioDanceSoundLoops.getLast().soundPlaying() == false && (int)game.marioDanceSoundLoops.getLast().getLongFramePosition() > 0 && game.isMarioDancePosePause() == false)//|| if sfx ends
+					dancingAnimationFinished = true;
+			}
+			else if(growingAnimationFinished == false){
+				if(playerEntranceGrowingSetup == false)
+					g.drawImage(playerSmallDancePose,(int)x, (int)y, null);
+				marioEntranceGrowingAnim.drawAnimation(g, x, y, 0);
+				if(System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis()){
+					animationTimer1 = System.currentTimeMillis();
+					marioEntranceGrowingAnim.runAnimation();
+					if(playerEntranceGrowingSetup == false && marioEntranceGrowingAnim.getCount() == 1)
+						playerEntranceGrowingSetup = true;
+				}
+				if(marioEntranceGrowingAnim.getCount() > 8)//|| if sfx ends
+					growingAnimationFinished = true;
+			}
+			else if(turningAroundAnimationFinished == false){
+				marioEntranceTurningAroundAnim.drawAnimation(g, x, y, 0);
+				if(game.isMarioGrowthPosePause() == false && (System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis())){
+					if(firstTimeAnimationRun == false)
+						marioEntranceTurningAroundAnim.nextFrame();
+					animationTimer1 = System.currentTimeMillis();
+					marioEntranceTurningAroundAnim.runAnimation();
+					firstTimeAnimationRun = true;
+				}
+				else if(firstTimeAnimationRun == false)
+					g.drawImage(playerGrowthPose,(int)x, (int)y, null);
+				if(marioEntranceTurningAroundAnim.getCount() > 13)
+					turningAroundAnimationFinished = true;
+			}
+			else if(turningAroundAnimationFinished == true){
+				g.drawImage(player, (int)x, (int)y, null);
+				firstTimeAnimationRun = false;
+				Game.State = Game.STATE.GAME;
+			}
+		}
+		else if(velY < 0 && game.animationTimer1 == 0){													//CHANGE ANIMATIONS HERE!
 			if(marioInvincible == true && !game.isPaused()){
 				if(random == 3|| random == 2 || random == 1)
 					starAnim1.drawAnimation(g, x, y, 0);
@@ -258,4 +373,45 @@ public class Player extends GameObject implements EntityA{
 	public boolean getMarioInvincible(){
 		return marioInvincible;
 	}
+
+	public boolean isSpinningAnimationFinished() {
+		return spinningAnimationFinished;
+	}
+
+	public void setSpinningAnimationFinished(boolean spinningAnimationFinished) {
+		this.spinningAnimationFinished = spinningAnimationFinished;
+	}
+
+	public boolean isDancingAnimationFinished() {
+		return dancingAnimationFinished;
+	}
+
+	public void setDancingAnimationFinished(boolean dancingAnimationFinished) {
+		this.dancingAnimationFinished = dancingAnimationFinished;
+	}
+
+	public boolean isGrowingAnimationFinished() {
+		return growingAnimationFinished;
+	}
+
+	public void setGrowingAnimationFinished(boolean growingAnimationFinished) {
+		this.growingAnimationFinished = growingAnimationFinished;
+	}
+	
+	public boolean isDancingInProgress() {
+		return dancingInProgress;
+	}
+
+	public void setDancingInProgress(boolean dancingInProgress) {
+		this.dancingInProgress = dancingInProgress;
+	}
+	
+	public int getDanceProgressionCount() {
+		return danceProgressionCount;
+	}
+
+	public void setDanceProgressionCount(int danceProgressionCount) {
+		this.danceProgressionCount = danceProgressionCount;
+	}
+
 }
