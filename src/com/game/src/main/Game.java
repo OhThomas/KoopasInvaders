@@ -97,17 +97,18 @@ public class Game extends Canvas implements Runnable {
 	private boolean marioLetsGoPause = false;
 	private int soundRandomizer = 0;
 	private int menuSoundLoopRandomizer = 0;
+	private int marioVoiceRandomizer = 0;
 	private boolean menuSoundSet = false;
 	LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> marioDanceSoundLoops = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> marioVoices = new LinkedList<SoundLoops>();
 	SoundLoops gameOverSoundLoop;
 	SoundLoops marioStarSoundLoop;
 	SoundLoops soundFXClip1SoundLoop;
 	SoundLoops soundFXClip2SoundLoop;
 	SoundLoops pauseSoundFXSoundLoop;
 	SoundLoops marioSpinningSoundLoop;
-	SoundLoops marioLetsGoSoundLoop;
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -610,7 +611,10 @@ public class Game extends Canvas implements Runnable {
 					marioGrowthPosePause = false;
 				}
 				if(marioLetsGoPause == true && marioLetsGoPauseTimer < System.currentTimeMillis()){
-					this.marioLetsGoSoundLoop.play();
+					Random rand = new Random();
+					marioVoiceRandomizer = rand.nextInt(4);
+					this.marioVoices.get(marioVoiceRandomizer).play();
+					this.marioVoices.get(marioVoiceRandomizer).setSoundLoopBoolean(true);
 					marioLetsGoPause = false;
 				}
 			}
@@ -789,7 +793,10 @@ public class Game extends Canvas implements Runnable {
 		String soundFXClip2 = "res/Sounds/SFX/MariopowerupSFX.wav";
 		String pauseSoundFXFile = "res/Sounds/SFX/smb_pause.wav";
 		String marioSpinningFile = "res/Sounds/SFX/smw_feather_get.wav";
-		String marioLetsGoFile = "res/Sounds/SFX/mk64_mario02.wav";
+		String marioVoiceLetsGoFile = "res/Sounds/SFX/MarioVoice/mk64_mario02.wav";
+		String marioVoiceHereWeGoFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_33_mario_27.wav";
+		String marioVoiceYelpFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_22_mario_16.wav";
+		String marioVoiceWoohooFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_26_mario_20.wav";
 		String marioDanceSoundFXFile1 = "res/Sounds/SFX/DanceSFX/mariodancepart1.wav";
 		String marioDanceSoundFXFile2 = "res/Sounds/SFX/DanceSFX/mariodancepart2.wav";
 		String marioDanceSoundFXFile3 = "res/Sounds/SFX/DanceSFX/mariodancepart3.wav";
@@ -826,7 +833,10 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops soundFXClip2SoundLoop = new SoundLoops(soundFXClip2);
 		SoundLoops pauseSoundFXSoundLoop = new SoundLoops(pauseSoundFXFile);
 		SoundLoops marioSpinningSoundLoop = new SoundLoops(marioSpinningFile);
-		SoundLoops marioLetsGoSoundLoop = new SoundLoops(marioLetsGoFile);
+		SoundLoops marioVoiceLetsGoSoundLoop = new SoundLoops(marioVoiceLetsGoFile);
+		SoundLoops marioVoiceHereWeGoSoundLoop = new SoundLoops(marioVoiceHereWeGoFile);
+		SoundLoops marioVoiceYelpSoundLoop = new SoundLoops(marioVoiceYelpFile);
+		SoundLoops marioVoiceWoohooSoundLoop = new SoundLoops(marioVoiceWoohooFile);
 		SoundLoops marioDanceSoundFXSoundLoop1 = new SoundLoops(marioDanceSoundFXFile1);
 		SoundLoops marioDanceSoundFXSoundLoop2 = new SoundLoops(marioDanceSoundFXFile2);
 		SoundLoops marioDanceSoundFXSoundLoop3 = new SoundLoops(marioDanceSoundFXFile3);
@@ -889,12 +899,15 @@ public class Game extends Canvas implements Runnable {
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop24);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop25);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop26);
+		game.marioVoices.add(marioVoiceLetsGoSoundLoop);
+		game.marioVoices.add(marioVoiceHereWeGoSoundLoop);
+		game.marioVoices.add(marioVoiceYelpSoundLoop);
+		game.marioVoices.add(marioVoiceWoohooSoundLoop);
 		game.marioStarSoundLoop = marioStarSoundLoop;
 		game.soundFXClip1SoundLoop = soundFXClip1SoundLoop;
 		game.soundFXClip2SoundLoop = soundFXClip2SoundLoop;
 		game.pauseSoundFXSoundLoop = pauseSoundFXSoundLoop;
 		game.marioSpinningSoundLoop = marioSpinningSoundLoop;
-		game.marioLetsGoSoundLoop = marioLetsGoSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		
 		JFrame frame = new JFrame(game.TITLE);
