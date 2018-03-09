@@ -41,7 +41,7 @@ public class MouseInput implements MouseListener {
 				mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.GAMEOVER) {
 			if (my >= 200 && my <= 264) {
 				// Pressed Play Button
-				Game.State = Game.STATE.TRANSITION;
+				Game.State = Game.STATE.TRANSITION_ENTRANCE;
 			}
 		}
 

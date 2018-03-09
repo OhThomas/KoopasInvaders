@@ -25,12 +25,14 @@ public class Player extends GameObject implements EntityA{
 	private BufferedImage playerSmall;
 	private BufferedImage playerSmallDancePose;
 	private BufferedImage playerGrowthPose;
+	private BufferedImage playerDeath;
 	private BufferedImage player2;
 	private BufferedImage player3;
 	private boolean playerEntranceSpinningSetup = false;
 	private boolean playerEntranceDancingSetup = false;
 	private boolean playerEntranceGrowingSetup = false;
 	private boolean playerEntranceTurningAroundSetup = false;
+	private boolean playerDeathSetup = false;
 	private boolean firstTimeAnimationRun = false;
 
 	private boolean spinningAnimationFinished = false;
@@ -43,6 +45,14 @@ public class Player extends GameObject implements EntityA{
 	private int timer2 = 0;
 	private int danceProgressionCount = 0;
 	private long animationTimer1 = 0;
+	private long marioDeathTimer1 = 0;
+	private long marioDeathTimer2 = 0;
+	private long marioDeathTimer3 = 0;
+	private long marioGravityTimer = 0;
+	private long marioGravityTimer2 = 0;
+	private long marioGravityTimer3 = 0;
+	private long marioGravityTimer4 = 0;
+	private long marioGravityTimer5 = 0;
 	Random r = new Random();
 	int random = r.nextInt((9-1)+1) + 1;		//int randomNum = rand.nextInt((max - min) + 1) + min;
 	
@@ -70,6 +80,7 @@ public class Player extends GameObject implements EntityA{
 	Animation marioEntranceDancingAnim;
 	Animation marioEntranceGrowingAnim;
 	Animation marioEntranceTurningAroundAnim;
+	Animation marioDeathAnim;
 	
 	public Player(double x, double y, Textures tex, Game game, Controller controller){
 		super(x,y);
@@ -82,6 +93,7 @@ public class Player extends GameObject implements EntityA{
 		playerSmall = tex.marioEntrance[0];
 		playerSmallDancePose = tex.marioEntrance[5];
 		playerGrowthPose = tex.marioEntrance[9];
+		playerDeath = tex.marioDeath[0];
 		player2 = tex.marioStar2[0];
 		player3 = tex.marioStar3[0];
 		
@@ -107,6 +119,8 @@ public class Player extends GameObject implements EntityA{
 		starAnim3l = new Animation(6, tex.marioStar3[4],tex.marioStar3[5],tex.marioStar3[6],tex.marioStar3[7]);
 		starAnim3r = new Animation(6, tex.marioStar3[8],tex.marioStar3[9],tex.marioStar3[10],tex.marioStar3[11]);
 		starAnim3d = new Animation(6, tex.marioStar3[12],tex.marioStar3[13],tex.marioStar3[14],tex.marioStar3[15]);
+		
+		marioDeathAnim = new Animation(5, tex.marioDeath[0], tex.marioDeath[1]);
 		
 		marioEntranceSpinningAnim = new Animation(1, tex.marioEntrance[0],tex.marioEntrance[1],tex.marioEntrance[2],
 				tex.marioEntrance[3],tex.marioEntrance[4],tex.marioEntrance[0],
@@ -214,7 +228,7 @@ public class Player extends GameObject implements EntityA{
 	}
 	
 	public void render(Graphics g){
-		if(game.State == STATE.TRANSITION){
+		if(game.State == STATE.TRANSITION_ENTRANCE){
 			if(spinningAnimationFinished == false){
 				if(playerEntranceSpinningSetup == false)
 					g.drawImage(playerSmall, (int)x, (int)y, null);
@@ -232,7 +246,7 @@ public class Player extends GameObject implements EntityA{
 				if(playerEntranceDancingSetup == false)
 					g.drawImage(playerSmallDancePose,(int)x, (int)y, null);
 				marioEntranceDancingAnim.drawAnimation(g, x, y, 0);
-				if(danceProgressionCount < 26 && game.marioDanceSoundLoops.get(danceProgressionCount).soundPlaying() == true){
+				if(danceProgressionCount < 26 && game.marioDanceSoundLoops.get(danceProgressionCount).clipIsActive() == true){
 					dancingInProgress = true;
 					marioEntranceDancingAnim.runAnimation();
 					marioEntranceDancingAnim.runAnimation();
@@ -241,10 +255,10 @@ public class Player extends GameObject implements EntityA{
 					danceProgressionCount = danceProgressionCount + 1;
 				}
 				if(danceProgressionCount > 0){
-					if(game.marioDanceSoundLoops.get(danceProgressionCount-1).soundPlaying() == false)
+					if(game.marioDanceSoundLoops.get(danceProgressionCount-1).clipIsActive() == false)
 						dancingInProgress = false;
 				}
-				if(game.marioDanceSoundLoops.getLast().soundPlaying() == false && (int)game.marioDanceSoundLoops.getLast().getLongFramePosition() > 0 && game.isMarioDancePosePause() == false)//|| if sfx ends
+				if(game.marioDanceSoundLoops.getLast().clipIsActive() == false && (int)game.marioDanceSoundLoops.getLast().getLongFramePosition() > 0 && game.isMarioDancePosePause() == false)//|| if sfx ends
 					dancingAnimationFinished = true;
 			}
 			else if(growingAnimationFinished == false){
@@ -278,6 +292,68 @@ public class Player extends GameObject implements EntityA{
 				g.drawImage(player, (int)x, (int)y, null);
 				firstTimeAnimationRun = false;
 				Game.State = Game.STATE.GAME;
+			}
+		}
+		else if(game.State == STATE.TRANSITION_DEATH){
+			marioDeathAnim.drawAnimation(g, x, y, 0);
+			if(playerDeathSetup == false || (System.currentTimeMillis() % 15 == 0 && animationTimer1 < System.currentTimeMillis())){
+				if(playerDeathSetup == false){
+					marioDeathAnim.nextFrame();
+					marioDeathTimer1 = System.currentTimeMillis() + 300;
+					marioDeathTimer2 = System.currentTimeMillis() + 650;
+					marioGravityTimer = System.currentTimeMillis() + 850;
+					marioGravityTimer2 = System.currentTimeMillis() + 950;
+					marioGravityTimer3 = System.currentTimeMillis() + 1000;
+					marioGravityTimer4 = System.currentTimeMillis() + 1300;
+					marioGravityTimer5 = System.currentTimeMillis() + 1500;
+					marioDeathTimer3 = System.currentTimeMillis() + 2000;
+				}
+				marioDeathAnim.runAnimation();
+				animationTimer1 = System.currentTimeMillis();
+				playerDeathSetup = true;
+			}
+			if(System.currentTimeMillis() <= marioDeathTimer1){
+			}
+			else if(System.currentTimeMillis() <= marioDeathTimer2){
+				if(System.currentTimeMillis() % 5 == 0)
+					y-= 0.39;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 200) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.34;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 180) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.30;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 150) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.26;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 120) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.22;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 100) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.20;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 80) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.15;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 40) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.12;
+				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 10) && System.currentTimeMillis() % 5 == 0)
+					y-= 0.02;
+			}
+			else if(System.currentTimeMillis() <= marioDeathTimer3){/*
+				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
+					y += 0.00;
+				else if(System.currentTimeMillis() <= marioGravityTimer2 && System.currentTimeMillis() % 5 == 0)
+					y+=0.08;
+				else if(System.currentTimeMillis() <= marioGravityTimer3 && System.currentTimeMillis() % 5 == 0)
+					y+=0.12;
+				else if(System.currentTimeMillis() <= marioGravityTimer4 && System.currentTimeMillis() % 5 == 0)
+					y+=0.25;
+				else if(System.currentTimeMillis() <= marioGravityTimer5 && System.currentTimeMillis() % 5 == 0)
+					y+=0.38;
+				else if(System.currentTimeMillis() % 5 == 0)
+					y+=0.45;*/
+				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
+					y += 0.00;
+				else if(System.currentTimeMillis() % 100 == 0){
+					velY += 0.01;
+				}
+				else
+					this.yProgression();
 			}
 		}
 		else if(velY < 0 && game.animationTimer1 == 0){													//CHANGE ANIMATIONS HERE!
@@ -344,6 +420,14 @@ public class Player extends GameObject implements EntityA{
 			else
 				g.drawImage(player, (int)x, (int)y, null);
 		}
+	}
+	
+	public void yProgression(){
+		this.y+=velY;
+	}
+
+	public void xProgression(){
+		this.x+=velX;
 	}
 	
 	public double getX(){

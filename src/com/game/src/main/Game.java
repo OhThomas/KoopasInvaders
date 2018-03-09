@@ -109,6 +109,7 @@ public class Game extends Canvas implements Runnable {
 	SoundLoops soundFXClip2SoundLoop;
 	SoundLoops pauseSoundFXSoundLoop;
 	SoundLoops marioSpinningSoundLoop;
+	SoundLoops marioDeathSoundLoop;
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -133,7 +134,8 @@ public class Game extends Canvas implements Runnable {
 	
 	public static enum STATE{
 		MENU,
-		TRANSITION,
+		TRANSITION_ENTRANCE,
+		TRANSITION_DEATH,
 		GAME,
 		PAUSE,
 		GAMEOVER
@@ -550,7 +552,7 @@ public class Game extends Canvas implements Runnable {
 				// - lives
 				// if lives = 0 then State = STATE.GAMEOVER
 				//draw x 0
-				State = STATE.GAMEOVER;
+				State = STATE.TRANSITION_DEATH;
 			}
 		}else if(State == STATE.MENU){													//Menu
 			//menu.render(g);
@@ -565,7 +567,7 @@ public class Game extends Canvas implements Runnable {
 			g.drawImage(playTitle, Game.WIDTH / 2 + 120, 200, null);
 			g.drawImage(helpTitle, Game.WIDTH / 2 + 120, 300, null);
 			g.drawImage(exitTitle, Game.WIDTH / 2 + 120, 400, null);
-		}else if (State == STATE.TRANSITION){
+		}else if (State == STATE.TRANSITION_ENTRANCE){
 			if(this.menuSoundLoops.get(this.menuSoundLoopRandomizer).getSoundLoopBoolean() == true){
 				this.menuSoundLoops.get(this.menuSoundLoopRandomizer).stop();
 				this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
@@ -618,6 +620,29 @@ public class Game extends Canvas implements Runnable {
 					marioLetsGoPause = false;
 				}
 			}
+		}else if(State == STATE.TRANSITION_DEATH){
+			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
+				this.gameSoundLoops.get(this.soundRandomizer).stop();
+				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+				soundSet = false;
+			}
+			
+			if (paused == false)
+				paused = true;
+			
+			if(marioDeathSoundLoop.getSoundLoopBoolean() == false){
+				marioDeathSoundLoop.play();
+				marioDeathSoundLoop.setSoundLoopBoolean(true);
+			}
+			
+			if(marioDeathSoundLoop.soundPlaying() == false){
+				marioDeathSoundLoop.setSoundLoopBoolean(false);
+				State = STATE.GAMEOVER;
+			}
+			
+			bb.draw(g2d);													//BLOCKS
+			p.render(g);
+			c.render(g);
 		}else if (State == STATE.GAMEOVER){												//GameOver
 			//wait a lil bit
 			//bs.show();
@@ -793,6 +818,7 @@ public class Game extends Canvas implements Runnable {
 		String soundFXClip2 = "res/Sounds/SFX/MariopowerupSFX.wav";
 		String pauseSoundFXFile = "res/Sounds/SFX/smb_pause.wav";
 		String marioSpinningFile = "res/Sounds/SFX/smw_feather_get.wav";
+		String marioDeathFile = "res/Sounds/SFX/smb3_player_down.wav";
 		String marioVoiceLetsGoFile = "res/Sounds/SFX/MarioVoice/mk64_mario02.wav";
 		String marioVoiceHereWeGoFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_33_mario_27.wav";
 		String marioVoiceYelpFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_22_mario_16.wav";
@@ -833,6 +859,7 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops soundFXClip2SoundLoop = new SoundLoops(soundFXClip2);
 		SoundLoops pauseSoundFXSoundLoop = new SoundLoops(pauseSoundFXFile);
 		SoundLoops marioSpinningSoundLoop = new SoundLoops(marioSpinningFile);
+		SoundLoops marioDeathSoundLoop = new SoundLoops(marioDeathFile);
 		SoundLoops marioVoiceLetsGoSoundLoop = new SoundLoops(marioVoiceLetsGoFile);
 		SoundLoops marioVoiceHereWeGoSoundLoop = new SoundLoops(marioVoiceHereWeGoFile);
 		SoundLoops marioVoiceYelpSoundLoop = new SoundLoops(marioVoiceYelpFile);
@@ -908,6 +935,7 @@ public class Game extends Canvas implements Runnable {
 		game.soundFXClip2SoundLoop = soundFXClip2SoundLoop;
 		game.pauseSoundFXSoundLoop = pauseSoundFXSoundLoop;
 		game.marioSpinningSoundLoop = marioSpinningSoundLoop;
+		game.marioDeathSoundLoop = marioDeathSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		
 		JFrame frame = new JFrame(game.TITLE);

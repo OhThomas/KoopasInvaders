@@ -26,6 +26,7 @@ public class Textures {
 	public BufferedImage[] bulletBillDL = new BufferedImage[10];
 	public BufferedImage[] bulletBillDR = new BufferedImage[10];
 	public BufferedImage[] marioEntrance = new BufferedImage[21];
+	public BufferedImage[] marioDeath = new BufferedImage[2];
 	public BufferedImage[] transparentBlocks = new BufferedImage[3];
 	public BufferedImage gameover;
 	
@@ -313,6 +314,9 @@ public class Textures {
 		marioEntrance[18] = fullMarioSprites.grabExactImage(264, 715, 16, 29);
 		marioEntrance[19] = fullMarioSprites.grabExactImage(144, 715, 16, 29);
 		marioEntrance[20] = fullMarioSprites.grabExactImage(288, 436, 16, 28);
+		
+		marioDeath[0] = fullMarioSprites.grabExactImage(8, 38, 16, 24);
+		marioDeath[1] = fullMarioSprites.grabExactImage(368, 38, 16, 24);
 		
 		transparentBlocks[0] = transparentBlocksSprites.grabExactImage(40, 210, 16, 28);
 		transparentBlocks[1] = transparentBlocksSprites.grabExactImage(140, 210, 16, 28);
