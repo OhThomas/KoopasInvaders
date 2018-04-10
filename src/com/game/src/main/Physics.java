@@ -1,5 +1,7 @@
 package com.game.src.main;
 
+import java.awt.Rectangle;
+
 import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
@@ -53,5 +55,81 @@ public class Physics {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean Collision(EntityA enta, BasicBlocks bb){
+		for(int i = 0; i < bb.wall.size(); i++){
+			if(enta.getBounds().intersects(bb.wall.get(i).getBounds2D()))
+				return true;
+		}
+		return false;
+	}
+	public static boolean Collision(BasicBlocks bb, EntityA enta){
+		for(int i = bb.wall.size(); i > 0; i--){
+			if(bb.wall.get(i-1).intersects(enta.getBounds()))
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean Collision(EntityB entb, BasicBlocks bb){
+		for(int i = 0; i < bb.wall.size(); i++){
+			if(entb.getBounds().intersects(bb.wall.get(i).getBounds2D()))
+				return true;
+		}
+		return false;
+	}
+	public static boolean Collision(BasicBlocks bb, EntityB entb){
+		for(int i = bb.wall.size(); i > 0; i--){
+			if(bb.wall.get(i-1).intersects(entb.getBounds()))
+				return true;
+		}
+		return false;
+	}
+
+	public static boolean Collision(EntityC entc, BasicBlocks bb){
+		for(int i = 0; i < bb.wall.size(); i++){
+			if(entc.getBounds().intersects(bb.wall.get(i).getBounds2D()))
+				return true;
+		}
+		return false;
+	}
+	public static boolean Collision(BasicBlocks bb, EntityC entc){
+		for(int i = 0; i < bb.wall.size(); i++){
+			if(bb.wall.get(i).intersects(entc.getBounds()))
+				return true;
+		}
+		return false;
+	}
+	
+	public static int BlockCollision(BasicBlocks bb, EntityA enta){
+		for(int i = bb.wall.size(); i > 0; i--){
+			if(bb.wall.get(i-1).intersects(enta.getBounds()))
+				return i-1;
+		}
+		return -1;
+	}
+	
+	public static int BlockCollision(BasicBlocks bb, EntityB entb){
+		for(int i = 0; i < bb.wall.size(); i++){
+			if(bb.wall.get(i).intersects(entb.getBounds()))
+				return i;
+		}
+		return -1;
+	}
+	
+	public static int BlockCollision(BasicBlocks bb, EntityC entc){
+		for(int i = bb.wall.size(); i > 0; i--){
+			if(bb.wall.get(i-1).intersects(entc.getBounds()))
+				return i-1;
+		}
+		return -1;
+	}
+	public static int BlockCollision(BasicBlocks bb, Rectangle rect){
+		for(int i = bb.wall.size(); i > 0; i--){
+			if(bb.wall.get(i-1).intersects(rect.getBounds2D()))
+				return i-1;
+		}
+		return -1;
 	}
 }

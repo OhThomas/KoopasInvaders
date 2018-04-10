@@ -15,12 +15,15 @@ public class BulletBill extends GameObject implements EntityC{
 	private Textures tex;
 	private Game game;
 	private float timer1 = 100;										//timer for chasing sequence
-	private int i = 0;												//replace with random value
 	public double speedIncrease = 0.1;								//way to set speed
+	private boolean bulletBillisDead = false;						//way to play death animation without killing Mario
 	
 	Animation animD;
 	Animation animDL;
 	Animation animDR;
+	Animation animExplosion;
+
+	SoundLoops bulletBillDeathSoundLoop;
 	
 	public BulletBill(double x, double y, Textures tex, Game game){
 		super(x,y);
@@ -39,25 +42,48 @@ public class BulletBill extends GameObject implements EntityC{
 		animDR = new Animation(6, tex.bulletBillDR[0], tex.bulletBillDR[1], tex.bulletBillDR[2], tex.bulletBillDR[3],
 				 tex.bulletBillDR[4], tex.bulletBillDR[5], tex.bulletBillDR[6], tex.bulletBillDR[7],
 				 tex.bulletBillDR[8], tex.bulletBillDR[9]);
+		
+		animExplosion = new Animation(5, tex.bulletBillExplosion[0],tex.bulletBillExplosion[1],
+				tex.bulletBillExplosion[2],tex.bulletBillExplosion[3],tex.bulletBillExplosion[4],
+				tex.bulletBillExplosion[5],tex.bulletBillExplosion[6]);
+
+		String bulletBillDeathFile = "res/Sounds/SFX/smb2_bbdeathsfx.wav";
+		SoundLoops bulletBillDeathSoundLoop = new SoundLoops(bulletBillDeathFile);
+		this.bulletBillDeathSoundLoop = bulletBillDeathSoundLoop;
 	}
 	
 	public void tick(){
 		if((int)timer1 > 0){									//Chases Player
-			if(this.getX() > game.playerX())
-				x--;
-			else
-				x++;
-			if(this.getY() > game.playerY())
-				y++;
-			else
-				y++;
-			timer1--;
+			if(!bulletBillisDead){
+				if(this.getX() > game.playerX())
+					x--;
+				else
+					x++;
+				if(this.getY() > game.playerY())
+					y++;
+				else
+					y++;
+			}
+			else{
+				if(this.getX() > game.playerX())
+					x = x - 0.25;
+				else
+					x = x + 0.25;
+				if(this.getY() > game.playerY())
+					y = y + 0.25;
+				else
+					y = y + 0.25;
+			}
+				timer1--;
 		}
 		else{
 			Random rand = new Random();
 			int i = rand.nextInt(130);
-			y++;
-			if (i == 18){										//Resets timer1 so he chases Player
+			if(!bulletBillisDead)
+				y++;
+			else
+				y = y + 0.25;
+			if (i == 18 && !bulletBillisDead){										//Resets timer1 so he chases Player
 				timer1 = 100;
 			}
 		}
@@ -81,26 +107,71 @@ public class BulletBill extends GameObject implements EntityC{
 				c.removeEntity(this);
 			}
 			*/
-			if(Physics.Collision(this, tempEnt)){
-				game.ec.remove(this);
+			if(Physics.Collision(this, tempEnt) && !bulletBillisDead){
+				if(this.bulletBillDeathSoundLoop.getSoundLoopBoolean() == false){
+					for(int j = game.bulletBillDeathSoundLoop.size(); j > 0; j--){
+						if(game.bulletBillDeathSoundLoop.get(j-1) != null && !game.bulletBillDeathSoundLoop.get(j-1).clipIsActive()){
+							game.bulletBillDeathSoundLoop.remove(j-1);
+							//j--;
+						}
+					}	
+					for(int k = 0; k < game.bulletBillDeathSoundLoop.size() || k == 0; k++){
+						if(game.bulletBillDeathSoundLoop.isEmpty())
+							game.bulletBillDeathSoundLoop.add(this.bulletBillDeathSoundLoop);
+						else if (game.bulletBillDeathSoundLoop.get(k) == game.bulletBillDeathSoundLoop.getLast()){
+							game.bulletBillDeathSoundLoop.add(this.bulletBillDeathSoundLoop);
+							k++;
+						}else 
+							this.bulletBillDeathSoundLoop.reduceSound(1.5f);
+					}
+					this.bulletBillDeathSoundLoop.setSoundLoopBoolean(true);
+					game.bulletBillDeathSoundLoop.getLast().play();
+				}
+				game.getHUD().setScore(200);
+				bulletBillisDead = true;
+				//game.ec.remove(this);
 				if(!game.ea.isEmpty())
 					game.ea.remove(game.ea.getLast());
 			}
 		}
-		
-		
+
+		if(bulletBillisDead){
+			if(game.getBulletBillDeathSoundPauseBoolean() == true && !game.isPaused()){
+				for(int l = game.bulletBillDeathSoundLoop.size()-1; l >= 0; l--){
+					if(!game.bulletBillDeathSoundLoop.get(l).clipIsActive())
+						game.bulletBillDeathSoundLoop.get(l).continuePlaying();
+				}
+				game.setBulletBillDeathSoundPauseBoolean(false);
+			}
+			animExplosion.runAnimation();
+		}
+		if(animExplosion.getCount() == 7){
+			game.ec.remove(this);
+		}
 		animD.runAnimation();
 		animDL.runAnimation();
 		animDR.runAnimation();
 	}
 	
 	public void render(Graphics g){
-		if(this.getX() > game.playerX()+6.4 && (int)this.timer1 > 0)
+		if(bulletBillisDead)
+			animExplosion.drawAnimation(g, x, y, 0);
+		else if(this.getX() > game.playerX()+6.4 && (int)this.timer1 > 0)
 			animDL.drawAnimation(g, x, y, 0);
 		else if(this.getX() < game.playerX()-6.4 && (int)this.timer1 > 0)
 			animDR.drawAnimation(g, x, y, 0);
 		else// if(this.getX() == game.playerX() || (int)this.timer1 <= 0)
 			animD.drawAnimation(g, x, y, 0);
+		
+		if(game.isPaused()){
+			if(game.getBulletBillDeathSoundPauseBoolean() == false){
+				for(int i = 0; i < game.bulletBillDeathSoundLoop.size();i++){
+					if(game.bulletBillDeathSoundLoop.get(i).clipIsActive())
+						game.bulletBillDeathSoundLoop.get(i).stop();
+				}
+				game.setBulletBillDeathSoundPauseBoolean(true);
+			}
+		}
 	}
 	
 	public Rectangle getBounds(){
@@ -122,5 +193,20 @@ public class BulletBill extends GameObject implements EntityC{
 	public double getY(){
 		return y;
 	}
+	
+	public boolean getEntityCDead() {
+		return bulletBillisDead;
+	}
 
+	public void setBulletBillisDead(boolean bulletBillisDead) {
+		this.bulletBillisDead = bulletBillisDead;
+	}
+
+	public SoundLoops getBulletBillDeathSoundLoop() {
+		return bulletBillDeathSoundLoop;
+	}
+
+	public void setBulletBillDeathSoundLoop(SoundLoops bulletBillDeathSoundLoop) {
+		this.bulletBillDeathSoundLoop = bulletBillDeathSoundLoop;
+	}
 }

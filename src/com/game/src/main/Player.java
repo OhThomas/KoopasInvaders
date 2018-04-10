@@ -146,6 +146,8 @@ public class Player extends GameObject implements EntityA{
 				tex.marioEntrance[11],tex.marioEntrance[12],tex.marioEntrance[13],tex.marioEntrance[14],
 				tex.marioEntrance[15],tex.marioEntrance[16],tex.marioEntrance[17],tex.marioEntrance[17],
 				tex.marioEntrance[18],tex.marioEntrance[19],tex.marioEntrance[20],tex.marioEntrance[20]);
+		animl.nextFrame();
+		animr.nextFrame();
 	}
 	
 	public void tick(){
@@ -179,7 +181,7 @@ public class Player extends GameObject implements EntityA{
 			
 			if(Physics.Collision(this, tempEnt)){
 				controller.removeEntity(tempEnt);
-				if(marioInvincible == false)
+				if(marioInvincible == false && tempEnt.getEntityBDead() == false)
 					game.Health -= 100;
 			}
 		}
@@ -187,15 +189,20 @@ public class Player extends GameObject implements EntityA{
 			EntityC tempEnt = game.ec.get(i);
 			
 			if(Physics.Collision(this, tempEnt)){
-				controller.removeEntity(tempEnt);
-				if(marioInvincible == false)
+				if(marioInvincible == false && tempEnt.getEntityCDead() == false)
 					game.Health -= 100;
+				controller.removeEntity(tempEnt);
 			}
 		}
 		for(int i = 0; i < game.ed.size(); i ++){
 			EntityD tempEnt = game.ed.get(i);
-			
-			if(Physics.Collision(this, tempEnt)){
+			if(Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "chainChompItem"){
+				tempEnt.getItemSoundLoop().play();
+				controller.removeEntity(tempEnt);
+				game.getHUD().setItemObtained(true);
+				game.getHUD().setItemName(tempEnt.getItemName());
+			}
+			else if(Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "mario1Star"){
 				controller.removeEntity(tempEnt);
 				marioInvincible = true;
 				timer1 = 646;
@@ -258,7 +265,7 @@ public class Player extends GameObject implements EntityA{
 					if(game.marioDanceSoundLoops.get(danceProgressionCount-1).clipIsActive() == false)
 						dancingInProgress = false;
 				}
-				if(game.marioDanceSoundLoops.getLast().clipIsActive() == false && (int)game.marioDanceSoundLoops.getLast().getLongFramePosition() > 0 && game.isMarioDancePosePause() == false)//|| if sfx ends
+				if(game.marioDanceSoundLoops.getLast().clipIsActive() == false && (int)game.marioDanceSoundLoops.getLast().getLongFramePosition() > 0 && game.getMarioDancePosePause() == false)//|| if sfx ends
 					dancingAnimationFinished = true;
 			}
 			else if(growingAnimationFinished == false){
@@ -276,7 +283,7 @@ public class Player extends GameObject implements EntityA{
 			}
 			else if(turningAroundAnimationFinished == false){
 				marioEntranceTurningAroundAnim.drawAnimation(g, x, y, 0);
-				if(game.isMarioGrowthPosePause() == false && (System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis())){
+				if(game.getMarioGrowthPosePause() == false && (System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis())){
 					if(firstTimeAnimationRun == false)
 						marioEntranceTurningAroundAnim.nextFrame();
 					animationTimer1 = System.currentTimeMillis();

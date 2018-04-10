@@ -59,6 +59,9 @@ public class SoundLoops {
         clip.setFramePosition(0);  // Must always rewind!
         clip.start();
     }
+    public void continuePlaying(){
+        clip.start();
+    }
     public void loop(){
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
@@ -76,6 +79,17 @@ public class SoundLoops {
     public void increaseSound(){
     	this.volume += 5.0f;
     	this.gainControl.setValue(volume);
+    }
+    public void reduceSound(float v){
+    	this.volume -= v * 1.0f;
+    	this.gainControl.setValue(volume);
+    }
+    public void increaseSound(float v){
+    	this.volume += v * 1.0f;
+    	this.gainControl.setValue(volume);
+    }
+    public double getVolume(){
+    	return (double)this.gainControl.getValue();
     }
     public long getLongFramePosition(){
     	long framePosition = clip.getLongFramePosition();
@@ -97,15 +111,20 @@ public class SoundLoops {
     public boolean clipIsActive(){
     	return clip.isActive();
     }
-    public boolean soundPlaying(){
-    	if(clip.getFramePosition() != clip.getFrameLength() && this.SoundLoopBoolean == true){
+    public boolean soundPlaying(){//SET SOUNDLOOPBOOLEAN TO FALSE AFTER USING THIS
+    	if(clip.getFramePosition() != clip.getFrameLength() && this.SoundLoopBoolean == true)
     		return true;
-    	}
     	else
     		return false;
     }
     public boolean endsSoon(){
     	if((int)clip.getLongFramePosition() >= clip.getFrameLength()-(441*4))
+    		return true;
+    	else
+    		return false;
+    }
+    public boolean endsSoon(int i){
+    	if((int)clip.getLongFramePosition() >= clip.getFrameLength()-(441*i))
     		return true;
     	else
     		return false;

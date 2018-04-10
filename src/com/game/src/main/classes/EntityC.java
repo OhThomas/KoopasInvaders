@@ -11,5 +11,6 @@ public interface EntityC {
 	
 	public double getX();
 	public double getY();
+	public boolean getEntityCDead();
 	
 }

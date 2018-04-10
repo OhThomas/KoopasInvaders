@@ -3,6 +3,8 @@ package com.game.src.main.classes;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+import com.game.src.main.SoundLoops;
+
 public interface EntityD {
 	
 	public void tick();
@@ -11,5 +13,7 @@ public interface EntityD {
 	
 	public double getX();
 	public double getY();
+	public String getItemName();
+	public SoundLoops getItemSoundLoop();
 	
 }

@@ -11,5 +11,7 @@ public interface EntityB {
 	
 	public double getX();
 	public double getY();
-	
+	public int getWidth();
+	public int getHeight();
+	public boolean getEntityBDead();
 }

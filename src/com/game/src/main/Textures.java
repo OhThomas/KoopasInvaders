@@ -17,6 +17,8 @@ public class Textures {
 	public BufferedImage[] animatedStar = new BufferedImage[20];
 	public BufferedImage[] animatedShootingStar = new BufferedImage[12];
 	public BufferedImage[] mario1Star = new BufferedImage[4];
+	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[2];
+	public BufferedImage[] chainChompItem = new BufferedImage[25];
 	public BufferedImage[] bowserEntrance = new BufferedImage[8];
 	public BufferedImage[] bowser = new BufferedImage[2];
 	public BufferedImage[] bowserHit = new BufferedImage[2];
@@ -25,9 +27,22 @@ public class Textures {
 	public BufferedImage[] bulletBillD = new BufferedImage[17];
 	public BufferedImage[] bulletBillDL = new BufferedImage[10];
 	public BufferedImage[] bulletBillDR = new BufferedImage[10];
+	public BufferedImage[] bulletBillExplosion = new BufferedImage[7];
+	public BufferedImage[] enemyExplosion = new BufferedImage[3];
+	public BufferedImage[] enemy2DeathL = new BufferedImage[10];
+	public BufferedImage[] enemy2DeathR = new BufferedImage[10];
+	public BufferedImage[] enemy3Death = new BufferedImage[3];
+	public BufferedImage[] enemy3Explosion = new BufferedImage[13];
+	public BufferedImage[] star = new BufferedImage[20];
+	public BufferedImage[] coin = new BufferedImage[3];
 	public BufferedImage[] marioEntrance = new BufferedImage[21];
 	public BufferedImage[] marioDeath = new BufferedImage[2];
 	public BufferedImage[] transparentBlocks = new BufferedImage[3];
+	public BufferedImage[] marioNumbersSmall = new BufferedImage[12];
+	public BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
+	public BufferedImage itemFrame;
+	public BufferedImage chainChompItemFrameDisplay;
+	public BufferedImage pressE;
 	public BufferedImage gameover;
 	
 	public static final int MARIO_WIDTH = 16;
@@ -45,11 +60,16 @@ public class Textures {
 	private SpriteSheet starSprites;
 	private SpriteSheet shootingStarSprites;
 	private SpriteSheet mario1StarSprites;
+	private SpriteSheet marioItemsSprites;
 	private SpriteSheet bowserSprites;
 	private SpriteSheet bulletBillSprites;
 	private SpriteSheet marioPlayerAnimationsSprites;
+	private SpriteSheet marioItemAnimationSprites;
 	private SpriteSheet marioSlowingDownSprites;
 	private SpriteSheet fullMarioSprites;
+	private SpriteSheet marioAdvanceSprites;
+	private SpriteSheet mario3FontNumbersSmallSprites;
+	private SpriteSheet goombaDeathSprites;
 	private SpriteSheet transparentBlocksSprites;
 	
 	public Textures(Game game){
@@ -57,11 +77,16 @@ public class Textures {
 		starSprites = new SpriteSheet(game.getAnimatedStar());
 		shootingStarSprites = new SpriteSheet(game.getAnimatedShootingStar());
 		mario1StarSprites = new SpriteSheet(game.getMario1StarSpriteSheet());
+		marioItemsSprites = new SpriteSheet(game.getMarioItemsSpriteSheet());
 		bowserSprites = new SpriteSheet(game.getBowserSpriteSheet());
 		bulletBillSprites = new SpriteSheet(game.getBulletBillSpriteSheet());
 		marioPlayerAnimationsSprites = new SpriteSheet(game.getMarioPlayerStarAnimations());
+		marioItemAnimationSprites = new SpriteSheet(game.getMarioItemAnimationSheet());
 		marioSlowingDownSprites = new SpriteSheet(game.getMarioSlowingDownSprites());
 		fullMarioSprites = new SpriteSheet(game.getFullMarioSpriteSheet());
+		marioAdvanceSprites = new SpriteSheet(game.getMarioAdvanceSpriteSheet());
+		mario3FontNumbersSmallSprites = new SpriteSheet(game.getMario3FontNumbersSmallSpriteSheet());
+		goombaDeathSprites = new SpriteSheet(game.getGoombaDeathSpriteSheet());
 		transparentBlocksSprites = new SpriteSheet(game.getTransparentBlocks());
 		
 		getTextures();
@@ -196,6 +221,34 @@ public class Textures {
 		mario1Star[2] = mario1StarSprites.grabExactImage((14 * 3) - 14, (16 * 1) - 16, 14, 16);
 		mario1Star[3] = mario1StarSprites.grabExactImage((14 * 4) - 14, (16 * 1) - 16, 14, 16);
 		
+		marioItemAnimationBeginning[0] = marioItemAnimationSprites.grabExactImage(1920, 1860, 80, 140);
+		
+		chainChompItem[0] = marioItemsSprites.grabExactImage(457, 0, 16, 16);
+		chainChompItem[1] = marioItemsSprites.grabExactImage(457, 19, 16, 16);
+		chainChompItem[2] = marioItemsSprites.grabExactImage(458, 39, 16, 15);
+		chainChompItem[3] = marioItemsSprites.grabExactImage(458, 58, 16, 16);
+		chainChompItem[4] = marioItemsSprites.grabExactImage(457, 77, 17, 16);
+		chainChompItem[5] = marioItemsSprites.grabExactImage(458, 96, 15, 16);
+		chainChompItem[6] = marioItemsSprites.grabExactImage(458, 114, 16, 17);
+		chainChompItem[7] = marioItemsSprites.grabExactImage(458, 133, 16, 17);
+		chainChompItem[8] = marioItemsSprites.grabExactImage(458, 152, 15, 17);
+		chainChompItem[9] = marioItemsSprites.grabExactImage(458, 172, 15, 16);
+		chainChompItem[10] = marioItemsSprites.grabExactImage(458, 191, 15, 16);
+		chainChompItem[11] = marioItemsSprites.grabExactImage(458, 211, 16, 15);
+		chainChompItem[12] = marioItemsSprites.grabExactImage(457, 230, 16, 16);
+		chainChompItem[13] = marioItemsSprites.grabExactImage(457, 249, 16, 16);
+		chainChompItem[14] = marioItemsSprites.grabExactImage(457, 268, 16, 16);
+		chainChompItem[15] = marioItemsSprites.grabExactImage(457, 288, 16, 16);
+		chainChompItem[16] = marioItemsSprites.grabExactImage(457, 307, 16, 16);
+		chainChompItem[17] = marioItemsSprites.grabExactImage(457, 326, 16, 16);
+		chainChompItem[18] = marioItemsSprites.grabExactImage(457, 345, 16, 16);
+		chainChompItem[19] = marioItemsSprites.grabExactImage(457, 364, 16, 16);
+		chainChompItem[20] = marioItemsSprites.grabExactImage(457, 384, 16, 16);
+		chainChompItem[21] = marioItemsSprites.grabExactImage(457, 403, 16, 16);
+		chainChompItem[22] = marioItemsSprites.grabExactImage(457, 422, 16, 16);
+		chainChompItem[23] = marioItemsSprites.grabExactImage(457, 441, 16, 16);
+		chainChompItem[24] = marioItemsSprites.grabExactImage(457, 460, 16, 16);
+		
 		fireball[0] = ss.grabSmallImage(5, 1, 16, 16);
 		fireball[1] = ss.grabSmallImage(6, 1, 16, 16);
 		fireball[2] = ss.grabSmallImage(7, 1, 16, 16);
@@ -293,6 +346,69 @@ public class Textures {
 		bulletBillDR[8] = bulletBillSprites.grabSmallImage(9, 3, 16, 16);
 		bulletBillDR[9] = bulletBillSprites.grabSmallImage(10, 3, 16, 16);
 		
+		bulletBillExplosion[0] = marioAdvanceSprites.grabExactImage(555, 47, 7, 7);
+		bulletBillExplosion[1] = marioAdvanceSprites.grabExactImage(518, 26, 5, 5);
+		bulletBillExplosion[2] = marioAdvanceSprites.grabExactImage(509, 24, 7, 8);
+		bulletBillExplosion[3] = marioAdvanceSprites.grabExactImage(491, 21, 14, 14);
+		bulletBillExplosion[4] = marioAdvanceSprites.grabExactImage(475,20,15,15);
+		bulletBillExplosion[5] = marioAdvanceSprites.grabExactImage(585, 92, 18, 16);
+		bulletBillExplosion[6] = marioAdvanceSprites.grabExactImage(455, 19, 16, 16);
+		
+		enemyExplosion[0] = goombaDeathSprites.grabExactImage(70, 67, 16, 15);
+		enemyExplosion[1] = goombaDeathSprites.grabExactImage(89, 67, 12, 14);
+		enemyExplosion[2] = goombaDeathSprites.grabExactImage(105, 67, 14, 14);
+		
+		star[0] = goombaDeathSprites.grabExactImage(80,109,7,7);
+		star[1] = goombaDeathSprites.grabExactImage(96,109,7,7);
+		star[2] = goombaDeathSprites.grabExactImage(112,96,5,5);
+		star[3] = goombaDeathSprites.grabExactImage(112,110,5,5);
+		star[4] = goombaDeathSprites.grabExactImage(113,119,2,2);
+		star[5] = goombaDeathSprites.grabExactImage(113,124,1,1);
+		
+		coin[0] = marioAdvanceSprites.grabExactImage(303, 99, 10, 16);
+		coin[1] = marioAdvanceSprites.grabExactImage(322, 99, 8, 16);
+		coin[2] = marioAdvanceSprites.grabExactImage(341, 99, 6, 16);
+		
+		enemy2DeathL[0] = goombaDeathSprites.grabExactImage(124, 99, 16, 16);
+		enemy2DeathL[1] = goombaDeathSprites.grabExactImage(125, 84, 15, 15);
+		enemy2DeathL[2] = goombaDeathSprites.grabExactImage(127, 71, 13, 13);
+		enemy2DeathL[3] = goombaDeathSprites.grabExactImage(129, 60, 11, 11);
+		enemy2DeathL[4] = goombaDeathSprites.grabExactImage(131, 51, 9, 9);
+		enemy2DeathL[5] = goombaDeathSprites.grabExactImage(132, 43, 8, 8);
+		enemy2DeathL[6] = goombaDeathSprites.grabExactImage(134, 37, 6, 6);
+		enemy2DeathL[7] = goombaDeathSprites.grabExactImage(135, 31, 5, 5);
+		enemy2DeathL[8] = goombaDeathSprites.grabExactImage(136, 27, 4, 3);
+		enemy2DeathL[9] = goombaDeathSprites.grabExactImage(136, 24, 2, 2);
+		
+		enemy2DeathR[0] = goombaDeathSprites.grabExactImage(140, 99, 16, 16);
+		enemy2DeathR[1] = goombaDeathSprites.grabExactImage(140, 84, 15, 15);
+		enemy2DeathR[2] = goombaDeathSprites.grabExactImage(140, 71, 13, 13);
+		enemy2DeathR[3] = goombaDeathSprites.grabExactImage(140, 60, 11, 11);
+		enemy2DeathR[4] = goombaDeathSprites.grabExactImage(140, 51, 9, 9);
+		enemy2DeathR[5] = goombaDeathSprites.grabExactImage(140, 43, 8, 8);
+		enemy2DeathR[6] = goombaDeathSprites.grabExactImage(140, 37, 6, 6);
+		enemy2DeathR[7] = goombaDeathSprites.grabExactImage(140, 31, 5, 5);
+		enemy2DeathR[8] = goombaDeathSprites.grabExactImage(140, 27, 4, 3);
+		enemy2DeathR[9] = goombaDeathSprites.grabExactImage(142, 24, 2, 2);
+		
+		enemy3Explosion[0] = goombaDeathSprites.grabExactImage(175, 105, 10, 9);
+		enemy3Explosion[1] = goombaDeathSprites.grabExactImage(190, 103, 12, 11);
+		enemy3Explosion[2] = goombaDeathSprites.grabExactImage(207, 102, 13, 11);
+		enemy3Explosion[3] = goombaDeathSprites.grabExactImage(225, 100, 14, 14);
+		enemy3Explosion[4] = goombaDeathSprites.grabExactImage(244, 99, 14, 15);
+		enemy3Explosion[5] = goombaDeathSprites.grabExactImage(263, 99, 16, 15);
+		enemy3Explosion[6] = goombaDeathSprites.grabExactImage(283, 98, 16, 16);
+		enemy3Explosion[7] = goombaDeathSprites.grabExactImage(303, 98, 16, 16);
+		enemy3Explosion[8] = goombaDeathSprites.grabExactImage(324, 98, 15, 16);
+		enemy3Explosion[9] = goombaDeathSprites.grabExactImage(344, 97, 16, 17);
+		enemy3Explosion[10] = goombaDeathSprites.grabExactImage(364, 98, 15, 16);
+		enemy3Explosion[11] = goombaDeathSprites.grabExactImage(384, 98, 13, 16);
+		enemy3Explosion[12] = goombaDeathSprites.grabExactImage(402, 101, 13, 13);
+		
+		enemy3Death[0] = goombaDeathSprites.grabExactImage(157, 106, 16, 8);
+		enemy3Death[1] = goombaDeathSprites.grabExactImage(159, 97, 11, 8);
+		enemy3Death[2] = goombaDeathSprites.grabExactImage(159, 92, 11, 4);
+				
 		marioEntrance[0] = fullMarioSprites.grabExactImage(129, 0, 14, 19);
 		marioEntrance[1] = fullMarioSprites.grabExactImage(169, 0, 14, 19);
 		marioEntrance[2] = fullMarioSprites.grabExactImage(89, 0, 14, 19);
@@ -321,6 +437,37 @@ public class Textures {
 		transparentBlocks[0] = transparentBlocksSprites.grabExactImage(40, 210, 16, 28);
 		transparentBlocks[1] = transparentBlocksSprites.grabExactImage(140, 210, 16, 28);
 		transparentBlocks[2] = transparentBlocksSprites.grabExactImage(240, 210, 16, 28);
+		
+		marioNumbersSmall[0] = marioAdvanceSprites.grabExactImage(519, 206, 9, 10);
+		marioNumbersSmall[1] = marioAdvanceSprites.grabExactImage(505, 194, 7, 10);
+		marioNumbersSmall[2] = marioAdvanceSprites.grabExactImage(513, 194, 9, 10);
+		marioNumbersSmall[3] = marioAdvanceSprites.grabExactImage(523, 194, 7, 10);
+		marioNumbersSmall[4] = marioAdvanceSprites.grabExactImage(458, 206, 10, 10);
+		marioNumbersSmall[5] = marioAdvanceSprites.grabExactImage(469, 206, 9, 10);
+		marioNumbersSmall[6] = marioAdvanceSprites.grabExactImage(479, 206, 9, 10);
+		marioNumbersSmall[7] = marioAdvanceSprites.grabExactImage(489, 206, 9, 10);
+		marioNumbersSmall[8] = marioAdvanceSprites.grabExactImage(499, 206, 9, 10);
+		marioNumbersSmall[9] = marioAdvanceSprites.grabExactImage(509, 206, 9, 10);
+		marioNumbersSmall[10] = marioAdvanceSprites.grabExactImage(529, 206, 6, 10);
+		marioNumbersSmall[11] = marioAdvanceSprites.grabExactImage(529, 182, 11, 11);
+		
+		mario3FontNumbersSmall[0] = mario3FontNumbersSmallSprites.grabExactImage(64, 16, 16, 16);
+		mario3FontNumbersSmall[1] = mario3FontNumbersSmallSprites.grabExactImage(0, 0, 16, 16);
+		mario3FontNumbersSmall[2] = mario3FontNumbersSmallSprites.grabExactImage(16, 0, 16, 16);
+		mario3FontNumbersSmall[3] = mario3FontNumbersSmallSprites.grabExactImage(32, 0, 16, 16);
+		mario3FontNumbersSmall[4] = mario3FontNumbersSmallSprites.grabExactImage(48, 0, 16, 16);
+		mario3FontNumbersSmall[5] = mario3FontNumbersSmallSprites.grabExactImage(64, 0, 16, 16);
+		mario3FontNumbersSmall[6] = mario3FontNumbersSmallSprites.grabExactImage(0, 16, 16, 16);
+		mario3FontNumbersSmall[7] = mario3FontNumbersSmallSprites.grabExactImage(16, 16, 16, 16);
+		mario3FontNumbersSmall[8] = mario3FontNumbersSmallSprites.grabExactImage(32, 16, 16, 16);
+		mario3FontNumbersSmall[9] = mario3FontNumbersSmallSprites.grabExactImage(48, 16, 16, 16);
+		mario3FontNumbersSmall[10] = mario3FontNumbersSmallSprites.grabExactImage(32, 32, 12, 16);
+		
+		itemFrame = marioAdvanceSprites.grabExactImage(308, 268, 26, 26);
+		
+		chainChompItemFrameDisplay = marioAdvanceSprites.grabExactImage(282, 301, 22, 22);
+		
+		pressE = marioAdvanceSprites.grabExactImage(450, 285, 47, 11);
 		
 		gameover = ss.grabExactImage(144, 208, 80, 16);
 	}

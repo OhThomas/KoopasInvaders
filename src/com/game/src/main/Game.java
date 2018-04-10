@@ -1,5 +1,4 @@
 package com.game.src.main;
-
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -8,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -39,14 +39,22 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage animatedStar = null;
 	private BufferedImage animatedShootingStar = null;
 	private BufferedImage mario1StarSpriteSheet = null;
+	private BufferedImage marioItemsSpriteSheet = null;
 	private BufferedImage background = null;
 	private BufferedImage marioLives = null;
 	private BufferedImage bowserSpriteSheet = null;
 	private BufferedImage bulletBillSpriteSheet = null;
 	private BufferedImage marioPlayerStarAnimations = null;
+	private BufferedImage marioItemAnimationSheet = null;
+	private BufferedImage marioItemAnimationBackgroundSheet = null;
 	private BufferedImage marioSlowingDownSprites = null;
 	private BufferedImage fullMarioSpriteSheet = null;
+	private BufferedImage marioAdvanceSpriteSheet = null;
+	private BufferedImage mario3FontNumbersSmallSpriteSheet = null;
+	private BufferedImage goombaDeathSpriteSheet = null;
 	private BufferedImage transparentBlocks = null;
+	private ArrayList<BufferedImage> itemBackground = new ArrayList<BufferedImage>();
+	private int backgroundTraverse = 0;
 	
 	Animation starAnim;
 	Animation shootingStarAnim;
@@ -64,6 +72,7 @@ public class Game extends Canvas implements Runnable {
 	private boolean spawnDone4 = false;
 	private boolean marioHasBeenInvincible = false;
 	private double myTime = 0.0;
+	private String itemName;
 	private int numberOfFireBallsShot = 0;
 	private int numberOfFireBallsShotDecoy = 0;
 	private double slowingDown = 0;
@@ -81,6 +90,8 @@ public class Game extends Canvas implements Runnable {
 	private boolean soundSet = false;
 	private boolean soundTimerSet = false;
 	private long soundFXTimer = 0;
+	private long enemyHitPauseTimer = 0;
+	private boolean enemyHitPauseBoolean = false;
 	private long transitionTimer = 0;
 	private long gameStartSoundTimer = 0;
 	private long pauseSoundFXTimer = 0;
@@ -99,10 +110,22 @@ public class Game extends Canvas implements Runnable {
 	private int menuSoundLoopRandomizer = 0;
 	private int marioVoiceRandomizer = 0;
 	private boolean menuSoundSet = false;
+	private boolean bulletBillDeathSoundPauseBoolean = false;
+	private boolean goombaDeathSoundPauseBoolean = false;
+	private boolean coinSoundPauseBoolean = false;
+	private boolean starDingPauseBoolean = false;
+	private boolean goomba3DeathSoundPauseBoolean = false;
+	private boolean goomba3DeathSmokeSoundPauseBoolean = false;
 	LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> marioDanceSoundLoops = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> marioVoices = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> bulletBillDeathSoundLoop = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> goombaDeathSoundLoop = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> coinSoundLoop = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> starDingSoundLoop = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> goomba3DeathSoundLoop = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> goomba3DeathSmokeSoundLoop = new LinkedList<SoundLoops>();
 	SoundLoops gameOverSoundLoop;
 	SoundLoops marioStarSoundLoop;
 	SoundLoops soundFXClip1SoundLoop;
@@ -110,6 +133,7 @@ public class Game extends Canvas implements Runnable {
 	SoundLoops pauseSoundFXSoundLoop;
 	SoundLoops marioSpinningSoundLoop;
 	SoundLoops marioDeathSoundLoop;
+	SoundLoops itemSwooshSoundLoop;
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -135,12 +159,13 @@ public class Game extends Canvas implements Runnable {
 	public static enum STATE{
 		MENU,
 		TRANSITION_ENTRANCE,
+		TRANSITION_ITEM,
 		TRANSITION_DEATH,
 		GAME,
 		PAUSE,
 		GAMEOVER
 	};
-	public static STATE State = STATE.MENU;
+	public static STATE State = STATE.GAME;
 	
 	public void init(){
 		requestFocus();
@@ -150,28 +175,36 @@ public class Game extends Canvas implements Runnable {
 			animatedStar = loader.loadImage("/animatedstar.png");
 			animatedShootingStar = loader.loadImage("/shootingstarworadiant.png");
 			mario1StarSpriteSheet = loader.loadImage("/mario1starspritesheet.png");
+			marioItemsSpriteSheet = loader.loadImage("/marioItemssmaller.png");
 			background = loader.loadImage("/starsbackgroundbigger.png");
 			marioLives = loader.loadImage("/mariolivessprite.png");
 			bowserSpriteSheet = loader.loadImage("/bowserspritesheet.png");
 			bulletBillSpriteSheet = loader.loadImage("/bulletbillspritesheet.png");
 			marioPlayerStarAnimations = loader.loadImage("/marioplayerstaranimations.png");
+			marioItemAnimationSheet = loader.loadImage("/marioitemanimations.png");
+			marioItemAnimationBackgroundSheet = loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur14.png");
 			marioSlowingDownSprites = loader.loadImage("/firemarioslidingeffect.png");
 			fullMarioSpriteSheet = loader.loadImage("/mario.png");
+			marioAdvanceSpriteSheet = loader.loadImage("/marioadvancespritesheet.png");
+			mario3FontNumbersSmallSpriteSheet = loader.loadImage("/mario3fonteNUMBERSSMALLERR.png");
+			goombaDeathSpriteSheet = loader.loadImage("/goombadeath.png");
 			title = loader.loadImage("/koopasinvaderstitlebigger.png");
 			gameOverTitle = loader.loadImage("/gameover1bigger.png");
 			playTitle = loader.loadImage("/newplaybutton.png");
 			helpTitle = loader.loadImage("/newhelpbutton.png");
 			exitTitle = loader.loadImage("/newexitbutton.png");
 			transparentBlocks = loader.loadImage("/randomtransparentblocks.png");
+			itemBackground = loader.loadImagesfromFolder("/res/BackgroundBlur");
+			
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 		
 		tex = new Textures(this);
-		bb = new BasicBlocks();												//BLOCKS
+		bb = new BasicBlocks(tex,this);												//BLOCKS
 		c = new Controller(tex, this);
 		p = new Player(Game.WIDTH,(Game.HEIGHT * SCALE) - MARIO_HEIGHT,tex,this,c);
-		hud = new HUD();
+		hud = new HUD(tex,this);
 		menu = new Menu();
 		
 		ea = c.getEntityA();
@@ -181,7 +214,6 @@ public class Game extends Canvas implements Runnable {
 		
 		this.addKeyListener(new KeyInput(this));
 		this.addMouseListener(new MouseInput());
-		
 		
 		starAnim = new Animation(10, tex.animatedStar[0],tex.animatedStar[1],tex.animatedStar[2],tex.animatedStar[3],
 				tex.animatedStar[4],tex.animatedStar[5],tex.animatedStar[6],tex.animatedStar[7],
@@ -267,9 +299,11 @@ public class Game extends Canvas implements Runnable {
 				p.tick();
 				hud.tick();
 				c.tick();
+				bb.tick();
 			}
 		}
-		starAnim.runAnimation();
+		if(!(State == STATE.TRANSITION_ITEM))
+			starAnim.runAnimation();
 		transparentBlocksAnim.runAnimation();
 		if((myTime / 10) == (int)(myTime/10) && shootingStarFrameStop == false)//(myTime > 10 && myTime < 22 || myTime > 30 && myTime < 42)
 			shootingStarAnim.runAnimation();
@@ -288,9 +322,10 @@ public class Game extends Canvas implements Runnable {
 		//**************DRAW**************//
 		
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-		
-		g.drawImage(background, 0, 0, null);
-		
+		if(!(State == STATE.TRANSITION_ITEM))
+			g.drawImage(background, 0, 0, null);
+		else
+			g.drawImage(marioItemAnimationBackgroundSheet, 0, 0, null);
 		//if((myTime / 10) == (int)(myTime/10) && myTime != 0)
 			//shootingStarFrameStop = false;
 		
@@ -304,7 +339,7 @@ public class Game extends Canvas implements Runnable {
 		starAnim.drawAnimation(g, 80, 20, 0);
 		
 		if (gameOverBoolean == true)
-			State = STATE.GAMEOVER;
+			State = STATE.TRANSITION_DEATH;
 		//State = STATE.GAME;
 		if(State == STATE.GAME){
 			if(marioHasBeenInvincible == false){					//Setting up music
@@ -329,7 +364,10 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			if(p.getMarioInvincible() == false && marioHasBeenInvincible == true){		//Setting up SoundFX in between Audio Clips
-				this.marioStarSoundLoop.stop();
+				if(this.marioStarSoundLoop.getSoundLoopBoolean() == true){
+					this.marioStarSoundLoop.stop();
+					this.marioStarSoundLoop.setSoundLoopBoolean(false);
+				}
 				
 				if(soundFXBoolean == true){
 					paused = true;
@@ -357,7 +395,7 @@ public class Game extends Canvas implements Runnable {
 						this.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
 					}
 					soundTimerSet = false;
-			}
+				}
 				else if(paused == true && soundTimerSet == true){
 					transparentBlocksAnim.drawAnimation(g,p.getX(), p.getY(), 0);
 					//add visual effect
@@ -371,7 +409,7 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(p.getMarioInvincible() == true){											//Setting up Star Sound
 				
-				if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true)
+				if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive())
 					this.gameSoundLoops.get(this.soundRandomizer).stop();
 				
 				if(soundFXBoolean == false){
@@ -385,6 +423,7 @@ public class Game extends Canvas implements Runnable {
 					paused = false;
 					pauseSoundFXSoundLoop.setSoundLoopBoolean(false);
 					this.marioStarSoundLoop.loop();
+					this.marioStarSoundLoop.setSoundLoopBoolean(true);
 				}
 				
 				if(System.currentTimeMillis() > soundFXTimer && soundFXisPlaying == true){							//checking if paused for soundFX Timer
@@ -396,6 +435,7 @@ public class Game extends Canvas implements Runnable {
 					soundFXClip1Reset = false;
 					this.marioStarSoundLoop.play();
 					this.marioStarSoundLoop.loop();
+					this.marioStarSoundLoop.setSoundLoopBoolean(true);
 					soundTimerSet = true;
 					marioHasBeenInvincible = true;
 				}
@@ -456,12 +496,20 @@ public class Game extends Canvas implements Runnable {
 				slowingDownActivatedl = false;
 				slowingDownActivatedr = false;
 			}
+			if(System.currentTimeMillis() < enemyHitPauseTimer){
+				paused = true;
+				enemyHitPauseBoolean = true;
+			}
+			else if(enemyHitPauseBoolean == true){
+				paused = false;
+				enemyHitPauseBoolean = false;
+			}
 			//SPAWN ENEMIES
 			/*
 			if (spawnDone == false){													//Spawning enemies
-			for(int i = 0; i < (Game.WIDTH * Game.SCALE); i+=64){
-				c.addEntity(new Enemy(i,0, tex, c , this));
-				}
+				for(int i = 0; i < (Game.WIDTH * Game.SCALE); i+=64){
+					c.addEntity(new Enemy(i,0, tex, c , this));
+					}
 				spawnDone = true;
 			}
 			if(eb.isEmpty() && spawnDone2 == false){
@@ -504,37 +552,49 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			
-				//if (i == rand.nextInt())
-					if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false){								
-						Random rand = new Random();
-						int i = rand.nextInt(eb.size());
-						c.addEntity(new GreenShell(eb.get(i).getX(),eb.get(i).getY() - 32,tex, this));
+		//if (i == rand.nextInt())
+			if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false){								
+				Random rand = new Random();
+				int i = rand.nextInt(eb.size());
+				if(eb.get(i).getEntityBDead() == false)
+					c.addEntity(new GreenShell(eb.get(i).getX(),eb.get(i).getY() - 32,tex, this));
+			}
+			if(spawnDone4 == true){												//Spawning Bowser Mechanics
+				hud.render(g);
+				if((int)hud.getTimer() <= 0){
+					//SPAWN BULLET BILLS
+					Random rand = new Random();
+					int i = rand.nextInt(20000);
+					if(i == 1 && ec.size() < 6){
+						c.addEntity(new BulletBill(eb.getLast().getX(),eb.getLast().getY() - 32,tex, this));
 					}
-					if(spawnDone4 == true){												//Spawning Bowser Mechanics
-						hud.render(g);
-						if((int)hud.getTimer() <= 0){
-							//SPAWN BULLET BILLS
-							
-							Random rand = new Random();
-							int i = rand.nextInt(20000);
-							if(i == 1 && ec.size() < 6){
-								c.addEntity(new BulletBill(eb.getLast().getX(),eb.getLast().getY() - 32,tex, this));
-							}
-							
-							//SPAWN GREEN SHELLS
-							if(numberOfFireBallsShot % 6==0)
-							{
-								numberOfFireBallsShot += 1;
-								numberOfFireBallsShotDecoy += 1;
-								c.addEntity(new GreenShell(eb.getLast().getX()+32,eb.getLast().getY() - 32,tex, this));
-							}
-							
-							//SPAWN STARS
-							int j = rand.nextInt(4);//400000
-							if(j == 2 && ed.size() < 1 && p.getMarioInvincible() == false)
-								c.addEntity(new Mario1Star(-16,this.playerY() - 32,tex, this));
+					
+					//SPAWN GREEN SHELLS
+					if(numberOfFireBallsShot % 6==0){
+						numberOfFireBallsShot += 1;
+						numberOfFireBallsShotDecoy += 1;
+						c.addEntity(new GreenShell(eb.getLast().getX()+32,eb.getLast().getY() - 32,tex, this));
+					}
+					
+					//SPAWN STARS & ITEMS
+					int j = rand.nextInt(4);//400000
+					if(j < 2 && ed.size() < 1 && p.getMarioInvincible() == false && hud.getItemObtained() == false){
+						int k = rand.nextInt(2);
+						if(k == 0){
+							//if(j == 0)
+								//c.addEntity(new Mario1Star(-16,this.playerY() - 32,tex, this));
+							//else if(j == 1)
+								c.addEntity(new ChainChompItem(-16,this.playerY() - 32,tex, this));
+						}
+						else{
+							//if(j == 0)
+								//c.addEntity(new Mario1Star((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
+							//else if(j == 1)
+								c.addEntity(new ChainChompItem((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
 						}
 					}
+				}
+			}
 			if (animationTimer1 != 0){													//if they shoot a fireball this stops them
 				p.setVelX(0);
 				p.setVelY(0);
@@ -554,6 +614,7 @@ public class Game extends Canvas implements Runnable {
 				//draw x 0
 				State = STATE.TRANSITION_DEATH;
 			}
+			hud.render(g);
 		}else if(State == STATE.MENU){													//Menu
 			//menu.render(g);
 			if(menuSoundSet == false){
@@ -620,6 +681,28 @@ public class Game extends Canvas implements Runnable {
 					marioLetsGoPause = false;
 				}
 			}
+		}else if(State == STATE.TRANSITION_ITEM){
+			if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive()){
+				this.gameSoundLoops.get(this.soundRandomizer).stop();
+				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+				this.itemSwooshSoundLoop.play();
+			}
+			switch(hud.getItemName()){
+				case "chainChompItem":
+					//useChainChompAnimation
+					break;
+				default:
+					break;
+			}
+			if(backgroundTraverse < itemBackground.size()-1 && System.currentTimeMillis() % 80 == 0){
+				backgroundTraverse++;
+			}
+			if(backgroundTraverse < itemBackground.size())
+				g.drawImage(itemBackground.get(backgroundTraverse), 0, 0, null);
+			
+			g.drawImage(tex.marioItemAnimationBeginning[0], Game.WIDTH, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22), null);
+			//else
+				//g.drawImage(tex.marioItemAnimationBeginning[0], Game.WIDTH, (Game.HEIGHT * Game.SCALE+120) - ((backgroundTraverse-1) * 25), null);
 		}else if(State == STATE.TRANSITION_DEATH){
 			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
@@ -677,123 +760,138 @@ public class Game extends Canvas implements Runnable {
 		int key = e.getKeyCode();
 		
 		if(State == STATE.GAME){
-		if(key == KeyEvent.VK_W || key == KeyEvent.VK_UP){
-			//p.setVelY(-5);
-			//yUBoolean = true;
-		} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
-			p.setVelX(-5);
-			xLBoolean = true;
-			slowingDownTimerLong = 0;
-			slowingDownActivatedl = false;
-			slowingDownActivatedr = false;
-			if(runningTimerActivatedResponse == false)
-				runningTimerActivated = true;
-		} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
-			//p.setVelY(5);
-			//yDBoolean = true;
-		} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
-			p.setVelX(5);
-			xRBoolean = true;
-			slowingDownTimerLong = 0;
-			slowingDownActivatedl = false;
-			slowingDownActivatedr = false;
-			if(runningTimerActivatedResponse == false)
-				runningTimerActivated = true;
-		}
-		if (key == KeyEvent.VK_SPACE && !isShooting){											//Fireballs
-			isShooting = true;
-			if(ea.isEmpty() && !paused){
-				c.addEntity(new Fireball(p.getX(),p.getY() + 32,tex, this));
-				animationTimer1 = 10;
-				numberOfFireBallsShot++;
+			if(key == KeyEvent.VK_W || key == KeyEvent.VK_UP){
+				//p.setVelY(-5);
+				//yUBoolean = true;
+			} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
+				p.setVelX(-5);
+				xLBoolean = true;
+				slowingDownTimerLong = 0;
+				slowingDownActivatedl = false;
+				slowingDownActivatedr = false;
+				if(runningTimerActivatedResponse == false)
+					runningTimerActivated = true;
+			} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
+				//p.setVelY(5);
+				//yDBoolean = true;
+			} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
+				p.setVelX(5);
+				xRBoolean = true;
+				slowingDownTimerLong = 0;
+				slowingDownActivatedl = false;
+				slowingDownActivatedr = false;
+				if(runningTimerActivatedResponse == false)
+					runningTimerActivated = true;
 			}
-		}
-		if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_P){
-			if(paused == false && soundFXisPlaying == false){
-				if(p.getMarioInvincible() == true)
-					this.marioStarSoundLoop.stop();
-				else
-					this.gameSoundLoops.get(soundRandomizer).stop();
-				this.pauseSoundFXSoundLoop.setFramePosition(0);
-				this.pauseSoundFXSoundLoop.play();
-				pauseSoundFXTimer = System.currentTimeMillis() + 685;
-				paused = true;
-				userHasPaused = true;
-			}
-			else if(paused == true && soundFXisPlaying == false){
-				if(pauseSoundFXTimer < System.currentTimeMillis()){
-				/*if(p.getMarioInvincible() == true)
-					this.marioStarSoundLoop.loop();
-				else
-					this.gameSoundLoops.get(soundRandomizer).loop();
-				paused = false;*/
-				this.pauseSoundFXSoundLoop.play();
-				pauseSoundFXTimer = System.currentTimeMillis() + 685;
-				this.pauseSoundFXSoundLoop.setSoundLoopBoolean(true);
+			if (key == KeyEvent.VK_SPACE && !isShooting){											//Fireballs
+				isShooting = true;
+				if(ea.isEmpty() && !paused){
+					c.addEntity(new Fireball(p.getX(),p.getY() + 32,tex, this));
+					animationTimer1 = 10;
+					numberOfFireBallsShot++;
 				}
-				userHasPaused = false;
 			}
-		}
+			if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_P){
+				if(paused == false && soundFXisPlaying == false){
+					if(p.getMarioInvincible() == true)
+						this.marioStarSoundLoop.stop();
+					else
+						this.gameSoundLoops.get(soundRandomizer).stop();
+					this.pauseSoundFXSoundLoop.setFramePosition(0);
+					this.pauseSoundFXSoundLoop.play();
+					pauseSoundFXTimer = System.currentTimeMillis() + 685;
+					paused = true;
+					userHasPaused = true;
+				}
+				else if(paused == true && soundFXisPlaying == false){
+					if(pauseSoundFXTimer < System.currentTimeMillis()){
+					/*if(p.getMarioInvincible() == true)
+						this.marioStarSoundLoop.loop();
+					else
+						this.gameSoundLoops.get(soundRandomizer).loop();
+					paused = false;*/
+					this.pauseSoundFXSoundLoop.play();
+					pauseSoundFXTimer = System.currentTimeMillis() + 685;
+					this.pauseSoundFXSoundLoop.setSoundLoopBoolean(true);
+					}
+					userHasPaused = false;
+				}
+			}
 		}
 	}
 	
 	public void keyReleased(KeyEvent e){
 		int key = e.getKeyCode();
-		
-		if(key == KeyEvent.VK_W || key == KeyEvent.VK_UP){
-			/*
-			p.setVelY(0);
-			yUBoolean = false;
-			if(yDBoolean == true)
-				p.setVelY(5);
-			*/
-		} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
-			p.setVelX(0);
-			xLBoolean = false;
-			if(xRBoolean == true){
-				p.setVelX(5);
-				runningTimerActivated = true;
-			}
-			else{
-				if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for left side
-					slowingDownActivatedl = true;
-					slowingDownTimerLong = System.currentTimeMillis() + 200;
-					slowingDown = -1.73;
-					p.setVelX(slowingDown);
-					runningTimerLong = 0;
-					runningTimerActivatedResponse = false;
+		if(State == STATE.GAME){
+			if(key == KeyEvent.VK_W || key == KeyEvent.VK_UP){
+				/*
+				p.setVelY(0);
+				yUBoolean = false;
+				if(yDBoolean == true)
+					p.setVelY(5);
+				*/
+			} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
+				p.setVelX(0);
+				xLBoolean = false;
+				if(xRBoolean == true){
+					p.setVelX(5);
+					runningTimerActivated = true;
+				}
+				else{
+					if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for left side
+						slowingDownActivatedl = true;
+						slowingDownTimerLong = System.currentTimeMillis() + 200;
+						slowingDown = -1.73;
+						p.setVelX(slowingDown);
+						runningTimerLong = 0;
+						runningTimerActivatedResponse = false;
+					}
+				}
+	
+				runningTimerActivatedResponse = false;
+			} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
+				/*
+				p.setVelY(0);
+				yDBoolean = false;
+				if(yUBoolean == true)
+					p.setVelY(-5);
+				*/
+			} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
+				p.setVelX(0);
+				xRBoolean = false;
+				if(xLBoolean == true){
+					p.setVelX(-5);
+					runningTimerActivated = true;
+				}
+				else{
+					if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for right side
+						slowingDownActivatedr = true;
+						slowingDownTimerLong = System.currentTimeMillis() + 200;
+						slowingDown = 1.73;
+						p.setVelX(slowingDown);
+						runningTimerLong = 0;
+						runningTimerActivatedResponse = false;
+					}
+				}
+	
+				runningTimerActivatedResponse = false;
+			} else if(key == KeyEvent.VK_SPACE){
+				isShooting = false;
+			} else if(key == KeyEvent.VK_E && !paused){
+				if(hud.getItemObtained() == true){
+					/*
+					switch(hud.getItemName()){
+						case "chainChompItem":
+							useChainChompAnimation
+							break;
+						default:
+							break;
+					}DO LATER IN TRANSITION*/
+					State = STATE.TRANSITION_ITEM;
+					this.itemName = hud.getItemName();
+					hud.setItemObtained(false);
 				}
 			}
-
-			runningTimerActivatedResponse = false;
-		} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
-			/*
-			p.setVelY(0);
-			yDBoolean = false;
-			if(yUBoolean == true)
-				p.setVelY(-5);
-			*/
-		} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
-			p.setVelX(0);
-			xRBoolean = false;
-			if(xLBoolean == true){
-				p.setVelX(-5);
-				runningTimerActivated = true;
-			}
-			else{
-				if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for right side
-					slowingDownActivatedr = true;
-					slowingDownTimerLong = System.currentTimeMillis() + 200;
-					slowingDown = 1.73;
-					p.setVelX(slowingDown);
-					runningTimerLong = 0;
-					runningTimerActivatedResponse = false;
-				}
-			}
-
-			runningTimerActivatedResponse = false;
-		} else if(key == KeyEvent.VK_SPACE){
-			isShooting = false;
 		}
 	}
 	
@@ -819,6 +917,7 @@ public class Game extends Canvas implements Runnable {
 		String pauseSoundFXFile = "res/Sounds/SFX/smb_pause.wav";
 		String marioSpinningFile = "res/Sounds/SFX/smw_feather_get.wav";
 		String marioDeathFile = "res/Sounds/SFX/smb3_player_down.wav";
+		String itemSwooshFile = "res/Sounds/SFX/spacewhooshsfxMARIO.wav";
 		String marioVoiceLetsGoFile = "res/Sounds/SFX/MarioVoice/mk64_mario02.wav";
 		String marioVoiceHereWeGoFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_33_mario_27.wav";
 		String marioVoiceYelpFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_22_mario_16.wav";
@@ -860,6 +959,7 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops pauseSoundFXSoundLoop = new SoundLoops(pauseSoundFXFile);
 		SoundLoops marioSpinningSoundLoop = new SoundLoops(marioSpinningFile);
 		SoundLoops marioDeathSoundLoop = new SoundLoops(marioDeathFile);
+		SoundLoops itemSwooshSoundLoop = new SoundLoops(itemSwooshFile);
 		SoundLoops marioVoiceLetsGoSoundLoop = new SoundLoops(marioVoiceLetsGoFile);
 		SoundLoops marioVoiceHereWeGoSoundLoop = new SoundLoops(marioVoiceHereWeGoFile);
 		SoundLoops marioVoiceYelpSoundLoop = new SoundLoops(marioVoiceYelpFile);
@@ -936,6 +1036,7 @@ public class Game extends Canvas implements Runnable {
 		game.pauseSoundFXSoundLoop = pauseSoundFXSoundLoop;
 		game.marioSpinningSoundLoop = marioSpinningSoundLoop;
 		game.marioDeathSoundLoop = marioDeathSoundLoop;
+		game.itemSwooshSoundLoop = itemSwooshSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		
 		JFrame frame = new JFrame(game.TITLE);
@@ -965,12 +1066,53 @@ public class Game extends Canvas implements Runnable {
 		return paused;
 	}
 	
+	public boolean getUserHasPaused() {
+		return userHasPaused;
+	}
+
+	public void setUserHasPaused(boolean userHasPaused) {
+		this.userHasPaused = userHasPaused;
+	}
+
+	
 	public boolean soundFXisPlaying(){
 		return soundFXisPlaying;
 	}
 
+	public boolean isMarioInvincible(){
+		return p.getMarioInvincible();
+	}
 	
-	public boolean isMarioDancePosePause() {
+	public long getPauseSoundFXTimer() {
+		return pauseSoundFXTimer;
+	}
+
+	public void setPauseSoundFXTimer(long pauseSoundFXTimer) {
+		this.pauseSoundFXTimer = pauseSoundFXTimer;
+	}
+	
+	public long getVisualPauseTimer() {
+		return visualPauseTimer;
+	}
+
+	public void setVisualPauseTimer(long visualPauseTimer) {
+		this.visualPauseTimer = visualPauseTimer;
+	}
+
+	
+	public long getEnemyHitPauseTimer() {
+		return enemyHitPauseTimer;
+	}
+
+	public void setEnemyHitPauseTimer(long enemyHitPauseTimer) {
+		this.enemyHitPauseTimer = enemyHitPauseTimer;
+	}
+
+	public boolean getSpawnDone4(){
+		return spawnDone4;
+	}
+	
+	public boolean getMarioDancePosePause() {
 		return marioDancePosePause;
 	}
 
@@ -986,7 +1128,7 @@ public class Game extends Canvas implements Runnable {
 		this.marioGrowthPosePauseTimer = marioGrowthPosePauseTimer;
 	}
 
-	public boolean isMarioGrowthPosePause() {
+	public boolean getMarioGrowthPosePause() {
 		return marioGrowthPosePause;
 	}
 
@@ -994,6 +1136,65 @@ public class Game extends Canvas implements Runnable {
 		this.marioGrowthPosePause = marioGrowthPosePause;
 	}
 
+	public boolean getBulletBillDeathSoundPauseBoolean() {
+		return bulletBillDeathSoundPauseBoolean;
+	}
+
+	public void setBulletBillDeathSoundPauseBoolean(boolean bulletBillDeathSoundPauseBoolean) {
+		this.bulletBillDeathSoundPauseBoolean = bulletBillDeathSoundPauseBoolean;
+	}
+
+	public boolean getGoombaDeathSoundPauseBoolean() {
+		return goombaDeathSoundPauseBoolean;
+	}
+
+	public void setGoombaDeathSoundPauseBoolean(boolean goombaDeathSoundPauseBoolean) {
+		this.goombaDeathSoundPauseBoolean = goombaDeathSoundPauseBoolean;
+	}
+	
+	public boolean getCoinSoundPauseBoolean() {
+		return coinSoundPauseBoolean;
+	}
+
+	public void setCoinSoundPauseBoolean(boolean coinSoundPauseBoolean) {
+		this.coinSoundPauseBoolean = coinSoundPauseBoolean;
+	}
+
+	public boolean getStarDingPauseBoolean() {
+		return starDingPauseBoolean;
+	}
+
+	public void setStarDingPauseBoolean(boolean starDingPauseBoolean) {
+		this.starDingPauseBoolean = starDingPauseBoolean;
+	}
+
+	public boolean getGoomba3DeathSoundPauseBoolean() {
+		return goomba3DeathSoundPauseBoolean;
+	}
+
+	public void setGoomba3DeathSoundPauseBoolean(boolean goomba3DeathSoundPauseBoolean) {
+		this.goomba3DeathSoundPauseBoolean = goomba3DeathSoundPauseBoolean;
+	}
+
+	public boolean getGoomba3DeathSmokeSoundPauseBoolean() {
+		return goomba3DeathSmokeSoundPauseBoolean;
+	}
+
+	public void setGoomba3DeathSmokeSoundPauseBoolean(boolean goomba3DeathSmokeSoundPauseBoolean) {
+		this.goomba3DeathSmokeSoundPauseBoolean = goomba3DeathSmokeSoundPauseBoolean;
+	}
+
+	public BasicBlocks getBb() {
+		return bb;
+	}
+
+	public void setBb(BasicBlocks bb) {
+		this.bb = bb;
+	}
+
+	public HUD getHUD(){
+		return this.hud;
+	}
 	
 	public BufferedImage getSpriteSheet(){
 		return spriteSheet;
@@ -1011,6 +1212,10 @@ public class Game extends Canvas implements Runnable {
 		return mario1StarSpriteSheet;
 	}
 	
+	public BufferedImage getMarioItemsSpriteSheet(){
+		return marioItemsSpriteSheet;
+	}
+	
 	public BufferedImage getBowserSpriteSheet(){
 		return bowserSpriteSheet;
 	}
@@ -1023,12 +1228,28 @@ public class Game extends Canvas implements Runnable {
 		return marioPlayerStarAnimations;
 	}
 	
+	public BufferedImage getMarioItemAnimationSheet(){
+		return marioItemAnimationSheet;
+	}
+	
 	public BufferedImage getMarioSlowingDownSprites(){
 		return marioSlowingDownSprites;
 	}
 
 	public BufferedImage getFullMarioSpriteSheet(){
 		return fullMarioSpriteSheet;
+	}
+
+	public BufferedImage getMarioAdvanceSpriteSheet() {
+		return marioAdvanceSpriteSheet;
+	}
+	
+	public BufferedImage getMario3FontNumbersSmallSpriteSheet() {
+		return mario3FontNumbersSmallSpriteSheet;
+	}
+	
+	public BufferedImage getGoombaDeathSpriteSheet() {
+		return goombaDeathSpriteSheet;
 	}
 	
 	public BufferedImage getTransparentBlocks(){

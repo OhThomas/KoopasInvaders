@@ -19,6 +19,7 @@ public class Bowser extends GameObject implements EntityB{
 	private double timer2 = 0;
 	private double hitTimer = 0;
 	public double speedIncrease = 0.1;
+	private boolean bowserisDead = false;
 	protected double velX, velY;
 	Random r = new Random();
 	
@@ -95,7 +96,7 @@ public class Bowser extends GameObject implements EntityB{
 				if (game.eb.size() == 2)
 					game.enemySpeedIncrease+= 0.9;
 				game.enemySpeedIncrease+= 0.2; //0.7
-				HUD.HEALTH -= 2;
+				HUD.HEALTH -= 4;
 				hitTimer = 80;
 				if(game.ea.size() >= 1)
 					game.ea.removeLast();
@@ -149,4 +150,15 @@ public class Bowser extends GameObject implements EntityB{
 		return timer1;
 	}
 
+	public boolean getEntityBDead() {
+		return bowserisDead;
+	}
+
+	public int getWidth() {
+		return 64;
+	}
+
+	public int getHeight() {
+		return 50;
+	}
 }
