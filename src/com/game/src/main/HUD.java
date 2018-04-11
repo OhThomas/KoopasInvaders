@@ -23,12 +23,15 @@ public class HUD {
 	private double imageTranslucentVelocity = 0;
 	private long imageTranslucentTimer = 0;
 	private boolean imageIsGone = false;
+	private long enemyHitPauseTimer = 0;
 	private BufferedImage[] marioNumbersSmall = new BufferedImage[10];
 	private BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
 	private BufferedImage marioAdditionSign = null;
 	private BufferedImage itemFrame = null;
 	private BufferedImage chainChompItemFrameDisplay = null;
 	private BufferedImage pressE = null;
+	
+	private SoundLoops itemEnemySoundLoop = null;
 	
 	public HUD(Textures tex, Game game){
 		this.tex = tex;
@@ -39,6 +42,9 @@ public class HUD {
 		this.itemFrame = tex.itemFrame;
 		this.chainChompItemFrameDisplay = tex.chainChompItemFrameDisplay;
 		this.pressE = tex.pressE;
+		String itemEnemyFile = "res/Sounds/SFX/smb3_sound_effects_inventory_open_close.wav";
+		SoundLoops itemEnemySoundLoops = new SoundLoops(itemEnemyFile);
+		this.itemEnemySoundLoop = itemEnemySoundLoops;
 		
 	}
 	
@@ -118,6 +124,12 @@ public class HUD {
 				g2d.setComposite(makeComposite(imageTranslucent));
 				g2d.drawImage(pressE,Game.WIDTH-10,28,null);
 			}
+			if(enemyHitPauseTimer != 0 && System.currentTimeMillis() < enemyHitPauseTimer){
+				if(!this.itemEnemySoundLoop.clipIsActive())
+					this.itemEnemySoundLoop.play();
+				stringToScore(g, this.marioNumbersSmall, (int)(game.ee.getLast().getX() + game.ee.getLast().getBounds().getWidth()), (int)game.ee.getLast().getY(), "200", false);
+			}
+			
 		}
 		else if(game.getVisualPauseTimer() > System.currentTimeMillis() || game.getPauseSoundFXTimer() > System.currentTimeMillis()){
 			if(timer1 > 0){
@@ -211,8 +223,6 @@ public class HUD {
 	public void stringToScore(Graphics g, BufferedImage[] font, int xPosition, int yPosition, String string, Boolean b){
 		//int k = 0;
 		if(b == false){
-			g.drawImage(this.marioAdditionSign, xPosition, yPosition, null);
-			xPosition -= this.marioAdditionSign.getWidth();
 			for(int i = string.length() - 1; i >= 0; i--){
 				/*if(k % 3 == 0 && k != 0){
 					xPosition -= font[10].getWidth();
@@ -228,38 +238,40 @@ public class HUD {
 				}
 				*/
 				if(string.charAt(i) == '0'){
-					xPosition -= font[0].getWidth();
 					g.drawImage(font[0], xPosition, yPosition, null);
+					xPosition -= font[0].getWidth();
 				}else if(string.charAt(i) == '1'){
-					xPosition -= font[1].getWidth();
 					g.drawImage(font[1], xPosition, yPosition, null);
+					xPosition -= font[1].getWidth();
 				}else if(string.charAt(i) == '2'){
-					xPosition -= font[2].getWidth();
 					g.drawImage(font[2], xPosition, yPosition, null);
+					xPosition -= font[2].getWidth();
 				}else if(string.charAt(i) == '3'){
-					xPosition -= font[3].getWidth();
 					g.drawImage(font[3], xPosition, yPosition, null);
+					xPosition -= font[3].getWidth();
 				}else if(string.charAt(i) == '4'){
-					xPosition -= font[4].getWidth();
 					g.drawImage(font[4], xPosition, yPosition, null);
+					xPosition -= font[4].getWidth();
 				}else if(string.charAt(i) == '5'){
-					xPosition -= font[5].getWidth();
 					g.drawImage(font[5], xPosition, yPosition, null);
+					xPosition -= font[5].getWidth();
 				}else if(string.charAt(i) == '6'){
-					xPosition -= font[6].getWidth();
 					g.drawImage(font[6], xPosition, yPosition, null);
+					xPosition -= font[6].getWidth();
 				}else if(string.charAt(i) == '7'){
-					xPosition -= font[7].getWidth();
 					g.drawImage(font[7], xPosition, yPosition, null);
+					xPosition -= font[7].getWidth();
 				}else if(string.charAt(i) == '8'){
-					xPosition -= font[8].getWidth();
 					g.drawImage(font[8], xPosition, yPosition, null);
+					xPosition -= font[8].getWidth();
 				}else if(string.charAt(i) == '9'){
-					xPosition -= font[9].getWidth();
 					g.drawImage(font[9], xPosition, yPosition, null);
+					xPosition -= font[9].getWidth();
 				}
 				//k++;
 			}
+			g.drawImage(this.marioAdditionSign, xPosition-3, yPosition, null);
+			xPosition -= this.marioAdditionSign.getWidth();
 		}
 		else{
 			g.drawImage(this.marioAdditionSign, xPosition, yPosition, null);
@@ -270,35 +282,35 @@ public class HUD {
 					g.drawImage(font[10], xPosition, y, null);
 				}*/
 				if(string.charAt(i) == '0'){
-					xPosition += font[0].getWidth();
 					g.drawImage(font[0], xPosition, yPosition, null);
+					xPosition += font[0].getWidth();
 				}else if(string.charAt(i) == '1'){
-					xPosition += font[1].getWidth();
 					g.drawImage(font[1], xPosition, yPosition, null);
+					xPosition += font[1].getWidth();
 				}else if(string.charAt(i) == '2'){
-					xPosition += font[2].getWidth();
 					g.drawImage(font[2], xPosition, yPosition, null);
+					xPosition += font[2].getWidth();
 				}else if(string.charAt(i) == '3'){
-					xPosition += font[3].getWidth();
 					g.drawImage(font[3], xPosition, yPosition, null);
+					xPosition += font[3].getWidth();
 				}else if(string.charAt(i) == '4'){
-					xPosition += font[4].getWidth();
 					g.drawImage(font[4], xPosition, yPosition, null);
+					xPosition += font[4].getWidth();
 				}else if(string.charAt(i) == '5'){
-					xPosition += font[5].getWidth();
 					g.drawImage(font[5], xPosition, yPosition, null);
+					xPosition += font[5].getWidth();
 				}else if(string.charAt(i) == '6'){
-					xPosition += font[6].getWidth();
 					g.drawImage(font[6], xPosition, yPosition, null);
+					xPosition += font[6].getWidth();
 				}else if(string.charAt(i) == '7'){
-					xPosition += font[7].getWidth();
 					g.drawImage(font[7], xPosition, yPosition, null);
+					xPosition += font[7].getWidth();
 				}else if(string.charAt(i) == '8'){
-					xPosition += font[8].getWidth();
 					g.drawImage(font[8], xPosition, yPosition, null);
+					xPosition += font[8].getWidth();
 				}else if(string.charAt(i) == '9'){
-					xPosition += font[9].getWidth();
 					g.drawImage(font[9], xPosition, yPosition, null);
+					xPosition += font[9].getWidth();
 				}
 				//k++;
 			}
@@ -381,6 +393,14 @@ public class HUD {
 
 	public void setItemObtained(boolean itemObtained) {
 		this.itemObtained = itemObtained;
+	}
+	
+	public long getEnemyHitPauseTimer() {
+		return enemyHitPauseTimer;
+	}
+
+	public void setEnemyHitPauseTimer(long enemyHitPauseTimer) {
+		this.enemyHitPauseTimer = enemyHitPauseTimer;
 	}
 	
 	public String getItemName() {

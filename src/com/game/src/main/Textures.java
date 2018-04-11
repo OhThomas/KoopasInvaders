@@ -17,7 +17,9 @@ public class Textures {
 	public BufferedImage[] animatedStar = new BufferedImage[20];
 	public BufferedImage[] animatedShootingStar = new BufferedImage[12];
 	public BufferedImage[] mario1Star = new BufferedImage[4];
-	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[2];
+	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[18];
+	public BufferedImage[] bigChainChompItem = new BufferedImage[9];
+	public BufferedImage[] chainChomp = new BufferedImage[2];
 	public BufferedImage[] chainChompItem = new BufferedImage[25];
 	public BufferedImage[] bowserEntrance = new BufferedImage[8];
 	public BufferedImage[] bowser = new BufferedImage[2];
@@ -65,6 +67,9 @@ public class Textures {
 	private SpriteSheet bulletBillSprites;
 	private SpriteSheet marioPlayerAnimationsSprites;
 	private SpriteSheet marioItemAnimationSprites;
+	private SpriteSheet bigMarioItemAnimationSprites;
+	private SpriteSheet chainChompItemGettingBiggerSprites;
+	private SpriteSheet chainChompSprites;
 	private SpriteSheet marioSlowingDownSprites;
 	private SpriteSheet fullMarioSprites;
 	private SpriteSheet marioAdvanceSprites;
@@ -82,6 +87,9 @@ public class Textures {
 		bulletBillSprites = new SpriteSheet(game.getBulletBillSpriteSheet());
 		marioPlayerAnimationsSprites = new SpriteSheet(game.getMarioPlayerStarAnimations());
 		marioItemAnimationSprites = new SpriteSheet(game.getMarioItemAnimationSheet());
+		bigMarioItemAnimationSprites = new SpriteSheet(game.getBigMarioItemAnimationSheet());
+		chainChompItemGettingBiggerSprites = new SpriteSheet(game.getChainChompItemGettingBiggerSheet());
+		chainChompSprites = new SpriteSheet(game.getChainChompSheet());
 		marioSlowingDownSprites = new SpriteSheet(game.getMarioSlowingDownSprites());
 		fullMarioSprites = new SpriteSheet(game.getFullMarioSpriteSheet());
 		marioAdvanceSprites = new SpriteSheet(game.getMarioAdvanceSpriteSheet());
@@ -222,6 +230,33 @@ public class Textures {
 		mario1Star[3] = mario1StarSprites.grabExactImage((14 * 4) - 14, (16 * 1) - 16, 14, 16);
 		
 		marioItemAnimationBeginning[0] = marioItemAnimationSprites.grabExactImage(1920, 1860, 80, 140);
+		marioItemAnimationBeginning[1] = bigMarioItemAnimationSprites.grabExactImage(171 * 4, 755 * 4, 21 * 4, 29 * 4);
+		marioItemAnimationBeginning[2] = bigMarioItemAnimationSprites.grabExactImage(8 * 4, 156 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning[3] = bigMarioItemAnimationSprites.grabExactImage(169 * 4, 436 * 4, 15 * 4, 28 * 4);
+		marioItemAnimationBeginning[4] = bigMarioItemAnimationSprites.grabExactImage(8 * 4, 196 * 4, 17 * 4, 27 * 4);
+		marioItemAnimationBeginning[5] = bigMarioItemAnimationSprites.grabExactImage(48 * 4, 196 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning[6] = bigMarioItemAnimationSprites.grabExactImage(232 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning[7] = bigMarioItemAnimationSprites.grabExactImage(204 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning[8] = bigMarioItemAnimationSprites.grabExactImage(172 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning[9] = bigMarioItemAnimationSprites.grabExactImage(264 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning[10] = bigMarioItemAnimationSprites.grabExactImage(144 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning[11] = bigMarioItemAnimationSprites.grabExactImage(8, 2720, 80, 116);
+		marioItemAnimationBeginning[12] = bigMarioItemAnimationSprites.grabExactImage(92, 2720, 88, 116);
+		marioItemAnimationBeginning[13] = bigMarioItemAnimationSprites.grabExactImage(1376, 2708, 76, 116);
+		marioItemAnimationBeginning[14] = bigMarioItemAnimationSprites.grabExactImage(1452, 2708, 64, 116);
+		marioItemAnimationBeginning[15] = bigMarioItemAnimationSprites.grabExactImage(1496, 2828, 64, 116);
+		marioItemAnimationBeginning[16] = bigMarioItemAnimationSprites.grabExactImage(1496, 2944, 64, 116);
+		marioItemAnimationBeginning[17] = bigMarioItemAnimationSprites.grabExactImage(8, 3020, 64, 116);
+		
+		bigChainChompItem[0] = marioItemAnimationSprites.grabExactImage(1776, 1841, 50, 48);
+		bigChainChompItem[1] = chainChompItemGettingBiggerSprites.grabExactImage(8, 288, 50, 48);
+		bigChainChompItem[2] = chainChompItemGettingBiggerSprites.grabExactImage(5, 211, 59, 56);
+		bigChainChompItem[3] = chainChompItemGettingBiggerSprites.grabExactImage(4, 146, 62, 59);
+		bigChainChompItem[4] = chainChompItemGettingBiggerSprites.grabExactImage(2, 74, 67, 66);
+		bigChainChompItem[5] = chainChompItemGettingBiggerSprites.grabExactImage(0, 0, 74, 69);
+		bigChainChompItem[6] = chainChompItemGettingBiggerSprites.grabExactImage(78, 0, 79, 71);
+		bigChainChompItem[7] = chainChompItemGettingBiggerSprites.grabExactImage(77, 73, 89, 80);
+		bigChainChompItem[8] = chainChompItemGettingBiggerSprites.grabExactImage(77, 154, 100, 90);
 		
 		chainChompItem[0] = marioItemsSprites.grabExactImage(457, 0, 16, 16);
 		chainChompItem[1] = marioItemsSprites.grabExactImage(457, 19, 16, 16);
@@ -248,6 +283,9 @@ public class Textures {
 		chainChompItem[22] = marioItemsSprites.grabExactImage(457, 422, 16, 16);
 		chainChompItem[23] = marioItemsSprites.grabExactImage(457, 441, 16, 16);
 		chainChompItem[24] = marioItemsSprites.grabExactImage(457, 460, 16, 16);
+		
+		chainChomp[0] = chainChompSprites.grabExactImage(362, 324, 19, 18);
+		chainChomp[1] = chainChompSprites.grabExactImage(362, 344, 19, 18);
 		
 		fireball[0] = ss.grabSmallImage(5, 1, 16, 16);
 		fireball[1] = ss.grabSmallImage(6, 1, 16, 16);

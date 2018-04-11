@@ -1,8 +1,11 @@
 package com.game.src.main;
+import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -18,6 +21,7 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
+import com.game.src.main.classes.EntityE;
 import com.game.src.main.libs.Animation;
 
 public class Game extends Canvas implements Runnable {
@@ -47,6 +51,10 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage marioPlayerStarAnimations = null;
 	private BufferedImage marioItemAnimationSheet = null;
 	private BufferedImage marioItemAnimationBackgroundSheet = null;
+	private BufferedImage bigMarioItemAnimationSheet = null;
+	private BufferedImage currentItemImg = null;
+	private BufferedImage chainChompItemGettingBiggerSheet = null;
+	private BufferedImage chainChompSheet = null;
 	private BufferedImage marioSlowingDownSprites = null;
 	private BufferedImage fullMarioSpriteSheet = null;
 	private BufferedImage marioAdvanceSpriteSheet = null;
@@ -59,6 +67,8 @@ public class Game extends Canvas implements Runnable {
 	Animation starAnim;
 	Animation shootingStarAnim;
 	Animation transparentBlocksAnim;
+	Animation currentItem;
+	Animation marioTurningWithItem;
 	
 	private boolean shootingStarFrameStop = false;
 	private boolean xLBoolean = false;
@@ -92,6 +102,7 @@ public class Game extends Canvas implements Runnable {
 	private long soundFXTimer = 0;
 	private long enemyHitPauseTimer = 0;
 	private boolean enemyHitPauseBoolean = false;
+	private boolean spawnItem = false;
 	private long transitionTimer = 0;
 	private long gameStartSoundTimer = 0;
 	private long pauseSoundFXTimer = 0;
@@ -99,6 +110,10 @@ public class Game extends Canvas implements Runnable {
 	private long marioDancePosePauseTimer = 0;
 	private long marioGrowthPosePauseTimer = 0;
 	private long marioLetsGoPauseTimer = 0;
+	private long itemWaitTimer = 0;
+	private long itemFlyingTimer1 = 0;
+	private double itemFlyingAwayY = 0;
+	private double itemFlyingAwayX = 0;
 	private boolean userHasPaused = false;
 	private boolean soundFXisPlaying = false;
 	private boolean soundFXBoolean = false;
@@ -153,6 +168,7 @@ public class Game extends Canvas implements Runnable {
 	public LinkedList<EntityB> eb;
 	public LinkedList<EntityC> ec;
 	public LinkedList<EntityD> ed;
+	public LinkedList<EntityE> ee;
 	
 	public static int Health = 100;
 	
@@ -165,7 +181,7 @@ public class Game extends Canvas implements Runnable {
 		PAUSE,
 		GAMEOVER
 	};
-	public static STATE State = STATE.GAME;
+	public static STATE State = STATE.MENU;
 	
 	public void init(){
 		requestFocus();
@@ -183,6 +199,9 @@ public class Game extends Canvas implements Runnable {
 			marioPlayerStarAnimations = loader.loadImage("/marioplayerstaranimations.png");
 			marioItemAnimationSheet = loader.loadImage("/marioitemanimations.png");
 			marioItemAnimationBackgroundSheet = loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur14.png");
+			bigMarioItemAnimationSheet = loader.loadImage("/mario-big.png");
+			chainChompItemGettingBiggerSheet = loader.loadImage("/Items/chainChompItemGettingBig.png");
+			chainChompSheet = loader.loadImage("/Items/Chain_Chomp_spritesss.png");
 			marioSlowingDownSprites = loader.loadImage("/firemarioslidingeffect.png");
 			fullMarioSpriteSheet = loader.loadImage("/mario.png");
 			marioAdvanceSpriteSheet = loader.loadImage("/marioadvancespritesheet.png");
@@ -211,6 +230,7 @@ public class Game extends Canvas implements Runnable {
 		eb = c.getEntityB();
 		ec = c.getEntityC();
 		ed = c.getEntityD();
+		ee = c.getEntityE();
 		
 		this.addKeyListener(new KeyInput(this));
 		this.addMouseListener(new MouseInput());
@@ -230,6 +250,11 @@ public class Game extends Canvas implements Runnable {
 		
 		transparentBlocksAnim = new Animation(3, tex.transparentBlocks[0], tex.transparentBlocks[1],
 				tex.transparentBlocks[2]);
+		
+		marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning[0],tex.marioItemAnimationBeginning[0],
+				tex.marioItemAnimationBeginning[1],tex.marioItemAnimationBeginning[11],tex.marioItemAnimationBeginning[12],
+				tex.marioItemAnimationBeginning[13],tex.marioItemAnimationBeginning[14],tex.marioItemAnimationBeginning[15],
+				tex.marioItemAnimationBeginning[16],tex.marioItemAnimationBeginning[17]);
 
 	}
 	
@@ -496,16 +521,33 @@ public class Game extends Canvas implements Runnable {
 				slowingDownActivatedl = false;
 				slowingDownActivatedr = false;
 			}
+			if(spawnItem == true){
+				switch(this.itemName){
+				case "chainChompItem":
+					c.addEntity(new ChainChomp(p.getX(),p.getY()-50, tex, this));
+					//spawnChainChomp
+					break;
+				default:
+					break;
+				}
+				spawnItem = false;
+			}
 			if(System.currentTimeMillis() < enemyHitPauseTimer){
+				if(this.gameSoundLoops.get(soundRandomizer).clipIsActive())
+					this.gameSoundLoops.get(soundRandomizer).stop();
 				paused = true;
 				enemyHitPauseBoolean = true;
 			}
 			else if(enemyHitPauseBoolean == true){
 				paused = false;
 				enemyHitPauseBoolean = false;
+				if(!this.gameSoundLoops.get(soundRandomizer).clipIsActive()){
+					this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(true);
+					this.gameSoundLoops.get(soundRandomizer).loop();
+				}
 			}
 			//SPAWN ENEMIES
-			/*
+			
 			if (spawnDone == false){													//Spawning enemies
 				for(int i = 0; i < (Game.WIDTH * Game.SCALE); i+=64){
 					c.addEntity(new Enemy(i,0, tex, c , this));
@@ -527,7 +569,7 @@ public class Game extends Canvas implements Runnable {
 					c.addEntity(new Enemy3(i,0, tex, c , this));
 				}
 				spawnDone3 = true;
-			}*/
+			}/**/
 			if(eb.isEmpty() && spawnDone4 == false){								//Spawning Bowser
 				this.enemyHitRightBarrier = false;
 				this.enemySpeedIncrease = 1.0;
@@ -686,21 +728,69 @@ public class Game extends Canvas implements Runnable {
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				this.itemSwooshSoundLoop.play();
-			}
-			switch(hud.getItemName()){
-				case "chainChompItem":
-					//useChainChompAnimation
-					break;
-				default:
-					break;
+				marioTurningWithItem.nextFrame();
+					switch(hud.getItemName()){
+						case "chainChompItem":
+							currentItem = new Animation(6,tex.bigChainChompItem[0],
+									tex.bigChainChompItem[1],tex.bigChainChompItem[2],tex.bigChainChompItem[3],
+									tex.bigChainChompItem[4],tex.bigChainChompItem[5],tex.bigChainChompItem[6],
+									tex.bigChainChompItem[7],tex.bigChainChompItem[8]);
+							currentItem.nextFrame();
+							currentItemImg = tex.bigChainChompItem[0];
+							//useChainChompAnimation
+							break;
+						default:
+							break;
+					}
 			}
 			if(backgroundTraverse < itemBackground.size()-1 && System.currentTimeMillis() % 80 == 0){
 				backgroundTraverse++;
 			}
+			else if(itemWaitTimer == 0 && backgroundTraverse >= itemBackground.size()-1)
+				itemWaitTimer = System.currentTimeMillis() + 400;
 			if(backgroundTraverse < itemBackground.size())
 				g.drawImage(itemBackground.get(backgroundTraverse), 0, 0, null);
+			if(itemWaitTimer != 0 && marioTurningWithItem.getCount() < 10 && System.currentTimeMillis() % 16 == 0){
+				marioTurningWithItem.runAnimation();
+			}
+			if(itemWaitTimer != 0 && marioVoices.get(0).getSoundLoopBoolean() == false){
+				marioVoices.get(0).play();
+				marioVoices.get(0).setSoundLoopBoolean(true);
+			}
+			if(itemWaitTimer != 0 && System.currentTimeMillis() < itemWaitTimer - 100){
+				if(marioTurningWithItem.getCount()<4 && System.currentTimeMillis() % 4 == 0)
+					itemFlyingAwayY -= .016;
+				itemFlyingTimer1 = System.currentTimeMillis() + 300;
+			}
+			else if(System.currentTimeMillis() < itemFlyingTimer1){
+				if(System.currentTimeMillis() % 2 == 0){
+					itemFlyingAwayX += .12;
+					itemFlyingAwayY += .1;
+				}
+				if(System.currentTimeMillis() % 3 == 0){
+					itemFlyingAwayY += .1;
+				}
+			}
+			else if(itemFlyingTimer1 != 0 && currentItemImg.getWidth() < 200){
+				if(currentItem.getCount() < 9 && System.currentTimeMillis() % 35 == 0)
+					currentItemImg = resize(currentItemImg,currentItemImg.getWidth()+20,currentItemImg.getHeight()+20);
+					//currentItem.runAnimation();
+				itemFlyingAwayX -= 0.8;
+				itemFlyingAwayY -= 1;
+				marioTurningWithItem.drawAnimation(g, Game.WIDTH, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22), 0);
+				g.drawImage(currentItemImg ,(int)(Game.WIDTH+42 + itemFlyingAwayX), (int)((Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22)-19 + itemFlyingAwayY),null);
+				//currentItem.drawAnimation(g, Game.WIDTH+42 + itemFlyingAwayX, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22)-19 + itemFlyingAwayY,0);
+			}
+			else if(currentItemImg.getWidth() >= 200){
+				spawnItem = true;
+				enemyHitPauseTimer = System.currentTimeMillis() + 800;
+				State = STATE.GAME;
+			}
 			
-			g.drawImage(tex.marioItemAnimationBeginning[0], Game.WIDTH, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22), null);
+			if(itemFlyingTimer1 == 0 || System.currentTimeMillis() < itemFlyingTimer1){
+				currentItem.drawAnimation(g, Game.WIDTH+42 + itemFlyingAwayX, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22)-19 + itemFlyingAwayY,0);
+				marioTurningWithItem.drawAnimation(g, Game.WIDTH, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22), 0);
+			}
 			//else
 				//g.drawImage(tex.marioItemAnimationBeginning[0], Game.WIDTH, (Game.HEIGHT * Game.SCALE+120) - ((backgroundTraverse-1) * 25), null);
 		}else if(State == STATE.TRANSITION_DEATH){
@@ -894,6 +984,26 @@ public class Game extends Canvas implements Runnable {
 			}
 		}
 	}
+	
+	private static BufferedImage commonResize(BufferedImage source,
+            int width, int height, Object hint) {
+        BufferedImage img = new BufferedImage(width, height,
+                source.getType());
+        Graphics2D g = img.createGraphics();
+        try {
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+            g.drawImage(source, 0, 0, width, height, null);
+        } finally {
+            g.dispose();
+        }
+        return img;
+    }
+	
+	 public BufferedImage resize(BufferedImage source,
+             int width, int height) {
+         return commonResize(source, width, height,
+                 RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+     }
 	
 	public static float clamp(float var, float min, float max){
 		if(var >= max)
@@ -1214,6 +1324,18 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getMarioItemsSpriteSheet(){
 		return marioItemsSpriteSheet;
+	}
+	
+	public BufferedImage getBigMarioItemAnimationSheet(){
+		return bigMarioItemAnimationSheet;
+	}
+	
+	public BufferedImage getChainChompItemGettingBiggerSheet(){
+		return chainChompItemGettingBiggerSheet;
+	}
+	
+	public BufferedImage getChainChompSheet(){
+		return chainChompSheet;
 	}
 	
 	public BufferedImage getBowserSpriteSheet(){

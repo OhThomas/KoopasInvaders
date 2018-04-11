@@ -25,9 +25,9 @@ public class BufferedImageLoader {
 	public ArrayList<BufferedImage> loadImagesfromFolder(String folder) throws IOException{
 		File f = new File("." + folder);
 		File[] fa = f.getCanonicalFile().listFiles();
-		System.out.println(f.getAbsolutePath());
+		//System.out.println(f.getAbsolutePath());
 		for (int i=0; i< fa.length; i++){
-			System.out.println(fa[i].toString());
+			//System.out.println(fa[i].toString());
 			Matcher m = p.matcher(fa[i].toString());
 			while(m.find())
 				currentNumberString += m.group();
@@ -36,7 +36,7 @@ public class BufferedImageLoader {
 			while(images.size() <= currentNumber)
 				images.add(img);
 			images.set(currentNumber, img);
-			System.out.println(currentNumber);
+			//System.out.println(currentNumber);
 			currentNumberString = "";
 		}
 		return images;

@@ -7,17 +7,20 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
+import com.game.src.main.classes.EntityE;
 
 public class Controller {
 	private LinkedList<EntityA> ea = new LinkedList<EntityA>();
 	private LinkedList<EntityB> eb = new LinkedList<EntityB>();
 	private LinkedList<EntityC> ec = new LinkedList<EntityC>();
 	private LinkedList<EntityD> ed = new LinkedList<EntityD>();
+	private LinkedList<EntityE> ee = new LinkedList<EntityE>();
 	
 	EntityA enta;
 	EntityB entb;
 	EntityC entc;
 	EntityD entd;
+	EntityE ente;
 	private Textures tex;
 	private Game game;
 	private Enemy enemy;
@@ -64,6 +67,12 @@ public class Controller {
 					
 					entd.tick();
 				}
+				//E CLASS
+				for(int i = 0; i < ee.size(); i++){
+					ente = ee.get(i);
+					
+					ente.tick();
+				}
 	}
 	
 	public void render(Graphics g){
@@ -90,6 +99,12 @@ public class Controller {
 				entd = ed.get(i);
 				
 				entd.render(g);
+			}
+		//E CLASS
+			for(int i = 0; i < ee.size(); i++){
+				ente = ee.get(i);
+				
+				ente.render(g);
 			}
 	}
 	
@@ -125,6 +140,14 @@ public class Controller {
 		ed.remove(block);
 	}
 	
+	public void addEntity(EntityE block){
+		ee.add(block);
+	}
+	
+	public void removeEntity(EntityE block){
+		ee.remove(block);
+	}
+	
 	public LinkedList<EntityA> getEntityA(){
 		return ea;
 	}
@@ -139,5 +162,9 @@ public class Controller {
 	
 	public LinkedList<EntityD> getEntityD(){
 		return ed;
+	}
+	
+	public LinkedList<EntityE> getEntityE(){
+		return ee;
 	}
 }
