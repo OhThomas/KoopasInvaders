@@ -1,3 +1,6 @@
+/*
+ * SPACE FIGHTERS PROGRAM
+ */
 package com.game.src.main;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -9,6 +12,9 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,6 +22,7 @@ import java.util.Random;
 
 import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
@@ -24,165 +31,497 @@ import com.game.src.main.classes.EntityD;
 import com.game.src.main.classes.EntityE;
 import com.game.src.main.libs.Animation;
 
+import SwingFX.InteropSharedModelFrame;
+import SwingFX.MenuMusicController;
+import SwingFX.fxmlWindow;
+import SwingFX.fxmlWindowFrame;
+
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Game.
+ */
 public class Game extends Canvas implements Runnable {
 	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+	
+	/** The Constant WIDTH. */
 	public static final int WIDTH = 320;
+	
+	/** The Constant HEIGHT. */
 	public static final int HEIGHT = WIDTH / 12 * 9;
+	
+	/** The Constant SCALE. */
 	public static final int SCALE = 2;
+	
+	/** The Constant MARIO_WIDTH. */
 	public static final int MARIO_WIDTH = 16;
+	
+	/** The Constant MARIO_HEIGHT. */
 	public static final int MARIO_HEIGHT = 28;
+	
+	/** The title. */
 	public final String TITLE = "Koopa's Invaders!";
 	
+	/** The running. */
 	private boolean running = false;
+	
+	/** The paused. */
 	private boolean paused = false;
+	
+	/** The thread. */
 	private Thread thread;
 	
+	/** The image. */
 	private BufferedImage image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
+	
+	/** The sprite sheet. */
 	private BufferedImage spriteSheet = null;
+	
+	/** The animated star. */
 	private BufferedImage animatedStar = null;
+	
+	/** The animated shooting star. */
 	private BufferedImage animatedShootingStar = null;
+	
+	/** The mario 1 star sprite sheet. */
 	private BufferedImage mario1StarSpriteSheet = null;
+	
+	/** The mario items sprite sheet. */
 	private BufferedImage marioItemsSpriteSheet = null;
+	
+	/** The background. */
 	private BufferedImage background = null;
+	
+	/** The mario lives. */
 	private BufferedImage marioLives = null;
+	
+	/** The bowser sprite sheet. */
 	private BufferedImage bowserSpriteSheet = null;
+	
+	/** The bullet bill sprite sheet. */
 	private BufferedImage bulletBillSpriteSheet = null;
+	
+	/** The mario player star animations. */
 	private BufferedImage marioPlayerStarAnimations = null;
+	
+	/** The mario item animation sheet. */
 	private BufferedImage marioItemAnimationSheet = null;
+	
+	/** The mario item animation background sheet. */
 	private BufferedImage marioItemAnimationBackgroundSheet = null;
+	
+	/** The big mario item animation sheet. */
 	private BufferedImage bigMarioItemAnimationSheet = null;
+	
+	/** The current item img. */
 	private BufferedImage currentItemImg = null;
+	
+	/** The chain chomp item getting bigger sheet. */
 	private BufferedImage chainChompItemGettingBiggerSheet = null;
+	
+	/** The chain chomp sheet. */
 	private BufferedImage chainChompSheet = null;
+	
+	/** The mario slowing down sprites. */
 	private BufferedImage marioSlowingDownSprites = null;
+	
+	/** The full mario sprite sheet. */
 	private BufferedImage fullMarioSpriteSheet = null;
+	
+	/** The mario advance sprite sheet. */
 	private BufferedImage marioAdvanceSpriteSheet = null;
+	
+	/** The mario 3 font numbers small sprite sheet. */
 	private BufferedImage mario3FontNumbersSmallSpriteSheet = null;
+	
+	/** The goomba death sprite sheet. */
 	private BufferedImage goombaDeathSpriteSheet = null;
+	
+	/** The set score title. */
+	private BufferedImage setScoreTitle = null;
+	
+	/** The leaderboard title. */
+	private BufferedImage leaderboardTitle = null;
+	
+	/** The transparent blocks. */
 	private BufferedImage transparentBlocks = null;
+	
+	/** The item background. */
 	private ArrayList<BufferedImage> itemBackground = new ArrayList<BufferedImage>();
+	
+	/** The background traverse. */
 	private int backgroundTraverse = 0;
 	
+	/** The star anim. */
 	Animation starAnim;
+	
+	/** The shooting star anim. */
 	Animation shootingStarAnim;
+	
+	/** The transparent blocks anim. */
 	Animation transparentBlocksAnim;
+	
+	/** The current item. */
 	Animation currentItem;
+	
+	/** The mario turning with item. */
 	Animation marioTurningWithItem;
 	
+	/** The shooting star frame stop. */
 	private boolean shootingStarFrameStop = false;
+	
+	/** The x L boolean. */
 	private boolean xLBoolean = false;
+	
+	/** The x R boolean. */
 	private boolean xRBoolean = false;
+	
+	/** The y U boolean. */
 	private boolean yUBoolean = false;
+	
+	/** The y D boolean. */
 	private boolean yDBoolean = false;
+	
+	/** The is shooting. */
 	private boolean isShooting = false;
+	
+	/** The spawn done. */
 	private boolean spawnDone = false;
+	
+	/** The spawn done 2. */
 	private boolean spawnDone2 = false;
+	
+	/** The spawn done 3. */
 	private boolean spawnDone3 = false;
+	
+	/** The spawn done 4. */
 	private boolean spawnDone4 = false;
+	
+	/** The you won. */
+	private boolean youWon = false;
+	
+	/** The mario has been invincible. */
 	private boolean marioHasBeenInvincible = false;
+	
+	/** The my time. */
 	private double myTime = 0.0;
+	
+	/** The item name. */
 	private String itemName;
+	
+	/** The number of fire balls shot. */
 	private int numberOfFireBallsShot = 0;
+	
+	/** The number of fire balls shot decoy. */
 	private int numberOfFireBallsShotDecoy = 0;
+	
+	/** The volume slider double. */
+	public double volumeSliderDouble = 0;
+	
+	/** The slowing down. */
 	private double slowingDown = 0;
+	
+	/** The slowing down timer long. */
 	private long slowingDownTimerLong = 0;
+	
+	/** The slowing down activatedl. */
 	public boolean slowingDownActivatedl = false;
+	
+	/** The slowing down activatedr. */
 	public boolean slowingDownActivatedr = false;
+	
+	/** The enemy hit right barrier. */
 	public boolean enemyHitRightBarrier = false;
+	
+	/** The game over boolean. */
 	public boolean gameOverBoolean = false;
+	
+	/** The game over sound boolean. */
 	public boolean gameOverSoundBoolean = false;
+	
+	/** The enemy speed increase. */
 	public double enemySpeedIncrease = 0.5;
+	
+	/** The animation timer 1. */
 	public int animationTimer1 = 0;
+	
+	/** The running timer long. */
 	private long runningTimerLong = 0;
+	
+	/** The running timer activated. */
 	private boolean runningTimerActivated = false;
+	
+	/** The running timer activated response. */
 	private boolean runningTimerActivatedResponse = false;
+	
+	/** The sound set. */
 	private boolean soundSet = false;
+	
+	/** The sound timer set. */
 	private boolean soundTimerSet = false;
+	
+	/** The sound FX timer. */
 	private long soundFXTimer = 0;
+	
+	/** The enemy hit pause timer. */
 	private long enemyHitPauseTimer = 0;
+	
+	/** The enemy hit pause boolean. */
 	private boolean enemyHitPauseBoolean = false;
+	
+	/** The spawn item. */
 	private boolean spawnItem = false;
+	
+	/** The transition timer. */
 	private long transitionTimer = 0;
+	
+	/** The game start sound timer. */
 	private long gameStartSoundTimer = 0;
+	
+	/** The pause sound FX timer. */
 	private long pauseSoundFXTimer = 0;
+	
+	/** The visual pause timer. */
 	private long visualPauseTimer = 0;
+	
+	/** The mario dance pose pause timer. */
 	private long marioDancePosePauseTimer = 0;
+	
+	/** The mario growth pose pause timer. */
 	private long marioGrowthPosePauseTimer = 0;
+	
+	/** The mario lets go pause timer. */
 	private long marioLetsGoPauseTimer = 0;
+	
+	/** The item wait timer. */
 	private long itemWaitTimer = 0;
+	
+	/** The item flying timer 1. */
 	private long itemFlyingTimer1 = 0;
+	
+	/** The item flying away Y. */
 	private double itemFlyingAwayY = 0;
+	
+	/** The item flying away X. */
 	private double itemFlyingAwayX = 0;
+	
+	/** The file score written. */
+	private boolean fileScoreWritten = false;
+	
+	/** The user has paused. */
 	private boolean userHasPaused = false;
+	
+	/** The sound F xis playing. */
 	private boolean soundFXisPlaying = false;
+	
+	/** The sound FX boolean. */
 	private boolean soundFXBoolean = false;
+	
+	/** The sound FX clip 1 reset. */
 	private boolean soundFXClip1Reset = false;
+	
+	/** The mario dance pose pause. */
 	private boolean marioDancePosePause = false;
+	
+	/** The mario growth pose pause. */
 	private boolean marioGrowthPosePause = false;
+	
+	/** The mario lets go pause. */
 	private boolean marioLetsGoPause = false;
-	private int soundRandomizer = 0;
-	private int menuSoundLoopRandomizer = 0;
+	
+	/** The sound randomizer. */
+	public int soundRandomizer = 0;
+	
+	/** The menu sound loop randomizer. */
+	public int menuSoundLoopRandomizer = 0;
+	
+	/** The mario voice randomizer. */
 	private int marioVoiceRandomizer = 0;
+	
+	/** The menu sound set. */
 	private boolean menuSoundSet = false;
+	
+	/** The bullet bill death sound pause boolean. */
 	private boolean bulletBillDeathSoundPauseBoolean = false;
+	
+	/** The goomba death sound pause boolean. */
 	private boolean goombaDeathSoundPauseBoolean = false;
+	
+	/** The coin sound pause boolean. */
 	private boolean coinSoundPauseBoolean = false;
+	
+	/** The star ding pause boolean. */
 	private boolean starDingPauseBoolean = false;
+	
+	/** The goomba 3 death sound pause boolean. */
 	private boolean goomba3DeathSoundPauseBoolean = false;
+	
+	/** The goomba 3 death smoke sound pause boolean. */
 	private boolean goomba3DeathSmokeSoundPauseBoolean = false;
-	LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
-	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
+	
+	/** The menu sound loops. */
+	public LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
+	
+	/** The game sound loops. */
+	public LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
+	
+	/** The mario dance sound loops. */
 	LinkedList<SoundLoops> marioDanceSoundLoops = new LinkedList<SoundLoops>();
+	
+	/** The mario voices. */
 	LinkedList<SoundLoops> marioVoices = new LinkedList<SoundLoops>();
+	
+	/** The bullet bill death sound loop. */
 	LinkedList<SoundLoops> bulletBillDeathSoundLoop = new LinkedList<SoundLoops>();
+	
+	/** The goomba death sound loop. */
 	LinkedList<SoundLoops> goombaDeathSoundLoop = new LinkedList<SoundLoops>();
+	
+	/** The coin sound loop. */
 	LinkedList<SoundLoops> coinSoundLoop = new LinkedList<SoundLoops>();
+	
+	/** The star ding sound loop. */
 	LinkedList<SoundLoops> starDingSoundLoop = new LinkedList<SoundLoops>();
+	
+	/** The goomba 3 death sound loop. */
 	LinkedList<SoundLoops> goomba3DeathSoundLoop = new LinkedList<SoundLoops>();
+	
+	/** The goomba 3 death smoke sound loop. */
 	LinkedList<SoundLoops> goomba3DeathSmokeSoundLoop = new LinkedList<SoundLoops>();
+	
+	/** The game over sound loop. */
 	SoundLoops gameOverSoundLoop;
+	
+	/** The game over winning sound loop. */
+	SoundLoops gameOverWinningSoundLoop;
+	
+	/** The game over iris sound loop. */
+	SoundLoops gameOverIrisSoundLoop;
+	
+	/** The mario star sound loop. */
 	SoundLoops marioStarSoundLoop;
+	
+	/** The sound FX clip 1 sound loop. */
 	SoundLoops soundFXClip1SoundLoop;
+	
+	/** The sound FX clip 2 sound loop. */
 	SoundLoops soundFXClip2SoundLoop;
+	
+	/** The pause sound FX sound loop. */
 	SoundLoops pauseSoundFXSoundLoop;
+	
+	/** The mario spinning sound loop. */
 	SoundLoops marioSpinningSoundLoop;
+	
+	/** The mario death sound loop. */
 	SoundLoops marioDeathSoundLoop;
+	
+	/** The item swoosh sound loop. */
 	SoundLoops itemSwooshSoundLoop;
+	
+	/** The p. */
 	private Player p;
+	
+	/** The c. */
 	private Controller c;
+	
+	/** The e. */
 	private Enemy e;
+	
+	/** The tex. */
 	private Textures tex;
+	
+	/** The hud. */
 	private HUD hud;
+	
+	/** The menu. */
 	private Menu menu;
+	
+	/** The game over. */
 	private GameOver gameOver;
+	
+	/** The bb. */
 	private BasicBlocks bb;													//BLOCKS
 	
+	/** The music menu frame. */
+	private fxmlWindowFrame musicMenuFrame;
+	
+	/** The m. */
+	private MenuMusicController m;
+	
+	/** The title. */
 	private BufferedImage title = null;
+	
+	/** The game over title. */
 	private BufferedImage gameOverTitle = null;
+	
+	/** The play title. */
 	private BufferedImage playTitle = null;
+	
+	/** The help title. */
 	private BufferedImage helpTitle = null;
+	
+	/** The exit title. */
 	private BufferedImage exitTitle = null;
 	
+	/** The ea. */
 	public LinkedList<EntityA> ea;
+	
+	/** The eb. */
 	public LinkedList<EntityB> eb;
+	
+	/** The ec. */
 	public LinkedList<EntityC> ec;
+	
+	/** The ed. */
 	public LinkedList<EntityD> ed;
+	
+	/** The ee. */
 	public LinkedList<EntityE> ee;
 	
+	/** The Health. */
 	public static int Health = 100;
 	
+	/**
+	 * The Enum STATE.
+	 */
 	public static enum STATE{
+		
+		/** The menu. */
 		MENU,
+		
+		/** The transition entrance. */
 		TRANSITION_ENTRANCE,
+		
+		/** The transition item. */
 		TRANSITION_ITEM,
+		
+		/** The transition death. */
 		TRANSITION_DEATH,
+		
+		/** The transition win. */
+		TRANSITION_WIN,
+		
+		/** The game. */
 		GAME,
+		
+		/** The pause. */
 		PAUSE,
-		GAMEOVER
+		
+		/** The gameover. */
+		GAMEOVER,
+		
+		/** The reset. */
+		RESET
 	};
+	
+	/** The State. */
 	public static STATE State = STATE.MENU;
 	
+	/**
+	 * Inits the.
+	 */
 	public void init(){
 		requestFocus();
 		BufferedImageLoader loader = new BufferedImageLoader();
@@ -212,6 +551,8 @@ public class Game extends Canvas implements Runnable {
 			playTitle = loader.loadImage("/newplaybutton.png");
 			helpTitle = loader.loadImage("/newhelpbutton.png");
 			exitTitle = loader.loadImage("/newexitbutton.png");
+			setScoreTitle = loader.loadImage("/setScoreSmaller.png");
+			leaderboardTitle = loader.loadImage("/leaderboardSmaller.png");
 			transparentBlocks = loader.loadImage("/randomtransparentblocks.png");
 			itemBackground = loader.loadImagesfromFolder("/res/BackgroundBlur");
 			
@@ -225,6 +566,8 @@ public class Game extends Canvas implements Runnable {
 		p = new Player(Game.WIDTH,(Game.HEIGHT * SCALE) - MARIO_HEIGHT,tex,this,c);
 		hud = new HUD(tex,this);
 		menu = new Menu();
+
+		musicMenuFrame = new fxmlWindowFrame("Music Menu","musicMenu.fxml");
 		
 		ea = c.getEntityA();
 		eb = c.getEntityB();
@@ -233,7 +576,7 @@ public class Game extends Canvas implements Runnable {
 		ee = c.getEntityE();
 		
 		this.addKeyListener(new KeyInput(this));
-		this.addMouseListener(new MouseInput());
+		this.addMouseListener(new MouseInput(this));
 		
 		starAnim = new Animation(10, tex.animatedStar[0],tex.animatedStar[1],tex.animatedStar[2],tex.animatedStar[3],
 				tex.animatedStar[4],tex.animatedStar[5],tex.animatedStar[6],tex.animatedStar[7],
@@ -258,6 +601,9 @@ public class Game extends Canvas implements Runnable {
 
 	}
 	
+	/**
+	 * Start.
+	 */
 	private synchronized void start(){
 		if(running)
 			return;
@@ -267,6 +613,9 @@ public class Game extends Canvas implements Runnable {
 		thread.start();
 	}
 	
+	/**
+	 * Stop.
+	 */
 	private synchronized void stop(){
 		if(!running)
 			return;
@@ -280,6 +629,9 @@ public class Game extends Canvas implements Runnable {
 		System.exit(1);
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	public void run(){
 		init();
 		long lastTime = System.nanoTime();
@@ -291,7 +643,6 @@ public class Game extends Canvas implements Runnable {
 		long timer = System.currentTimeMillis();
 		
 		while(running){
-			
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
@@ -318,6 +669,9 @@ public class Game extends Canvas implements Runnable {
 		stop();
 	}
 	
+	/**
+	 * Tick.
+	 */
 	private void tick(){
 		if(State == STATE.GAME){
 			if(!paused){
@@ -332,8 +686,16 @@ public class Game extends Canvas implements Runnable {
 		transparentBlocksAnim.runAnimation();
 		if((myTime / 10) == (int)(myTime/10) && shootingStarFrameStop == false)//(myTime > 10 && myTime < 22 || myTime > 30 && myTime < 42)
 			shootingStarAnim.runAnimation();
+		//System.out.println(m.getVolumeSliderDouble());
+		//this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setVolume((float)m.getVolumeSliderDouble());
+		//System.out.println(this.menuSoundLoops.get(this.menuSoundLoopRandomizer).getVolume());
 	}
 	
+	/**
+	 * Render.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private void render() throws IOException{
 		BufferStrategy bs = this.getBufferStrategy();
 		
@@ -365,7 +727,9 @@ public class Game extends Canvas implements Runnable {
 		
 		if (gameOverBoolean == true)
 			State = STATE.TRANSITION_DEATH;
-		//State = STATE.GAME;
+		if (HUD.getTimer2() <= 0 && p.gameOver == false)
+			State = STATE.TRANSITION_WIN;
+		
 		if(State == STATE.GAME){
 			if(marioHasBeenInvincible == false){					//Setting up music
 				if(this.menuSoundLoops.get(this.menuSoundLoopRandomizer).getSoundLoopBoolean() == true){
@@ -547,7 +911,7 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			//SPAWN ENEMIES
-			
+			/**/
 			if (spawnDone == false){													//Spawning enemies
 				for(int i = 0; i < (Game.WIDTH * Game.SCALE); i+=64){
 					c.addEntity(new Enemy(i,0, tex, c , this));
@@ -569,7 +933,7 @@ public class Game extends Canvas implements Runnable {
 					c.addEntity(new Enemy3(i,0, tex, c , this));
 				}
 				spawnDone3 = true;
-			}/**/
+			}
 			if(eb.isEmpty() && spawnDone4 == false){								//Spawning Bowser
 				this.enemyHitRightBarrier = false;
 				this.enemySpeedIncrease = 1.0;
@@ -603,7 +967,7 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(spawnDone4 == true){												//Spawning Bowser Mechanics
 				hud.render(g);
-				if((int)hud.getTimer() <= 0){
+				if((int)HUD.getTimer1() <= 0){
 					//SPAWN BULLET BILLS
 					Random rand = new Random();
 					int i = rand.nextInt(20000);
@@ -617,24 +981,24 @@ public class Game extends Canvas implements Runnable {
 						numberOfFireBallsShotDecoy += 1;
 						c.addEntity(new GreenShell(eb.getLast().getX()+32,eb.getLast().getY() - 32,tex, this));
 					}
-					
-					//SPAWN STARS & ITEMS
-					int j = rand.nextInt(4);//400000
-					if(j < 2 && ed.size() < 1 && p.getMarioInvincible() == false && hud.getItemObtained() == false){
-						int k = rand.nextInt(2);
-						if(k == 0){
-							//if(j == 0)
-								//c.addEntity(new Mario1Star(-16,this.playerY() - 32,tex, this));
-							//else if(j == 1)
-								c.addEntity(new ChainChompItem(-16,this.playerY() - 32,tex, this));
-						}
-						else{
-							//if(j == 0)
-								//c.addEntity(new Mario1Star((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
-							//else if(j == 1)
-								c.addEntity(new ChainChompItem((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
-						}
-					}
+				}
+			}
+			//SPAWN STARS & ITEMS
+			Random rand = new Random();
+			int j = rand.nextInt(400000);//400000
+			if(j < 2 && ed.size() < 1 && p.getMarioInvincible() == false && hud.getItemObtained() == false){
+				int k = rand.nextInt(2);
+				if(k == 0){
+					if(j == 0)
+						c.addEntity(new Mario1Star(-16,this.playerY() - 32,tex, this));
+					else if(j == 1)
+						c.addEntity(new ChainChompItem(-16,this.playerY() - 32,tex, this));
+				}
+				else{
+					if(j == 0)
+						c.addEntity(new Mario1Star((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
+					else if(j == 1)
+						c.addEntity(new ChainChompItem((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
 				}
 			}
 			if (animationTimer1 != 0){													//if they shoot a fireball this stops them
@@ -659,6 +1023,7 @@ public class Game extends Canvas implements Runnable {
 			hud.render(g);
 		}else if(State == STATE.MENU){													//Menu
 			//menu.render(g);
+
 			if(menuSoundSet == false){
 				Random rand = new Random();
 				menuSoundLoopRandomizer = rand.nextInt(2);
@@ -666,6 +1031,8 @@ public class Game extends Canvas implements Runnable {
 				this.menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(true);
 				menuSoundSet = true;
 			}
+			//this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setVolume((float)this.m.getVolumeSliderDouble());
+			//System.out.println(this.volumeSliderDouble);
 			g.drawImage(title, 70, 100, null);
 			g.drawImage(playTitle, Game.WIDTH / 2 + 120, 200, null);
 			g.drawImage(helpTitle, Game.WIDTH / 2 + 120, 300, null);
@@ -784,6 +1151,13 @@ public class Game extends Canvas implements Runnable {
 			else if(currentItemImg.getWidth() >= 200){
 				spawnItem = true;
 				enemyHitPauseTimer = System.currentTimeMillis() + 800;
+				backgroundTraverse = 0;
+				itemWaitTimer = 0;
+				itemFlyingTimer1 = 0;
+				itemFlyingAwayX = 0;
+				itemFlyingAwayY = 0;
+				marioVoices.get(0).setSoundLoopBoolean(false);
+				marioTurningWithItem.setCount(0);
 				State = STATE.GAME;
 			}
 			
@@ -816,18 +1190,55 @@ public class Game extends Canvas implements Runnable {
 			bb.draw(g2d);													//BLOCKS
 			p.render(g);
 			c.render(g);
-		}else if (State == STATE.GAMEOVER){												//GameOver
-			//wait a lil bit
-			//bs.show();
+		}else if(State == STATE.TRANSITION_WIN) {
+
+			p.render(g);
 			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				soundSet = false;
 			}
-
-			if(gameOverSoundBoolean == false){
-				this.gameOverSoundLoop.play();
-				gameOverSoundBoolean = true;
+			if(this.gameOverIrisSoundLoop.getSoundLoopBoolean() == false) {
+				this.gameOverIrisSoundLoop.play();
+				this.gameOverIrisSoundLoop.setSoundLoopBoolean(true);
+			}
+			if(youWon == false)
+				youWon = true;
+			if(p.gameOver == true) {
+				State = STATE.GAMEOVER;
+				//p.setGameOver(false);
+			}
+		}else if (State == STATE.GAMEOVER){												//GameOver
+			//wait a lil bit
+			//bs.show();
+			if(fileScoreWritten == false) {
+				File file = new File("Score.txt");
+				if(!file.exists())
+					file.createNewFile();
+				BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file));
+				fileWriter.write(String.valueOf((int)this.getHUD().getScore()));
+				fileWriter.flush();
+				fileWriter.close();
+				fileScoreWritten = true;
+			}
+			
+			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
+				this.gameSoundLoops.get(this.soundRandomizer).stop();
+				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+				soundSet = false;
+			}
+			
+			if(youWon == false) {
+				if(gameOverSoundBoolean == false){
+					this.gameOverSoundLoop.play();
+					gameOverSoundBoolean = true;
+				}
+			}
+			else {
+				if(gameOverSoundBoolean == false) {
+					this.gameOverWinningSoundLoop.play();
+					gameOverSoundBoolean = true;
+				}
 			}
 			numberOfFireBallsShot = numberOfFireBallsShot - numberOfFireBallsShotDecoy;
 			
@@ -835,10 +1246,51 @@ public class Game extends Canvas implements Runnable {
 			g.drawImage(playTitle, Game.WIDTH / 2 + 120, 200, null);
 			g.drawImage(helpTitle, Game.WIDTH / 2 + 120, 300, null);
 			g.drawImage(exitTitle, Game.WIDTH / 2 + 120, 400, null);
+			g.drawImage(setScoreTitle, 40, 20, null);
+			g.drawImage(leaderboardTitle, Game.WIDTH /2 + 380, 20, null);
 			//gameOver.render(g);
 			
 			//g.dispose();
 			//g2d.dispose();
+		}else if(State == STATE.RESET) {
+			if(gameOverSoundLoop.clipIsActive())
+				gameOverSoundLoop.stop();
+			if(gameOverWinningSoundLoop.clipIsActive())
+				gameOverWinningSoundLoop.stop();
+			spawnDone = false;
+			spawnDone2 = false;
+			spawnDone3 = false;
+			spawnDone4 = false;
+			gameOverSoundBoolean = false;
+			gameOverBoolean = false;
+			Health = 100;
+			this.gameOverIrisSoundLoop.setSoundLoopBoolean(false);
+			this.getHUD().setScore(0);
+			this.getHUD().HEALTH = 100;
+			this.getHUD().setTimer1(100);
+			this.getHUD().setTimer2(100);
+			p.setX(Game.WIDTH);
+			p.setY((Game.HEIGHT * SCALE) - MARIO_HEIGHT);
+			p.gameOver = false;
+			p.playerWinSetup = false;
+			p.playerWinTimer = 0;
+			bb.reset();
+			paused = false;
+			tex = new Textures(this);
+			bb = new BasicBlocks(tex,this);												//BLOCKS
+			c = new Controller(tex, this);
+			p = new Player(Game.WIDTH,(Game.HEIGHT * SCALE) - MARIO_HEIGHT,tex,this,c);
+			hud = new HUD(tex,this);
+			menu = new Menu();
+
+			musicMenuFrame = new fxmlWindowFrame("Music Menu","musicMenu.fxml");
+			
+			ea = c.getEntityA();
+			eb = c.getEntityB();
+			ec = c.getEntityC();
+			ed = c.getEntityD();
+			ee = c.getEntityE();
+			State = STATE.TRANSITION_ENTRANCE;
 		}
 		
 		//**************DRAW**************//
@@ -846,6 +1298,11 @@ public class Game extends Canvas implements Runnable {
 		bs.show();
 	}
 	
+	/**
+	 * Key pressed.
+	 *
+	 * @param e the e
+	 */
 	public void keyPressed(KeyEvent e){
 		int key = e.getKeyCode();
 		
@@ -910,6 +1367,11 @@ public class Game extends Canvas implements Runnable {
 		}
 	}
 	
+	/**
+	 * Key released.
+	 *
+	 * @param e the e
+	 */
 	public void keyReleased(KeyEvent e){
 		int key = e.getKeyCode();
 		if(State == STATE.GAME){
@@ -985,6 +1447,15 @@ public class Game extends Canvas implements Runnable {
 		}
 	}
 	
+	/**
+	 * Common resize.
+	 *
+	 * @param source the source
+	 * @param width the width
+	 * @param height the height
+	 * @param hint the hint
+	 * @return the buffered image
+	 */
 	private static BufferedImage commonResize(BufferedImage source,
             int width, int height, Object hint) {
         BufferedImage img = new BufferedImage(width, height,
@@ -999,12 +1470,57 @@ public class Game extends Canvas implements Runnable {
         return img;
     }
 	
-	 public BufferedImage resize(BufferedImage source,
+	 /**
+ 	 * Resize.
+ 	 *
+ 	 * @param source the source
+ 	 * @param width the width
+ 	 * @param height the height
+ 	 * @return the buffered image
+ 	 */
+ 	public BufferedImage resize(BufferedImage source,
              int width, int height) {
          return commonResize(source, width, height,
                  RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
      }
+	 
+	 /**
+ 	 * Show GUI.
+ 	 *
+ 	 * @param title the title
+ 	 * @param fxmlFile the fxml file
+ 	 */
+ 	public static void showGUI(String title, String fxmlFile){
+		 InteropSharedModelFrame frame = new InteropSharedModelFrame(title,fxmlFile);
+	     frame.setVisible(true);
+	 }
+	 
+	 /**
+ 	 * Show FXML window.
+ 	 *
+ 	 * @param title the title
+ 	 * @param fxmlFile the fxml file
+ 	 */
+ 	public static void showFXMLWindow(String title, String fxmlFile){
+		 fxmlWindowFrame frame = new fxmlWindowFrame(title,fxmlFile);
+	     frame.setVisible(true);
+	 }
 	
+	 /**
+ 	 * Use music menu FXML window.
+ 	 */
+ 	public void useMusicMenuFXMLWindow(){
+		 this.musicMenuFrame.setVisible(true);
+	 }
+	 
+	/**
+	 * Clamp.
+	 *
+	 * @param var the var
+	 * @param min the min
+	 * @param max the max
+	 * @return the float
+	 */
 	public static float clamp(float var, float min, float max){
 		if(var >= max)
 			return var = max;
@@ -1014,6 +1530,12 @@ public class Game extends Canvas implements Runnable {
 			return var;
 	}
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String args[])
 		throws Exception{
 		String gameAudioFile = "res/Sounds/Music/mario1remix.wav";													//Loading in Music
@@ -1021,6 +1543,8 @@ public class Game extends Canvas implements Runnable {
 		String menuAudioFile = "res/Sounds/Music/supermarioworldremix1.wav";
 		String menuAudioFile2 = "res/Sounds/Music/menuloop2.wav";
 		String gameOverAudioFile = "res/Sounds/SFX/smw_game_over.wav";
+		String gameOverWinningAudioFile = "res/Sounds/SFX/smb_stage_clear.wav";
+		String gameOverIrisAudioFile = "res/Sounds/SFX/smw_goal_iris-out.wav";
 		String marioStarAudioFile = "res/Sounds/SFX/mariowhistle.wav";
 		String soundFXClip1 = "res/Sounds/SFX/riseupacoustic1cWAVE.wav";
 		String soundFXClip2 = "res/Sounds/SFX/MariopowerupSFX.wav";
@@ -1063,6 +1587,8 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops gameSoundLoop = new SoundLoops(gameAudioFile);
 		SoundLoops gameSoundLoop2 = new SoundLoops(gameAudioFile2);
 		SoundLoops gameOverSoundLoop = new SoundLoops(gameOverAudioFile);
+		SoundLoops gameOverWinningSoundLoop = new SoundLoops(gameOverWinningAudioFile);
+		SoundLoops gameOverIrisSoundLoop = new SoundLoops(gameOverIrisAudioFile);
 		SoundLoops marioStarSoundLoop = new SoundLoops(marioStarAudioFile);
 		SoundLoops soundFXClip1SoundLoop = new SoundLoops(soundFXClip1);
 		SoundLoops soundFXClip2SoundLoop = new SoundLoops(soundFXClip2);
@@ -1148,7 +1674,10 @@ public class Game extends Canvas implements Runnable {
 		game.marioDeathSoundLoop = marioDeathSoundLoop;
 		game.itemSwooshSoundLoop = itemSwooshSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
-		
+		game.gameOverWinningSoundLoop = gameOverWinningSoundLoop;
+		game.gameOverIrisSoundLoop = gameOverIrisSoundLoop;
+
+        //SwingUtilities.invokeLater(Game::showGUI);   //USE TO BRING UP NEW JAVAFX WINDOW
 		JFrame frame = new JFrame(game.TITLE);
 		frame.add(game);
 		frame.pack();
@@ -1160,244 +1689,544 @@ public class Game extends Canvas implements Runnable {
 		
 	}
 	
+	/**
+	 * Player X.
+	 *
+	 * @return the int
+	 */
 	public int playerX(){
 		return (int)p.getX();
 	}
 	
+	/**
+	 * Player Y.
+	 *
+	 * @return the int
+	 */
 	public int playerY(){
 		return (int)p.getY();
 	}
 	
+	/**
+	 * Animation timer 1.
+	 *
+	 * @return the int
+	 */
 	public int animationTimer1(){
 		return animationTimer1;
 	}
 	
+	/**
+	 * Checks if is paused.
+	 *
+	 * @return true, if is paused
+	 */
 	public boolean isPaused(){
 		return paused;
 	}
 	
+	/**
+	 * Gets the user has paused.
+	 *
+	 * @return the user has paused
+	 */
 	public boolean getUserHasPaused() {
 		return userHasPaused;
 	}
 
+	/**
+	 * Sets the user has paused.
+	 *
+	 * @param userHasPaused the new user has paused
+	 */
 	public void setUserHasPaused(boolean userHasPaused) {
 		this.userHasPaused = userHasPaused;
 	}
 
 	
+	/**
+	 * Sound F xis playing.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean soundFXisPlaying(){
 		return soundFXisPlaying;
 	}
 
+	/**
+	 * Checks if is mario invincible.
+	 *
+	 * @return true, if is mario invincible
+	 */
 	public boolean isMarioInvincible(){
 		return p.getMarioInvincible();
 	}
 	
+	/**
+	 * Gets the pause sound FX timer.
+	 *
+	 * @return the pause sound FX timer
+	 */
 	public long getPauseSoundFXTimer() {
 		return pauseSoundFXTimer;
 	}
 
+	/**
+	 * Sets the pause sound FX timer.
+	 *
+	 * @param pauseSoundFXTimer the new pause sound FX timer
+	 */
 	public void setPauseSoundFXTimer(long pauseSoundFXTimer) {
 		this.pauseSoundFXTimer = pauseSoundFXTimer;
 	}
 	
+	/**
+	 * Gets the visual pause timer.
+	 *
+	 * @return the visual pause timer
+	 */
 	public long getVisualPauseTimer() {
 		return visualPauseTimer;
 	}
 
+	/**
+	 * Sets the visual pause timer.
+	 *
+	 * @param visualPauseTimer the new visual pause timer
+	 */
 	public void setVisualPauseTimer(long visualPauseTimer) {
 		this.visualPauseTimer = visualPauseTimer;
 	}
 
 	
+	/**
+	 * Gets the enemy hit pause timer.
+	 *
+	 * @return the enemy hit pause timer
+	 */
 	public long getEnemyHitPauseTimer() {
 		return enemyHitPauseTimer;
 	}
 
+	/**
+	 * Sets the enemy hit pause timer.
+	 *
+	 * @param enemyHitPauseTimer the new enemy hit pause timer
+	 */
 	public void setEnemyHitPauseTimer(long enemyHitPauseTimer) {
 		this.enemyHitPauseTimer = enemyHitPauseTimer;
 	}
 
+	/**
+	 * Gets the spawn done 4.
+	 *
+	 * @return the spawn done 4
+	 */
 	public boolean getSpawnDone4(){
 		return spawnDone4;
 	}
 	
+	/**
+	 * Gets the mario dance pose pause.
+	 *
+	 * @return the mario dance pose pause
+	 */
 	public boolean getMarioDancePosePause() {
 		return marioDancePosePause;
 	}
 
+	/**
+	 * Sets the mario dance pose pause.
+	 *
+	 * @param marioDancePosePause the new mario dance pose pause
+	 */
 	public void setMarioDancePosePause(boolean marioDancePosePause) {
 		this.marioDancePosePause = marioDancePosePause;
 	}
 
+	/**
+	 * Gets the mario growth pose pause timer.
+	 *
+	 * @return the mario growth pose pause timer
+	 */
 	public long getMarioGrowthPosePauseTimer() {
 		return marioGrowthPosePauseTimer;
 	}
 
+	/**
+	 * Sets the mario growth pose pause timer.
+	 *
+	 * @param marioGrowthPosePauseTimer the new mario growth pose pause timer
+	 */
 	public void setMarioGrowthPosePauseTimer(long marioGrowthPosePauseTimer) {
 		this.marioGrowthPosePauseTimer = marioGrowthPosePauseTimer;
 	}
 
+	/**
+	 * Gets the mario growth pose pause.
+	 *
+	 * @return the mario growth pose pause
+	 */
 	public boolean getMarioGrowthPosePause() {
 		return marioGrowthPosePause;
 	}
 
+	/**
+	 * Sets the mario growth pose pause.
+	 *
+	 * @param marioGrowthPosePause the new mario growth pose pause
+	 */
 	public void setMarioGrowthPosePause(boolean marioGrowthPosePause) {
 		this.marioGrowthPosePause = marioGrowthPosePause;
 	}
 
+	/**
+	 * Gets the bullet bill death sound pause boolean.
+	 *
+	 * @return the bullet bill death sound pause boolean
+	 */
 	public boolean getBulletBillDeathSoundPauseBoolean() {
 		return bulletBillDeathSoundPauseBoolean;
 	}
 
+	/**
+	 * Sets the bullet bill death sound pause boolean.
+	 *
+	 * @param bulletBillDeathSoundPauseBoolean the new bullet bill death sound pause boolean
+	 */
 	public void setBulletBillDeathSoundPauseBoolean(boolean bulletBillDeathSoundPauseBoolean) {
 		this.bulletBillDeathSoundPauseBoolean = bulletBillDeathSoundPauseBoolean;
 	}
 
+	/**
+	 * Gets the goomba death sound pause boolean.
+	 *
+	 * @return the goomba death sound pause boolean
+	 */
 	public boolean getGoombaDeathSoundPauseBoolean() {
 		return goombaDeathSoundPauseBoolean;
 	}
 
+	/**
+	 * Sets the goomba death sound pause boolean.
+	 *
+	 * @param goombaDeathSoundPauseBoolean the new goomba death sound pause boolean
+	 */
 	public void setGoombaDeathSoundPauseBoolean(boolean goombaDeathSoundPauseBoolean) {
 		this.goombaDeathSoundPauseBoolean = goombaDeathSoundPauseBoolean;
 	}
 	
+	/**
+	 * Gets the coin sound pause boolean.
+	 *
+	 * @return the coin sound pause boolean
+	 */
 	public boolean getCoinSoundPauseBoolean() {
 		return coinSoundPauseBoolean;
 	}
 
+	/**
+	 * Sets the coin sound pause boolean.
+	 *
+	 * @param coinSoundPauseBoolean the new coin sound pause boolean
+	 */
 	public void setCoinSoundPauseBoolean(boolean coinSoundPauseBoolean) {
 		this.coinSoundPauseBoolean = coinSoundPauseBoolean;
 	}
 
+	/**
+	 * Gets the star ding pause boolean.
+	 *
+	 * @return the star ding pause boolean
+	 */
 	public boolean getStarDingPauseBoolean() {
 		return starDingPauseBoolean;
 	}
 
+	/**
+	 * Sets the star ding pause boolean.
+	 *
+	 * @param starDingPauseBoolean the new star ding pause boolean
+	 */
 	public void setStarDingPauseBoolean(boolean starDingPauseBoolean) {
 		this.starDingPauseBoolean = starDingPauseBoolean;
 	}
 
+	/**
+	 * Gets the goomba 3 death sound pause boolean.
+	 *
+	 * @return the goomba 3 death sound pause boolean
+	 */
 	public boolean getGoomba3DeathSoundPauseBoolean() {
 		return goomba3DeathSoundPauseBoolean;
 	}
 
+	/**
+	 * Sets the goomba 3 death sound pause boolean.
+	 *
+	 * @param goomba3DeathSoundPauseBoolean the new goomba 3 death sound pause boolean
+	 */
 	public void setGoomba3DeathSoundPauseBoolean(boolean goomba3DeathSoundPauseBoolean) {
 		this.goomba3DeathSoundPauseBoolean = goomba3DeathSoundPauseBoolean;
 	}
 
+	/**
+	 * Gets the goomba 3 death smoke sound pause boolean.
+	 *
+	 * @return the goomba 3 death smoke sound pause boolean
+	 */
 	public boolean getGoomba3DeathSmokeSoundPauseBoolean() {
 		return goomba3DeathSmokeSoundPauseBoolean;
 	}
 
+	/**
+	 * Sets the goomba 3 death smoke sound pause boolean.
+	 *
+	 * @param goomba3DeathSmokeSoundPauseBoolean the new goomba 3 death smoke sound pause boolean
+	 */
 	public void setGoomba3DeathSmokeSoundPauseBoolean(boolean goomba3DeathSmokeSoundPauseBoolean) {
 		this.goomba3DeathSmokeSoundPauseBoolean = goomba3DeathSmokeSoundPauseBoolean;
 	}
 
+	/**
+	 * Gets the bb.
+	 *
+	 * @return the bb
+	 */
 	public BasicBlocks getBb() {
 		return bb;
 	}
 
+	/**
+	 * Sets the bb.
+	 *
+	 * @param bb the new bb
+	 */
 	public void setBb(BasicBlocks bb) {
 		this.bb = bb;
 	}
 
+	/**
+	 * Gets the hud.
+	 *
+	 * @return the hud
+	 */
 	public HUD getHUD(){
 		return this.hud;
 	}
 	
+	/**
+	 * Gets the sprite sheet.
+	 *
+	 * @return the sprite sheet
+	 */
 	public BufferedImage getSpriteSheet(){
 		return spriteSheet;
 	}
 	
+	/**
+	 * Gets the animated star.
+	 *
+	 * @return the animated star
+	 */
 	public BufferedImage getAnimatedStar(){
 		return animatedStar;
 	}
 	
+	/**
+	 * Gets the animated shooting star.
+	 *
+	 * @return the animated shooting star
+	 */
 	public BufferedImage getAnimatedShootingStar(){
 		return animatedShootingStar;
 	}
 	
+	/**
+	 * Gets the mario 1 star sprite sheet.
+	 *
+	 * @return the mario 1 star sprite sheet
+	 */
 	public BufferedImage getMario1StarSpriteSheet(){
 		return mario1StarSpriteSheet;
 	}
 	
+	/**
+	 * Gets the mario items sprite sheet.
+	 *
+	 * @return the mario items sprite sheet
+	 */
 	public BufferedImage getMarioItemsSpriteSheet(){
 		return marioItemsSpriteSheet;
 	}
 	
+	/**
+	 * Gets the big mario item animation sheet.
+	 *
+	 * @return the big mario item animation sheet
+	 */
 	public BufferedImage getBigMarioItemAnimationSheet(){
 		return bigMarioItemAnimationSheet;
 	}
 	
+	/**
+	 * Gets the chain chomp item getting bigger sheet.
+	 *
+	 * @return the chain chomp item getting bigger sheet
+	 */
 	public BufferedImage getChainChompItemGettingBiggerSheet(){
 		return chainChompItemGettingBiggerSheet;
 	}
 	
+	/**
+	 * Gets the chain chomp sheet.
+	 *
+	 * @return the chain chomp sheet
+	 */
 	public BufferedImage getChainChompSheet(){
 		return chainChompSheet;
 	}
 	
+	/**
+	 * Gets the bowser sprite sheet.
+	 *
+	 * @return the bowser sprite sheet
+	 */
 	public BufferedImage getBowserSpriteSheet(){
 		return bowserSpriteSheet;
 	}
 	
+	/**
+	 * Gets the bullet bill sprite sheet.
+	 *
+	 * @return the bullet bill sprite sheet
+	 */
 	public BufferedImage getBulletBillSpriteSheet(){
 		return bulletBillSpriteSheet;
 	}
 	
+	/**
+	 * Gets the mario player star animations.
+	 *
+	 * @return the mario player star animations
+	 */
 	public BufferedImage getMarioPlayerStarAnimations(){
 		return marioPlayerStarAnimations;
 	}
 	
+	/**
+	 * Gets the mario item animation sheet.
+	 *
+	 * @return the mario item animation sheet
+	 */
 	public BufferedImage getMarioItemAnimationSheet(){
 		return marioItemAnimationSheet;
 	}
 	
+	/**
+	 * Gets the mario slowing down sprites.
+	 *
+	 * @return the mario slowing down sprites
+	 */
 	public BufferedImage getMarioSlowingDownSprites(){
 		return marioSlowingDownSprites;
 	}
 
+	/**
+	 * Gets the full mario sprite sheet.
+	 *
+	 * @return the full mario sprite sheet
+	 */
 	public BufferedImage getFullMarioSpriteSheet(){
 		return fullMarioSpriteSheet;
 	}
 
+	/**
+	 * Gets the mario advance sprite sheet.
+	 *
+	 * @return the mario advance sprite sheet
+	 */
 	public BufferedImage getMarioAdvanceSpriteSheet() {
 		return marioAdvanceSpriteSheet;
 	}
 	
+	/**
+	 * Gets the mario 3 font numbers small sprite sheet.
+	 *
+	 * @return the mario 3 font numbers small sprite sheet
+	 */
 	public BufferedImage getMario3FontNumbersSmallSpriteSheet() {
 		return mario3FontNumbersSmallSpriteSheet;
 	}
 	
+	/**
+	 * Gets the goomba death sprite sheet.
+	 *
+	 * @return the goomba death sprite sheet
+	 */
 	public BufferedImage getGoombaDeathSpriteSheet() {
 		return goombaDeathSpriteSheet;
 	}
 	
+	/**
+	 * Gets the transparent blocks.
+	 *
+	 * @return the transparent blocks
+	 */
 	public BufferedImage getTransparentBlocks(){
 		return transparentBlocks;
 	}
 
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityA block){
 		ea.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityA block){
 		ea.remove(block);
 	}
 	
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityB block){
 		eb.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityB block){
 		eb.remove(block);
 	}
 	
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityD block){
 		ed.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityD block){
 		ed.remove(block);
 	}

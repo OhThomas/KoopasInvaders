@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.game.src.main;
 
 import java.awt.AlphaComposite;
@@ -6,33 +9,87 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class HUD.
+ */
 public class HUD {
 
+	/** The tex. */
 	private Textures tex;
+	
+	/** The game. */
 	private Game game;
+	
+	/** The health. */
 	public static float HEALTH = 0;
+	
+	/** The green value. */
 	private float greenValue = 255;
+	
+	/** The score. */
 	private long score = 0;
+	
+	/** The score string. */
 	private String scoreString;
+	
+	/** The level. */
 	private int level = 1;
+	
+	/** The item obtained. */
 	private boolean itemObtained = false;
+	
+	/** The item name. */
 	private String itemName = null;
-	private double timer1 = 100;
-	private double timer2 = 100;
+	
+	/** The timer 1. */
+	private static double timer1 = 100;
+	
+	/** The timer 2. */
+	private static double timer2 = 100;
+	
+	/** The image translucent. */
 	private float imageTranslucent = 0;
+	
+	/** The image translucent velocity. */
 	private double imageTranslucentVelocity = 0;
+	
+	/** The image translucent timer. */
 	private long imageTranslucentTimer = 0;
+	
+	/** The image is gone. */
 	private boolean imageIsGone = false;
+	
+	/** The enemy hit pause timer. */
 	private long enemyHitPauseTimer = 0;
+	
+	/** The mario numbers small. */
 	private BufferedImage[] marioNumbersSmall = new BufferedImage[10];
+	
+	/** The mario 3 font numbers small. */
 	private BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
+	
+	/** The mario addition sign. */
 	private BufferedImage marioAdditionSign = null;
+	
+	/** The item frame. */
 	private BufferedImage itemFrame = null;
+	
+	/** The chain chomp item frame display. */
 	private BufferedImage chainChompItemFrameDisplay = null;
+	
+	/** The press E. */
 	private BufferedImage pressE = null;
 	
+	/** The item enemy sound loop. */
 	private SoundLoops itemEnemySoundLoop = null;
 	
+	/**
+	 * Instantiates a new hud.
+	 *
+	 * @param tex the tex
+	 * @param game the game
+	 */
 	public HUD(Textures tex, Game game){
 		this.tex = tex;
 		this.game = game;
@@ -48,6 +105,9 @@ public class HUD {
 		
 	}
 	
+	/**
+	 * Tick.
+	 */
 	public void tick(){
 		if(game.getSpawnDone4()){
 			if(timer1 > 0){
@@ -81,6 +141,11 @@ public class HUD {
 		}
 	}
 	
+	/**
+	 * Render.
+	 *
+	 * @param g the g
+	 */
 	public void render(Graphics g){
 		if(!game.getUserHasPaused()){
 			if(game.getSpawnDone4()){
@@ -132,32 +197,34 @@ public class HUD {
 			
 		}
 		else if(game.getVisualPauseTimer() > System.currentTimeMillis() || game.getPauseSoundFXTimer() > System.currentTimeMillis()){
-			if(timer1 > 0){
-				g.setColor(Color.gray);
-				g.fillRect(15, 15, (int)HEALTH * 2, 32); //(x,x,200,x)
-				g.setColor(new Color(75,(int)greenValue,0));
-				g.fillRect(15, 15, (int)HEALTH * 2, 32);
-				g.setColor(Color.white);
-				g.drawRect(15, 15, (int)HEALTH * 2, 32); //(x,x,200,x)
-				g.drawString(HEALTH+"%", 15, 15);
-			}
-			else if (timer1 <= 0 && HEALTH > 0){
-				g.setColor(Color.gray);
-				g.fillRect(15, 15, 200, 32); //(x,x,200,x)
-				g.setColor(new Color(75,(int)greenValue,0));
-				g.fillRect(15, 15, (int)HEALTH * 2, 32);
-				g.setColor(Color.white);
-				g.drawRect(15, 15, 200, 32); //(x,x,200,x)
-				g.drawString(HEALTH+"%", 15, 15);
-			}
-			//HEALTH BAR DEPLETES
-			else if(timer1 <= 0 && HEALTH <= 0){
-				if(timer2 <= 0)
-					return;
-				g.setColor(Color.gray);
-				g.fillRect(15, 15, (int)timer2 * 2, 32); //(x,x,200,x)
-				g.setColor(Color.white);
-				g.drawRect(15, 15, (int)timer2 * 2, 32); //(x,x,200,x)
+			if(game.getSpawnDone4()) {
+				if(timer1 > 0){
+					g.setColor(Color.gray);
+					g.fillRect(15, 15, (int)HEALTH * 2, 32); //(x,x,200,x)
+					g.setColor(new Color(75,(int)greenValue,0));
+					g.fillRect(15, 15, (int)HEALTH * 2, 32);
+					g.setColor(Color.white);
+					g.drawRect(15, 15, (int)HEALTH * 2, 32); //(x,x,200,x)
+					g.drawString(HEALTH+"%", 15, 15);
+				}
+				else if (timer1 <= 0 && HEALTH > 0){
+					g.setColor(Color.gray);
+					g.fillRect(15, 15, 200, 32); //(x,x,200,x)
+					g.setColor(new Color(75,(int)greenValue,0));
+					g.fillRect(15, 15, (int)HEALTH * 2, 32);
+					g.setColor(Color.white);
+					g.drawRect(15, 15, 200, 32); //(x,x,200,x)
+					g.drawString(HEALTH+"%", 15, 15);
+				}
+				//HEALTH BAR DEPLETES
+				else if(timer1 <= 0 && HEALTH <= 0){
+					if(timer2 <= 0)
+						return;
+					g.setColor(Color.gray);
+					g.fillRect(15, 15, (int)timer2 * 2, 32); //(x,x,200,x)
+					g.setColor(Color.white);
+					g.drawRect(15, 15, (int)timer2 * 2, 32); //(x,x,200,x)
+				}
 			}
 			stringToScore(g, scoreString);
 			g.drawImage(itemFrame, Game.WIDTH,0, null);
@@ -175,6 +242,13 @@ public class HUD {
 		//g.drawImage(img, Game.WIDTH, 0, null);
 		//g.drawString("Level: " + level, 170, 64);
 	}
+	
+	/**
+	 * String to score.
+	 *
+	 * @param g the g
+	 * @param string the string
+	 */
 	public void stringToScore(Graphics g, String string){
 		int x = Game.WIDTH * Game.SCALE;
 		int y = 0;
@@ -219,6 +293,17 @@ public class HUD {
 			k++;
 		}
 	}
+	
+	/**
+	 * String to score.
+	 *
+	 * @param g the g
+	 * @param font the font
+	 * @param xPosition the x position
+	 * @param yPosition the y position
+	 * @param string the string
+	 * @param b the b
+	 */
 	//COMMAS DISABLED vvv
 	public void stringToScore(Graphics g, BufferedImage[] font, int xPosition, int yPosition, String string, Boolean b){
 		//int k = 0;
@@ -317,6 +402,13 @@ public class HUD {
 		}
 	}
 	
+	/**
+	 * String to buffered image.
+	 *
+	 * @param font the font
+	 * @param string the string
+	 * @return the buffered image
+	 */
 	public BufferedImage stringToBufferedImage(BufferedImage[] font, String string){
 		BufferedImage previousImage = this.marioAdditionSign;
 		BufferedImage nextImage = null;
@@ -353,6 +445,13 @@ public class HUD {
 		return previousImage;
 	}
 	
+	/**
+	 * Attach images.
+	 *
+	 * @param img1 the img 1
+	 * @param img2 the img 2
+	 * @return the buffered image
+	 */
 	public BufferedImage attachImages(BufferedImage img1, BufferedImage img2){
 	        BufferedImage resultImage = new BufferedImage(img1.getWidth() +
 	                img2.getWidth(),img2.getHeight(),
@@ -364,54 +463,142 @@ public class HUD {
 	         
 	}
 	
+	/**
+	 * Make composite.
+	 *
+	 * @param alpha the alpha
+	 * @return the alpha composite
+	 */
 	private AlphaComposite makeComposite(float alpha) {
 		  int type = AlphaComposite.SRC_OVER;
 		  return(AlphaComposite.getInstance(type, alpha));
 	}
 	
+	/**
+	 * Sets the score.
+	 *
+	 * @param score the new score
+	 */
 	public void setScore(long score){
 		this.score = this.score + score;
 		if(this.score < 0)
 			this.score = 0;
 	}
 	
-	public float getScore(){
+	/**
+	 * Gets the score.
+	 *
+	 * @return the score
+	 */
+	public long getScore(){
 		return score;
 	}
 	
+	/**
+	 * Sets the level.
+	 *
+	 * @param level the new level
+	 */
 	public void setLevel(int level){
 		this.level = level;
 	}
 	
+	/**
+	 * Gets the level.
+	 *
+	 * @return the level
+	 */
 	public int getLevel(){
 		return level;
 	}
 
+	/**
+	 * Gets the item obtained.
+	 *
+	 * @return the item obtained
+	 */
 	public boolean getItemObtained() {
 		return itemObtained;
 	}
 
+	/**
+	 * Sets the item obtained.
+	 *
+	 * @param itemObtained the new item obtained
+	 */
 	public void setItemObtained(boolean itemObtained) {
 		this.itemObtained = itemObtained;
 	}
 	
+	/**
+	 * Gets the enemy hit pause timer.
+	 *
+	 * @return the enemy hit pause timer
+	 */
 	public long getEnemyHitPauseTimer() {
 		return enemyHitPauseTimer;
 	}
 
+	/**
+	 * Sets the enemy hit pause timer.
+	 *
+	 * @param enemyHitPauseTimer the new enemy hit pause timer
+	 */
 	public void setEnemyHitPauseTimer(long enemyHitPauseTimer) {
 		this.enemyHitPauseTimer = enemyHitPauseTimer;
 	}
 	
+	/**
+	 * Gets the item name.
+	 *
+	 * @return the item name
+	 */
 	public String getItemName() {
 		return itemName;
 	}
 
+	/**
+	 * Sets the item name.
+	 *
+	 * @param itemName the new item name
+	 */
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
 	}
-
-	public double getTimer(){
-		return timer1;
+	
+	/**
+	 * Gets the timer 1.
+	 *
+	 * @return the timer 1
+	 */
+	public static double getTimer1() {
+		return HUD.timer1;
+	}
+	
+	/**
+	 * Gets the timer 2.
+	 *
+	 * @return the timer 2
+	 */
+	public static double getTimer2() {
+		return HUD.timer2;
+	}
+	
+	/**
+	 * Sets the timer 1.
+	 *
+	 * @param timer the new timer 1
+	 */
+	public void setTimer1(double timer) {
+		HUD.timer1 = timer;
+	}
+	
+	/**
+	 * Sets the timer 2.
+	 *
+	 * @param timer the new timer 2
+	 */
+	public void setTimer2(double timer) {
+		HUD.timer2 = timer;
 	}
 }

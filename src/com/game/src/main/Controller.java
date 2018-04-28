@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -9,22 +12,57 @@ import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.classes.EntityE;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Controller.
+ */
 public class Controller {
+	
+	/** The ea. */
 	private LinkedList<EntityA> ea = new LinkedList<EntityA>();
+	
+	/** The eb. */
 	private LinkedList<EntityB> eb = new LinkedList<EntityB>();
+	
+	/** The ec. */
 	private LinkedList<EntityC> ec = new LinkedList<EntityC>();
+	
+	/** The ed. */
 	private LinkedList<EntityD> ed = new LinkedList<EntityD>();
+	
+	/** The ee. */
 	private LinkedList<EntityE> ee = new LinkedList<EntityE>();
 	
+	/** The enta. */
 	EntityA enta;
+	
+	/** The entb. */
 	EntityB entb;
+	
+	/** The entc. */
 	EntityC entc;
+	
+	/** The entd. */
 	EntityD entd;
+	
+	/** The ente. */
 	EntityE ente;
+	
+	/** The tex. */
 	private Textures tex;
+	
+	/** The game. */
 	private Game game;
+	
+	/** The enemy. */
 	private Enemy enemy;
 	
+	/**
+	 * Instantiates a new controller.
+	 *
+	 * @param tex the tex
+	 * @param game the game
+	 */
 	public Controller(Textures tex, Game game){
 		this.tex = tex;
 		this.game = game;
@@ -42,6 +80,9 @@ public class Controller {
 	}
 	*/
 	
+	/**
+	 * Tick.
+	 */
 	public void tick(){
 		//A CLASS
 		for(int i = 0; i < ea.size(); i++){
@@ -75,6 +116,11 @@ public class Controller {
 				}
 	}
 	
+	/**
+	 * Render.
+	 *
+	 * @param g the g
+	 */
 	public void render(Graphics g){
 		//A CLASS
 		for(int i = 0; i < ea.size(); i++){
@@ -108,62 +154,137 @@ public class Controller {
 			}
 	}
 	
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityA block){
 		ea.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityA block){
 		ea.remove(block);
 	}
 	
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityB block){
 		eb.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityB block){
 		eb.remove(block);
 	}
 	
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityC block){
 		ec.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityC block){
 		ec.remove(block);
 	}
 	
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityD block){
 		ed.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityD block){
 		ed.remove(block);
 	}
 	
+	/**
+	 * Adds the entity.
+	 *
+	 * @param block the block
+	 */
 	public void addEntity(EntityE block){
 		ee.add(block);
 	}
 	
+	/**
+	 * Removes the entity.
+	 *
+	 * @param block the block
+	 */
 	public void removeEntity(EntityE block){
 		ee.remove(block);
 	}
 	
+	/**
+	 * Gets the entity A.
+	 *
+	 * @return the entity A
+	 */
 	public LinkedList<EntityA> getEntityA(){
 		return ea;
 	}
 	
+	/**
+	 * Gets the entity B.
+	 *
+	 * @return the entity B
+	 */
 	public LinkedList<EntityB> getEntityB(){
 		return eb;
 	}
 	
+	/**
+	 * Gets the entity C.
+	 *
+	 * @return the entity C
+	 */
 	public LinkedList<EntityC> getEntityC(){
 		return ec;
 	}
 	
+	/**
+	 * Gets the entity D.
+	 *
+	 * @return the entity D
+	 */
 	public LinkedList<EntityD> getEntityD(){
 		return ed;
 	}
 	
+	/**
+	 * Gets the entity E.
+	 *
+	 * @return the entity E
+	 */
 	public LinkedList<EntityE> getEntityE(){
 		return ee;
 	}

@@ -1,759 +1,2305 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<class-diagram version="1.2.2" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
-  realizations="true" associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="com.game.src.main.Enemy" project="Koopa Invaders Test" 
+<class-diagram version="1.2.2" icons="true" automaticImage="PNG" always-add-relationships="true" generalizations="true" 
+  realizations="true" associations="true" dependencies="true" nesting-relationships="true" router="FAN">  
+  <package id="1" language="java" name="SwingFX" project="Koopa Invaders Test" file="/Koopa Invaders Test/src/SwingFX" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="156" y="42"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="2" language="java" name="com.game.src.main" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="174" y="132"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="3" language="java" name="com.game.src.main.libs" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/libs" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="86" y="222"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="4" language="java" name="com.game.src.main.classes" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/classes" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="298" y="222"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <class id="5" language="java" name="com.game.src.main.Enemy" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Enemy.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="261" width="257" x="1741" y="3821"/>    
+    <position height="405" width="257" x="793" y="-712"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="com.game.src.main.HUD" project="Koopa Invaders Test" 
+  <class id="6" language="java" name="com.game.src.main.HUD" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/HUD.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="315" width="133" x="662" y="3821"/>    
+    <position height="819" width="349" x="1569" y="5195"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="com.game.src.main.Enemy2" project="Koopa Invaders Test" 
+  <class id="7" language="java" name="com.game.src.main.Enemy2" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Enemy2.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="261" width="263" x="897" y="452"/>    
+    <position height="441" width="263" x="490" y="-712"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="com.game.src.main.Enemy3" project="Koopa Invaders Test" 
+  <class id="8" language="java" name="com.game.src.main.Enemy3" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Enemy3.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="261" width="263" x="1200" y="452"/>    
+    <position height="369" width="263" x="1090" y="-712"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="com.game.src.main.Fireball" project="Koopa Invaders Test" 
+  <class id="9" language="java" name="com.game.src.main.Fireball" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Fireball.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="189" width="211" x="1892" y="1293"/>    
+    <position height="189" width="211" x="1393" y="-712"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="6" language="java" name="com.game.src.main.SoundEffect.Volume" project="Koopa Invaders Test" 
-    file="/Koopa Invaders Test/src/com/game/src/main/SoundEffect.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="153" width="119" x="400" y="4176"/>    
+  <class id="10" language="java" name="com.game.src.main.ChainChompItem" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/ChainChompItem.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="333" width="256" x="3146" y="975"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
-  </enumeration>  
-  <class id="7" language="java" name="com.game.src.main.KeyInput" project="Koopa Invaders Test" 
+  </class>  
+  <class id="11" language="java" name="com.game.src.main.KeyInput" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/KeyInput.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="117" width="165" x="845" y="1293"/>    
+    <position height="117" width="165" x="1636" y="975"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="com.game.src.main.MouseInput" project="Koopa Invaders Test" 
+  <class id="12" language="java" name="com.game.src.main.MouseInput" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/MouseInput.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="171" width="193" x="581" y="223"/>    
+    <position height="171" width="193" x="1925" y="975"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="9" language="java" name="com.game.src.main.Game" project="Koopa Invaders Test" 
+  <class id="13" language="java" name="com.game.src.main.Game" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Game.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="1971" width="252" x="1031" y="1810"/>    
+    <position height="3573" width="316" x="1264" y="1582"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="10" language="java" name="com.game.src.main.GreenShell" project="Koopa Invaders Test" 
+  <class id="14" language="java" name="com.game.src.main.GreenShell" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/GreenShell.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="189" width="230" x="2164" y="1293"/>    
+    <position height="207" width="230" x="1644" y="-712"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="11" language="java" name="com.game.src.main.SpriteSheet" project="Koopa Invaders Test" 
+  <class id="15" language="java" name="com.game.src.main.SpriteSheet" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/SpriteSheet.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="189" width="238" x="2019" y="4909"/>    
+    <position height="189" width="238" x="2225" y="7129"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="12" language="java" name="com.game.src.main.BulletBill" project="Koopa Invaders Test" 
+  <class id="16" language="java" name="com.game.src.main.BulletBill" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/BulletBill.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="333" width="216" x="1636" y="1293"/>    
+    <position height="423" width="255" x="2221" y="975"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="13" language="java" name="com.game.src.main.BasicBlocks" project="Koopa Invaders Test" 
+  <class id="17" language="java" name="com.game.src.main.BasicBlocks" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/BasicBlocks.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="171" width="156" x="835" y="3821"/>    
+    <position height="279" width="166" x="1346" y="975"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="14" language="java" name="com.game.src.main.GameObject" project="Koopa Invaders Test" 
+  <class id="18" language="java" name="com.game.src.main.GameObject" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/GameObject.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="135" width="160" x="1809" y="223"/>    
+    <position height="135" width="160" x="2495" y="-887"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="15" language="java" name="com.game.src.main.SoundLoops" project="Koopa Invaders Test" 
+  <class id="19" language="java" name="com.game.src.main.SoundLoops" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/SoundLoops.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="171" width="144" x="1031" y="3821"/>    
+    <position height="513" width="204" x="1298" y="6054"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="16" language="java" name="com.game.src.main.Mario1Star" project="Koopa Invaders Test" 
+  <class id="20" language="java" name="com.game.src.main.Mario1Star" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Mario1Star.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="225" width="229" x="1367" y="1293"/>    
+    <position height="297" width="229" x="2856" y="975"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="17" language="java" name="com.game.src.main.Textures" project="Koopa Invaders Test" 
+  <class id="21" language="java" name="com.game.src.main.Textures" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Textures.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="693" width="214" x="2019" y="4176"/>    
+    <position height="1035" width="248" x="2225" y="6054"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="18" language="java" name="com.game.src.main.Player" project="Koopa Invaders Test" 
+  <class id="22" language="java" name="com.game.src.main.Player" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Player.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="801" width="256" x="601" y="452"/>    
+    <position height="1647" width="256" x="2218" y="-712"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="19" language="java" name="com.game.src.main.Bowser" project="Koopa Invaders Test" 
+  <class id="23" language="java" name="com.game.src.main.Bowser" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Bowser.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="423" width="264" x="1503" y="452"/>    
+    <position height="531" width="264" x="1914" y="-712"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="20" language="java" name="com.game.src.main.Menu" project="Koopa Invaders Test" 
+  <class id="24" language="java" name="com.game.src.main.Menu" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Menu.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="225" width="142" x="1215" y="3821"/>    
+    <position height="225" width="142" x="719" y="5195"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="21" language="java" name="com.game.src.main.SoundEffect" project="Koopa Invaders Test" 
-    file="/Koopa Invaders Test/src/com/game/src/main/SoundEffect.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="189" width="138" x="400" y="3821"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </enumeration>  
-  <enumeration id="22" language="java" name="com.game.src.main.Game.STATE" project="Koopa Invaders Test" 
+  <enumeration id="25" language="java" name="com.game.src.main.Game.STATE" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Game.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="153" width="122" x="1397" y="3821"/>    
+    <position height="243" width="183" x="2021" y="5195"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="23" language="java" name="com.game.src.main.Controller" project="Koopa Invaders Test" 
+  <class id="26" language="java" name="com.game.src.main.Controller" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Controller.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="477" width="180" x="1101" y="1293"/>    
+    <position height="567" width="180" x="979" y="975"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="24" language="java" name="com.game.src.main.Physics" project="Koopa Invaders Test" 
+  <class id="27" language="java" name="com.game.src.main.Physics" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/Physics.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="189" width="184" x="996" y="223"/>    
+    <position height="531" width="223" x="1001" y="1582"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="25" language="java" name="com.game.src.main.BufferedImageLoader" project="Koopa Invaders Test" 
+  <class id="28" language="java" name="com.game.src.main.ChainChomp" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/ChainChomp.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="369" width="237" x="2516" y="975"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="29" language="java" name="com.game.src.main.BufferedImageLoader" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/BufferedImageLoader.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="117" width="184" x="1402" y="223"/>    
+    <position height="207" width="299" x="949" y="6054"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="26" language="java" name="com.game.src.main.GameOver" project="Koopa Invaders Test" 
+  <class id="30" language="java" name="com.game.src.main.GameOver" project="Koopa Invaders Test" 
     file="/Koopa Invaders Test/src/com/game/src/main/GameOver.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="225" width="142" x="1559" y="3821"/>    
+    <position height="261" width="166" x="901" y="5195"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <association id="27">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="28" name="bowserSprites"/>      
-      <multiplicity id="29" minimum="0" maximum="1"/>    
+  <interface id="31" language="java" name="com.game.src.main.classes.EntityD" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/classes/EntityD.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="189" width="187" x="3993" y="-797"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="32" language="java" name="com.game.src.main.classes.EntityE" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/classes/EntityE.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="153" width="137" x="4220" y="-797"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="33" language="java" name="com.game.src.main.classes.EntityB" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/classes/EntityB.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="207" width="148" x="4397" y="-797"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="34" language="java" name="com.game.src.main.classes.EntityC" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/classes/EntityC.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="171" width="148" x="4585" y="-797"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="35" language="java" name="com.game.src.main.classes.EntityA" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/classes/EntityA.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="153" width="137" x="4773" y="-797"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="36" language="java" name="com.game.src.main.libs.Animation" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/com/game/src/main/libs/Animation.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="1341" width="2312" x="4670" y="-150"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="37" language="java" name="SwingFX.SwingPanel" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/SwingPanel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="243" width="198" x="5841" y="3227"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="38" language="java" name="SwingFX.ScoreScreenController" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/ScoreScreenController.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="225" width="185" x="5314" y="2854"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="39" language="java" name="SwingFX.SwingFXPanel" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/SwingFXPanel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="243" width="156" x="5333" y="3227"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="40" language="java" name="SwingFX.fxmlWindow" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/fxmlWindow.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="207" width="170" x="6315" y="3227"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="41" language="java" name="SwingFX.InteropSharedModelFrame" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/InteropSharedModelFrame.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="243" width="240" x="5732" y="2854"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="42" language="java" name="SwingFX.DataModel" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/DataModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="153" width="196" x="6079" y="3227"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="43" language="java" name="SwingFX.InteropFrame" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/InteropFrame.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="171" width="158" x="6012" y="2854"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="44" language="java" name="SwingFX.fxmlWindowFrame" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/fxmlWindowFrame.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="279" width="198" x="6210" y="2854"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="45" language="java" name="SwingFX.TransparentBackground" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/TransparentBackground.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="387" width="230" x="5529" y="3227"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="46" language="java" name="SwingFX.LeaderboardController" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/LeaderboardController.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="333" width="153" x="5539" y="2854"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="47" language="java" name="SwingFX.MenuMusicController" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/MenuMusicController.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="171" width="199" x="6525" y="3227"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="48" language="java" name="SwingFX.SwingFXMLPanel" project="Koopa Invaders Test" 
+    file="/Koopa Invaders Test/src/SwingFX/SwingFXMLPanel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="261" width="202" x="5801" y="3654"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <association id="49">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="50" name="marioTurningWithItem"/>      
+      <multiplicity id="51" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="30">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="31" name="gameOverSoundLoop"/>      
-      <multiplicity id="32" minimum="0" maximum="1"/>    
+  <association id="52">    
+    <bendpoint x="2169" y="975"/>    
+    <bendpoint x="2232" y="1582"/>    
+    <bendpoint x="2234" y="5195"/>    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="53" name="tex"/>      
+      <multiplicity id="54" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
+    <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="33">    
-    <bendpoint x="610" y="1293"/>    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="34" name="p"/>      
-      <multiplicity id="35" minimum="0" maximum="1"/>    
+  <dependency id="55">    
+    <end type="SOURCE" refId="31"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <association id="56">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="57" name="tex"/>      
+      <multiplicity id="58" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="18" navigable="true"/>    
+    <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="36">    
-    <bendpoint x="1440" y="1810"/>    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="37" name="c"/>      
-      <multiplicity id="38" minimum="0" maximum="1"/>    
+  <realization id="59">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="35"/>  
+  </realization>  
+  <realization id="60">    
+    <end type="SOURCE" refId="28"/>    
+    <end type="TARGET" refId="32"/>  
+  </realization>  
+  <association id="61">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="62" name="animl"/>      
+      <multiplicity id="63" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="39">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="40" name="c"/>      
-      <multiplicity id="41" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="42">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="43" name="tex"/>      
-      <multiplicity id="44" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="45">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="46" name="starSprites"/>      
-      <multiplicity id="47" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="48">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="49" name="c"/>      
-      <multiplicity id="50" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="51">    
-    <bendpoint x="2112" y="1810"/>    
-    <bendpoint x="2112" y="3821"/>    
-    <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="52" name="tex"/>      
-      <multiplicity id="53" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="54">    
-    <bendpoint x="2070" y="1810"/>    
-    <bendpoint x="2070" y="3821"/>    
-    <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="55" name="tex"/>      
-      <multiplicity id="56" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="57">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="58" name="gameOver"/>      
-      <multiplicity id="59" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="26" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="60">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="61" name="marioStarSoundLoop"/>      
-      <multiplicity id="62" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="63">    
-    <bendpoint x="589" y="1293"/>    
-    <end type="SOURCE" refId="18" navigable="false">      
-      <attribute id="64" name="game"/>      
-      <multiplicity id="65" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
+  <realization id="64">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="34"/>  
+  </realization>  
+  <dependency id="65">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="33"/>  
+  </dependency>  
   <association id="66">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="67" name="marioSlowingDownSprites"/>      
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="67" name="starAnim1d"/>      
       <multiplicity id="68" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="69">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="70" name="e"/>      
-      <multiplicity id="71" minimum="0" maximum="1"/>    
+    <bendpoint x="1181" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="70" name="gameSoundLoops"/>      
+      <multiplicity id="71" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
+    <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="72">    
-    <bendpoint x="1311" y="1293"/>    
-    <end type="SOURCE" refId="19" navigable="false">      
-      <attribute id="73" name="game"/>      
-      <multiplicity id="74" minimum="0" maximum="1"/>    
+    <bendpoint x="1370" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="73" name="starDingSoundLoop"/>      
+      <multiplicity id="74" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
+    <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="75">    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="76" name="game"/>      
-      <multiplicity id="77" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="78">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="79" name="gameSoundLoop"/>      
-      <multiplicity id="80" minimum="0" maximum="1"/>    
+  <realization id="75">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="33"/>  
+  </realization>  
+  <association id="76">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="77" name="transparentBlocksSprites"/>      
+      <multiplicity id="78" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <nesting id="81">    
-    <end type="SOURCE" refId="21"/>    
-    <end type="TARGET" refId="6"/>  
-  </nesting>  
+  <association id="79">    
+    <end type="SOURCE" refId="41" navigable="false">      
+      <attribute id="80" name="swingPanel"/>      
+      <multiplicity id="81" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="37" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
   <association id="82">    
-    <bendpoint x="610" y="1810"/>    
-    <bendpoint x="610" y="3821"/>    
-    <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="83" name="tex"/>      
-      <multiplicity id="84" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="85">    
-    <bendpoint x="2049" y="1810"/>    
-    <bendpoint x="2049" y="3821"/>    
-    <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="86" name="tex"/>      
-      <multiplicity id="87" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="88">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="89" name="game"/>      
-      <multiplicity id="90" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="91">    
     <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="92" name="marioPlayerAnimationsSprites"/>      
-      <multiplicity id="93" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization id="94">    
-    <bendpoint x="2091" y="1810"/>    
-    <bendpoint x="2424" y="1293"/>    
-    <bendpoint x="2424" y="452"/>    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <association id="95">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="96" name="gameSoundLoop2"/>      
-      <multiplicity id="97" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization id="98">    
-    <bendpoint x="1818" y="452"/>    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <generalization id="99">    
-    <bendpoint x="1797" y="452"/>    
-    <end type="SOURCE" refId="16"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <association id="100">    
-    <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="101" name="game"/>      
-      <multiplicity id="102" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="103">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="104" name="bb"/>      
-      <multiplicity id="105" minimum="0" maximum="1"/>    
+      <attribute id="83" name="game"/>      
+      <multiplicity id="84" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="106">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="14"/>  
+  <dependency id="85">    
+    <bendpoint x="1315" y="975"/>    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <association id="86">    
+    <bendpoint x="1223" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="87" name="marioDanceSoundLoops"/>      
+      <multiplicity id="88" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="89">    
+    <bendpoint x="5810" y="3227"/>    
+    <end type="SOURCE" refId="43" navigable="false">      
+      <attribute id="90" name="swingFXPanel"/>      
+      <multiplicity id="91" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="48" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="92">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="18"/>  
   </generalization>  
-  <association id="107">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="108" name="State"/>      
-      <multiplicity id="109" minimum="0" maximum="1"/>    
+  <association id="93">    
+    <bendpoint x="1118" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="94" name="goombaDeathSoundLoop"/>      
+      <multiplicity id="95" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="22" navigable="true"/>    
+    <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="110">    
-    <bendpoint x="1040" y="1293"/>    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="111" name="game"/>      
-      <multiplicity id="112" minimum="0" maximum="1"/>    
+  <dependency id="96">    
+    <end type="SOURCE" refId="30"/>    
+    <end type="TARGET" refId="29"/>  
+  </dependency>  
+  <generalization id="97">    
+    <bendpoint x="2504" y="-712"/>    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <association id="98">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="99" name="c"/>      
+      <multiplicity id="100" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
+    <end type="TARGET" refId="26" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="113">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="114" name="menuSoundLoop"/>      
-      <multiplicity id="115" minimum="0" maximum="1"/>    
+  <association id="101">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="102" name="animExplosion"/>      
+      <multiplicity id="103" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="116">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="117" name="shootingStarSprites"/>      
-      <multiplicity id="118" minimum="0" maximum="1"/>    
+  <association id="104">    
+    <bendpoint x="1454" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="105" name="marioStarSoundLoop"/>      
+      <multiplicity id="106" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
+    <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <dependency id="107">    
+    <bendpoint x="1210" y="975"/>    
+    <bendpoint x="1610" y="1582"/>    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="108">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="109" name="animDeathR"/>      
+      <multiplicity id="110" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="111">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="112">    
+    <bendpoint x="1231" y="975"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="113" name="game"/>      
+      <multiplicity id="114" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="115">    
+    <end type="SOURCE" refId="41" navigable="false">      
+      <attribute id="116" name="swingFXPanel"/>      
+      <multiplicity id="117" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="118">    
+    <end type="SOURCE" refId="41"/>    
+    <end type="TARGET" refId="13"/>  
+  </dependency>  
   <association id="119">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="120" name="soundFXClip1SoundLoop"/>      
+    <bendpoint x="688" y="975"/>    
+    <bendpoint x="625" y="1582"/>    
+    <bendpoint x="625" y="5195"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="120" name="goomba3DeathSoundLoop"/>      
       <multiplicity id="121" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
+    <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="122">    
-    <bendpoint x="2133" y="1293"/>    
-    <bendpoint x="2133" y="1810"/>    
-    <bendpoint x="2133" y="3821"/>    
-    <end type="SOURCE" refId="19" navigable="false">      
-      <attribute id="123" name="tex"/>      
+    <end type="SOURCE" refId="44" navigable="false">      
+      <attribute id="123" name="fxmlWindow"/>      
       <multiplicity id="124" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
+    <end type="TARGET" refId="40" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="125">    
-    <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="126" name="game"/>      
-      <multiplicity id="127" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <nesting id="128">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="22"/>  
-  </nesting>  
-  <association id="129">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="130" name="c"/>      
-      <multiplicity id="131" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization id="132">    
-    <bendpoint x="1860" y="452"/>    
+  <generalization id="125">    
+    <bendpoint x="2525" y="-712"/>    
+    <end type="SOURCE" refId="28"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <dependency id="126">    
+    <end type="SOURCE" refId="30"/>    
+    <end type="TARGET" refId="13"/>  
+  </dependency>  
+  <dependency id="127">    
+    <bendpoint x="864" y="975"/>    
     <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <association id="133">    
-    <bendpoint x="631" y="3821"/>    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="134" name="tex"/>      
-      <multiplicity id="135" minimum="0" maximum="1"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <association id="128">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="129" name="animDeathBounceR"/>      
+      <multiplicity id="130" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="136">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="14"/>  
+  <realization id="131">    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="33"/>  
+  </realization>  
+  <dependency id="132">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="36"/>  
+  </dependency>  
+  <generalization id="133">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="18"/>  
   </generalization>  
+  <association id="134">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="135" name="anim"/>      
+      <multiplicity id="136" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
   <association id="137">    
-    <end type="SOURCE" refId="18" navigable="false">      
-      <attribute id="138" name="controller"/>      
+    <bendpoint x="2276" y="1582"/>    
+    <bendpoint x="2276" y="5195"/>    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="138" name="tex"/>      
       <multiplicity id="139" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
+    <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="140">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="141" name="hud"/>      
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="141" name="anim"/>      
       <multiplicity id="142" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="143">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="144" name="ss"/>      
-      <multiplicity id="145" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="146">    
-    <bendpoint x="631" y="1293"/>    
-    <bendpoint x="589" y="1810"/>    
-    <bendpoint x="589" y="3821"/>    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="147" name="tex"/>      
-      <multiplicity id="148" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="149">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="150" name="soundFXClip2SoundLoop"/>      
-      <multiplicity id="151" minimum="0" maximum="1"/>    
+  <dependency id="143">    
+    <bendpoint x="709" y="975"/>    
+    <bendpoint x="709" y="1582"/>    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="144">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="145" name="starSprites"/>      
+      <multiplicity id="146" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="152">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="153" name="mario1StarSprites"/>      
-      <multiplicity id="154" minimum="0" maximum="1"/>    
+  <association id="147">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="148" name="controller"/>      
+      <multiplicity id="149" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
+    <end type="TARGET" refId="26" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="155">    
-    <bendpoint x="568" y="1293"/>    
-    <bendpoint x="568" y="1810"/>    
-    <bendpoint x="568" y="3821"/>    
-    <end type="SOURCE" refId="18" navigable="false">      
-      <attribute id="156" name="tex"/>      
-      <multiplicity id="157" minimum="0" maximum="1"/>    
+  <association id="150">    
+    <end type="SOURCE" refId="44" navigable="false">      
+      <attribute id="151" name="m"/>      
+      <multiplicity id="152" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
+    <end type="TARGET" refId="47" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="158">    
-    <bendpoint x="1419" y="1810"/>    
-    <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="159" name="enemy"/>      
-      <multiplicity id="160" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization id="161">    
-    <end type="SOURCE" refId="19"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <association id="162">    
-    <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="163" name="game"/>      
-      <multiplicity id="164" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="165">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="166" name="menuSoundLoop2"/>      
-      <multiplicity id="167" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="168">    
-    <bendpoint x="2154" y="1810"/>    
-    <bendpoint x="2154" y="3821"/>    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="169" name="tex"/>      
-      <multiplicity id="170" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="171">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="172" name="transparentBlocksSprites"/>      
-      <multiplicity id="173" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="174">    
-    <bendpoint x="1070" y="1293"/>    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="175" name="game"/>      
-      <multiplicity id="176" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="177">    
+  <dependency id="153">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="154">    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="178" name="game"/>      
-      <multiplicity id="179" minimum="0" maximum="1"/>    
+      <attribute id="155" name="c"/>      
+      <multiplicity id="156" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
+    <end type="TARGET" refId="26" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <dependency id="157">    
+    <bendpoint x="2032" y="1582"/>    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="158">    
+    <bendpoint x="1391" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="159" name="goomba3DeathSoundLoop"/>      
+      <multiplicity id="160" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="161">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="162" name="game"/>      
+      <multiplicity id="163" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="164">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="165" name="c"/>      
+      <multiplicity id="166" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="26" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="167">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="168" name="bb"/>      
+      <multiplicity id="169" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="170">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="171" name="starAnim1r"/>      
+      <multiplicity id="172" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="173">    
+    <bendpoint x="1538" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="174" name="tex"/>      
+      <multiplicity id="175" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="176">    
+    <bendpoint x="1605" y="975"/>    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="177" name="game"/>      
+      <multiplicity id="178" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="179">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="33"/>  
+  </realization>  
   <association id="180">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="181" name="menu"/>      
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="181" name="starAnim2"/>      
       <multiplicity id="182" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="20" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="183">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="184" name="bulletBillSprites"/>      
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="184" name="starAnim1l"/>      
       <multiplicity id="185" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="186">    
-    <end type="SOURCE" refId="19" navigable="false">      
-      <attribute id="187" name="c"/>      
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="187" name="animDeathBounceL"/>      
       <multiplicity id="188" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="189">    
-    <bendpoint x="1995" y="452"/>    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <generalization id="190">    
-    <end type="SOURCE" refId="18"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <association id="191">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="192" name="game"/>      
-      <multiplicity id="193" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="194">    
+  <association id="189">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="195" name="volume"/>      
-      <multiplicity id="196" minimum="0" maximum="1"/>    
+      <attribute id="190" name="chainChompItemGettingBiggerSprites"/>      
+      <multiplicity id="191" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="192">    
+    <bendpoint x="2846" y="1582"/>    
+    <bendpoint x="2846" y="5195"/>    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="193" name="itemSoundLoop"/>      
+      <multiplicity id="194" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="195">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="196">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="197" name="mario3FontNumbersSmallSprites"/>      
+      <multiplicity id="198" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="199">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="200" name="anim"/>      
+      <multiplicity id="201" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="202">    
+    <bendpoint x="906" y="975"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <association id="203">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="204" name="entd"/>      
+      <multiplicity id="205" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="31" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="206">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="47"/>  
+  </dependency>  
+  <dependency id="207">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <association id="208">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="209" name="marioEntranceDancingAnim"/>      
+      <multiplicity id="210" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="211">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="13"/>  
+  </dependency>  
+  <association id="212">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="213" name="starAnim3r"/>      
+      <multiplicity id="214" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="215">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="216" name="hud"/>      
+      <multiplicity id="217" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="197">    
-    <bendpoint x="1336" y="1293"/>    
-    <bendpoint x="1682" y="1810"/>    
-    <bendpoint x="2028" y="3821"/>    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="198" name="tex"/>      
-      <multiplicity id="199" minimum="0" maximum="1"/>    
+  <association id="218">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="219" name="anim"/>      
+      <multiplicity id="220" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
+    <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="200">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="201" name="soundEffect"/>      
-      <multiplicity id="202" minimum="0" maximum="1"/>    
+  <dependency id="221">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <association id="222">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="223" name="starAnim3d"/>      
+      <multiplicity id="224" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="225">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="226" name="animr"/>      
+      <multiplicity id="227" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="228">    
+    <bendpoint x="667" y="975"/>    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <dependency id="229">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="34"/>  
+  </dependency>  
+  <dependency id="230">    
+    <end type="SOURCE" refId="28"/>    
+    <end type="TARGET" refId="34"/>  
+  </dependency>  
+  <association id="231">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="232" name="bigMarioItemAnimationSprites"/>      
+      <multiplicity id="233" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="234">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="235" name="game"/>      
+      <multiplicity id="236" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="237">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="31"/>  
+  </realization>  
+  <association id="238">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="239" name="game"/>      
+      <multiplicity id="240" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="241">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="242">    
+    <bendpoint x="885" y="975"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="243" name="game"/>      
+      <multiplicity id="244" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="245">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="17"/>  
+  </dependency>  
+  <dependency id="246">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="247">    
+    <bendpoint x="1244" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="248" name="goomba3DeathSmokeSoundLoop"/>      
+      <multiplicity id="249" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="250">    
+    <end type="SOURCE" refId="41"/>    
+    <end type="TARGET" refId="45"/>  
+  </dependency>  
+  <association id="251">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="252" name="animD"/>      
+      <multiplicity id="253" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="254">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="255" name="anim"/>      
+      <multiplicity id="256" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="257">    
+    <bendpoint x="1328" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="258" name="bulletBillDeathSoundLoop"/>      
+      <multiplicity id="259" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="260">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="32"/>  
+  </dependency>  
+  <association id="261">    
+    <bendpoint x="927" y="975"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="262" name="game"/>      
+      <multiplicity id="263" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="264">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="265" name="ee"/>      
+      <multiplicity id="266" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="32" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="267">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="268" name="starAnim2l"/>      
+      <multiplicity id="269" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="270">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="40"/>  
+  </dependency>  
+  <association id="271">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="272" name="enta"/>      
+      <multiplicity id="273" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="35" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="274">    
+    <bendpoint x="2011" y="1582"/>    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="25"/>  
+  </dependency>  
+  <realization id="275">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="33"/>  
+  </realization>  
+  <association id="276">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="277" name="eb"/>      
+      <multiplicity id="278" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="279">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="280">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="31"/>  
+  </dependency>  
+  <generalization id="281">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <association id="282">    
+    <bendpoint x="1475" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="283" name="gameOverWinningSoundLoop"/>      
+      <multiplicity id="284" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="285">    
+    <bendpoint x="646" y="975"/>    
+    <bendpoint x="646" y="1582"/>    
+    <bendpoint x="646" y="5195"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="286" name="tex"/>      
+      <multiplicity id="287" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="288">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="289" name="enemy"/>      
+      <multiplicity id="290" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="291">    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="29"/>  
+  </dependency>  
+  <association id="292">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="293" name="coin"/>      
+      <multiplicity id="294" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="295">    
+    <end type="SOURCE" refId="37"/>    
+    <end type="TARGET" refId="13"/>  
+  </dependency>  
+  <dependency id="296">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="28"/>  
+  </dependency>  
+  <association id="297">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="298" name="itemEnemySoundLoop"/>      
+      <multiplicity id="299" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="300">    
+    <bendpoint x="1286" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="301" name="gameOverSoundLoop"/>      
+      <multiplicity id="302" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="303">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <dependency id="304">    
+    <end type="SOURCE" refId="28"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <dependency id="305">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <association id="306">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="307" name="marioAdvanceSprites"/>      
+      <multiplicity id="308" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="309">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="310" name="menu"/>      
+      <multiplicity id="311" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="24" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="312">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="313" name="animBackwards"/>      
+      <multiplicity id="314" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="315">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="316" name="m"/>      
+      <multiplicity id="317" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="47" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="318">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <realization id="319">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="31"/>  
+  </realization>  
+  <association id="320">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="321" name="c"/>      
+      <multiplicity id="322" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="26" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="323">    
+    <bendpoint x="1852" y="1582"/>    
+    <bendpoint x="1948" y="5195"/>    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="324" name="tex"/>      
+      <multiplicity id="325" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="326">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="327" name="goombaDeathSprites"/>      
+      <multiplicity id="328" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="329">    
+    <bendpoint x="562" y="975"/>    
+    <bendpoint x="583" y="1582"/>    
+    <bendpoint x="583" y="5195"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="330" name="tex"/>      
+      <multiplicity id="331" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="332">    
+    <bendpoint x="1349" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="333" name="coinSoundLoop"/>      
+      <multiplicity id="334" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="335">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <association id="336">    
+    <bendpoint x="2379" y="1582"/>    
+    <bendpoint x="2379" y="5195"/>    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="337" name="tex"/>      
+      <multiplicity id="338" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="339">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <generalization id="340">    
+    <bendpoint x="2829" y="-712"/>    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <association id="341">    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="342" name="anim"/>      
+      <multiplicity id="343" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="344">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="345" name="fullMarioSprites"/>      
+      <multiplicity id="346" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="347">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="348" name="bowserSprites"/>      
+      <multiplicity id="349" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="350">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="31"/>  
+  </dependency>  
+  <association id="351">    
+    <bendpoint x="1563" y="975"/>    
+    <bendpoint x="1873" y="1582"/>    
+    <bendpoint x="1969" y="5195"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="352" name="tex"/>      
+      <multiplicity id="353" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="354">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="355" name="ec"/>      
+      <multiplicity id="356" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="34" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="357">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="358">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="359" name="game"/>      
+      <multiplicity id="360" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="361">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="34"/>  
+  </dependency>  
+  <association id="362">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="363" name="marioSlowingDownSprites"/>      
+      <multiplicity id="364" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="365">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="34"/>  
+  </realization>  
+  <association id="366">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="367" name="anim"/>      
+      <multiplicity id="368" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="369">    
+    <bendpoint x="1873" y="975"/>    
+    <bendpoint x="1990" y="1582"/>    
+    <bendpoint x="1990" y="5195"/>    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="370" name="tex"/>      
+      <multiplicity id="371" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="372">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="373" name="ss"/>      
+      <multiplicity id="374" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="375">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="376" name="animSlowingDownl"/>      
+      <multiplicity id="377" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="378">    
+    <bendpoint x="948" y="975"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="379" name="e"/>      
+      <multiplicity id="380" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="381">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <association id="382">    
+    <bendpoint x="1852" y="975"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="383" name="p"/>      
+      <multiplicity id="384" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="22" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="385">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <dependency id="386">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="387">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="17"/>  
+  </dependency>  
+  <dependency id="388">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <association id="389">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="390" name="game"/>      
+      <multiplicity id="391" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="392">    
+    <bendpoint x="520" y="975"/>    
+    <bendpoint x="520" y="1582"/>    
+    <bendpoint x="520" y="5195"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="393" name="goomba2DeathSoundLoop"/>      
+      <multiplicity id="394" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="395">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="396" name="bulletBillSprites"/>      
+      <multiplicity id="397" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="398">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="399" name="entc"/>      
+      <multiplicity id="400" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="34" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="401">    
+    <bendpoint x="1202" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="402" name="marioDeathSoundLoop"/>      
+      <multiplicity id="403" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="404">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="405" name="ea"/>      
+      <multiplicity id="406" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="35" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="407">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="408" name="animEntrance"/>      
+      <multiplicity id="409" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="410">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="411" name="game"/>      
+      <multiplicity id="412" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="413">    
+    <bendpoint x="2297" y="1582"/>    
+    <bendpoint x="2297" y="5195"/>    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="414" name="itemSoundLoop"/>      
+      <multiplicity id="415" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="416">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="41"/>  
+  </dependency>  
+  <association id="417">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="418" name="shootingStarSprites"/>      
+      <multiplicity id="419" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="420">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="421" name="animd"/>      
+      <multiplicity id="422" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="423">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="424" name="starAnim3l"/>      
+      <multiplicity id="425" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="426">    
+    <bendpoint x="3157" y="1582"/>    
+    <bendpoint x="3157" y="5195"/>    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="427" name="tex"/>      
+      <multiplicity id="428" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="429">    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <dependency id="430">    
+    <bendpoint x="1252" y="975"/>    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <dependency id="431">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <association id="432">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="433" name="marioEntranceGrowingAnim"/>      
+      <multiplicity id="434" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="435">    
+    <bendpoint x="1273" y="975"/>    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="436" name="game"/>      
+      <multiplicity id="437" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="438">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="439" name="ec"/>      
+      <multiplicity id="440" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="34" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="441">    
+    <bendpoint x="1433" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="442" name="menuSoundLoops"/>      
+      <multiplicity id="443" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="444">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="445" name="starAnim2r"/>      
+      <multiplicity id="446" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="447">    
+    <bendpoint x="1894" y="975"/>    
+    <bendpoint x="1894" y="1582"/>    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="448">    
+    <bendpoint x="1139" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="449" name="marioSpinningSoundLoop"/>      
+      <multiplicity id="450" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="451">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="452" name="animExplosion"/>      
+      <multiplicity id="453" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="454">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="455" name="starAnim1"/>      
+      <multiplicity id="456" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="457">    
+    <bendpoint x="2825" y="975"/>    
+    <bendpoint x="2825" y="1582"/>    
+    <bendpoint x="2825" y="5195"/>    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="458" name="tex"/>      
+      <multiplicity id="459" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="460">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="33"/>  
+  </dependency>  
+  <dependency id="461">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="462">    
+    <end type="SOURCE" refId="40"/>    
+    <end type="TARGET" refId="48"/>  
+  </dependency>  
+  <association id="463">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="464" name="c"/>      
+      <multiplicity id="465" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="26" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="466">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="25"/>  
+  </nesting>  
+  <association id="467">    
+    <bendpoint x="1831" y="975"/>    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="468" name="game"/>      
+      <multiplicity id="469" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="470">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="471" name="starAnim2d"/>      
+      <multiplicity id="472" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="473">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="474">    
+    <bendpoint x="2211" y="1582"/>    
+    <end type="SOURCE" refId="28"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="475">    
+    <bendpoint x="1307" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="476" name="pauseSoundFXSoundLoop"/>      
+      <multiplicity id="477" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="478">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="479" name="animExplosion"/>      
+      <multiplicity id="480" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="481">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <dependency id="482">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="32"/>  
+  </dependency>  
+  <dependency id="483">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="44"/>  
+  </dependency>  
+  <association id="484">    
+    <bendpoint x="604" y="975"/>    
+    <bendpoint x="604" y="1582"/>    
+    <bendpoint x="604" y="5195"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="485" name="goombaDeathSoundLoop"/>      
+      <multiplicity id="486" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="487">    
+    <bendpoint x="1097" y="5195"/>    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="29"/>  
+  </dependency>  
+  <association id="488">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="489" name="animDR"/>      
+      <multiplicity id="490" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="491">    
+    <bendpoint x="2685" y="-712"/>    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <association id="492">    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="493" name="game"/>      
+      <multiplicity id="494" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="495">    
+    <bendpoint x="5789" y="3227"/>    
+    <end type="SOURCE" refId="41" navigable="false">      
+      <attribute id="496" name="swingFXMLPanel"/>      
+      <multiplicity id="497" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="48" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="498">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <association id="499">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="500" name="marioEntranceTurningAroundAnim"/>      
+      <multiplicity id="501" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="502">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="503" name="animDeath"/>      
+      <multiplicity id="504" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="505">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="506" name="ed"/>      
+      <multiplicity id="507" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="31" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="508">    
+    <end type="SOURCE" refId="41" navigable="false">      
+      <attribute id="509" name="dataModel"/>      
+      <multiplicity id="510" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="42" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="511">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="512">    
+    <bendpoint x="583" y="975"/>    
+    <bendpoint x="562" y="1582"/>    
+    <bendpoint x="562" y="5195"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="513" name="coinSoundLoop"/>      
+      <multiplicity id="514" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="515">    
+    <end type="SOURCE" refId="43" navigable="false">      
+      <attribute id="516" name="swingPanel"/>      
+      <multiplicity id="517" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="37" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="518">    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <dependency id="519">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <association id="520">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="521" name="mario1StarSprites"/>      
+      <multiplicity id="522" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="523">    
+    <bendpoint x="2783" y="975"/>    
+    <bendpoint x="2783" y="1582"/>    
+    <bendpoint x="2783" y="5195"/>    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="524" name="tex"/>      
+      <multiplicity id="525" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="526">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="527" name="gameOver"/>      
+      <multiplicity id="528" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="30" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="529">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="530" name="animHit"/>      
+      <multiplicity id="531" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="532">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="533" name="transparentBlocksAnim"/>      
+      <multiplicity id="534" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="535">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="35"/>  
+  </realization>  
+  <association id="536">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="537" name="anim"/>      
+      <multiplicity id="538" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="539">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="540" name="marioPlayerAnimationsSprites"/>      
+      <multiplicity id="541" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="542">    
+    <bendpoint x="1189" y="975"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <association id="543">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="544" name="currentItem"/>      
+      <multiplicity id="545" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="546">    
+    <bendpoint x="730" y="975"/>    
+    <bendpoint x="667" y="1582"/>    
+    <bendpoint x="667" y="5195"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="547" name="goomba3DeathSmokeSoundLoop"/>      
+      <multiplicity id="548" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="549">    
+    <bendpoint x="1496" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="550" name="marioVoices"/>      
+      <multiplicity id="551" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="552">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="33"/>  
+  </dependency>  
+  <association id="553">    
+    <bendpoint x="688" y="1582"/>    
+    <bendpoint x="688" y="5195"/>    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="554" name="tex"/>      
+      <multiplicity id="555" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="556">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="557" name="animDeathL"/>      
+      <multiplicity id="558" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="559">    
+    <bendpoint x="1652" y="1582"/>    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="560">    
+    <bendpoint x="1412" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="561" name="itemSwooshSoundLoop"/>      
+      <multiplicity id="562" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="563">    
+    <bendpoint x="1294" y="975"/>    
+    <bendpoint x="1631" y="1582"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="564">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="565" name="ea"/>      
+      <multiplicity id="566" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="35" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="567">    
+    <end type="SOURCE" refId="44" navigable="false">      
+      <attribute id="568" name="dataModel"/>      
+      <multiplicity id="569" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="42" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="570">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="571" name="ed"/>      
+      <multiplicity id="572" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="31" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="573">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="574" name="anim"/>      
+      <multiplicity id="575" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="576">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="577" name="ente"/>      
+      <multiplicity id="578" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="32" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="579">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="32"/>  
+  </dependency>  
+  <association id="580">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="581" name="marioDeathAnim"/>      
+      <multiplicity id="582" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="583">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="584" name="chainChompSprites"/>      
+      <multiplicity id="585" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="586">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="587">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="588" name="starAnim"/>      
+      <multiplicity id="589" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="590">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="591" name="starAnim3"/>      
+      <multiplicity id="592" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="593">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="594" name="ee"/>      
+      <multiplicity id="595" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="32" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="596">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="35"/>  
+  </dependency>  
+  <association id="597">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="598" name="musicMenuFrame"/>      
+      <multiplicity id="599" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="44" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="600">    
+    <end type="SOURCE" refId="44" navigable="false">      
+      <attribute id="601" name="swingPanel"/>      
+      <multiplicity id="602" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="37" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="603">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="604" name="shootingStarAnim"/>      
+      <multiplicity id="605" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="606">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <association id="607">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="608" name="marioItemsSprites"/>      
+      <multiplicity id="609" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="610">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="34"/>  
+  </dependency>  
+  <association id="611">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="612" name="entb"/>      
+      <multiplicity id="613" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="614">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="615" name="State"/>      
+      <multiplicity id="616" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="617">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="618" name="anim"/>      
+      <multiplicity id="619" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="620">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="621" name="marioItemAnimationSprites"/>      
+      <multiplicity id="622" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="623">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="624" name="game"/>      
+      <multiplicity id="625" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="626">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="627" name="animDL"/>      
+      <multiplicity id="628" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="629">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="630" name="marioEntranceSpinningAnim"/>      
+      <multiplicity id="631" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="632">    
+    <bendpoint x="1160" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="633" name="soundFXClip1SoundLoop"/>      
+      <multiplicity id="634" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="635">    
+    <bendpoint x="1265" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="636" name="gameOverIrisSoundLoop"/>      
+      <multiplicity id="637" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="638">    
+    <bendpoint x="2867" y="1582"/>    
+    <bendpoint x="2867" y="5195"/>    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="639" name="tex"/>      
+      <multiplicity id="640" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="641">    
+    <bendpoint x="499" y="975"/>    
+    <bendpoint x="499" y="1582"/>    
+    <bendpoint x="499" y="5195"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="642" name="starDingSoundLoop"/>      
+      <multiplicity id="643" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="644">    
+    <bendpoint x="2255" y="1582"/>    
+    <bendpoint x="2255" y="5195"/>    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="645" name="bulletBillDeathSoundLoop"/>      
+      <multiplicity id="646" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="647">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="648" name="eb"/>      
+      <multiplicity id="649" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="650">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="651" name="animSlowingDownr"/>      
+      <multiplicity id="652" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="653">    
+    <bendpoint x="3136" y="1582"/>    
+    <bendpoint x="3094" y="5195"/>    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="654" name="itemSoundLoop"/>      
+      <multiplicity id="655" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="656">    
+    <bendpoint x="1517" y="5195"/>    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="657" name="soundFXClip2SoundLoop"/>      
+      <multiplicity id="658" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="659">    
+    <bendpoint x="541" y="975"/>    
+    <bendpoint x="541" y="1582"/>    
+    <bendpoint x="541" y="5195"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="660" name="goomba2DeathQuiterSoundLoop"/>      
+      <multiplicity id="661" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="662">    
+    <bendpoint x="1542" y="975"/>    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="663" name="game"/>      
+      <multiplicity id="664" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -8,23 +11,53 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.libs.Animation;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class BulletBill.
+ */
 public class BulletBill extends GameObject implements EntityC{
 
+	/** The barrier. */
 	private boolean barrier = false;
 	
+	/** The tex. */
 	private Textures tex;
+	
+	/** The game. */
 	private Game game;
+	
+	/** The timer 1. */
 	private float timer1 = 100;										//timer for chasing sequence
+	
+	/** The speed increase. */
 	public double speedIncrease = 0.1;								//way to set speed
+	
+	/** The bullet billis dead. */
 	private boolean bulletBillisDead = false;						//way to play death animation without killing Mario
 	
+	/** The anim D. */
 	Animation animD;
+	
+	/** The anim DL. */
 	Animation animDL;
+	
+	/** The anim DR. */
 	Animation animDR;
+	
+	/** The anim explosion. */
 	Animation animExplosion;
 
+	/** The bullet bill death sound loop. */
 	SoundLoops bulletBillDeathSoundLoop;
 	
+	/**
+	 * Instantiates a new bullet bill.
+	 *
+	 * @param x the x
+	 * @param y the y
+	 * @param tex the tex
+	 * @param game the game
+	 */
 	public BulletBill(double x, double y, Textures tex, Game game){
 		super(x,y);
 		this.tex = tex;
@@ -52,6 +85,9 @@ public class BulletBill extends GameObject implements EntityC{
 		this.bulletBillDeathSoundLoop = bulletBillDeathSoundLoop;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityC#tick()
+	 */
 	public void tick(){
 		if((int)timer1 > 0){									//Chases Player
 			if(!bulletBillisDead){
@@ -153,6 +189,9 @@ public class BulletBill extends GameObject implements EntityC{
 		animDR.runAnimation();
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityC#render(java.awt.Graphics)
+	 */
 	public void render(Graphics g){
 		if(bulletBillisDead)
 			animExplosion.drawAnimation(g, x, y, 0);
@@ -174,38 +213,75 @@ public class BulletBill extends GameObject implements EntityC{
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityC#getBounds()
+	 */
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, 16, 16);
 	}
 	
+	/**
+	 * Sets the y.
+	 *
+	 * @param y the new y
+	 */
 	public void setY(double y){
 		this.y = y;
 	}
 	
+	/**
+	 * Sets the speed.
+	 *
+	 * @param speed the new speed
+	 */
 	public void setSpeed(double speed){
 		this.speedIncrease = speed;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityC#getX()
+	 */
 	public double getX() {
 		return x;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityC#getY()
+	 */
 	public double getY(){
 		return y;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityC#getEntityCDead()
+	 */
 	public boolean getEntityCDead() {
 		return bulletBillisDead;
 	}
 
+	/**
+	 * Sets the bullet billis dead.
+	 *
+	 * @param bulletBillisDead the new bullet billis dead
+	 */
 	public void setBulletBillisDead(boolean bulletBillisDead) {
 		this.bulletBillisDead = bulletBillisDead;
 	}
 
+	/**
+	 * Gets the bullet bill death sound loop.
+	 *
+	 * @return the bullet bill death sound loop
+	 */
 	public SoundLoops getBulletBillDeathSoundLoop() {
 		return bulletBillDeathSoundLoop;
 	}
 
+	/**
+	 * Sets the bullet bill death sound loop.
+	 *
+	 * @param bulletBillDeathSoundLoop the new bullet bill death sound loop
+	 */
 	public void setBulletBillDeathSoundLoop(SoundLoops bulletBillDeathSoundLoop) {
 		this.bulletBillDeathSoundLoop = bulletBillDeathSoundLoop;
 	}

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -5,17 +8,38 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Menu.
+ */
 public class Menu {
 
+	/** The play button. */
 	public Rectangle playButton = new Rectangle(Game.WIDTH / 2 + 120, 200, 128, 64);
+	
+	/** The help button. */
 	public Rectangle helpButton = new Rectangle(Game.WIDTH / 2 + 120, 300, 128, 64);
+	
+	/** The quit button. */
 	public Rectangle quitButton = new Rectangle(Game.WIDTH / 2 + 120, 400, 128, 64);
 	
+	/** The title. */
 	private BufferedImage title = null;
+	
+	/** The play title. */
 	private BufferedImage playTitle = null;
+	
+	/** The help title. */
 	private BufferedImage helpTitle = null;
+	
+	/** The exit title. */
 	private BufferedImage exitTitle = null;
 	
+	/**
+	 * Render.
+	 *
+	 * @param g the g
+	 */
 	public void render(Graphics g){
 		
 		BufferedImageLoader loader = new BufferedImageLoader();

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.game.src.main;
 
 import java.awt.image.BufferedImage;
@@ -9,19 +12,46 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class BufferedImageLoader.
+ */
 public class BufferedImageLoader {
 
+	/** The image. */
 	private BufferedImage image;
+	
+	/** The images. */
 	private ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+	
+	/** The current number string. */
 	private String currentNumberString = "";
+	
+	/** The current number. */
 	private int currentNumber = 0;
+	
+	/** The p. */
 	Pattern p = Pattern.compile("[0-9]");
 	
+	/**
+	 * Load image.
+	 *
+	 * @param path the path
+	 * @return the buffered image
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public BufferedImage loadImage(String path) throws IOException{
 		image = ImageIO.read(getClass().getResource(path));
 		return image;
 	}
 	
+	/**
+	 * Load imagesfrom folder.
+	 *
+	 * @param folder the folder
+	 * @return the array list
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public ArrayList<BufferedImage> loadImagesfromFolder(String folder) throws IOException{
 		File f = new File("." + folder);
 		File[] fa = f.getCanonicalFile().listFiles();

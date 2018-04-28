@@ -1,82 +1,231 @@
+/*
+ * 
+ */
 package com.game.src.main;
 
 import java.awt.image.BufferedImage;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Textures.
+ */
 public class Textures {
 
+	/** The player. */
 	public BufferedImage[] player = new BufferedImage[16];
+	
+	/** The mario star 1. */
 	public BufferedImage[] marioStar1 = new BufferedImage[16];
+	
+	/** The mario star 2. */
 	public BufferedImage[] marioStar2 = new BufferedImage[16];
+	
+	/** The mario star 3. */
 	public BufferedImage[] marioStar3 = new BufferedImage[16];
+	
+	/** The mario slowing down. */
 	public BufferedImage[] marioSlowingDown = new BufferedImage[2];
+	
+	/** The fireball. */
 	public BufferedImage[] fireball = new BufferedImage[4];
+	
+	/** The enemy. */
 	public BufferedImage[] enemy = new BufferedImage[2];
+	
+	/** The enemy 2. */
 	public BufferedImage[] enemy2 = new BufferedImage[2];
+	
+	/** The enemy 3. */
 	public BufferedImage[] enemy3 = new BufferedImage[2];
+	
+	/** The green shell. */
 	public BufferedImage[] greenShell = new BufferedImage[4];
+	
+	/** The animated star. */
 	public BufferedImage[] animatedStar = new BufferedImage[20];
+	
+	/** The animated shooting star. */
 	public BufferedImage[] animatedShootingStar = new BufferedImage[12];
+	
+	/** The mario 1 star. */
 	public BufferedImage[] mario1Star = new BufferedImage[4];
+	
+	/** The mario item animation beginning. */
 	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[18];
+	
+	/** The big chain chomp item. */
 	public BufferedImage[] bigChainChompItem = new BufferedImage[9];
+	
+	/** The chain chomp. */
 	public BufferedImage[] chainChomp = new BufferedImage[2];
+	
+	/** The chain chomp item. */
 	public BufferedImage[] chainChompItem = new BufferedImage[25];
+	
+	/** The bowser entrance. */
 	public BufferedImage[] bowserEntrance = new BufferedImage[8];
+	
+	/** The bowser. */
 	public BufferedImage[] bowser = new BufferedImage[2];
+	
+	/** The bowser hit. */
 	public BufferedImage[] bowserHit = new BufferedImage[2];
+	
+	/** The bowser ship. */
 	public BufferedImage[] bowserShip = new BufferedImage[8];
+	
+	/** The bowser ship hit. */
 	public BufferedImage[] bowserShipHit = new BufferedImage[4];
+	
+	/** The bullet bill D. */
 	public BufferedImage[] bulletBillD = new BufferedImage[17];
+	
+	/** The bullet bill DL. */
 	public BufferedImage[] bulletBillDL = new BufferedImage[10];
+	
+	/** The bullet bill DR. */
 	public BufferedImage[] bulletBillDR = new BufferedImage[10];
+	
+	/** The bullet bill explosion. */
 	public BufferedImage[] bulletBillExplosion = new BufferedImage[7];
+	
+	/** The enemy explosion. */
 	public BufferedImage[] enemyExplosion = new BufferedImage[3];
+	
+	/** The enemy 2 death L. */
 	public BufferedImage[] enemy2DeathL = new BufferedImage[10];
+	
+	/** The enemy 2 death R. */
 	public BufferedImage[] enemy2DeathR = new BufferedImage[10];
+	
+	/** The enemy 3 death. */
 	public BufferedImage[] enemy3Death = new BufferedImage[3];
+	
+	/** The enemy 3 explosion. */
 	public BufferedImage[] enemy3Explosion = new BufferedImage[13];
+	
+	/** The star. */
 	public BufferedImage[] star = new BufferedImage[20];
+	
+	/** The coin. */
 	public BufferedImage[] coin = new BufferedImage[3];
+	
+	/** The mario entrance. */
 	public BufferedImage[] marioEntrance = new BufferedImage[21];
+	
+	/** The mario death. */
 	public BufferedImage[] marioDeath = new BufferedImage[2];
+	
+	/** The transparent blocks. */
 	public BufferedImage[] transparentBlocks = new BufferedImage[3];
+	
+	/** The mario numbers small. */
 	public BufferedImage[] marioNumbersSmall = new BufferedImage[12];
+	
+	/** The mario 3 font numbers small. */
 	public BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
+	
+	/** The item frame. */
 	public BufferedImage itemFrame;
+	
+	/** The chain chomp item frame display. */
 	public BufferedImage chainChompItemFrameDisplay;
+	
+	/** The press E. */
 	public BufferedImage pressE;
+	
+	/** The gameover. */
 	public BufferedImage gameover;
 	
+	/** The Constant MARIO_WIDTH. */
 	public static final int MARIO_WIDTH = 16;
+	
+	/** The Constant MARIO_HEIGHT. */
 	public static final int MARIO_HEIGHT = 28;
+	
+	/** The Constant BOWSER_WIDTH. */
 	public static final int BOWSER_WIDTH = 64;
+	
+	/** The Constant BOWSER_HEIGHT. */
 	public static final int BOWSER_HEIGHT = 41;
+	
+	/** The Constant BOWSER_HIT_WIDTH. */
 	public static final int BOWSER_HIT_WIDTH = 64;
+	
+	/** The Constant BOWSER_HIT_HEIGHT. */
 	public static final int BOWSER_HIT_HEIGHT = 50;
+	
+	/** The Constant BOWSER_SHIP_WIDTH. */
 	public static final int BOWSER_SHIP_WIDTH = 64;
+	
+	/** The Constant BOWSER_SHIP_HEIGHT. */
 	public static final int BOWSER_SHIP_HEIGHT = 55;
+	
+	/** The Constant SHOOTING_STAR_WIDTH. */
 	public static final int SHOOTING_STAR_WIDTH = 399;
+	
+	/** The Constant SHOOTING_STAR_HEIGHT. */
 	public static final int SHOOTING_STAR_HEIGHT = 150;
 	
+	/** The ss. */
 	private SpriteSheet ss;
+	
+	/** The star sprites. */
 	private SpriteSheet starSprites;
+	
+	/** The shooting star sprites. */
 	private SpriteSheet shootingStarSprites;
+	
+	/** The mario 1 star sprites. */
 	private SpriteSheet mario1StarSprites;
+	
+	/** The mario items sprites. */
 	private SpriteSheet marioItemsSprites;
+	
+	/** The bowser sprites. */
 	private SpriteSheet bowserSprites;
+	
+	/** The bullet bill sprites. */
 	private SpriteSheet bulletBillSprites;
+	
+	/** The mario player animations sprites. */
 	private SpriteSheet marioPlayerAnimationsSprites;
+	
+	/** The mario item animation sprites. */
 	private SpriteSheet marioItemAnimationSprites;
+	
+	/** The big mario item animation sprites. */
 	private SpriteSheet bigMarioItemAnimationSprites;
+	
+	/** The chain chomp item getting bigger sprites. */
 	private SpriteSheet chainChompItemGettingBiggerSprites;
+	
+	/** The chain chomp sprites. */
 	private SpriteSheet chainChompSprites;
+	
+	/** The mario slowing down sprites. */
 	private SpriteSheet marioSlowingDownSprites;
+	
+	/** The full mario sprites. */
 	private SpriteSheet fullMarioSprites;
+	
+	/** The mario advance sprites. */
 	private SpriteSheet marioAdvanceSprites;
+	
+	/** The mario 3 font numbers small sprites. */
 	private SpriteSheet mario3FontNumbersSmallSprites;
+	
+	/** The goomba death sprites. */
 	private SpriteSheet goombaDeathSprites;
+	
+	/** The transparent blocks sprites. */
 	private SpriteSheet transparentBlocksSprites;
 	
+	/**
+	 * Instantiates a new textures.
+	 *
+	 * @param game the game
+	 */
 	public Textures(Game game){
 		ss = new SpriteSheet(game.getSpriteSheet());
 		starSprites = new SpriteSheet(game.getAnimatedStar());
@@ -100,6 +249,11 @@ public class Textures {
 		getTextures();
 	}
 	
+	/**
+	 * Gets the textures.
+	 *
+	 * @return the textures
+	 */
 	private void getTextures(){
 		player[0] = ss.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		player[1] = ss.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);

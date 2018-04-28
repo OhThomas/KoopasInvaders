@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -7,23 +10,54 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.libs.Animation;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Enemy.
+ */
 public class Enemy extends GameObject implements EntityB{
 
+	/** The barrier. */
 	private boolean barrier = false;
 	
+	/** The tex. */
 	private Textures tex;
+	
+	/** The game. */
 	private Game game;
+	
+	/** The c. */
 	private Controller c;
+	
+	/** The speed increase. */
 	public double speedIncrease = 0.1;
+	
+	/** The goombais dead. */
 	public boolean goombaisDead = false;
 	
+	/** The anim. */
 	Animation anim;
+	
+	/** The anim explosion. */
 	Animation animExplosion;
+	
+	/** The coin. */
 	Animation coin;
 	
+	/** The goomba death sound loop. */
 	SoundLoops goombaDeathSoundLoop;
+	
+	/** The coin sound loop. */
 	SoundLoops coinSoundLoop;
 	
+	/**
+	 * Instantiates a new enemy.
+	 *
+	 * @param x the x
+	 * @param y the y
+	 * @param tex the tex
+	 * @param c the c
+	 * @param game the game
+	 */
 	public Enemy(double x, double y, Textures tex, Controller c, Game game){
 		super(x,y);
 		this.tex = tex;
@@ -43,6 +77,9 @@ public class Enemy extends GameObject implements EntityB{
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#tick()
+	 */
 	public void tick(){
 		if(!goombaisDead){
 			if (game.enemyHitRightBarrier == false){
@@ -164,6 +201,9 @@ public class Enemy extends GameObject implements EntityB{
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#render(java.awt.Graphics)
+	 */
 	public void render(Graphics g){
 		if(goombaisDead && animExplosion.getCount() != 3)
 			animExplosion.drawAnimation(g, x, y, 0);
@@ -193,42 +233,80 @@ public class Enemy extends GameObject implements EntityB{
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#getBounds()
+	 */
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, 16, 16);
 	}
 	
+	/**
+	 * Sets the y.
+	 *
+	 * @param y the new y
+	 */
 	public void setY(double y){
 		this.y = y;
 	}
 	
+	/**
+	 * Sets the speed.
+	 *
+	 * @param speed the new speed
+	 */
 	public void setSpeed(double speed){
 		this.speedIncrease = speed;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#getX()
+	 */
 	public double getX() {
 		return x;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#getY()
+	 */
 	public double getY(){
 		return y;
 	}
 	
+	/**
+	 * Gets the goomba death sound loop.
+	 *
+	 * @return the goomba death sound loop
+	 */
 	public SoundLoops getGoombaDeathSoundLoop() {
 		return goombaDeathSoundLoop;
 	}
 
+	/**
+	 * Sets the goomba death sound loop.
+	 *
+	 * @param goombaDeathSoundLoop the new goomba death sound loop
+	 */
 	public void setGoombaDeathSoundLoop(SoundLoops goombaDeathSoundLoop) {
 		this.goombaDeathSoundLoop = goombaDeathSoundLoop;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#getEntityBDead()
+	 */
 	public boolean getEntityBDead() {
 		return goombaisDead;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#getWidth()
+	 */
 	public int getWidth() {
 		return 16;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.game.src.main.classes.EntityB#getHeight()
+	 */
 	public int getHeight() {
 		return 16;
 	}
