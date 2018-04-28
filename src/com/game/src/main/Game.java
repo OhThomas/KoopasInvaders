@@ -1257,6 +1257,38 @@ public class Game extends Canvas implements Runnable {
 				gameOverSoundLoop.stop();
 			if(gameOverWinningSoundLoop.clipIsActive())
 				gameOverWinningSoundLoop.stop();
+			for(int i = 0; i < this.marioDanceSoundLoops.size(); i++) {
+				marioDanceSoundLoops.get(i).setSoundLoopBoolean(false);
+				marioDanceSoundLoops.get(i).setFramePosition(0);
+			}
+			for(int i = 0; i < this.marioVoices.size(); i++) {
+				marioVoices.get(i).setSoundLoopBoolean(false);
+				marioVoices.get(i).setFramePosition(0);
+			}
+			for(int i = 0; i < this.gameSoundLoops.size(); i++) {
+				gameSoundLoops.get(i).setSoundLoopBoolean(false);
+				gameSoundLoops.get(i).setFramePosition(0);
+			}
+			this.marioHasBeenInvincible = false;
+			this.pauseSoundFXTimer = 0;
+			this.soundFXBoolean = false;
+			this.soundFXClip1Reset = false;
+			this.soundFXClip1SoundLoop.setFramePosition(0);
+			this.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
+			this.soundFXClip2SoundLoop.setFramePosition(0);
+			this.soundFXClip2SoundLoop.setSoundLoopBoolean(false);
+			this.soundFXisPlaying = false;
+			this.slowingDownTimerLong = 0;
+			this.animationTimer1 = 0;
+			this.enemyHitPauseTimer = 0;
+			this.marioLetsGoPauseTimer = 0;
+			this.pauseSoundFXTimer = 0;
+			this.visualPauseTimer = 0;
+			this.enemyHitPauseBoolean = false;
+			this.paused = false;
+			this.userHasPaused = false;
+			this.enemyHitRightBarrier = false;
+			this.enemySpeedIncrease = 0.5;
 			spawnDone = false;
 			spawnDone2 = false;
 			spawnDone3 = false;
@@ -1265,6 +1297,11 @@ public class Game extends Canvas implements Runnable {
 			gameOverBoolean = false;
 			Health = 100;
 			this.gameOverIrisSoundLoop.setSoundLoopBoolean(false);
+			this.marioSpinningSoundLoop.setSoundLoopBoolean(false);
+			this.marioGrowthPosePause = false;
+			this.marioGrowthPosePauseTimer = 0;
+			this.marioDancePosePause = false;
+			this.marioDancePosePauseTimer = 0;
 			this.getHUD().setScore(0);
 			this.getHUD().HEALTH = 100;
 			this.getHUD().setTimer1(100);
@@ -1274,6 +1311,15 @@ public class Game extends Canvas implements Runnable {
 			p.gameOver = false;
 			p.playerWinSetup = false;
 			p.playerWinTimer = 0;
+			p.setDanceProgressionCount(0);
+			p.setDancingInProgress(false);
+			p.setGrowingAnimationFinished(false);
+			p.setSpinningAnimationFinished(false);
+			p.setDancingAnimationFinished(false);
+			p.marioEntranceDancingAnim.setCount(0);
+			p.marioEntranceGrowingAnim.setCount(0);
+			p.marioEntranceSpinningAnim.setCount(0);
+			p.marioEntranceTurningAroundAnim.setCount(0);
 			bb.reset();
 			paused = false;
 			tex = new Textures(this);
