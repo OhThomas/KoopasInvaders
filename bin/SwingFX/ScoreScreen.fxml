@@ -16,6 +16,11 @@
             </ImageView>
             <TextField fx:id="nameTxtField" layoutX="245.0" layoutY="220.0" onAction="#handle" promptText="Enter Name" />
             <Button fx:id="button" layoutX="281.0" layoutY="245.0" mnemonicParsing="false" onAction="#buttonPressed" text="Enter Score" />
+            <ImageView fitHeight="45.0" fitWidth="200.0" layoutX="220.0" layoutY="175.0">
+               <image>
+                  <Image url="@../../res/setScore.png" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
    </children>
