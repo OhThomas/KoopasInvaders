@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="240.0" maxWidth="320.0" prefHeight="240.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SwingFX.MenuMusicController">
+   <children>
+      <AnchorPane prefHeight="240.0" prefWidth="320.0">
+         <children>
+            <ImageView fitHeight="553.0" fitWidth="771.0">
+               <image>
+                  <Image url="@../../res/BackgroundBlur/starsbackgroundbiggerblur14.png" />
+               </image>
+            </ImageView>
+            <Slider fx:id="volumeSlider" layoutX="52.0" layoutY="91.0" />
+            <TextField editable="false" layoutX="48.0" layoutY="60.0" text="              Volume" />
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>
