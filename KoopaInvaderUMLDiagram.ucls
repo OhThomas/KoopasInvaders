@@ -984,1320 +984,1324 @@
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="234">    
+  <dependency id="234">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="41"/>  
+  </dependency>  
+  <association id="235">    
     <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="235" name="game"/>      
-      <multiplicity id="236" minimum="0" maximum="1"/>    
+      <attribute id="236" name="game"/>      
+      <multiplicity id="237" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <realization id="237">    
+  <realization id="238">    
     <end type="SOURCE" refId="20"/>    
     <end type="TARGET" refId="31"/>  
   </realization>  
-  <association id="238">    
+  <association id="239">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="239" name="game"/>      
-      <multiplicity id="240" minimum="0" maximum="1"/>    
+      <attribute id="240" name="game"/>      
+      <multiplicity id="241" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="241">    
+  <dependency id="242">    
     <end type="SOURCE" refId="5"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <association id="242">    
+  <association id="243">    
     <bendpoint x="885" y="975"/>    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="243" name="game"/>      
-      <multiplicity id="244" minimum="0" maximum="1"/>    
+      <attribute id="244" name="game"/>      
+      <multiplicity id="245" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="245">    
+  <dependency id="246">    
     <end type="SOURCE" refId="14"/>    
     <end type="TARGET" refId="17"/>  
   </dependency>  
-  <dependency id="246">    
+  <dependency id="247">    
     <end type="SOURCE" refId="10"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <association id="247">    
+  <association id="248">    
     <bendpoint x="1244" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="248" name="goomba3DeathSmokeSoundLoop"/>      
-      <multiplicity id="249" minimum="0" maximum="2147483647"/>    
+      <attribute id="249" name="goomba3DeathSmokeSoundLoop"/>      
+      <multiplicity id="250" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="250">    
+  <dependency id="251">    
     <end type="SOURCE" refId="41"/>    
     <end type="TARGET" refId="45"/>  
   </dependency>  
-  <association id="251">    
+  <association id="252">    
     <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="252" name="animD"/>      
-      <multiplicity id="253" minimum="0" maximum="1"/>    
+      <attribute id="253" name="animD"/>      
+      <multiplicity id="254" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="254">    
+  <association id="255">    
     <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="255" name="anim"/>      
-      <multiplicity id="256" minimum="0" maximum="1"/>    
+      <attribute id="256" name="anim"/>      
+      <multiplicity id="257" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="257">    
+  <association id="258">    
     <bendpoint x="1328" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="258" name="bulletBillDeathSoundLoop"/>      
-      <multiplicity id="259" minimum="0" maximum="2147483647"/>    
+      <attribute id="259" name="bulletBillDeathSoundLoop"/>      
+      <multiplicity id="260" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="260">    
+  <dependency id="261">    
     <end type="SOURCE" refId="27"/>    
     <end type="TARGET" refId="32"/>  
   </dependency>  
-  <association id="261">    
+  <association id="262">    
     <bendpoint x="927" y="975"/>    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="262" name="game"/>      
-      <multiplicity id="263" minimum="0" maximum="1"/>    
+      <attribute id="263" name="game"/>      
+      <multiplicity id="264" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="264">    
+  <association id="265">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="265" name="ee"/>      
-      <multiplicity id="266" minimum="0" maximum="2147483647"/>    
+      <attribute id="266" name="ee"/>      
+      <multiplicity id="267" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="32" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="267">    
+  <association id="268">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="268" name="starAnim2l"/>      
-      <multiplicity id="269" minimum="0" maximum="1"/>    
+      <attribute id="269" name="starAnim2l"/>      
+      <multiplicity id="270" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="270">    
+  <dependency id="271">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="40"/>  
   </dependency>  
-  <association id="271">    
+  <association id="272">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="272" name="enta"/>      
-      <multiplicity id="273" minimum="0" maximum="1"/>    
+      <attribute id="273" name="enta"/>      
+      <multiplicity id="274" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="35" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="274">    
+  <dependency id="275">    
     <bendpoint x="2011" y="1582"/>    
     <end type="SOURCE" refId="12"/>    
     <end type="TARGET" refId="25"/>  
   </dependency>  
-  <realization id="275">    
+  <realization id="276">    
     <end type="SOURCE" refId="5"/>    
     <end type="TARGET" refId="33"/>  
   </realization>  
-  <association id="276">    
+  <association id="277">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="277" name="eb"/>      
-      <multiplicity id="278" minimum="0" maximum="2147483647"/>    
+      <attribute id="278" name="eb"/>      
+      <multiplicity id="279" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="33" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="279">    
+  <dependency id="280">    
     <end type="SOURCE" refId="4"/>    
     <end type="TARGET" refId="2"/>  
   </dependency>  
-  <dependency id="280">    
+  <dependency id="281">    
     <end type="SOURCE" refId="27"/>    
     <end type="TARGET" refId="31"/>  
   </dependency>  
-  <generalization id="281">    
+  <generalization id="282">    
     <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="18"/>  
   </generalization>  
-  <association id="282">    
+  <association id="283">    
     <bendpoint x="1475" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="283" name="gameOverWinningSoundLoop"/>      
-      <multiplicity id="284" minimum="0" maximum="1"/>    
+      <attribute id="284" name="gameOverWinningSoundLoop"/>      
+      <multiplicity id="285" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="285">    
+  <association id="286">    
     <bendpoint x="646" y="975"/>    
     <bendpoint x="646" y="1582"/>    
     <bendpoint x="646" y="5195"/>    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="286" name="tex"/>      
-      <multiplicity id="287" minimum="0" maximum="1"/>    
+      <attribute id="287" name="tex"/>      
+      <multiplicity id="288" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="288">    
+  <association id="289">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="289" name="enemy"/>      
-      <multiplicity id="290" minimum="0" maximum="1"/>    
+      <attribute id="290" name="enemy"/>      
+      <multiplicity id="291" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="291">    
+  <dependency id="292">    
     <end type="SOURCE" refId="24"/>    
     <end type="TARGET" refId="29"/>  
   </dependency>  
-  <association id="292">    
+  <association id="293">    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="293" name="coin"/>      
-      <multiplicity id="294" minimum="0" maximum="1"/>    
+      <attribute id="294" name="coin"/>      
+      <multiplicity id="295" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="295">    
+  <dependency id="296">    
     <end type="SOURCE" refId="37"/>    
     <end type="TARGET" refId="13"/>  
   </dependency>  
-  <dependency id="296">    
+  <dependency id="297">    
     <end type="SOURCE" refId="13"/>    
     <end type="TARGET" refId="28"/>  
   </dependency>  
-  <association id="297">    
+  <association id="298">    
     <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="298" name="itemEnemySoundLoop"/>      
-      <multiplicity id="299" minimum="0" maximum="1"/>    
+      <attribute id="299" name="itemEnemySoundLoop"/>      
+      <multiplicity id="300" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="300">    
+  <association id="301">    
     <bendpoint x="1286" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="301" name="gameOverSoundLoop"/>      
-      <multiplicity id="302" minimum="0" maximum="1"/>    
+      <attribute id="302" name="gameOverSoundLoop"/>      
+      <multiplicity id="303" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="303">    
+  <dependency id="304">    
     <end type="SOURCE" refId="20"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <dependency id="304">    
+  <dependency id="305">    
     <end type="SOURCE" refId="28"/>    
     <end type="TARGET" refId="27"/>  
   </dependency>  
-  <dependency id="305">    
+  <dependency id="306">    
     <end type="SOURCE" refId="10"/>    
     <end type="TARGET" refId="27"/>  
   </dependency>  
-  <association id="306">    
+  <association id="307">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="307" name="marioAdvanceSprites"/>      
-      <multiplicity id="308" minimum="0" maximum="1"/>    
+      <attribute id="308" name="marioAdvanceSprites"/>      
+      <multiplicity id="309" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="309">    
+  <association id="310">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="310" name="menu"/>      
-      <multiplicity id="311" minimum="0" maximum="1"/>    
+      <attribute id="311" name="menu"/>      
+      <multiplicity id="312" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="24" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="312">    
+  <association id="313">    
     <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="313" name="animBackwards"/>      
-      <multiplicity id="314" minimum="0" maximum="1"/>    
+      <attribute id="314" name="animBackwards"/>      
+      <multiplicity id="315" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="315">    
+  <association id="316">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="316" name="m"/>      
-      <multiplicity id="317" minimum="0" maximum="1"/>    
+      <attribute id="317" name="m"/>      
+      <multiplicity id="318" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="47" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="318">    
+  <dependency id="319">    
     <end type="SOURCE" refId="17"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <realization id="319">    
+  <realization id="320">    
     <end type="SOURCE" refId="10"/>    
     <end type="TARGET" refId="31"/>  
   </realization>  
-  <association id="320">    
+  <association id="321">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="321" name="c"/>      
-      <multiplicity id="322" minimum="0" maximum="1"/>    
+      <attribute id="322" name="c"/>      
+      <multiplicity id="323" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="26" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="323">    
+  <association id="324">    
     <bendpoint x="1852" y="1582"/>    
     <bendpoint x="1948" y="5195"/>    
     <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="324" name="tex"/>      
-      <multiplicity id="325" minimum="0" maximum="1"/>    
+      <attribute id="325" name="tex"/>      
+      <multiplicity id="326" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="326">    
+  <association id="327">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="327" name="goombaDeathSprites"/>      
-      <multiplicity id="328" minimum="0" maximum="1"/>    
+      <attribute id="328" name="goombaDeathSprites"/>      
+      <multiplicity id="329" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="329">    
+  <association id="330">    
     <bendpoint x="562" y="975"/>    
     <bendpoint x="583" y="1582"/>    
     <bendpoint x="583" y="5195"/>    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="330" name="tex"/>      
-      <multiplicity id="331" minimum="0" maximum="1"/>    
+      <attribute id="331" name="tex"/>      
+      <multiplicity id="332" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="332">    
+  <association id="333">    
     <bendpoint x="1349" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="333" name="coinSoundLoop"/>      
-      <multiplicity id="334" minimum="0" maximum="2147483647"/>    
+      <attribute id="334" name="coinSoundLoop"/>      
+      <multiplicity id="335" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="335">    
+  <generalization id="336">    
     <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="18"/>  
   </generalization>  
-  <association id="336">    
+  <association id="337">    
     <bendpoint x="2379" y="1582"/>    
     <bendpoint x="2379" y="5195"/>    
     <end type="SOURCE" refId="28" navigable="false">      
-      <attribute id="337" name="tex"/>      
-      <multiplicity id="338" minimum="0" maximum="1"/>    
+      <attribute id="338" name="tex"/>      
+      <multiplicity id="339" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="339">    
+  <dependency id="340">    
     <end type="SOURCE" refId="20"/>    
     <end type="TARGET" refId="27"/>  
   </dependency>  
-  <generalization id="340">    
+  <generalization id="341">    
     <bendpoint x="2829" y="-712"/>    
     <end type="SOURCE" refId="10"/>    
     <end type="TARGET" refId="18"/>  
   </generalization>  
-  <association id="341">    
+  <association id="342">    
     <end type="SOURCE" refId="20" navigable="false">      
-      <attribute id="342" name="anim"/>      
-      <multiplicity id="343" minimum="0" maximum="1"/>    
+      <attribute id="343" name="anim"/>      
+      <multiplicity id="344" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="344">    
+  <association id="345">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="345" name="fullMarioSprites"/>      
-      <multiplicity id="346" minimum="0" maximum="1"/>    
+      <attribute id="346" name="fullMarioSprites"/>      
+      <multiplicity id="347" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="347">    
+  <association id="348">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="348" name="bowserSprites"/>      
-      <multiplicity id="349" minimum="0" maximum="1"/>    
+      <attribute id="349" name="bowserSprites"/>      
+      <multiplicity id="350" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="350">    
+  <dependency id="351">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="31"/>  
   </dependency>  
-  <association id="351">    
+  <association id="352">    
     <bendpoint x="1563" y="975"/>    
     <bendpoint x="1873" y="1582"/>    
     <bendpoint x="1969" y="5195"/>    
     <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="352" name="tex"/>      
-      <multiplicity id="353" minimum="0" maximum="1"/>    
+      <attribute id="353" name="tex"/>      
+      <multiplicity id="354" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="354">    
+  <association id="355">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="355" name="ec"/>      
-      <multiplicity id="356" minimum="0" maximum="2147483647"/>    
+      <attribute id="356" name="ec"/>      
+      <multiplicity id="357" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="34" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="357">    
+  <dependency id="358">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <association id="358">    
+  <association id="359">    
     <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="359" name="game"/>      
-      <multiplicity id="360" minimum="0" maximum="1"/>    
+      <attribute id="360" name="game"/>      
+      <multiplicity id="361" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="361">    
+  <dependency id="362">    
     <end type="SOURCE" refId="27"/>    
     <end type="TARGET" refId="34"/>  
   </dependency>  
-  <association id="362">    
+  <association id="363">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="363" name="marioSlowingDownSprites"/>      
-      <multiplicity id="364" minimum="0" maximum="1"/>    
+      <attribute id="364" name="marioSlowingDownSprites"/>      
+      <multiplicity id="365" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <realization id="365">    
+  <realization id="366">    
     <end type="SOURCE" refId="16"/>    
     <end type="TARGET" refId="34"/>  
   </realization>  
-  <association id="366">    
+  <association id="367">    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="367" name="anim"/>      
-      <multiplicity id="368" minimum="0" maximum="1"/>    
+      <attribute id="368" name="anim"/>      
+      <multiplicity id="369" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="369">    
+  <association id="370">    
     <bendpoint x="1873" y="975"/>    
     <bendpoint x="1990" y="1582"/>    
     <bendpoint x="1990" y="5195"/>    
     <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="370" name="tex"/>      
-      <multiplicity id="371" minimum="0" maximum="1"/>    
+      <attribute id="371" name="tex"/>      
+      <multiplicity id="372" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="372">    
+  <association id="373">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="373" name="ss"/>      
-      <multiplicity id="374" minimum="0" maximum="1"/>    
+      <attribute id="374" name="ss"/>      
+      <multiplicity id="375" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="375">    
+  <association id="376">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="376" name="animSlowingDownl"/>      
-      <multiplicity id="377" minimum="0" maximum="1"/>    
+      <attribute id="377" name="animSlowingDownl"/>      
+      <multiplicity id="378" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="378">    
+  <association id="379">    
     <bendpoint x="948" y="975"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="379" name="e"/>      
-      <multiplicity id="380" minimum="0" maximum="1"/>    
+      <attribute id="380" name="e"/>      
+      <multiplicity id="381" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="381">    
+  <dependency id="382">    
     <end type="SOURCE" refId="22"/>    
     <end type="TARGET" refId="19"/>  
   </dependency>  
-  <association id="382">    
+  <association id="383">    
     <bendpoint x="1852" y="975"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="383" name="p"/>      
-      <multiplicity id="384" minimum="0" maximum="1"/>    
+      <attribute id="384" name="p"/>      
+      <multiplicity id="385" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="22" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="385">    
+  <generalization id="386">    
     <end type="SOURCE" refId="22"/>    
     <end type="TARGET" refId="18"/>  
   </generalization>  
-  <dependency id="386">    
+  <dependency id="387">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="1"/>  
   </dependency>  
-  <dependency id="387">    
+  <dependency id="388">    
     <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="17"/>  
   </dependency>  
-  <dependency id="388">    
+  <dependency id="389">    
     <end type="SOURCE" refId="13"/>    
     <end type="TARGET" refId="12"/>  
   </dependency>  
-  <association id="389">    
+  <association id="390">    
     <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="390" name="game"/>      
-      <multiplicity id="391" minimum="0" maximum="1"/>    
+      <attribute id="391" name="game"/>      
+      <multiplicity id="392" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="392">    
+  <association id="393">    
     <bendpoint x="520" y="975"/>    
     <bendpoint x="520" y="1582"/>    
     <bendpoint x="520" y="5195"/>    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="393" name="goomba2DeathSoundLoop"/>      
-      <multiplicity id="394" minimum="0" maximum="1"/>    
+      <attribute id="394" name="goomba2DeathSoundLoop"/>      
+      <multiplicity id="395" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="395">    
+  <association id="396">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="396" name="bulletBillSprites"/>      
-      <multiplicity id="397" minimum="0" maximum="1"/>    
+      <attribute id="397" name="bulletBillSprites"/>      
+      <multiplicity id="398" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="398">    
+  <association id="399">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="399" name="entc"/>      
-      <multiplicity id="400" minimum="0" maximum="1"/>    
+      <attribute id="400" name="entc"/>      
+      <multiplicity id="401" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="34" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="401">    
+  <association id="402">    
     <bendpoint x="1202" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="402" name="marioDeathSoundLoop"/>      
-      <multiplicity id="403" minimum="0" maximum="1"/>    
+      <attribute id="403" name="marioDeathSoundLoop"/>      
+      <multiplicity id="404" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="404">    
+  <association id="405">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="405" name="ea"/>      
-      <multiplicity id="406" minimum="0" maximum="2147483647"/>    
+      <attribute id="406" name="ea"/>      
+      <multiplicity id="407" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="35" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="407">    
+  <association id="408">    
     <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="408" name="animEntrance"/>      
-      <multiplicity id="409" minimum="0" maximum="1"/>    
+      <attribute id="409" name="animEntrance"/>      
+      <multiplicity id="410" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="410">    
+  <association id="411">    
     <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="411" name="game"/>      
-      <multiplicity id="412" minimum="0" maximum="1"/>    
+      <attribute id="412" name="game"/>      
+      <multiplicity id="413" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="413">    
+  <association id="414">    
     <bendpoint x="2297" y="1582"/>    
     <bendpoint x="2297" y="5195"/>    
     <end type="SOURCE" refId="28" navigable="false">      
-      <attribute id="414" name="itemSoundLoop"/>      
-      <multiplicity id="415" minimum="0" maximum="1"/>    
+      <attribute id="415" name="itemSoundLoop"/>      
+      <multiplicity id="416" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="416">    
+  <dependency id="417">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="41"/>  
   </dependency>  
-  <association id="417">    
+  <association id="418">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="418" name="shootingStarSprites"/>      
-      <multiplicity id="419" minimum="0" maximum="1"/>    
+      <attribute id="419" name="shootingStarSprites"/>      
+      <multiplicity id="420" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="420">    
+  <association id="421">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="421" name="animd"/>      
-      <multiplicity id="422" minimum="0" maximum="1"/>    
+      <attribute id="422" name="animd"/>      
+      <multiplicity id="423" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="423">    
+  <association id="424">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="424" name="starAnim3l"/>      
-      <multiplicity id="425" minimum="0" maximum="1"/>    
+      <attribute id="425" name="starAnim3l"/>      
+      <multiplicity id="426" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="426">    
+  <association id="427">    
     <bendpoint x="3157" y="1582"/>    
     <bendpoint x="3157" y="5195"/>    
     <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="427" name="tex"/>      
-      <multiplicity id="428" minimum="0" maximum="1"/>    
+      <attribute id="428" name="tex"/>      
+      <multiplicity id="429" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="429">    
+  <dependency id="430">    
     <end type="SOURCE" refId="23"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <dependency id="430">    
+  <dependency id="431">    
     <bendpoint x="1252" y="975"/>    
     <end type="SOURCE" refId="14"/>    
     <end type="TARGET" refId="27"/>  
   </dependency>  
-  <dependency id="431">    
+  <dependency id="432">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="1"/>  
   </dependency>  
-  <association id="432">    
+  <association id="433">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="433" name="marioEntranceGrowingAnim"/>      
-      <multiplicity id="434" minimum="0" maximum="1"/>    
+      <attribute id="434" name="marioEntranceGrowingAnim"/>      
+      <multiplicity id="435" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="435">    
+  <association id="436">    
     <bendpoint x="1273" y="975"/>    
     <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="436" name="game"/>      
-      <multiplicity id="437" minimum="0" maximum="1"/>    
+      <attribute id="437" name="game"/>      
+      <multiplicity id="438" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="438">    
+  <association id="439">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="439" name="ec"/>      
-      <multiplicity id="440" minimum="0" maximum="2147483647"/>    
+      <attribute id="440" name="ec"/>      
+      <multiplicity id="441" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="34" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="441">    
+  <association id="442">    
     <bendpoint x="1433" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="442" name="menuSoundLoops"/>      
-      <multiplicity id="443" minimum="0" maximum="2147483647"/>    
+      <attribute id="443" name="menuSoundLoops"/>      
+      <multiplicity id="444" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="444">    
+  <association id="445">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="445" name="starAnim2r"/>      
-      <multiplicity id="446" minimum="0" maximum="1"/>    
+      <attribute id="446" name="starAnim2r"/>      
+      <multiplicity id="447" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="447">    
+  <dependency id="448">    
     <bendpoint x="1894" y="975"/>    
     <bendpoint x="1894" y="1582"/>    
     <end type="SOURCE" refId="23"/>    
     <end type="TARGET" refId="6"/>  
   </dependency>  
-  <association id="448">    
+  <association id="449">    
     <bendpoint x="1139" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="449" name="marioSpinningSoundLoop"/>      
-      <multiplicity id="450" minimum="0" maximum="1"/>    
+      <attribute id="450" name="marioSpinningSoundLoop"/>      
+      <multiplicity id="451" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="451">    
+  <association id="452">    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="452" name="animExplosion"/>      
-      <multiplicity id="453" minimum="0" maximum="1"/>    
+      <attribute id="453" name="animExplosion"/>      
+      <multiplicity id="454" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="454">    
+  <association id="455">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="455" name="starAnim1"/>      
-      <multiplicity id="456" minimum="0" maximum="1"/>    
+      <attribute id="456" name="starAnim1"/>      
+      <multiplicity id="457" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="457">    
+  <association id="458">    
     <bendpoint x="2825" y="975"/>    
     <bendpoint x="2825" y="1582"/>    
     <bendpoint x="2825" y="5195"/>    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="458" name="tex"/>      
-      <multiplicity id="459" minimum="0" maximum="1"/>    
+      <attribute id="459" name="tex"/>      
+      <multiplicity id="460" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="460">    
+  <dependency id="461">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="33"/>  
   </dependency>  
-  <dependency id="461">    
+  <dependency id="462">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="4"/>  
   </dependency>  
-  <dependency id="462">    
+  <dependency id="463">    
     <end type="SOURCE" refId="40"/>    
     <end type="TARGET" refId="48"/>  
   </dependency>  
-  <association id="463">    
+  <association id="464">    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="464" name="c"/>      
-      <multiplicity id="465" minimum="0" maximum="1"/>    
+      <attribute id="465" name="c"/>      
+      <multiplicity id="466" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="26" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <nesting id="466">    
+  <nesting id="467">    
     <end type="SOURCE" refId="13"/>    
     <end type="TARGET" refId="25"/>  
   </nesting>  
-  <association id="467">    
+  <association id="468">    
     <bendpoint x="1831" y="975"/>    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="468" name="game"/>      
-      <multiplicity id="469" minimum="0" maximum="1"/>    
+      <attribute id="469" name="game"/>      
+      <multiplicity id="470" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="470">    
+  <association id="471">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="471" name="starAnim2d"/>      
-      <multiplicity id="472" minimum="0" maximum="1"/>    
+      <attribute id="472" name="starAnim2d"/>      
+      <multiplicity id="473" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="473">    
+  <dependency id="474">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="3"/>  
   </dependency>  
-  <dependency id="474">    
+  <dependency id="475">    
     <bendpoint x="2211" y="1582"/>    
     <end type="SOURCE" refId="28"/>    
     <end type="TARGET" refId="6"/>  
   </dependency>  
-  <association id="475">    
+  <association id="476">    
     <bendpoint x="1307" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="476" name="pauseSoundFXSoundLoop"/>      
-      <multiplicity id="477" minimum="0" maximum="1"/>    
+      <attribute id="477" name="pauseSoundFXSoundLoop"/>      
+      <multiplicity id="478" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="478">    
+  <association id="479">    
     <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="479" name="animExplosion"/>      
-      <multiplicity id="480" minimum="0" maximum="1"/>    
+      <attribute id="480" name="animExplosion"/>      
+      <multiplicity id="481" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="481">    
+  <dependency id="482">    
     <end type="SOURCE" refId="17"/>    
     <end type="TARGET" refId="27"/>  
   </dependency>  
-  <dependency id="482">    
+  <dependency id="483">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="32"/>  
   </dependency>  
-  <dependency id="483">    
+  <dependency id="484">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="44"/>  
   </dependency>  
-  <association id="484">    
+  <association id="485">    
     <bendpoint x="604" y="975"/>    
     <bendpoint x="604" y="1582"/>    
     <bendpoint x="604" y="5195"/>    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="485" name="goombaDeathSoundLoop"/>      
-      <multiplicity id="486" minimum="0" maximum="1"/>    
+      <attribute id="486" name="goombaDeathSoundLoop"/>      
+      <multiplicity id="487" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="487">    
+  <dependency id="488">    
     <bendpoint x="1097" y="5195"/>    
     <end type="SOURCE" refId="13"/>    
     <end type="TARGET" refId="29"/>  
   </dependency>  
-  <association id="488">    
+  <association id="489">    
     <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="489" name="animDR"/>      
-      <multiplicity id="490" minimum="0" maximum="1"/>    
+      <attribute id="490" name="animDR"/>      
+      <multiplicity id="491" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="491">    
+  <generalization id="492">    
     <bendpoint x="2685" y="-712"/>    
     <end type="SOURCE" refId="20"/>    
     <end type="TARGET" refId="18"/>  
   </generalization>  
-  <association id="492">    
+  <association id="493">    
     <end type="SOURCE" refId="20" navigable="false">      
-      <attribute id="493" name="game"/>      
-      <multiplicity id="494" minimum="0" maximum="1"/>    
+      <attribute id="494" name="game"/>      
+      <multiplicity id="495" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="495">    
+  <association id="496">    
     <bendpoint x="5789" y="3227"/>    
     <end type="SOURCE" refId="41" navigable="false">      
-      <attribute id="496" name="swingFXMLPanel"/>      
-      <multiplicity id="497" minimum="0" maximum="1"/>    
+      <attribute id="497" name="swingFXMLPanel"/>      
+      <multiplicity id="498" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="48" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="498">    
+  <dependency id="499">    
     <end type="SOURCE" refId="16"/>    
     <end type="TARGET" refId="27"/>  
   </dependency>  
-  <association id="499">    
+  <association id="500">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="500" name="marioEntranceTurningAroundAnim"/>      
-      <multiplicity id="501" minimum="0" maximum="1"/>    
+      <attribute id="501" name="marioEntranceTurningAroundAnim"/>      
+      <multiplicity id="502" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="502">    
+  <association id="503">    
     <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="503" name="animDeath"/>      
-      <multiplicity id="504" minimum="0" maximum="1"/>    
+      <attribute id="504" name="animDeath"/>      
+      <multiplicity id="505" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="505">    
+  <association id="506">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="506" name="ed"/>      
-      <multiplicity id="507" minimum="0" maximum="2147483647"/>    
+      <attribute id="507" name="ed"/>      
+      <multiplicity id="508" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="31" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="508">    
+  <association id="509">    
     <end type="SOURCE" refId="41" navigable="false">      
-      <attribute id="509" name="dataModel"/>      
-      <multiplicity id="510" minimum="0" maximum="1"/>    
+      <attribute id="510" name="dataModel"/>      
+      <multiplicity id="511" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="42" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="511">    
+  <dependency id="512">    
     <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <association id="512">    
+  <association id="513">    
     <bendpoint x="583" y="975"/>    
     <bendpoint x="562" y="1582"/>    
     <bendpoint x="562" y="5195"/>    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="513" name="coinSoundLoop"/>      
-      <multiplicity id="514" minimum="0" maximum="1"/>    
+      <attribute id="514" name="coinSoundLoop"/>      
+      <multiplicity id="515" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="515">    
+  <association id="516">    
     <end type="SOURCE" refId="43" navigable="false">      
-      <attribute id="516" name="swingPanel"/>      
-      <multiplicity id="517" minimum="0" maximum="1"/>    
+      <attribute id="517" name="swingPanel"/>      
+      <multiplicity id="518" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="37" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="518">    
+  <generalization id="519">    
     <end type="SOURCE" refId="23"/>    
     <end type="TARGET" refId="18"/>  
   </generalization>  
-  <dependency id="519">    
+  <dependency id="520">    
     <end type="SOURCE" refId="1"/>    
     <end type="TARGET" refId="2"/>  
   </dependency>  
-  <association id="520">    
+  <association id="521">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="521" name="mario1StarSprites"/>      
-      <multiplicity id="522" minimum="0" maximum="1"/>    
+      <attribute id="522" name="mario1StarSprites"/>      
+      <multiplicity id="523" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="523">    
+  <association id="524">    
     <bendpoint x="2783" y="975"/>    
     <bendpoint x="2783" y="1582"/>    
     <bendpoint x="2783" y="5195"/>    
     <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="524" name="tex"/>      
-      <multiplicity id="525" minimum="0" maximum="1"/>    
+      <attribute id="525" name="tex"/>      
+      <multiplicity id="526" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="526">    
+  <association id="527">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="527" name="gameOver"/>      
-      <multiplicity id="528" minimum="0" maximum="1"/>    
+      <attribute id="528" name="gameOver"/>      
+      <multiplicity id="529" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="30" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="529">    
+  <association id="530">    
     <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="530" name="animHit"/>      
-      <multiplicity id="531" minimum="0" maximum="1"/>    
+      <attribute id="531" name="animHit"/>      
+      <multiplicity id="532" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="532">    
+  <association id="533">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="533" name="transparentBlocksAnim"/>      
-      <multiplicity id="534" minimum="0" maximum="1"/>    
+      <attribute id="534" name="transparentBlocksAnim"/>      
+      <multiplicity id="535" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <realization id="535">    
+  <realization id="536">    
     <end type="SOURCE" refId="22"/>    
     <end type="TARGET" refId="35"/>  
   </realization>  
-  <association id="536">    
+  <association id="537">    
     <end type="SOURCE" refId="14" navigable="false">      
-      <attribute id="537" name="anim"/>      
-      <multiplicity id="538" minimum="0" maximum="1"/>    
+      <attribute id="538" name="anim"/>      
+      <multiplicity id="539" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="539">    
+  <association id="540">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="540" name="marioPlayerAnimationsSprites"/>      
-      <multiplicity id="541" minimum="0" maximum="1"/>    
+      <attribute id="541" name="marioPlayerAnimationsSprites"/>      
+      <multiplicity id="542" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="542">    
+  <dependency id="543">    
     <bendpoint x="1189" y="975"/>    
     <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="27"/>  
   </dependency>  
-  <association id="543">    
+  <association id="544">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="544" name="currentItem"/>      
-      <multiplicity id="545" minimum="0" maximum="1"/>    
+      <attribute id="545" name="currentItem"/>      
+      <multiplicity id="546" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="546">    
+  <association id="547">    
     <bendpoint x="730" y="975"/>    
     <bendpoint x="667" y="1582"/>    
     <bendpoint x="667" y="5195"/>    
     <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="547" name="goomba3DeathSmokeSoundLoop"/>      
-      <multiplicity id="548" minimum="0" maximum="1"/>    
+      <attribute id="548" name="goomba3DeathSmokeSoundLoop"/>      
+      <multiplicity id="549" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="549">    
+  <association id="550">    
     <bendpoint x="1496" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="550" name="marioVoices"/>      
-      <multiplicity id="551" minimum="0" maximum="2147483647"/>    
+      <attribute id="551" name="marioVoices"/>      
+      <multiplicity id="552" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="552">    
+  <dependency id="553">    
     <end type="SOURCE" refId="17"/>    
     <end type="TARGET" refId="33"/>  
   </dependency>  
-  <association id="553">    
+  <association id="554">    
     <bendpoint x="688" y="1582"/>    
     <bendpoint x="688" y="5195"/>    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="554" name="tex"/>      
-      <multiplicity id="555" minimum="0" maximum="1"/>    
+      <attribute id="555" name="tex"/>      
+      <multiplicity id="556" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="556">    
+  <association id="557">    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="557" name="animDeathL"/>      
-      <multiplicity id="558" minimum="0" maximum="1"/>    
+      <attribute id="558" name="animDeathL"/>      
+      <multiplicity id="559" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="559">    
+  <dependency id="560">    
     <bendpoint x="1652" y="1582"/>    
     <end type="SOURCE" refId="17"/>    
     <end type="TARGET" refId="6"/>  
   </dependency>  
-  <association id="560">    
+  <association id="561">    
     <bendpoint x="1412" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="561" name="itemSwooshSoundLoop"/>      
-      <multiplicity id="562" minimum="0" maximum="1"/>    
+      <attribute id="562" name="itemSwooshSoundLoop"/>      
+      <multiplicity id="563" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="563">    
+  <dependency id="564">    
     <bendpoint x="1294" y="975"/>    
     <bendpoint x="1631" y="1582"/>    
     <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="6"/>  
   </dependency>  
-  <association id="564">    
+  <association id="565">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="565" name="ea"/>      
-      <multiplicity id="566" minimum="0" maximum="2147483647"/>    
+      <attribute id="566" name="ea"/>      
+      <multiplicity id="567" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="35" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="567">    
+  <association id="568">    
     <end type="SOURCE" refId="44" navigable="false">      
-      <attribute id="568" name="dataModel"/>      
-      <multiplicity id="569" minimum="0" maximum="1"/>    
+      <attribute id="569" name="dataModel"/>      
+      <multiplicity id="570" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="42" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="570">    
+  <association id="571">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="571" name="ed"/>      
-      <multiplicity id="572" minimum="0" maximum="2147483647"/>    
+      <attribute id="572" name="ed"/>      
+      <multiplicity id="573" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="31" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="573">    
+  <association id="574">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="574" name="anim"/>      
-      <multiplicity id="575" minimum="0" maximum="1"/>    
+      <attribute id="575" name="anim"/>      
+      <multiplicity id="576" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="576">    
+  <association id="577">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="577" name="ente"/>      
-      <multiplicity id="578" minimum="0" maximum="1"/>    
+      <attribute id="578" name="ente"/>      
+      <multiplicity id="579" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="32" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="579">    
+  <dependency id="580">    
     <end type="SOURCE" refId="6"/>    
     <end type="TARGET" refId="32"/>  
   </dependency>  
-  <association id="580">    
+  <association id="581">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="581" name="marioDeathAnim"/>      
-      <multiplicity id="582" minimum="0" maximum="1"/>    
+      <attribute id="582" name="marioDeathAnim"/>      
+      <multiplicity id="583" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="583">    
+  <association id="584">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="584" name="chainChompSprites"/>      
-      <multiplicity id="585" minimum="0" maximum="1"/>    
+      <attribute id="585" name="chainChompSprites"/>      
+      <multiplicity id="586" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="586">    
+  <dependency id="587">    
     <end type="SOURCE" refId="14"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <association id="587">    
+  <association id="588">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="588" name="starAnim"/>      
-      <multiplicity id="589" minimum="0" maximum="1"/>    
+      <attribute id="589" name="starAnim"/>      
+      <multiplicity id="590" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="590">    
+  <association id="591">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="591" name="starAnim3"/>      
-      <multiplicity id="592" minimum="0" maximum="1"/>    
+      <attribute id="592" name="starAnim3"/>      
+      <multiplicity id="593" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="593">    
+  <association id="594">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="594" name="ee"/>      
-      <multiplicity id="595" minimum="0" maximum="2147483647"/>    
+      <attribute id="595" name="ee"/>      
+      <multiplicity id="596" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="32" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="596">    
+  <dependency id="597">    
     <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="35"/>  
   </dependency>  
-  <association id="597">    
+  <association id="598">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="598" name="musicMenuFrame"/>      
-      <multiplicity id="599" minimum="0" maximum="1"/>    
+      <attribute id="599" name="musicMenuFrame"/>      
+      <multiplicity id="600" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="44" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="600">    
+  <association id="601">    
     <end type="SOURCE" refId="44" navigable="false">      
-      <attribute id="601" name="swingPanel"/>      
-      <multiplicity id="602" minimum="0" maximum="1"/>    
+      <attribute id="602" name="swingPanel"/>      
+      <multiplicity id="603" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="37" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="603">    
+  <association id="604">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="604" name="shootingStarAnim"/>      
-      <multiplicity id="605" minimum="0" maximum="1"/>    
+      <attribute id="605" name="shootingStarAnim"/>      
+      <multiplicity id="606" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="606">    
+  <generalization id="607">    
     <end type="SOURCE" refId="14"/>    
     <end type="TARGET" refId="18"/>  
   </generalization>  
-  <association id="607">    
+  <association id="608">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="608" name="marioItemsSprites"/>      
-      <multiplicity id="609" minimum="0" maximum="1"/>    
+      <attribute id="609" name="marioItemsSprites"/>      
+      <multiplicity id="610" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="610">    
+  <dependency id="611">    
     <end type="SOURCE" refId="17"/>    
     <end type="TARGET" refId="34"/>  
   </dependency>  
-  <association id="611">    
+  <association id="612">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="612" name="entb"/>      
-      <multiplicity id="613" minimum="0" maximum="1"/>    
+      <attribute id="613" name="entb"/>      
+      <multiplicity id="614" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="33" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="614">    
+  <association id="615">    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="615" name="State"/>      
-      <multiplicity id="616" minimum="0" maximum="1"/>    
+      <attribute id="616" name="State"/>      
+      <multiplicity id="617" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="25" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="617">    
+  <association id="618">    
     <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="618" name="anim"/>      
-      <multiplicity id="619" minimum="0" maximum="1"/>    
+      <attribute id="619" name="anim"/>      
+      <multiplicity id="620" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="620">    
+  <association id="621">    
     <end type="SOURCE" refId="21" navigable="false">      
-      <attribute id="621" name="marioItemAnimationSprites"/>      
-      <multiplicity id="622" minimum="0" maximum="1"/>    
+      <attribute id="622" name="marioItemAnimationSprites"/>      
+      <multiplicity id="623" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="623">    
+  <association id="624">    
     <end type="SOURCE" refId="28" navigable="false">      
-      <attribute id="624" name="game"/>      
-      <multiplicity id="625" minimum="0" maximum="1"/>    
+      <attribute id="625" name="game"/>      
+      <multiplicity id="626" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="626">    
+  <association id="627">    
     <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="627" name="animDL"/>      
-      <multiplicity id="628" minimum="0" maximum="1"/>    
+      <attribute id="628" name="animDL"/>      
+      <multiplicity id="629" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="629">    
+  <association id="630">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="630" name="marioEntranceSpinningAnim"/>      
-      <multiplicity id="631" minimum="0" maximum="1"/>    
+      <attribute id="631" name="marioEntranceSpinningAnim"/>      
+      <multiplicity id="632" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="632">    
+  <association id="633">    
     <bendpoint x="1160" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="633" name="soundFXClip1SoundLoop"/>      
-      <multiplicity id="634" minimum="0" maximum="1"/>    
+      <attribute id="634" name="soundFXClip1SoundLoop"/>      
+      <multiplicity id="635" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="635">    
+  <association id="636">    
     <bendpoint x="1265" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="636" name="gameOverIrisSoundLoop"/>      
-      <multiplicity id="637" minimum="0" maximum="1"/>    
+      <attribute id="637" name="gameOverIrisSoundLoop"/>      
+      <multiplicity id="638" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="638">    
+  <association id="639">    
     <bendpoint x="2867" y="1582"/>    
     <bendpoint x="2867" y="5195"/>    
     <end type="SOURCE" refId="20" navigable="false">      
-      <attribute id="639" name="tex"/>      
-      <multiplicity id="640" minimum="0" maximum="1"/>    
+      <attribute id="640" name="tex"/>      
+      <multiplicity id="641" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="21" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="641">    
+  <association id="642">    
     <bendpoint x="499" y="975"/>    
     <bendpoint x="499" y="1582"/>    
     <bendpoint x="499" y="5195"/>    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="642" name="starDingSoundLoop"/>      
-      <multiplicity id="643" minimum="0" maximum="1"/>    
+      <attribute id="643" name="starDingSoundLoop"/>      
+      <multiplicity id="644" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="644">    
+  <association id="645">    
     <bendpoint x="2255" y="1582"/>    
     <bendpoint x="2255" y="5195"/>    
     <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="645" name="bulletBillDeathSoundLoop"/>      
-      <multiplicity id="646" minimum="0" maximum="1"/>    
+      <attribute id="646" name="bulletBillDeathSoundLoop"/>      
+      <multiplicity id="647" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="647">    
+  <association id="648">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="648" name="eb"/>      
-      <multiplicity id="649" minimum="0" maximum="2147483647"/>    
+      <attribute id="649" name="eb"/>      
+      <multiplicity id="650" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="33" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="650">    
+  <association id="651">    
     <end type="SOURCE" refId="22" navigable="false">      
-      <attribute id="651" name="animSlowingDownr"/>      
-      <multiplicity id="652" minimum="0" maximum="1"/>    
+      <attribute id="652" name="animSlowingDownr"/>      
+      <multiplicity id="653" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="36" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="653">    
+  <association id="654">    
     <bendpoint x="3136" y="1582"/>    
     <bendpoint x="3094" y="5195"/>    
     <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="654" name="itemSoundLoop"/>      
-      <multiplicity id="655" minimum="0" maximum="1"/>    
+      <attribute id="655" name="itemSoundLoop"/>      
+      <multiplicity id="656" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="656">    
+  <association id="657">    
     <bendpoint x="1517" y="5195"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="657" name="soundFXClip2SoundLoop"/>      
-      <multiplicity id="658" minimum="0" maximum="1"/>    
+      <attribute id="658" name="soundFXClip2SoundLoop"/>      
+      <multiplicity id="659" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="659">    
+  <association id="660">    
     <bendpoint x="541" y="975"/>    
     <bendpoint x="541" y="1582"/>    
     <bendpoint x="541" y="5195"/>    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="660" name="goomba2DeathQuiterSoundLoop"/>      
-      <multiplicity id="661" minimum="0" maximum="1"/>    
+      <attribute id="661" name="goomba2DeathQuiterSoundLoop"/>      
+      <multiplicity id="662" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="662">    
+  <association id="663">    
     <bendpoint x="1542" y="975"/>    
     <end type="SOURCE" refId="14" navigable="false">      
-      <attribute id="663" name="game"/>      
-      <multiplicity id="664" minimum="0" maximum="1"/>    
+      <attribute id="664" name="game"/>      
+      <multiplicity id="665" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="13" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
