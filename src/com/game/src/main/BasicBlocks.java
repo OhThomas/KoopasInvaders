@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.game.src.main;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,33 +10,15 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class BasicBlocks.
- */
 public class BasicBlocks {
 
-	/** The tex. */
 	private Textures tex;
-	
-	/** The game. */
 	private Game game;
-	
-	/** The block hit. */
 	private int blockHit;
-	
-	/** The keep destroying block. */
 	private int keepDestroyingBlock = 0;
-	
-	/** The wall. */
 	public ArrayList<Rectangle> wall = new ArrayList<Rectangle>();
+	SoundLoops brickBreaking;
 	
-	/**
-	 * Instantiates a new basic blocks.
-	 *
-	 * @param tex the tex
-	 * @param game the game
-	 */
 	public BasicBlocks(Textures tex,Game game){
 		this.tex = tex;
 		this.game = game;
@@ -47,18 +26,20 @@ public class BasicBlocks {
 		basicBlocks(215, 370);
 		basicBlocks(385, 370);
 		basicBlocks(555, 370);
+		String brickBreakingFile = "res/Sounds/SFX/brickbreaking.wav";
+		SoundLoops brickBreakingSoundLoop = new SoundLoops(brickBreakingFile);
+		VolumeSlider.adjustSFX(brickBreakingSoundLoop);
+		this.brickBreaking = brickBreakingSoundLoop;
 	}
-	
-	/**
-	 * Tick.
-	 */
 	public void tick(){
 		for(int i = 0; i < game.ea.size(); i++){
 			EntityA tempEnt = game.ea.get(i);
 			blockHit = Physics.BlockCollision(this, tempEnt);
 			if(blockHit != -1){
-				wall.remove(blockHit);
-				game.getHUD().setScore(2);
+				if(wall.size() > blockHit) {
+					wall.remove(blockHit);
+					game.getHUD().setScore(2);
+				}
 				Random rand = new Random();
 				int r = rand.nextInt(5);
 				keepDestroyingBlock += r;
@@ -66,7 +47,32 @@ public class BasicBlocks {
 					game.ea.remove(game.ea.getLast());
 					keepDestroyingBlock = 0;
 				}
+				for(int j = game.brickBreakingSFX.size(); j > 0; j--){
+					if(game.brickBreakingSFX.get(j-1) != null && !game.brickBreakingSFX.get(j-1).clipIsActive()){
+						game.brickBreakingSFX.remove(j-1);
+						//j--;
+					}
+				}	
+				for(int k = 0; k < game.brickBreakingSFX.size() || k == 0; k++){
+					if(game.brickBreakingSFX.isEmpty()) {
+						VolumeSlider.adjustSFX(brickBreaking);
+						game.brickBreakingSFX.add(this.brickBreaking);
+					}
+					else if (game.brickBreakingSFX.get(k) == game.brickBreakingSFX.getLast()){
+						VolumeSlider.adjustSFX(brickBreaking);
+						if(brickBreaking.getVolume() - (1.5f*k) >= brickBreaking.minimumVolume())
+							this.brickBreaking.reduceSound(1.5f*k);
+						game.brickBreakingSFX.add(this.brickBreaking);
+						k++;
+					}
+				}
+				System.out.println(game.brickBreakingSFX.size());
+				game.brickBreakingSFX.getLast().play();
+				if(keepDestroyingBlock == 0 && game.brickBreakingSFX.size() == 1)
+					game.brickBreakingSFX.getLast().stop();
 			}
+			else if(game.brickBreakingSFX.size() == 1)
+				game.brickBreakingSFX.getLast().stop();
 			/*
 			if(Physics.Collision(this, tempEnt)){
 				blockHit = Physics.BlockCollision(this, tempEnt);
@@ -100,15 +106,41 @@ public class BasicBlocks {
 							j--;
 					}
 				}
-				wall.remove(blockHit);
-				game.getHUD().setScore(1);
+				if(wall.size() > blockHit) {
+					wall.remove(blockHit);
+					game.getHUD().setScore(1);
+				}
 				int r = rand.nextInt(3);
 				keepDestroyingBlock += r;
 				if(keepDestroyingBlock > 8){
 					game.eb.remove(tempEnt);
 					keepDestroyingBlock = 0;
 				}
+				for(int j = game.brickBreakingSFX.size(); j > 0; j--){
+					if(game.brickBreakingSFX.get(j-1) != null && !game.brickBreakingSFX.get(j-1).clipIsActive()){
+						game.brickBreakingSFX.remove(j-1);
+						//j--;
+					}
+				}	
+				for(int k = 0; k < game.brickBreakingSFX.size() || k == 0; k++){
+					if(game.brickBreakingSFX.isEmpty()) {
+						VolumeSlider.adjustSFX(brickBreaking);
+						game.brickBreakingSFX.add(this.brickBreaking);
+					}
+					else if (game.brickBreakingSFX.get(k) == game.brickBreakingSFX.getLast()){
+						VolumeSlider.adjustSFX(brickBreaking);
+						if(brickBreaking.getVolume() - (1.5f*k) >= brickBreaking.minimumVolume())
+							this.brickBreaking.reduceSound(1.5f*k);
+						game.brickBreakingSFX.add(this.brickBreaking);
+						k++;
+					}
+				}
+				game.brickBreakingSFX.getLast().play();
+				//if(keepDestroyingBlock == 0 && game.brickBreakingSFX.size() == 1)
+				//	game.brickBreakingSFX.getLast().stop();
 			}
+			//else if(game.brickBreakingSFX.size() == 1)
+				//game.brickBreakingSFX.getLast().stop();
 		}
 		
 		for(int i = 0; i < game.ec.size(); i++){
@@ -127,30 +159,58 @@ public class BasicBlocks {
 							j--;
 					}
 				}
-				if(!game.ec.isEmpty() && r == 0)
+				if(!game.ec.isEmpty() && r == 0 && !game.ec.get(i).entityName().equals("BuzzyBeetleShell"))
 					game.ec.remove(tempEnt);
+				for(int j = game.brickBreakingSFX.size(); j > 0; j--){
+					if(game.brickBreakingSFX.get(j-1) != null && !game.brickBreakingSFX.get(j-1).clipIsActive()){
+						game.brickBreakingSFX.remove(j-1);
+						//j--;
+					}
+				}	
+				for(int k = 0; k < game.brickBreakingSFX.size() || k == 0; k++){
+					if(game.brickBreakingSFX.isEmpty()) {
+						VolumeSlider.adjustSFX(brickBreaking);
+						game.brickBreakingSFX.add(this.brickBreaking);
+					}
+					else if (game.brickBreakingSFX.get(k) == game.brickBreakingSFX.getLast()){
+						VolumeSlider.adjustSFX(brickBreaking);
+						if(brickBreaking.getVolume() - (1.5f *k) >= brickBreaking.minimumVolume())
+							this.brickBreaking.reduceSound(1.5f*k);
+						game.brickBreakingSFX.add(this.brickBreaking);
+						k++;
+					}
+				}
+				game.brickBreakingSFX.getLast().play();
+				//if(keepDestroyingBlock == 0 && game.brickBreakingSFX.size() == 1)
+					//game.brickBreakingSFX.getLast().stop();
 			}
+			//else if(game.brickBreakingSFX.size() == 1)
+				//game.brickBreakingSFX.getLast().stop();
+		}
+		if(game.getBrickBreakingSFXSoundPauseBoolean() == true && !Game.isPaused()){
+			for(int l = Game.brickBreakingSFX.size()-1; l >= 0; l--){
+				if(!Game.brickBreakingSFX.get(l).clipIsActive())
+					Game.brickBreakingSFX.get(l).continuePlaying();
+			}
+			game.setBrickBreakingSFXSoundPauseBoolean(false);
 		}
 	}
-	
-	/**
-	 * Draw.
-	 *
-	 * @param g the g
-	 */
 	public void draw(Graphics2D g){
 		g.setColor(Color.GREEN);
 		for(int i = 0; i < wall.size(); i++){
 			g.fill(wall.get(i));
 		}
+		if(Game.isPaused()){
+			if(game.getBrickBreakingSFXSoundPauseBoolean() == false){
+				for(int i = 0; i < Game.brickBreakingSFX.size();i++){
+					if(Game.brickBreakingSFX.get(i).clipIsActive())
+						Game.brickBreakingSFX.get(i).stop();
+				}
+				game.setBrickBreakingSFXSoundPauseBoolean(true);
+			}
+		}
 	}
 	
-	/**
-	 * Basic blocks.
-	 *
-	 * @param xPos the x pos
-	 * @param yPos the y pos
-	 */
 	public void basicBlocks(int xPos, int yPos){
 		int wallWidth = 3;
 		int x = 0;
@@ -177,13 +237,6 @@ public class BasicBlocks {
 		}
 	}
 	
-	/**
-	 * Row.
-	 *
-	 * @param rows the rows
-	 * @param xPos the x pos
-	 * @param yPos the y pos
-	 */
 	public void row(int rows, int xPos, int yPos){
 		for(int i = 0; i < rows; i++){
 			Rectangle brick = new Rectangle(xPos + (i * 3), yPos, 3, 3);
@@ -191,44 +244,23 @@ public class BasicBlocks {
 		}
 	}
 	
-	/**
-	 * Reset.
-	 */
 	public void reset(){
 		wall.clear();
-
+		
 		basicBlocks(45, 370);
 		basicBlocks(215, 370);
 		basicBlocks(385, 370);
 		basicBlocks(555, 370);
 	}
 	
-	/**
-	 * Gets the bounds.
-	 *
-	 * @param i the i
-	 * @return the bounds
-	 */
 	public Rectangle getBounds(int i){
 		return new Rectangle((int)wall.get(i).getX(), (int)wall.get(i).getY(), (int)wall.get(i).getWidth(), (int)wall.get(i).getHeight());
 	}
 	
-	/**
-	 * Gets the x.
-	 *
-	 * @param i the i
-	 * @return the x
-	 */
 	public double getX(int i) {
 		return (int)wall.get(i).getX();
 	}
 
-	/**
-	 * Gets the y.
-	 *
-	 * @param i the i
-	 * @return the y
-	 */
 	public double getY(int i){
 		return (int)wall.get(i).getY();
 	}

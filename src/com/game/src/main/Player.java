@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -15,219 +12,79 @@ import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.libs.Animation;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class Player.
- */
 public class Player extends GameObject implements EntityA{
 
-	/** The Constant MARIO_WIDTH. */
 	public static final int MARIO_WIDTH = 16;
-	
-	/** The Constant MARIO_HEIGHT. */
 	public static final int MARIO_HEIGHT = 28;
 	
-	/** The vel X. */
 	private double velX = 0;
-	
-	/** The vel Y. */
 	private double velY = 0;
 	
-	/** The tex. */
 	private Textures tex;
-	
-	/** The player. */
 	private BufferedImage player;
-	
-	/** The player small. */
 	private BufferedImage playerSmall;
-	
-	/** The player small dance pose. */
 	private BufferedImage playerSmallDancePose;
-	
-	/** The player growth pose. */
 	private BufferedImage playerGrowthPose;
-	
-	/** The player death. */
 	private BufferedImage playerDeath;
-	
-	/** The player 2. */
 	private BufferedImage player2;
-	
-	/** The player 3. */
 	private BufferedImage player3;
-	
-	/** The player entrance spinning setup. */
 	private boolean playerEntranceSpinningSetup = false;
-	
-	/** The player entrance dancing setup. */
 	private boolean playerEntranceDancingSetup = false;
-	
-	/** The player entrance growing setup. */
 	private boolean playerEntranceGrowingSetup = false;
-	
-	/** The player entrance turning around setup. */
 	private boolean playerEntranceTurningAroundSetup = false;
-	
-	/** The player death setup. */
 	private boolean playerDeathSetup = false;
-	
-	/** The first time animation run. */
 	private boolean firstTimeAnimationRun = false;
-	
-	/** The player win setup. */
 	public boolean playerWinSetup = false;
-
-	/** The game over. */
 	public boolean gameOver = false;
-	
-	/** The spinning animation finished. */
+
 	private boolean spinningAnimationFinished = false;
-	
-	/** The dancing animation finished. */
 	private boolean dancingAnimationFinished = false;
-	
-	/** The growing animation finished. */
 	private boolean growingAnimationFinished = false;
-	
-	/** The turning around animation finished. */
 	private boolean turningAroundAnimationFinished = false;
-	
-	/** The dancing in progress. */
 	private boolean dancingInProgress = false;
-	
-	/** The mario invincible. */
 	private boolean marioInvincible = false;	//To make Player invincible w/ star
-	
-	/** The timer 1. */
 	private int timer1 = 100;					//Timer for how long Player is invincible
-	
-	/** The timer 2. */
 	private int timer2 = 0;
-	
-	/** The dance progression count. */
 	private int danceProgressionCount = 0;
-	
-	/** The animation timer 1. */
 	private long animationTimer1 = 0;
-	
-	/** The mario death timer 1. */
 	private long marioDeathTimer1 = 0;
-	
-	/** The mario death timer 2. */
 	private long marioDeathTimer2 = 0;
-	
-	/** The mario death timer 3. */
 	private long marioDeathTimer3 = 0;
-	
-	/** The mario gravity timer. */
 	private long marioGravityTimer = 0;
-	
-	/** The mario gravity timer 2. */
 	private long marioGravityTimer2 = 0;
-	
-	/** The mario gravity timer 3. */
 	private long marioGravityTimer3 = 0;
-	
-	/** The mario gravity timer 4. */
 	private long marioGravityTimer4 = 0;
-	
-	/** The mario gravity timer 5. */
 	private long marioGravityTimer5 = 0;
-	
-	/** The player win timer. */
 	public long playerWinTimer = 0;
-	
-	/** The r. */
 	Random r = new Random();
-	
-	/** The random. */
 	int random = r.nextInt((9-1)+1) + 1;		//int randomNum = rand.nextInt((max - min) + 1) + min;
 	
-	/** The game. */
 	Game game;
-	
-	/** The controller. */
 	Controller controller;
-	
-	/** The anim. */
 	Animation anim;
-	
-	/** The animl. */
 	Animation animl;
-	
-	/** The animr. */
 	Animation animr;
-	
-	/** The animd. */
 	Animation animd;
-	
-	/** The anim slowing downl. */
 	Animation animSlowingDownl;
-	
-	/** The anim slowing downr. */
 	Animation animSlowingDownr;
-	
-	/** The star anim 1. */
 	Animation starAnim1;
-	
-	/** The star anim 1 l. */
 	Animation starAnim1l;
-	
-	/** The star anim 1 r. */
 	Animation starAnim1r;
-	
-	/** The star anim 1 d. */
 	Animation starAnim1d;
-	
-	/** The star anim 2. */
 	Animation starAnim2;
-	
-	/** The star anim 2 l. */
 	Animation starAnim2l;
-	
-	/** The star anim 2 r. */
 	Animation starAnim2r;
-	
-	/** The star anim 2 d. */
 	Animation starAnim2d;
-	
-	/** The star anim 3. */
 	Animation starAnim3;
-	
-	/** The star anim 3 l. */
 	Animation starAnim3l;
-	
-	/** The star anim 3 r. */
 	Animation starAnim3r;
-	
-	/** The star anim 3 d. */
 	Animation starAnim3d;
-	
-	/** The mario entrance spinning anim. */
 	Animation marioEntranceSpinningAnim;
-	
-	/** The mario entrance dancing anim. */
 	Animation marioEntranceDancingAnim;
-	
-	/** The mario entrance growing anim. */
 	Animation marioEntranceGrowingAnim;
-	
-	/** The mario entrance turning around anim. */
 	Animation marioEntranceTurningAroundAnim;
-	
-	/** The mario death anim. */
 	Animation marioDeathAnim;
 	
-	/**
-	 * Instantiates a new player.
-	 *
-	 * @param x the x
-	 * @param y the y
-	 * @param tex the tex
-	 * @param game the game
-	 * @param controller the controller
-	 */
 	public Player(double x, double y, Textures tex, Game game, Controller controller){
 		super(x,y);
 		this.tex = tex;
@@ -296,9 +153,6 @@ public class Player extends GameObject implements EntityA{
 		animr.nextFrame();
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityA#tick()
-	 */
 	public void tick(){
 		x+=velX;
 		y+=velY;
@@ -379,16 +233,10 @@ public class Player extends GameObject implements EntityA{
 			starAnim3d.runAnimation();
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityA#getBounds()
-	 */
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, MARIO_WIDTH, MARIO_HEIGHT);
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityA#render(java.awt.Graphics)
-	 */
 	public void render(Graphics g){
 		if(game.State == STATE.TRANSITION_ENTRANCE){
 			if(spinningAnimationFinished == false){
@@ -453,6 +301,10 @@ public class Player extends GameObject implements EntityA{
 			else if(turningAroundAnimationFinished == true){
 				g.drawImage(player, (int)x, (int)y, null);
 				firstTimeAnimationRun = false;
+				for(int i = 0; i <= game.marioVoices.size() -1; i++) {
+					game.marioVoices.get(i).setSoundLoopBoolean(false);
+					game.marioVoices.get(i).setFramePosition(0);
+				}
 				Game.State = Game.STATE.GAME;
 			}
 		}
@@ -593,188 +445,246 @@ public class Player extends GameObject implements EntityA{
 			else
 				g.drawImage(player, (int)x, (int)y, null);
 		}
+		if((int)this.game.getMarioStarSoundLoop().getLongFramePosition() >= this.game.getMarioStarSoundLoop().getFrameLength() && timer1 != 0 && !game.isPaused()) {
+			this.marioInvincible = false;
+			timer1 = 0;
+		}
 	}
 	
-	/**
-	 * Y progression.
-	 */
+	public void changeAnimations(int i) {
+		BufferedImage[] p;
+		BufferedImage[] pEntrance;
+		BufferedImage[] pDeath;
+		BufferedImage[] pStar1;
+		BufferedImage[] pStar2;
+		BufferedImage[] pStar3;
+		SpriteSheet ss;
+		switch(i) {
+			case 1:
+				p = tex.playerNES;
+				pEntrance = tex.marioEntranceNES;
+				pDeath = tex.marioDeathNES;
+				pStar1 = tex.marioStarNES1;
+				pStar2 = tex.marioStarNES2;
+				pStar3 = tex.marioStarNES3;
+				ss = new SpriteSheet(game.getSpriteSheetNES());
+				marioEntranceTurningAroundAnim = new Animation(1, pEntrance[11],pEntrance[11],
+						pEntrance[12],pEntrance[12],pEntrance[15],pEntrance[16],
+						pEntrance[16],pEntrance[17],pEntrance[17],pEntrance[18],
+						pEntrance[18],pEntrance[19],pEntrance[19],pEntrance[20]);
+				break;
+			default:
+				p = tex.player;
+				pEntrance = tex.marioEntrance;
+				pDeath = tex.marioDeath;
+				pStar1 = tex.marioStar1;
+				pStar2 = tex.marioStar2;
+				pStar3 = tex.marioStar3;
+				ss = new SpriteSheet(game.getSpriteSheet());
+				break;
+		}
+		if(!(p == tex.player)) {
+			anim = new Animation(6, p[0],p[1],p[2],p[3]);
+			animl = new Animation(6, p[4],p[5],p[6],p[7]);
+			animr = new Animation(6, p[8],p[9],p[10],p[11]);
+			animd = new Animation(6, p[12],p[13],p[14],p[15]);
+			playerSmall = pEntrance[0];
+			playerSmallDancePose = pEntrance[5];
+			playerGrowthPose = p[19];
+			playerDeath = pDeath[0];
+			player2 = tex.marioStarNES2[0];
+			player3 = tex.marioStarNES3[0];
+			animSlowingDownl = new Animation(6,p[16],p[16]);
+			animSlowingDownr = new Animation(6,p[17],p[17]);
+			
+			starAnim1 = new Animation(6, pStar1[0],pStar1[1],pStar1[2],pStar1[3]);
+			starAnim1l = new Animation(6, pStar1[4],pStar1[5],pStar1[6],pStar1[7]);
+			starAnim1r = new Animation(6, pStar1[8],pStar1[9],pStar1[10],pStar1[11]);
+			starAnim1d = new Animation(6, pStar1[12],pStar1[13],pStar1[14],pStar1[15]);
+			
+			starAnim2 = new Animation(6, pStar2[0],pStar2[1],pStar2[2],pStar2[3]);
+			starAnim2l = new Animation(6, pStar2[4],pStar2[5],pStar2[6],pStar2[7]);
+			starAnim2r = new Animation(6, pStar2[8],pStar2[9],pStar2[10],pStar2[11]);
+			starAnim2d = new Animation(6, pStar2[12],pStar2[13],pStar2[14],pStar2[15]);
+	
+			starAnim3 = new Animation(6, pStar3[0],pStar3[1],pStar3[2],pStar3[3]);
+			starAnim3l = new Animation(6, pStar3[4],pStar3[5],pStar3[6],pStar3[7]);
+			starAnim3r = new Animation(6, pStar3[8],pStar3[9],pStar3[10],pStar3[11]);
+			starAnim3d = new Animation(6, pStar3[12],pStar3[13],pStar3[14],pStar3[15]);
+			
+			marioDeathAnim = new Animation(5, pDeath[0], pDeath[1]);
+			
+			marioEntranceSpinningAnim = new Animation(1, pEntrance[0],pEntrance[1],pEntrance[2],
+					pEntrance[3],pEntrance[4],pEntrance[0],
+					pEntrance[1],pEntrance[2],pEntrance[3],
+					pEntrance[4],pEntrance[0],pEntrance[1],
+					pEntrance[2],pEntrance[3],pEntrance[4],pEntrance[0]);
+			
+			marioEntranceDancingAnim = new Animation(1, pEntrance[5],pEntrance[6],pEntrance[7],
+					pEntrance[8],pEntrance[5],pEntrance[6],
+					pEntrance[7],pEntrance[8],pEntrance[5],
+					pEntrance[6],pEntrance[7],pEntrance[8],
+					pEntrance[5],pEntrance[6],pEntrance[7],
+					pEntrance[8],pEntrance[5],pEntrance[6],
+					pEntrance[7],pEntrance[8],pEntrance[5],
+					pEntrance[6],pEntrance[7],pEntrance[8],
+					pEntrance[6],pEntrance[5]);
+			
+			marioEntranceGrowingAnim = new Animation(1, pEntrance[9],p[18],pEntrance[10],
+					p[19],pEntrance[9],p[18],
+					pEntrance[10],p[19],p[18],p[18]);
+			animl.nextFrame();
+			animr.nextFrame();
+			player = ss.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		}
+		else {
+			player = ss.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+			playerSmall = tex.marioEntrance[0];
+			playerSmallDancePose = tex.marioEntrance[5];
+			playerGrowthPose = tex.marioEntrance[9];
+			playerDeath = tex.marioDeath[0];
+			player2 = tex.marioStar2[0];
+			player3 = tex.marioStar3[0];
+			
+			anim = new Animation(6, tex.player[0],tex.player[1],tex.player[2],tex.player[3]);
+			animl = new Animation(6, tex.player[4],tex.player[5],tex.player[6],tex.player[7]);
+			animr = new Animation(6, tex.player[8],tex.player[9],tex.player[10],tex.player[11]);
+			animd = new Animation(6, tex.player[12],tex.player[13],tex.player[14],tex.player[15]);
+			
+			animSlowingDownl = new Animation(6,tex.marioSlowingDown[0],tex.marioSlowingDown[0]);
+			animSlowingDownr = new Animation(6,tex.marioSlowingDown[1],tex.marioSlowingDown[1]);
+			
+			starAnim1 = new Animation(6, tex.marioStar1[0],tex.marioStar1[1],tex.marioStar1[2],tex.marioStar1[3]);
+			starAnim1l = new Animation(6, tex.marioStar1[4],tex.marioStar1[5],tex.marioStar1[6],tex.marioStar1[7]);
+			starAnim1r = new Animation(6, tex.marioStar1[8],tex.marioStar1[9],tex.marioStar1[10],tex.marioStar1[11]);
+			starAnim1d = new Animation(6, tex.marioStar1[12],tex.marioStar1[13],tex.marioStar1[14],tex.marioStar1[15]);
+			
+			starAnim2 = new Animation(6, tex.marioStar2[0],tex.marioStar2[1],tex.marioStar2[2],tex.marioStar2[3]);
+			starAnim2l = new Animation(6, tex.marioStar2[4],tex.marioStar2[5],tex.marioStar2[6],tex.marioStar2[7]);
+			starAnim2r = new Animation(6, tex.marioStar2[8],tex.marioStar2[9],tex.marioStar2[10],tex.marioStar2[11]);
+			starAnim2d = new Animation(6, tex.marioStar2[12],tex.marioStar2[13],tex.marioStar2[14],tex.marioStar2[15]);
+
+			starAnim3 = new Animation(6, tex.marioStar3[0],tex.marioStar3[1],tex.marioStar3[2],tex.marioStar3[3]);
+			starAnim3l = new Animation(6, tex.marioStar3[4],tex.marioStar3[5],tex.marioStar3[6],tex.marioStar3[7]);
+			starAnim3r = new Animation(6, tex.marioStar3[8],tex.marioStar3[9],tex.marioStar3[10],tex.marioStar3[11]);
+			starAnim3d = new Animation(6, tex.marioStar3[12],tex.marioStar3[13],tex.marioStar3[14],tex.marioStar3[15]);
+			
+			marioDeathAnim = new Animation(5, tex.marioDeath[0], tex.marioDeath[1]);
+			
+			marioEntranceSpinningAnim = new Animation(1, tex.marioEntrance[0],tex.marioEntrance[1],tex.marioEntrance[2],
+					tex.marioEntrance[3],tex.marioEntrance[4],tex.marioEntrance[0],
+					tex.marioEntrance[1],tex.marioEntrance[2],tex.marioEntrance[3],
+					tex.marioEntrance[4],tex.marioEntrance[0],tex.marioEntrance[1],
+					tex.marioEntrance[2],tex.marioEntrance[3],tex.marioEntrance[4],tex.marioEntrance[0]);
+			
+			marioEntranceDancingAnim = new Animation(1, tex.marioEntrance[5],tex.marioEntrance[6],tex.marioEntrance[7],
+					tex.marioEntrance[8],tex.marioEntrance[5],tex.marioEntrance[6],
+					tex.marioEntrance[7],tex.marioEntrance[8],tex.marioEntrance[5],
+					tex.marioEntrance[6],tex.marioEntrance[7],tex.marioEntrance[8],
+					tex.marioEntrance[5],tex.marioEntrance[6],tex.marioEntrance[7],
+					tex.marioEntrance[8],tex.marioEntrance[5],tex.marioEntrance[6],
+					tex.marioEntrance[7],tex.marioEntrance[8],tex.marioEntrance[5],
+					tex.marioEntrance[6],tex.marioEntrance[7],tex.marioEntrance[8],
+					tex.marioEntrance[6],tex.marioEntrance[5]);
+			
+			marioEntranceGrowingAnim = new Animation(1, tex.marioEntrance[9],tex.marioEntrance[6],tex.marioEntrance[10],
+					tex.marioEntrance[8],tex.marioEntrance[9],tex.marioEntrance[6],
+					tex.marioEntrance[10],tex.marioEntrance[8],tex.marioEntrance[9],tex.marioEntrance[9]);
+			
+			marioEntranceTurningAroundAnim = new Animation(1, tex.marioEntrance[9],tex.marioEntrance[10],
+					tex.marioEntrance[11],tex.marioEntrance[12],tex.marioEntrance[13],tex.marioEntrance[14],
+					tex.marioEntrance[15],tex.marioEntrance[16],tex.marioEntrance[17],tex.marioEntrance[17],
+					tex.marioEntrance[18],tex.marioEntrance[19],tex.marioEntrance[20],tex.marioEntrance[20]);
+			animl.nextFrame();
+			animr.nextFrame();
+		}
+	}
+	
 	public void yProgression(){
 		this.y+=velY;
 	}
 
-	/**
-	 * X progression.
-	 */
 	public void xProgression(){
 		this.x+=velX;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityA#getX()
-	 */
 	public double getX(){
 		return x;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityA#getY()
-	 */
 	public double getY(){
 		return y;
 	}
 	
-	/**
-	 * Sets the x.
-	 *
-	 * @param x the new x
-	 */
 	public void setX(double x){
 		this.x = x;
 	}
 	
-	/**
-	 * Sets the y.
-	 *
-	 * @param y the new y
-	 */
 	public void setY(double y){
 		this.y = y;
 	}
 	
-	/**
-	 * Sets the vel X.
-	 *
-	 * @param velX the new vel X
-	 */
 	public void setVelX(double velX){
 		this.velX = velX;
 	}
 	
-	/**
-	 * Sets the vel Y.
-	 *
-	 * @param velY the new vel Y
-	 */
 	public void setVelY(double velY){
 		this.velY = velY;
 	}
 	
-	/**
-	 * Gets the mario invincible.
-	 *
-	 * @return the mario invincible
-	 */
 	public boolean getMarioInvincible(){
 		return marioInvincible;
 	}
 
-	/**
-	 * Checks if is spinning animation finished.
-	 *
-	 * @return true, if is spinning animation finished
-	 */
+	public void setMarioInvincible(boolean marioInvincible){
+		this.marioInvincible = marioInvincible;
+	}
+	
 	public boolean isSpinningAnimationFinished() {
 		return spinningAnimationFinished;
 	}
 
-	/**
-	 * Sets the spinning animation finished.
-	 *
-	 * @param spinningAnimationFinished the new spinning animation finished
-	 */
 	public void setSpinningAnimationFinished(boolean spinningAnimationFinished) {
 		this.spinningAnimationFinished = spinningAnimationFinished;
 	}
 
-	/**
-	 * Checks if is dancing animation finished.
-	 *
-	 * @return true, if is dancing animation finished
-	 */
 	public boolean isDancingAnimationFinished() {
 		return dancingAnimationFinished;
 	}
 
-	/**
-	 * Sets the dancing animation finished.
-	 *
-	 * @param dancingAnimationFinished the new dancing animation finished
-	 */
 	public void setDancingAnimationFinished(boolean dancingAnimationFinished) {
 		this.dancingAnimationFinished = dancingAnimationFinished;
 	}
 
-	/**
-	 * Checks if is growing animation finished.
-	 *
-	 * @return true, if is growing animation finished
-	 */
 	public boolean isGrowingAnimationFinished() {
 		return growingAnimationFinished;
 	}
 
-	/**
-	 * Sets the growing animation finished.
-	 *
-	 * @param growingAnimationFinished the new growing animation finished
-	 */
 	public void setGrowingAnimationFinished(boolean growingAnimationFinished) {
 		this.growingAnimationFinished = growingAnimationFinished;
 	}
 	
-	/**
-	 * Checks if is dancing in progress.
-	 *
-	 * @return true, if is dancing in progress
-	 */
 	public boolean isDancingInProgress() {
 		return dancingInProgress;
 	}
 
-	/**
-	 * Sets the dancing in progress.
-	 *
-	 * @param dancingInProgress the new dancing in progress
-	 */
 	public void setDancingInProgress(boolean dancingInProgress) {
 		this.dancingInProgress = dancingInProgress;
 	}
 	
-	/**
-	 * Gets the dance progression count.
-	 *
-	 * @return the dance progression count
-	 */
 	public int getDanceProgressionCount() {
 		return danceProgressionCount;
 	}
 
-	/**
-	 * Sets the dance progression count.
-	 *
-	 * @param danceProgressionCount the new dance progression count
-	 */
 	public void setDanceProgressionCount(int danceProgressionCount) {
 		this.danceProgressionCount = danceProgressionCount;
 	}
-
-	/**
-	 * Gets the game over.
-	 *
-	 * @return the game over
-	 */
+	
 	public boolean getGameOver() {
 		return gameOver;
 	}
 
-	/**
-	 * Sets the game over.
-	 *
-	 * @param gameOver the new game over
-	 */
 	public void setGameOver(boolean gameOver) {
 		this.gameOver = gameOver;
 	}
-
-
 }

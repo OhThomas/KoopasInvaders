@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -11,44 +8,19 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.libs.Animation;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class ChainChompItem.
- */
 public class ChainChompItem extends GameObject implements EntityD{
 	
-	/** The tex. */
 	private Textures tex;
-	
-	/** The game. */
 	private Game game;
-	
-	/** The vel Y. */
 	protected double velX, velY;
-	
-	/** The item name. */
 	private String itemName = "chainChompItem";
-	
-	/** The item spawn location. */
 	private boolean itemSpawnLocation = false;
 	
-	/** The anim. */
 	Animation anim;
-	
-	/** The anim backwards. */
 	Animation animBackwards;
 
-	/** The item sound loop. */
 	SoundLoops itemSoundLoop;
 	
-	/**
-	 * Instantiates a new chain chomp item.
-	 *
-	 * @param x the x
-	 * @param y the y
-	 * @param tex the tex
-	 * @param game the game
-	 */
 	public ChainChompItem(double x, double y, Textures tex, Game game) {
 		super(x, y);
 		this.tex = tex;
@@ -78,12 +50,10 @@ public class ChainChompItem extends GameObject implements EntityD{
 		String itemFile = "res/Sounds/SFX/Items/sm64_chain_chomp.wav";
 		SoundLoops itemSoundLoop = new SoundLoops(itemFile);
 		itemSoundLoop.reduceSound(10f);
+		VolumeSlider.adjustSFX(itemSoundLoop);
 		this.itemSoundLoop = itemSoundLoop;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#tick()
-	 */
 	@Override
 	public void tick() {
 		if(itemSpawnLocation == false){
@@ -132,9 +102,6 @@ public class ChainChompItem extends GameObject implements EntityD{
 			animBackwards.runAnimation();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#render(java.awt.Graphics)
-	 */
 	@Override
 	public void render(Graphics g) {
 		if(itemSpawnLocation == false)
@@ -143,50 +110,30 @@ public class ChainChompItem extends GameObject implements EntityD{
 			animBackwards.drawAnimation(g, x, y, 0);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getBounds()
-	 */
 	@Override
 	public Rectangle getBounds() {
 		return new Rectangle((int)x, (int)y, 14, 16);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getX()
-	 */
 	@Override
 	public double getX() {
 		return x;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getY()
-	 */
 	@Override
 	public double getY() {
 		return y;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getItemName()
-	 */
 	@Override
 	public String getItemName() {
 		return itemName;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getItemSoundLoop()
-	 */
 	public SoundLoops getItemSoundLoop() {
 		return itemSoundLoop;
 	}
 
-	/**
-	 * Sets the item sound loop.
-	 *
-	 * @param itemSoundLoop the new item sound loop
-	 */
 	public void setItemSoundLoop(SoundLoops itemSoundLoop) {
 		this.itemSoundLoop = itemSoundLoop;
 	}

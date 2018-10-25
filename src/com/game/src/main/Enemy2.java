@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -10,69 +7,29 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.libs.Animation;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class Enemy2.
- */
 public class Enemy2 extends GameObject implements EntityB{
 
-	/** The barrier. */
 	private boolean barrier = false;
 	
-	/** The tex. */
 	private Textures tex;
-	
-	/** The game. */
 	private Game game;
-	
-	/** The c. */
 	private Controller c;
-	
-	/** The speed increase. */
 	public double speedIncrease = 0.1;
-	
-	/** The sound loop position. */
 	private int soundLoopPosition = 0;
-	
-	/** The goomba bounce death timer. */
 	private long goombaBounceDeathTimer = 0;
-	
-	/** The goombais dead. */
 	private boolean goombaisDead = false;
+	private String enemyType = "Goomba2";
 	
-	/** The anim. */
 	Animation anim;
-	
-	/** The anim death bounce L. */
 	Animation animDeathBounceL;
-	
-	/** The anim death bounce R. */
 	Animation animDeathBounceR;
-	
-	/** The anim death L. */
 	Animation animDeathL;
-	
-	/** The anim death R. */
 	Animation animDeathR;
 	
-	/** The goomba 2 death sound loop. */
 	SoundLoops goomba2DeathSoundLoop;
-	
-	/** The goomba 2 death quiter sound loop. */
 	SoundLoops goomba2DeathQuiterSoundLoop;
-	
-	/** The star ding sound loop. */
 	SoundLoops starDingSoundLoop;
 	
-	/**
-	 * Instantiates a new enemy 2.
-	 *
-	 * @param x the x
-	 * @param y the y
-	 * @param tex the tex
-	 * @param c the c
-	 * @param game the game
-	 */
 	public Enemy2(double x, double y, Textures tex, Controller c, Game game){
 		super(x,y);
 		this.tex = tex;
@@ -96,14 +53,15 @@ public class Enemy2 extends GameObject implements EntityB{
 		SoundLoops goomba2DeathSoundLoop = new SoundLoops(goomba2DeathFile);
 		SoundLoops starDingSoundLoop = new SoundLoops(starDingFile);
 		starDingSoundLoop.reduceSound(16.5f);
+		VolumeSlider.adjustSFX(goomba2DeathSoundLoop);
+		VolumeSlider.adjustSFX(starDingSoundLoop);
+		if(starDingSoundLoop.getVolume() > -10f)
+			starDingSoundLoop.reduceSound(6.5f);
 		this.goomba2DeathSoundLoop = goomba2DeathSoundLoop;
 		this.goomba2DeathQuiterSoundLoop = goomba2DeathSoundLoop;
 		this.starDingSoundLoop = starDingSoundLoop;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#tick()
-	 */
 	public void tick(){
 		if(!goombaisDead){
 			if (game.enemyHitRightBarrier == false){
@@ -142,8 +100,8 @@ public class Enemy2 extends GameObject implements EntityB{
 				//y +=16;
 			}
 			
-			if (y >= game.getHeight()){
-				game.gameOverBoolean = true;
+			if (y+this.getHeight() >= game.getHeight()){
+				game.Health -= 100;
 			}
 			
 			for(int i = 0; i < game.ea.size(); i++){
@@ -151,8 +109,8 @@ public class Enemy2 extends GameObject implements EntityB{
 				
 				if(Physics.Collision(this, tempEnt)){
 					if (game.eb.size() == 2)
-						game.enemySpeedIncrease+= 0.9;
-					game.enemySpeedIncrease+= 0.2; //0.7
+						game.enemySpeedIncrease+= 0.4;
+					game.enemySpeedIncrease+= 0.06; //0.7
 					if(this.goomba2DeathSoundLoop.getSoundLoopBoolean() == false){
 						for(int j = game.goombaDeathSoundLoop.size(); j > 0; j--){
 							if(game.goombaDeathSoundLoop.get(j-1) != null && !game.goombaDeathSoundLoop.get(j-1).clipIsActive()){
@@ -165,7 +123,7 @@ public class Enemy2 extends GameObject implements EntityB{
 							else if (game.goombaDeathSoundLoop.get(k) == game.goombaDeathSoundLoop.getLast()){
 								game.goombaDeathSoundLoop.add(this.goomba2DeathSoundLoop);
 								k++;
-							}else 
+							}else if(this.goomba2DeathSoundLoop.getVolume() -1.5f >= this.goomba2DeathSoundLoop.minimumVolume())
 								this.goomba2DeathSoundLoop.reduceSound(1.5f);
 						}
 						this.goomba2DeathSoundLoop.setSoundLoopBoolean(true);
@@ -236,7 +194,7 @@ public class Enemy2 extends GameObject implements EntityB{
 					else if (game.starDingSoundLoop.get(k) == game.starDingSoundLoop.getLast()){
 						game.starDingSoundLoop.add(this.starDingSoundLoop);
 						k++;
-					}else 
+					}else if(this.starDingSoundLoop.getVolume() -1.5f >= this.starDingSoundLoop.minimumVolume())
 						this.starDingSoundLoop.reduceSound(1.5f);
 					soundLoopPosition = k;
 				}
@@ -246,9 +204,6 @@ public class Enemy2 extends GameObject implements EntityB{
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#render(java.awt.Graphics)
-	 */
 	public void render(Graphics g){
 		if(animDeathBounceL.getCount() < 1 && animDeathBounceR.getCount() < 1)
 			anim.drawAnimation(g, x, y, 0);
@@ -279,64 +234,39 @@ public class Enemy2 extends GameObject implements EntityB{
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getBounds()
-	 */
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, 16, 16);
 	}
 	
-	/**
-	 * Sets the y.
-	 *
-	 * @param y the new y
-	 */
 	public void setY(double y){
 		this.y = y;
 	}
 	
-	/**
-	 * Sets the speed.
-	 *
-	 * @param speed the new speed
-	 */
 	public void setSpeed(double speed){
 		this.speedIncrease = speed;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getX()
-	 */
 	public double getX() {
 		return x;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getY()
-	 */
 	public double getY(){
 		return y;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getEntityBDead()
-	 */
 	public boolean getEntityBDead() {
 		return goombaisDead;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getWidth()
-	 */
 	public int getWidth() {
 		return 16;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getHeight()
-	 */
 	public int getHeight() {
 		return 16;
 	}
 
+	public String enemyType() {
+		return enemyType;
+	}
 }

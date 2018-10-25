@@ -1,233 +1,136 @@
-/*
- * 
- */
 package com.game.src.main;
 
 import java.awt.image.BufferedImage;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class Textures.
- */
 public class Textures {
 
-	/** The player. */
 	public BufferedImage[] player = new BufferedImage[16];
-	
-	/** The mario star 1. */
+	public BufferedImage[] playerNES = new BufferedImage[20];
 	public BufferedImage[] marioStar1 = new BufferedImage[16];
-	
-	/** The mario star 2. */
 	public BufferedImage[] marioStar2 = new BufferedImage[16];
-	
-	/** The mario star 3. */
 	public BufferedImage[] marioStar3 = new BufferedImage[16];
-	
-	/** The mario slowing down. */
+	public BufferedImage[] marioStarNES1 = new BufferedImage[16];
+	public BufferedImage[] marioStarNES2 = new BufferedImage[16];
+	public BufferedImage[] marioStarNES3 = new BufferedImage[16];
 	public BufferedImage[] marioSlowingDown = new BufferedImage[2];
-	
-	/** The fireball. */
 	public BufferedImage[] fireball = new BufferedImage[4];
-	
-	/** The enemy. */
+	public BufferedImage[] fireball1Silhouette = new BufferedImage[4];
 	public BufferedImage[] enemy = new BufferedImage[2];
-	
-	/** The enemy 2. */
 	public BufferedImage[] enemy2 = new BufferedImage[2];
-	
-	/** The enemy 3. */
 	public BufferedImage[] enemy3 = new BufferedImage[2];
-	
-	/** The green shell. */
 	public BufferedImage[] greenShell = new BufferedImage[4];
-	
-	/** The animated star. */
+	public BufferedImage[] greenShellDead = new BufferedImage[8];
+	public BufferedImage[] buzzyBeetleShell = new BufferedImage[4];
+	public BufferedImage[] buzzyBeetleShellDead = new BufferedImage[7];
 	public BufferedImage[] animatedStar = new BufferedImage[20];
-	
-	/** The animated shooting star. */
 	public BufferedImage[] animatedShootingStar = new BufferedImage[12];
-	
-	/** The mario 1 star. */
 	public BufferedImage[] mario1Star = new BufferedImage[4];
-	
-	/** The mario item animation beginning. */
 	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[18];
-	
-	/** The big chain chomp item. */
 	public BufferedImage[] bigChainChompItem = new BufferedImage[9];
-	
-	/** The chain chomp. */
 	public BufferedImage[] chainChomp = new BufferedImage[2];
-	
-	/** The chain chomp item. */
 	public BufferedImage[] chainChompItem = new BufferedImage[25];
-	
-	/** The bowser entrance. */
-	public BufferedImage[] bowserEntrance = new BufferedImage[8];
-	
-	/** The bowser. */
+	public BufferedImage[] chainChompDisintegrate = new BufferedImage[8];
+	public BufferedImage[] bowserEntrance = new BufferedImage[16];
 	public BufferedImage[] bowser = new BufferedImage[2];
-	
-	/** The bowser hit. */
 	public BufferedImage[] bowserHit = new BufferedImage[2];
-	
-	/** The bowser ship. */
 	public BufferedImage[] bowserShip = new BufferedImage[8];
-	
-	/** The bowser ship hit. */
-	public BufferedImage[] bowserShipHit = new BufferedImage[4];
-	
-	/** The bullet bill D. */
+	public BufferedImage[] bowserShip2 = new BufferedImage[8];
+	public BufferedImage[] bowserShip3 = new BufferedImage[8];
+	public BufferedImage[] bowserShip4 = new BufferedImage[8];
+	public BufferedImage[] bowserShip5 = new BufferedImage[8];
+	public BufferedImage[] bowserShip6 = new BufferedImage[8];
+	public BufferedImage[] bowserShip7 = new BufferedImage[8];
+	public BufferedImage[] bowserShip8 = new BufferedImage[8];
+	public BufferedImage[] bowserShip9 = new BufferedImage[8];
+	public BufferedImage[] bowserShip10 = new BufferedImage[8];
+	public BufferedImage[] bowserShip11 = new BufferedImage[8];
+	public BufferedImage[] bowserShip12 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit2 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit3 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit4 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit5 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit6 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit7 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit8 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit9 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit10 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit11 = new BufferedImage[8];
+	public BufferedImage[] bowserShipHit12 = new BufferedImage[8];
 	public BufferedImage[] bulletBillD = new BufferedImage[17];
-	
-	/** The bullet bill DL. */
 	public BufferedImage[] bulletBillDL = new BufferedImage[10];
-	
-	/** The bullet bill DR. */
 	public BufferedImage[] bulletBillDR = new BufferedImage[10];
-	
-	/** The bullet bill explosion. */
 	public BufferedImage[] bulletBillExplosion = new BufferedImage[7];
-	
-	/** The enemy explosion. */
+	public BufferedImage[] bulletBillSpawnSmokeL = new BufferedImage[10];
+	public BufferedImage[] bulletBillSpawnSmokeR = new BufferedImage[10];
 	public BufferedImage[] enemyExplosion = new BufferedImage[3];
-	
-	/** The enemy 2 death L. */
 	public BufferedImage[] enemy2DeathL = new BufferedImage[10];
-	
-	/** The enemy 2 death R. */
 	public BufferedImage[] enemy2DeathR = new BufferedImage[10];
-	
-	/** The enemy 3 death. */
 	public BufferedImage[] enemy3Death = new BufferedImage[3];
-	
-	/** The enemy 3 explosion. */
 	public BufferedImage[] enemy3Explosion = new BufferedImage[13];
-	
-	/** The star. */
 	public BufferedImage[] star = new BufferedImage[20];
-	
-	/** The coin. */
 	public BufferedImage[] coin = new BufferedImage[3];
-	
-	/** The mario entrance. */
 	public BufferedImage[] marioEntrance = new BufferedImage[21];
-	
-	/** The mario death. */
+	public BufferedImage[] marioEntranceNES = new BufferedImage[21];
 	public BufferedImage[] marioDeath = new BufferedImage[2];
-	
-	/** The transparent blocks. */
+	public BufferedImage[] marioDeathNES = new BufferedImage[2];
+	public BufferedImage[] marioSkin1 = new BufferedImage[3];
+	public BufferedImage[] marioSilhouette = new BufferedImage[3];
+	public BufferedImage[] songTrackImages = new BufferedImage[12];
+	public BufferedImage[] songTrackSilhouetteImages = new BufferedImage[12];
+	public BufferedImage[] itemSilhouette = new BufferedImage[6];
 	public BufferedImage[] transparentBlocks = new BufferedImage[3];
-	
-	/** The mario numbers small. */
 	public BufferedImage[] marioNumbersSmall = new BufferedImage[12];
-	
-	/** The mario 3 font numbers small. */
 	public BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
-	
-	/** The item frame. */
+	public BufferedImage[] mario3Font = new BufferedImage[42];
 	public BufferedImage itemFrame;
-	
-	/** The chain chomp item frame display. */
 	public BufferedImage chainChompItemFrameDisplay;
-	
-	/** The press E. */
 	public BufferedImage pressE;
-	
-	/** The gameover. */
+	public BufferedImage textIndicator;
 	public BufferedImage gameover;
 	
-	/** The Constant MARIO_WIDTH. */
 	public static final int MARIO_WIDTH = 16;
-	
-	/** The Constant MARIO_HEIGHT. */
 	public static final int MARIO_HEIGHT = 28;
-	
-	/** The Constant BOWSER_WIDTH. */
 	public static final int BOWSER_WIDTH = 64;
-	
-	/** The Constant BOWSER_HEIGHT. */
 	public static final int BOWSER_HEIGHT = 41;
-	
-	/** The Constant BOWSER_HIT_WIDTH. */
 	public static final int BOWSER_HIT_WIDTH = 64;
-	
-	/** The Constant BOWSER_HIT_HEIGHT. */
 	public static final int BOWSER_HIT_HEIGHT = 50;
-	
-	/** The Constant BOWSER_SHIP_WIDTH. */
 	public static final int BOWSER_SHIP_WIDTH = 64;
-	
-	/** The Constant BOWSER_SHIP_HEIGHT. */
 	public static final int BOWSER_SHIP_HEIGHT = 55;
-	
-	/** The Constant SHOOTING_STAR_WIDTH. */
 	public static final int SHOOTING_STAR_WIDTH = 399;
-	
-	/** The Constant SHOOTING_STAR_HEIGHT. */
 	public static final int SHOOTING_STAR_HEIGHT = 150;
 	
-	/** The ss. */
 	private SpriteSheet ss;
-	
-	/** The star sprites. */
+	private SpriteSheet ssNES;
+	private SpriteSheet marioEntranceSprites;
 	private SpriteSheet starSprites;
-	
-	/** The shooting star sprites. */
 	private SpriteSheet shootingStarSprites;
-	
-	/** The mario 1 star sprites. */
 	private SpriteSheet mario1StarSprites;
-	
-	/** The mario items sprites. */
 	private SpriteSheet marioItemsSprites;
-	
-	/** The bowser sprites. */
 	private SpriteSheet bowserSprites;
-	
-	/** The bullet bill sprites. */
 	private SpriteSheet bulletBillSprites;
-	
-	/** The mario player animations sprites. */
 	private SpriteSheet marioPlayerAnimationsSprites;
-	
-	/** The mario item animation sprites. */
 	private SpriteSheet marioItemAnimationSprites;
-	
-	/** The big mario item animation sprites. */
 	private SpriteSheet bigMarioItemAnimationSprites;
-	
-	/** The chain chomp item getting bigger sprites. */
+	private SpriteSheet itemSilhouetteSprites;
 	private SpriteSheet chainChompItemGettingBiggerSprites;
-	
-	/** The chain chomp sprites. */
 	private SpriteSheet chainChompSprites;
-	
-	/** The mario slowing down sprites. */
+	private SpriteSheet chainChompDisintegrateSprites;
 	private SpriteSheet marioSlowingDownSprites;
-	
-	/** The full mario sprites. */
 	private SpriteSheet fullMarioSprites;
-	
-	/** The mario advance sprites. */
+	private SpriteSheet fullMarioBlackSprites;
 	private SpriteSheet marioAdvanceSprites;
-	
-	/** The mario 3 font numbers small sprites. */
+	private SpriteSheet marioPaintSprites;
+	private SpriteSheet marioPaintSilhouetteSprites;
 	private SpriteSheet mario3FontNumbersSmallSprites;
-	
-	/** The goomba death sprites. */
+	private SpriteSheet mario3FontSprites;
 	private SpriteSheet goombaDeathSprites;
-	
-	/** The transparent blocks sprites. */
 	private SpriteSheet transparentBlocksSprites;
 	
-	/**
-	 * Instantiates a new textures.
-	 *
-	 * @param game the game
-	 */
 	public Textures(Game game){
 		ss = new SpriteSheet(game.getSpriteSheet());
+		ssNES = new SpriteSheet(game.getSpriteSheetNES());
+		marioEntranceSprites = new SpriteSheet(game.getMarioEntranceSprites());
 		starSprites = new SpriteSheet(game.getAnimatedStar());
 		shootingStarSprites = new SpriteSheet(game.getAnimatedShootingStar());
 		mario1StarSprites = new SpriteSheet(game.getMario1StarSpriteSheet());
@@ -237,23 +140,24 @@ public class Textures {
 		marioPlayerAnimationsSprites = new SpriteSheet(game.getMarioPlayerStarAnimations());
 		marioItemAnimationSprites = new SpriteSheet(game.getMarioItemAnimationSheet());
 		bigMarioItemAnimationSprites = new SpriteSheet(game.getBigMarioItemAnimationSheet());
+		itemSilhouetteSprites = new SpriteSheet(game.getItemSilhouetteSheet());
 		chainChompItemGettingBiggerSprites = new SpriteSheet(game.getChainChompItemGettingBiggerSheet());
 		chainChompSprites = new SpriteSheet(game.getChainChompSheet());
+		chainChompDisintegrateSprites = new SpriteSheet(game.getChainChompDisintegrate());
 		marioSlowingDownSprites = new SpriteSheet(game.getMarioSlowingDownSprites());
 		fullMarioSprites = new SpriteSheet(game.getFullMarioSpriteSheet());
+		fullMarioBlackSprites = new SpriteSheet(game.getFullMarioSpriteSheetBlack());
 		marioAdvanceSprites = new SpriteSheet(game.getMarioAdvanceSpriteSheet());
+		marioPaintSprites = new SpriteSheet(game.getMarioPaintSpriteSheet());
+		marioPaintSilhouetteSprites = new SpriteSheet(game.getMarioPaintSilhouetteSpriteSheet());
 		mario3FontNumbersSmallSprites = new SpriteSheet(game.getMario3FontNumbersSmallSpriteSheet());
+		mario3FontSprites = new SpriteSheet(game.getMario3FontSpriteSheet());
 		goombaDeathSprites = new SpriteSheet(game.getGoombaDeathSpriteSheet());
 		transparentBlocksSprites = new SpriteSheet(game.getTransparentBlocks());
 		
 		getTextures();
 	}
 	
-	/**
-	 * Gets the textures.
-	 *
-	 * @return the textures
-	 */
 	private void getTextures(){
 		player[0] = ss.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		player[1] = ss.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
@@ -337,6 +241,91 @@ public class Textures {
 		
 		marioSlowingDown[0] = marioSlowingDownSprites.grabExactImage(0, 0, MARIO_WIDTH, MARIO_HEIGHT);
 		marioSlowingDown[1] = marioSlowingDownSprites.grabExactImage(MARIO_WIDTH, 0, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerNES[0] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[1] = ssNES.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[2] = ssNES.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[3] = ssNES.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerNES[4] = ssNES.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[5] = ssNES.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[6] = ssNES.grabMarioImage(3, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[7] = ssNES.grabMarioImage(4, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerNES[8] = ssNES.grabMarioImage(1, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[9] = ssNES.grabMarioImage(2, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[10] = ssNES.grabMarioImage(3, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[11] = ssNES.grabMarioImage(4, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerNES[12] = ssNES.grabMarioImage(1, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[13] = ssNES.grabMarioImage(2, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[14] = ssNES.grabMarioImage(3, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[15] = ssNES.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerNES[16] = ssNES.grabMarioImage(1, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[17] = ssNES.grabMarioImage(2, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[18] = ssNES.grabMarioImage(3, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[19] = ssNES.grabMarioImage(4, 5, MARIO_WIDTH, MARIO_HEIGHT);
+
+		marioStarNES1[0] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[1] = ssNES.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[2] = ssNES.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[3] = ssNES.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES1[4] = ssNES.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[5] = ssNES.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[6] = ssNES.grabMarioImage(3, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[7] = ssNES.grabMarioImage(4, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES1[8] = ssNES.grabMarioImage(1, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[9] = ssNES.grabMarioImage(2, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[10] = ssNES.grabMarioImage(3, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[11] = ssNES.grabMarioImage(4, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES1[12] = ssNES.grabMarioImage(1, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[13] = ssNES.grabMarioImage(2, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[14] = ssNES.grabMarioImage(3, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[15] = ssNES.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES2[0] = ssNES.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[1] = ssNES.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[2] = ssNES.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[3] = ssNES.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES2[4] = ssNES.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[5] = ssNES.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[6] = ssNES.grabMarioImage(7, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[7] = ssNES.grabMarioImage(8, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES2[8] = ssNES.grabMarioImage(5, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[9] = ssNES.grabMarioImage(6, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[10] = ssNES.grabMarioImage(7, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[11] = ssNES.grabMarioImage(8, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES2[12] = ssNES.grabMarioImage(5, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[13] = ssNES.grabMarioImage(6, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[14] = ssNES.grabMarioImage(7, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[15] = ssNES.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
+
+		marioStarNES3[0] = ssNES.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[1] = ssNES.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[2] = ssNES.grabMarioImage(11, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[3] = ssNES.grabMarioImage(12, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES3[4] = ssNES.grabMarioImage(9, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[5] = ssNES.grabMarioImage(10, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[6] = ssNES.grabMarioImage(11, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[7] = ssNES.grabMarioImage(12, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES3[8] = ssNES.grabMarioImage(9, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[9] = ssNES.grabMarioImage(10, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[10] = ssNES.grabMarioImage(11, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[11] = ssNES.grabMarioImage(12, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarNES3[12] = ssNES.grabMarioImage(9, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[13] = ssNES.grabMarioImage(10, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[14] = ssNES.grabMarioImage(11, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[15] = ssNES.grabMarioImage(12, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		animatedStar[0] = starSprites.grab6pxImage(1, 1, 6, 6);
 		animatedStar[1] = starSprites.grab6pxImage(2, 1, 6, 6);
@@ -441,6 +430,15 @@ public class Textures {
 		chainChomp[0] = chainChompSprites.grabExactImage(362, 324, 19, 18);
 		chainChomp[1] = chainChompSprites.grabExactImage(362, 344, 19, 18);
 		
+		chainChompDisintegrate[0] = chainChompDisintegrateSprites.grabExactImage(0,0,19,18);
+		chainChompDisintegrate[1] = chainChompDisintegrateSprites.grabExactImage(20,2,15,14);
+		chainChompDisintegrate[2] = chainChompDisintegrateSprites.grabExactImage(38,4,11,10);
+		chainChompDisintegrate[3] = chainChompDisintegrateSprites.grabExactImage(52,6,7,6);
+		chainChompDisintegrate[4] = chainChompDisintegrateSprites.grabExactImage(60,7,4,4);
+		chainChompDisintegrate[5] = chainChompDisintegrateSprites.grabExactImage(65,7,3,3);
+		chainChompDisintegrate[6] = chainChompDisintegrateSprites.grabExactImage(69,8,2,2);
+		chainChompDisintegrate[7] = chainChompDisintegrateSprites.grabExactImage(72,9,1,1);
+		
 		fireball[0] = ss.grabSmallImage(5, 1, 16, 16);
 		fireball[1] = ss.grabSmallImage(6, 1, 16, 16);
 		fireball[2] = ss.grabSmallImage(7, 1, 16, 16);
@@ -450,6 +448,33 @@ public class Textures {
 		greenShell[1] = ss.grabSmallImage(6, 2, 16, 16);
 		greenShell[2] = ss.grabSmallImage(7, 2, 16, 16);
 		greenShell[3] = ss.grabSmallImage(8, 2, 16, 16);
+		
+		greenShellDead[0] = goombaDeathSprites.grabExactImage(91, 179, 16, 16);
+		greenShellDead[1] = goombaDeathSprites.grabExactImage(91, 195, 14, 14);
+		greenShellDead[2] = goombaDeathSprites.grabExactImage(91, 209, 12, 12);
+		greenShellDead[3] = goombaDeathSprites.grabExactImage(91, 221, 10, 10);
+		greenShellDead[4] = goombaDeathSprites.grabExactImage(91, 231, 8, 8);
+		greenShellDead[5] = goombaDeathSprites.grabExactImage(91, 239, 6, 5);
+		greenShellDead[6] = goombaDeathSprites.grabExactImage(91, 244, 4, 4);
+		greenShellDead[7] = goombaDeathSprites.grabExactImage(91, 248, 3, 3);
+
+		buzzyBeetleShell[0] = ss.grabExactImage(0, 143, 16, 14);
+		buzzyBeetleShell[1] = ss.grabExactImage(16, 143, 16, 14);
+		buzzyBeetleShell[2] = ss.grabExactImage(32, 143, 16, 14);
+		buzzyBeetleShell[3] = ss.grabExactImage(48, 143, 16, 14);
+		
+		buzzyBeetleShellDead[0] = goombaDeathSprites.grabExactImage(112,179,16,14);
+		buzzyBeetleShellDead[1] = goombaDeathSprites.grabExactImage(112,193,14,12);
+		buzzyBeetleShellDead[2] = goombaDeathSprites.grabExactImage(112,205,10,10);
+		buzzyBeetleShellDead[3] = goombaDeathSprites.grabExactImage(112,215,10,8);
+		buzzyBeetleShellDead[4] = goombaDeathSprites.grabExactImage(112,223,7,6);
+		buzzyBeetleShellDead[5] = goombaDeathSprites.grabExactImage(112,229,4,4);
+		buzzyBeetleShellDead[6] = goombaDeathSprites.grabExactImage(112,233,3,3);
+		
+		fireball1Silhouette[0] = ss.grabSmallImage(5, 3, 16, 16);
+		fireball1Silhouette[1] = ss.grabSmallImage(6, 3, 16, 16);
+		fireball1Silhouette[2] = ss.grabSmallImage(7, 3, 16, 16);
+		fireball1Silhouette[3] = ss.grabSmallImage(8, 3, 16, 16);
 		
 		//enemy[0] = ss.grabMarioImage(5, 5, 16, 16);
 		enemy[0] = ss.grabSmallImage(5, 8, 16, 16);
@@ -471,11 +496,21 @@ public class Textures {
 		bowserEntrance[6] = bowserSprites.grabExactImage((BOWSER_WIDTH * 4) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
 		bowserEntrance[7] = bowserSprites.grabExactImage((BOWSER_WIDTH * 6) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
 		
+		bowserEntrance[8] = bowserSprites.grabExactImage((BOWSER_WIDTH * 10) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserEntrance[9] = bowserSprites.grabExactImage((BOWSER_WIDTH * 10) - BOWSER_WIDTH, (BOWSER_HEIGHT * 2) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserEntrance[10] = bowserSprites.grabExactImage((BOWSER_WIDTH * 9) - BOWSER_WIDTH, (BOWSER_HEIGHT * 5) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserEntrance[11] = bowserSprites.grabExactImage((BOWSER_WIDTH * 10) - BOWSER_WIDTH, (BOWSER_HEIGHT * 5) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserEntrance[12] = bowserSprites.grabExactImage((BOWSER_WIDTH * 10) - BOWSER_WIDTH, (BOWSER_HEIGHT * 4) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserEntrance[13] = bowserSprites.grabExactImage((BOWSER_WIDTH * 10) - BOWSER_WIDTH, (BOWSER_HEIGHT * 3) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserEntrance[14] = bowserSprites.grabExactImage((BOWSER_WIDTH * 9) - BOWSER_WIDTH, (BOWSER_HEIGHT * 3) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserEntrance[15] = bowserSprites.grabExactImage((BOWSER_WIDTH * 9) - BOWSER_WIDTH, (BOWSER_HEIGHT * 4) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		
+		
 		bowser[0] = bowserSprites.grabExactImage((BOWSER_WIDTH * 6) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
 		bowser[1] = bowserSprites.grabExactImage((BOWSER_WIDTH * 7) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
 		
-		bowserHit[0] = bowserSprites.grabExactImage((BOWSER_WIDTH * 8) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
-		bowserHit[1] = bowserSprites.grabExactImage((BOWSER_WIDTH * 9) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT);
+		bowserHit[0] = bowserSprites.grabExactImage((BOWSER_WIDTH * 8) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT +9);
+		bowserHit[1] = bowserSprites.grabExactImage((BOWSER_WIDTH * 9) - BOWSER_WIDTH, (BOWSER_HEIGHT * 1) - BOWSER_HEIGHT, BOWSER_WIDTH, BOWSER_HEIGHT +9);
 		
 		bowserShip[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 2) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
 		bowserShip[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 2) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
@@ -490,6 +525,208 @@ public class Textures {
 		bowserShipHit[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 3) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
 		bowserShipHit[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 3) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
 		bowserShipHit[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 3) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 3) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 3) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 3) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 3) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip2[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip2[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip2[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip2[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip2[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip2[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip2[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip2[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 4) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit2[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit2[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit2[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit2[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit2[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit2[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit2[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit2[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 5) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip3[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip3[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip3[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip3[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip3[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip3[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip3[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip3[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 6) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit3[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit3[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit3[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit3[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit3[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit3[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit3[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit3[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 7) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip4[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip4[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip4[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip4[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip4[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip4[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip4[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip4[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 8) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit4[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit4[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit4[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit4[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit4[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit4[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit4[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit4[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 9) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip5[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip5[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip5[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip5[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip5[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip5[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip5[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip5[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 10) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit5[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit5[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit5[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit5[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit5[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit5[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit5[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit5[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 11) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip6[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip6[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip6[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip6[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip6[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip6[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip6[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip6[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 12) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit6[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit6[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit6[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit6[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit6[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit6[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit6[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit6[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 13) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+
+		bowserShip7[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip7[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip7[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip7[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip7[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip7[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip7[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip7[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 14) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit7[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit7[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit7[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit7[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit7[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit7[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit7[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit7[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 15) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip8[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip8[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip8[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip8[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip8[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip8[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip8[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip8[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 16) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+	
+		bowserShipHit8[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit8[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit8[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit8[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit8[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit8[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit8[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit8[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 17) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip9[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip9[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip9[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip9[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip9[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip9[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip9[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip9[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 18) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit9[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit9[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit9[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit9[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit9[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit9[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit9[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit9[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 19) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip10[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip10[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip10[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip10[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip10[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip10[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip10[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip10[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 20) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit10[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit10[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit10[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit10[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit10[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit10[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit10[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit10[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 21) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip11[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip11[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip11[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip11[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip11[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip11[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip11[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip11[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 22) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit11[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit11[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit11[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit11[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit11[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit11[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit11[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit11[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 23) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShip12[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip12[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip12[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip12[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip12[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip12[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip12[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShip12[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 24) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		
+		bowserShipHit12[0] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 1) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit12[1] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 2) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit12[2] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 3) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit12[3] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 4) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit12[4] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 5) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit12[5] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 6) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit12[6] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 7) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
+		bowserShipHit12[7] = bowserSprites.grabExactImage((BOWSER_SHIP_WIDTH * 8) - BOWSER_SHIP_WIDTH, (BOWSER_SHIP_HEIGHT * 25) - BOWSER_SHIP_HEIGHT, BOWSER_SHIP_WIDTH, BOWSER_SHIP_HEIGHT);
 		
 		bulletBillD[0] = bulletBillSprites.grabSmallImage(1, 1, 16, 16);
 		bulletBillD[1] = bulletBillSprites.grabSmallImage(2, 1, 16, 16);
@@ -538,13 +775,35 @@ public class Textures {
 		bulletBillDR[8] = bulletBillSprites.grabSmallImage(9, 3, 16, 16);
 		bulletBillDR[9] = bulletBillSprites.grabSmallImage(10, 3, 16, 16);
 		
-		bulletBillExplosion[0] = marioAdvanceSprites.grabExactImage(555, 47, 7, 7);
-		bulletBillExplosion[1] = marioAdvanceSprites.grabExactImage(518, 26, 5, 5);
-		bulletBillExplosion[2] = marioAdvanceSprites.grabExactImage(509, 24, 7, 8);
+		bulletBillExplosion[0] = marioAdvanceSprites.grabExactImage(551, 44, 11, 10);
+		bulletBillExplosion[1] = marioAdvanceSprites.grabExactImage(516, 23, 10, 8);
+		bulletBillExplosion[2] = marioAdvanceSprites.grabExactImage(505, 21, 11, 11);
 		bulletBillExplosion[3] = marioAdvanceSprites.grabExactImage(491, 21, 14, 14);
 		bulletBillExplosion[4] = marioAdvanceSprites.grabExactImage(475,20,15,15);
 		bulletBillExplosion[5] = marioAdvanceSprites.grabExactImage(585, 92, 18, 16);
 		bulletBillExplosion[6] = marioAdvanceSprites.grabExactImage(455, 19, 16, 16);
+		
+		bulletBillSpawnSmokeL[0] = bulletBillSprites.grabExactImage(0, 48, 29, 32);
+		bulletBillSpawnSmokeL[1] = bulletBillSprites.grabExactImage(29, 48, 27, 30);
+		bulletBillSpawnSmokeL[2] = bulletBillSprites.grabExactImage(56, 48, 27, 30);
+		bulletBillSpawnSmokeL[3] = bulletBillSprites.grabExactImage(83, 48, 24, 30);
+		bulletBillSpawnSmokeL[4] = bulletBillSprites.grabExactImage(107, 48, 20, 30);
+		bulletBillSpawnSmokeL[5] = bulletBillSprites.grabExactImage(127, 48, 19, 30);
+		bulletBillSpawnSmokeL[6] = bulletBillSprites.grabExactImage(146, 48, 15, 30);
+		bulletBillSpawnSmokeL[7] = bulletBillSprites.grabExactImage(164, 48, 11, 30);
+		bulletBillSpawnSmokeL[8] = bulletBillSprites.grabExactImage(181, 48, 7, 30);
+		bulletBillSpawnSmokeL[9] = bulletBillSprites.grabExactImage(197, 48, 2, 30);
+		
+		bulletBillSpawnSmokeR[0] = bulletBillSprites.grabExactImage(176, 82, 29, 32);
+		bulletBillSpawnSmokeR[1] = bulletBillSprites.grabExactImage(149, 82, 27, 30);
+		bulletBillSpawnSmokeR[2] = bulletBillSprites.grabExactImage(122, 82, 27, 30);
+		bulletBillSpawnSmokeR[3] = bulletBillSprites.grabExactImage(98, 82, 24, 30);
+		bulletBillSpawnSmokeR[4] = bulletBillSprites.grabExactImage(78, 82, 20, 30);
+		bulletBillSpawnSmokeR[5] = bulletBillSprites.grabExactImage(58, 82, 19, 30);
+		bulletBillSpawnSmokeR[6] = bulletBillSprites.grabExactImage(44, 82, 15, 30);
+		bulletBillSpawnSmokeR[7] = bulletBillSprites.grabExactImage(30, 82, 11, 30);
+		bulletBillSpawnSmokeR[8] = bulletBillSprites.grabExactImage(18, 82, 7, 30);
+		bulletBillSpawnSmokeR[9] = bulletBillSprites.grabExactImage(6, 82, 2, 30);
 		
 		enemyExplosion[0] = goombaDeathSprites.grabExactImage(70, 67, 16, 15);
 		enemyExplosion[1] = goombaDeathSprites.grabExactImage(89, 67, 12, 14);
@@ -623,8 +882,58 @@ public class Textures {
 		marioEntrance[19] = fullMarioSprites.grabExactImage(144, 715, 16, 29);
 		marioEntrance[20] = fullMarioSprites.grabExactImage(288, 436, 16, 28);
 		
+		marioEntranceNES[0] = marioEntranceSprites.grabExactImage(0, 0, 12, 14);
+		marioEntranceNES[1] = marioEntranceSprites.grabExactImage(12, 0, 12, 15);
+		marioEntranceNES[2] = marioEntranceSprites.grabExactImage(24, 0, 14, 14);
+		marioEntranceNES[3] = marioEntranceSprites.grabExactImage(38, 0, 12, 15);
+		marioEntranceNES[4] = marioEntranceSprites.grabExactImage(50, 0, 12, 14);
+		marioEntranceNES[5] = marioEntranceSprites.grabExactImage(62, 0, 13, 15);
+		marioEntranceNES[6] = marioEntranceSprites.grabExactImage(75, 0, 13, 15);
+		marioEntranceNES[7] = marioEntranceSprites.grabExactImage(89, 0, 13, 15);
+		marioEntranceNES[8] = marioEntranceSprites.grabExactImage(102, 0, 13, 15);
+		marioEntranceNES[9] = marioEntranceSprites.grabExactImage(116, 0, 12, 16);
+		marioEntranceNES[10] = marioEntranceSprites.grabExactImage(128, 0, 12, 16);
+		marioEntranceNES[11] = marioEntranceSprites.grabExactImage(140, 0, 16, 26);
+		marioEntranceNES[12] = marioEntranceSprites.grabExactImage(156, 0, 14, 27);
+		marioEntranceNES[13] = marioEntranceSprites.grabExactImage(170, 0, 14, 27);
+		marioEntranceNES[14] = marioEntranceSprites.grabExactImage(184, 0, 16, 27);
+		marioEntranceNES[15] = marioEntranceSprites.grabExactImage(200, 0, 14, 27);
+		marioEntranceNES[16] = marioEntranceSprites.grabExactImage(214, 0, 16, 27);
+		marioEntranceNES[17] = marioEntranceSprites.grabExactImage(230, 0, 16, 28);
+		marioEntranceNES[18] = marioEntranceSprites.grabExactImage(246, 0, 16, 28);
+		marioEntranceNES[19] = marioEntranceSprites.grabExactImage(262, 0, 15, 28);
+		marioEntranceNES[20] = marioEntranceSprites.grabExactImage(278, 0, 16, 28);
+		
 		marioDeath[0] = fullMarioSprites.grabExactImage(8, 38, 16, 24);
 		marioDeath[1] = fullMarioSprites.grabExactImage(368, 38, 16, 24);
+		
+		marioDeathNES[0] = marioEntranceSprites.grabExactImage(0, 14, 14, 14);
+		marioDeathNES[1] = marioEntranceSprites.grabExactImage(0, 0, 12, 14);
+		
+		marioSilhouette[0] = fullMarioBlackSprites.grabExactImage(208, 436, 15, 28);
+		marioSilhouette[1] = fullMarioBlackSprites.grabExactImage(368, 436, 16, 28);
+		marioSilhouette[2] = fullMarioBlackSprites.grabExactImage(328, 436, 16, 27);
+		
+		marioSkin1[0] = fullMarioSprites.grabExactImage(208, 436, 15, 28);
+		marioSkin1[1] = fullMarioSprites.grabExactImage(368, 436, 16, 28);
+		marioSkin1[2] = fullMarioSprites.grabExactImage(328, 436, 16, 27);
+		
+		songTrackImages[0] = marioPaintSprites.grabExactImage(76, 76, 11, 16);//Song Note
+		songTrackImages[1] = marioPaintSprites.grabExactImage(132, 34, 16, 16);//Dinosaur
+		songTrackImages[2] = marioPaintSprites.grabExactImage(149, 34, 16, 16);//Tiger
+		songTrackImages[3] = marioPaintSprites.grabExactImage(169, 35, 16, 15);//Elephant
+		
+		songTrackSilhouetteImages[0] = marioPaintSilhouetteSprites.grabExactImage(77, 77, 9, 14);//Song Note
+		songTrackSilhouetteImages[1] = marioPaintSilhouetteSprites.grabExactImage(130, 33, 18, 18);//Dinosaur
+		songTrackSilhouetteImages[2] = marioPaintSilhouetteSprites.grabExactImage(148, 33, 18, 18);//Tiger
+		songTrackSilhouetteImages[3] = marioPaintSilhouetteSprites.grabExactImage(168, 34, 18, 17);//Elephant
+		
+		itemSilhouette[0] = itemSilhouetteSprites.grabExactImage(0, 0, 18, 18);
+		itemSilhouette[1] = itemSilhouetteSprites.grabExactImage(19, 0, 18, 18);
+		itemSilhouette[2] = itemSilhouetteSprites.grabExactImage(38, 0, 18, 18);
+		itemSilhouette[3] = itemSilhouetteSprites.grabExactImage(57, 0, 18, 18);
+		itemSilhouette[4] = itemSilhouetteSprites.grabExactImage(76, 0, 18, 18);
+		itemSilhouette[5] = itemSilhouetteSprites.grabExactImage(95, 0, 18, 18);
 		
 		transparentBlocks[0] = transparentBlocksSprites.grabExactImage(40, 210, 16, 28);
 		transparentBlocks[1] = transparentBlocksSprites.grabExactImage(140, 210, 16, 28);
@@ -655,11 +964,56 @@ public class Textures {
 		mario3FontNumbersSmall[9] = mario3FontNumbersSmallSprites.grabExactImage(48, 16, 16, 16);
 		mario3FontNumbersSmall[10] = mario3FontNumbersSmallSprites.grabExactImage(32, 32, 12, 16);
 		
+		mario3Font[0] = mario3FontSprites.grabExactImage(0, 0, 32, 64);//A
+		mario3Font[1] = mario3FontSprites.grabExactImage(34, 0, 32, 64);//B
+		mario3Font[2] = mario3FontSprites.grabExactImage(68, 0, 32, 64);//C
+		mario3Font[3] = mario3FontSprites.grabExactImage(102, 0, 32, 64);//D
+		mario3Font[4] = mario3FontSprites.grabExactImage(136, 0, 32, 64);//E
+		mario3Font[5] = mario3FontSprites.grabExactImage(170, 0, 32, 64);//F
+		mario3Font[6] = mario3FontSprites.grabExactImage(204, 0, 32, 64);//G
+		mario3Font[7] = mario3FontSprites.grabExactImage(238, 0, 32, 64);//H
+		mario3Font[8] = mario3FontSprites.grabExactImage(272, 0, 32, 64);//I
+		mario3Font[9] = mario3FontSprites.grabExactImage(306, 0, 32, 64);//J
+		mario3Font[10] = mario3FontSprites.grabExactImage(340, 0, 40, 64);//K
+		mario3Font[11] = mario3FontSprites.grabExactImage(382, 0, 32, 64);//L
+		mario3Font[12] = mario3FontSprites.grabExactImage(416, 0, 44, 64);//M
+		mario3Font[13] = mario3FontSprites.grabExactImage(462, 0, 32, 64);//N
+		mario3Font[14] = mario3FontSprites.grabExactImage(496, 0, 32, 64);//O
+		mario3Font[15] = mario3FontSprites.grabExactImage(530, 0, 32, 64);//P
+		mario3Font[16] = mario3FontSprites.grabExactImage(564, 0, 32, 64);//Q
+		mario3Font[17] = mario3FontSprites.grabExactImage(598, 0, 36, 64);//R
+		mario3Font[18] = mario3FontSprites.grabExactImage(636, 0, 32, 64);//S
+		mario3Font[19] = mario3FontSprites.grabExactImage(670, 0, 32, 64);//T
+		mario3Font[20] = mario3FontSprites.grabExactImage(704, 0, 32, 64);//U
+		mario3Font[21] = mario3FontSprites.grabExactImage(738, 0, 32, 64);//V
+		mario3Font[22] = mario3FontSprites.grabExactImage(772, 0, 32, 64);//W
+		mario3Font[23] = mario3FontSprites.grabExactImage(806, 0, 32, 64);//X
+		mario3Font[24] = mario3FontSprites.grabExactImage(840, 0, 32, 64);//Y
+		mario3Font[25] = mario3FontSprites.grabExactImage(874, 0, 32, 64);//Z
+		mario3Font[26] = mario3FontSprites.grabExactImage(0, 66, 32, 64);//1
+		mario3Font[27] = mario3FontSprites.grabExactImage(34, 66, 32, 64);//2
+		mario3Font[28] = mario3FontSprites.grabExactImage(68, 66, 32, 64);//3
+		mario3Font[29] = mario3FontSprites.grabExactImage(102, 66, 32, 64);//4
+		mario3Font[30] = mario3FontSprites.grabExactImage(136, 66, 32, 64);//5
+		mario3Font[31] = mario3FontSprites.grabExactImage(170, 66, 32, 64);//6
+		mario3Font[32] = mario3FontSprites.grabExactImage(204, 66, 32, 64);//7
+		mario3Font[33] = mario3FontSprites.grabExactImage(238, 66, 32, 64);//8
+		mario3Font[34] = mario3FontSprites.grabExactImage(272, 66, 32, 64);//9
+		mario3Font[35] = mario3FontSprites.grabExactImage(306, 66, 32, 64);//0
+		mario3Font[36] = mario3FontSprites.grabExactImage(340, 66, 16, 64);//.
+		mario3Font[37] = mario3FontSprites.grabExactImage(358, 66, 32, 64);//'
+		mario3Font[38] = mario3FontSprites.grabExactImage(392, 66, 16, 64);//!
+		mario3Font[39] = mario3FontSprites.grabExactImage(410, 66, 16, 64);//:
+		mario3Font[40] = mario3FontSprites.grabExactImage(428, 66, 28, 64);//,
+		mario3Font[41] = mario3FontSprites.grabExactImage(456, 66, 32, 64);//[SPACE]
+		
 		itemFrame = marioAdvanceSprites.grabExactImage(308, 268, 26, 26);
 		
 		chainChompItemFrameDisplay = marioAdvanceSprites.grabExactImage(282, 301, 22, 22);
 		
 		pressE = marioAdvanceSprites.grabExactImage(450, 285, 47, 11);
+		
+		textIndicator = mario3FontSprites.grabExactImage(0, 132, 16, 64);
 		
 		gameover = ss.grabExactImage(144, 208, 80, 16);
 	}

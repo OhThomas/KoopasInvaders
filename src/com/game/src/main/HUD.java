@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.game.src.main;
 
 import java.awt.AlphaComposite;
@@ -9,105 +6,52 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class HUD.
- */
 public class HUD {
 
-	/** The tex. */
 	private Textures tex;
-	
-	/** The game. */
 	private Game game;
-	
-	/** The health. */
 	public static float HEALTH = 0;
-	
-	/** The green value. */
 	private float greenValue = 255;
-	
-	/** The score. */
 	private long score = 0;
-	
-	/** The score string. */
 	private String scoreString;
-	
-	/** The level. */
+	public static String currentScoreFromChainChomp = "";
 	private int level = 1;
-	
-	/** The item obtained. */
 	private boolean itemObtained = false;
-	
-	/** The item name. */
 	private String itemName = null;
-	
-	/** The timer 1. */
 	private static double timer1 = 100;
-	
-	/** The timer 2. */
 	private static double timer2 = 100;
-	
-	/** The image translucent. */
 	private float imageTranslucent = 0;
-	
-	/** The image translucent velocity. */
 	private double imageTranslucentVelocity = 0;
-	
-	/** The image translucent timer. */
 	private long imageTranslucentTimer = 0;
-	
-	/** The image is gone. */
 	private boolean imageIsGone = false;
-	
-	/** The enemy hit pause timer. */
 	private long enemyHitPauseTimer = 0;
-	
-	/** The mario numbers small. */
 	private BufferedImage[] marioNumbersSmall = new BufferedImage[10];
-	
-	/** The mario 3 font numbers small. */
 	private BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
-	
-	/** The mario addition sign. */
+	public static BufferedImage[] mario3Font = new BufferedImage[40];
 	private BufferedImage marioAdditionSign = null;
-	
-	/** The item frame. */
 	private BufferedImage itemFrame = null;
-	
-	/** The chain chomp item frame display. */
 	private BufferedImage chainChompItemFrameDisplay = null;
-	
-	/** The press E. */
 	private BufferedImage pressE = null;
 	
-	/** The item enemy sound loop. */
 	private SoundLoops itemEnemySoundLoop = null;
 	
-	/**
-	 * Instantiates a new hud.
-	 *
-	 * @param tex the tex
-	 * @param game the game
-	 */
 	public HUD(Textures tex, Game game){
 		this.tex = tex;
 		this.game = game;
 		this.marioNumbersSmall = tex.marioNumbersSmall;
 		this.mario3FontNumbersSmall = tex.mario3FontNumbersSmall;
+		this.mario3Font = tex.mario3Font;
 		this.marioAdditionSign = tex.marioNumbersSmall[11];
 		this.itemFrame = tex.itemFrame;
 		this.chainChompItemFrameDisplay = tex.chainChompItemFrameDisplay;
 		this.pressE = tex.pressE;
 		String itemEnemyFile = "res/Sounds/SFX/smb3_sound_effects_inventory_open_close.wav";
 		SoundLoops itemEnemySoundLoops = new SoundLoops(itemEnemyFile);
+		VolumeSlider.adjustSFX(itemEnemySoundLoops);
 		this.itemEnemySoundLoop = itemEnemySoundLoops;
 		
 	}
 	
-	/**
-	 * Tick.
-	 */
 	public void tick(){
 		if(game.getSpawnDone4()){
 			if(timer1 > 0){
@@ -141,11 +85,6 @@ public class HUD {
 		}
 	}
 	
-	/**
-	 * Render.
-	 *
-	 * @param g the g
-	 */
 	public void render(Graphics g){
 		if(!game.getUserHasPaused()){
 			if(game.getSpawnDone4()){
@@ -190,11 +129,20 @@ public class HUD {
 				g2d.drawImage(pressE,Game.WIDTH-10,28,null);
 			}
 			if(enemyHitPauseTimer != 0 && System.currentTimeMillis() < enemyHitPauseTimer){
-				if(!this.itemEnemySoundLoop.clipIsActive())
+				if(!this.itemEnemySoundLoop.clipIsActive()) {
+					VolumeSlider.adjustSFX(itemEnemySoundLoop);
 					this.itemEnemySoundLoop.play();
-				stringToScore(g, this.marioNumbersSmall, (int)(game.ee.getLast().getX() + game.ee.getLast().getBounds().getWidth()), (int)game.ee.getLast().getY(), "200", false);
+				}
+				if(currentScoreFromChainChomp.equals(""))
+					stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, "200", false);
+				else 
+					stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, currentScoreFromChainChomp, false);
 			}
-			
+			else if(enemyHitPauseTimer != 0) {
+				currentScoreFromChainChomp = "";
+				enemyHitPauseTimer = 0;
+			}
+				
 		}
 		else if(game.getVisualPauseTimer() > System.currentTimeMillis() || game.getPauseSoundFXTimer() > System.currentTimeMillis()){
 			if(game.getSpawnDone4()) {
@@ -242,13 +190,6 @@ public class HUD {
 		//g.drawImage(img, Game.WIDTH, 0, null);
 		//g.drawString("Level: " + level, 170, 64);
 	}
-	
-	/**
-	 * String to score.
-	 *
-	 * @param g the g
-	 * @param string the string
-	 */
 	public void stringToScore(Graphics g, String string){
 		int x = Game.WIDTH * Game.SCALE;
 		int y = 0;
@@ -293,17 +234,6 @@ public class HUD {
 			k++;
 		}
 	}
-	
-	/**
-	 * String to score.
-	 *
-	 * @param g the g
-	 * @param font the font
-	 * @param xPosition the x position
-	 * @param yPosition the y position
-	 * @param string the string
-	 * @param b the b
-	 */
 	//COMMAS DISABLED vvv
 	public void stringToScore(Graphics g, BufferedImage[] font, int xPosition, int yPosition, String string, Boolean b){
 		//int k = 0;
@@ -401,14 +331,106 @@ public class HUD {
 			}
 		}
 	}
-	
-	/**
-	 * String to buffered image.
-	 *
-	 * @param font the font
-	 * @param string the string
-	 * @return the buffered image
-	 */
+	public static BufferedImage mario3FontCharBufferedImage(char c) {
+		switch(c) {
+		case 'a': case 'A':
+			return mario3Font[0];
+		case 'b': case 'B':
+			return mario3Font[1];
+		case 'c': case 'C':
+			return mario3Font[2];
+		case 'd': case 'D':
+			return mario3Font[3];
+		case 'e': case 'E':
+			return mario3Font[4];
+		case 'f': case 'F':
+			return mario3Font[5];
+		case 'g': case 'G':
+			return mario3Font[6];
+		case 'h': case 'H':
+			return mario3Font[7];
+		case 'i': case 'I':
+			return mario3Font[8];
+		case 'j': case 'J':
+			return mario3Font[9];
+		case 'k': case 'K':
+			return mario3Font[10];
+		case 'l': case 'L':
+			return mario3Font[11];
+		case 'm': case 'M':
+			return mario3Font[12];
+		case 'n': case 'N':
+			return mario3Font[13];
+		case 'o': case 'O':
+			return mario3Font[14];
+		case 'p': case 'P':
+			return mario3Font[15];
+		case 'q': case 'Q':
+			return mario3Font[16];
+		case 'r': case 'R':
+			return mario3Font[17];
+		case 's': case 'S':
+			return mario3Font[18];
+		case 't': case 'T':
+			return mario3Font[19];
+		case 'u': case 'U':
+			return mario3Font[20];
+		case 'v': case 'V':
+			return mario3Font[21];
+		case 'w': case 'W':
+			return mario3Font[22];
+		case 'x': case 'X':
+			return mario3Font[23];
+		case 'y': case 'Y':
+			return mario3Font[24];
+		case 'z': case 'Z':
+			return mario3Font[25];
+		case '1':
+			return mario3Font[26];
+		case '2':
+			return mario3Font[27];
+		case '3':
+			return mario3Font[28];
+		case '4':
+			return mario3Font[29];
+		case '5':
+			return mario3Font[30];
+		case '6':
+			return mario3Font[31];
+		case '7':
+			return mario3Font[32];
+		case '8':
+			return mario3Font[33];
+		case '9':
+			return mario3Font[34];
+		case '0':
+			return mario3Font[35];
+		case '.': 
+			return mario3Font[36];
+		case '\'':
+			return mario3Font[37];
+		case '!':
+			return mario3Font[38];
+		case ':':
+			return mario3Font[39];
+		case ',':
+			return mario3Font[40];
+		case ' ':
+			return mario3Font[41];
+		case '\n':
+			return mario3Font[41];
+		default: return mario3Font[36];
+		}
+	}
+	public static BufferedImage stringToMario3FontImage(String string) {
+		BufferedImage previousImage = null;
+		BufferedImage nextImage = null;
+		for(int i = 0; i < string.length(); i++) {
+			nextImage = mario3FontCharBufferedImage(string.charAt(i));
+			previousImage = attachImages(previousImage, nextImage);
+		}
+		return previousImage;
+	}
 	public BufferedImage stringToBufferedImage(BufferedImage[] font, String string){
 		BufferedImage previousImage = this.marioAdditionSign;
 		BufferedImage nextImage = null;
@@ -444,15 +466,19 @@ public class HUD {
 			}
 		return previousImage;
 	}
-	
-	/**
-	 * Attach images.
-	 *
-	 * @param img1 the img 1
-	 * @param img2 the img 2
-	 * @return the buffered image
-	 */
-	public BufferedImage attachImages(BufferedImage img1, BufferedImage img2){
+	public static void clickyButton(Graphics g, BufferedImage img, BufferedImage highlightedImg, BufferedImage clickedImg,
+			boolean buttonHighlighted, boolean buttonClicked, boolean backOnButton, boolean mouseIsOffClickedObjectAndHeldDown,
+			boolean mouseIsClickedDown, int x, int y) {
+		if(!mouseIsOffClickedObjectAndHeldDown && buttonClicked || backOnButton && buttonClicked)
+			g.drawImage(clickedImg,x, y, null);
+		else if(buttonHighlighted && !buttonClicked && !mouseIsOffClickedObjectAndHeldDown && !mouseIsClickedDown)
+			g.drawImage(highlightedImg, x, y, null);
+		else
+			g.drawImage(img, x, y, null);
+	}
+	public static BufferedImage attachImages(BufferedImage img1, BufferedImage img2){
+			if(img1 == null)
+				return img2;
 	        BufferedImage resultImage = new BufferedImage(img1.getWidth() +
 	                img2.getWidth(),img2.getHeight(),
 	                BufferedImage.TYPE_INT_ARGB);
@@ -463,141 +489,65 @@ public class HUD {
 	         
 	}
 	
-	/**
-	 * Make composite.
-	 *
-	 * @param alpha the alpha
-	 * @return the alpha composite
-	 */
 	private AlphaComposite makeComposite(float alpha) {
 		  int type = AlphaComposite.SRC_OVER;
 		  return(AlphaComposite.getInstance(type, alpha));
 	}
 	
-	/**
-	 * Sets the score.
-	 *
-	 * @param score the new score
-	 */
 	public void setScore(long score){
 		this.score = this.score + score;
 		if(this.score < 0)
 			this.score = 0;
 	}
 	
-	/**
-	 * Gets the score.
-	 *
-	 * @return the score
-	 */
 	public long getScore(){
 		return score;
 	}
 	
-	/**
-	 * Sets the level.
-	 *
-	 * @param level the new level
-	 */
 	public void setLevel(int level){
 		this.level = level;
 	}
 	
-	/**
-	 * Gets the level.
-	 *
-	 * @return the level
-	 */
 	public int getLevel(){
 		return level;
 	}
 
-	/**
-	 * Gets the item obtained.
-	 *
-	 * @return the item obtained
-	 */
 	public boolean getItemObtained() {
 		return itemObtained;
 	}
 
-	/**
-	 * Sets the item obtained.
-	 *
-	 * @param itemObtained the new item obtained
-	 */
 	public void setItemObtained(boolean itemObtained) {
 		this.itemObtained = itemObtained;
 	}
 	
-	/**
-	 * Gets the enemy hit pause timer.
-	 *
-	 * @return the enemy hit pause timer
-	 */
 	public long getEnemyHitPauseTimer() {
 		return enemyHitPauseTimer;
 	}
 
-	/**
-	 * Sets the enemy hit pause timer.
-	 *
-	 * @param enemyHitPauseTimer the new enemy hit pause timer
-	 */
 	public void setEnemyHitPauseTimer(long enemyHitPauseTimer) {
 		this.enemyHitPauseTimer = enemyHitPauseTimer;
 	}
 	
-	/**
-	 * Gets the item name.
-	 *
-	 * @return the item name
-	 */
 	public String getItemName() {
 		return itemName;
 	}
 
-	/**
-	 * Sets the item name.
-	 *
-	 * @param itemName the new item name
-	 */
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
 	}
-	
-	/**
-	 * Gets the timer 1.
-	 *
-	 * @return the timer 1
-	 */
+
 	public static double getTimer1() {
 		return HUD.timer1;
 	}
 	
-	/**
-	 * Gets the timer 2.
-	 *
-	 * @return the timer 2
-	 */
 	public static double getTimer2() {
 		return HUD.timer2;
 	}
 	
-	/**
-	 * Sets the timer 1.
-	 *
-	 * @param timer the new timer 1
-	 */
 	public void setTimer1(double timer) {
 		HUD.timer1 = timer;
 	}
 	
-	/**
-	 * Sets the timer 2.
-	 *
-	 * @param timer the new timer 2
-	 */
 	public void setTimer2(double timer) {
 		HUD.timer2 = timer;
 	}

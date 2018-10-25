@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -10,41 +7,18 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.libs.Animation;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class Mario1Star.
- */
 public class Mario1Star extends GameObject implements EntityD{
 	
-	/** The tex. */
 	private Textures tex;
-	
-	/** The game. */
 	private Game game;
-	
-	/** The vel Y. */
 	protected double velX, velY;
-	
-	/** The item name. */
 	private String itemName = "mario1Star";
-	
-	/** The item spawn location. */
 	private boolean itemSpawnLocation = false;
 	
-	/** The anim. */
 	Animation anim;
 	
-	/** The item sound loop. */
 	SoundLoops itemSoundLoop;
 	
-	/**
-	 * Instantiates a new mario 1 star.
-	 *
-	 * @param x the x
-	 * @param y the y
-	 * @param tex the tex
-	 * @param game the game
-	 */
 	public Mario1Star(double x, double y, Textures tex, Game game) {
 		super(x, y);
 		this.tex = tex;
@@ -64,9 +38,6 @@ public class Mario1Star extends GameObject implements EntityD{
 		this.itemSoundLoop = itemSoundLoop;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#tick()
-	 */
 	@Override
 	public void tick() {
 		if(itemSpawnLocation == false){
@@ -112,49 +83,31 @@ public class Mario1Star extends GameObject implements EntityD{
 		anim.runAnimation();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#render(java.awt.Graphics)
-	 */
 	@Override
 	public void render(Graphics g) {
 		anim.drawAnimation(g, x, y, 0);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getBounds()
-	 */
 	@Override
 	public Rectangle getBounds() {
 		return new Rectangle((int)x, (int)y, 14, 16);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getX()
-	 */
 	@Override
 	public double getX() {
 		return x;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getY()
-	 */
 	@Override
 	public double getY() {
 		return y;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getItemName()
-	 */
 	@Override
 	public String getItemName() {
 		return itemName;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityD#getItemSoundLoop()
-	 */
 	@Override
 	public SoundLoops getItemSoundLoop() {
 		return itemSoundLoop;

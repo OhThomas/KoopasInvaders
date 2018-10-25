@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.game.src.main;
 
 import java.awt.Graphics;
@@ -10,54 +7,24 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.libs.Animation;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class Enemy3.
- */
 public class Enemy3 extends GameObject implements EntityB{
 
-	/** The barrier. */
 	private boolean barrier = false;
 	
-	/** The tex. */
 	private Textures tex;
-	
-	/** The game. */
 	private Game game;
-	
-	/** The c. */
 	private Controller c;
-	
-	/** The speed increase. */
 	public double speedIncrease = 0.1;
-	
-	/** The goombais dead. */
 	private boolean goombaisDead = false;
+	private String enemyType = "Goomba3";
 	
-	/** The anim. */
 	Animation anim;
-	
-	/** The anim death. */
 	Animation animDeath;
-	
-	/** The anim explosion. */
 	Animation animExplosion;
 	
-	/** The goomba 3 death sound loop. */
 	SoundLoops goomba3DeathSoundLoop;
-	
-	/** The goomba 3 death smoke sound loop. */
 	SoundLoops goomba3DeathSmokeSoundLoop;
 	
-	/**
-	 * Instantiates a new enemy 3.
-	 *
-	 * @param x the x
-	 * @param y the y
-	 * @param tex the tex
-	 * @param c the c
-	 * @param game the game
-	 */
 	public Enemy3(double x, double y, Textures tex, Controller c, Game game){
 		super(x,y);
 		this.tex = tex;
@@ -75,13 +42,12 @@ public class Enemy3 extends GameObject implements EntityB{
 		String goomba3DeathSmokeSoundLoopFile = "res/Sounds/SFX/mariogoomba3deathsmokesfx.wav";
 		SoundLoops goomba3DeathSoundLoop = new SoundLoops(goomba3DeathSoundLoopFile);
 		SoundLoops goomba3DeathSmokeSoundLoop = new SoundLoops(goomba3DeathSmokeSoundLoopFile);
+		VolumeSlider.adjustSFX(goomba3DeathSoundLoop);
+		VolumeSlider.adjustSFX(goomba3DeathSmokeSoundLoop);
 		this.goomba3DeathSoundLoop = goomba3DeathSoundLoop;
 		this.goomba3DeathSmokeSoundLoop = goomba3DeathSmokeSoundLoop;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#tick()
-	 */
 	public void tick(){
 		if(!goombaisDead){
 			if (game.enemyHitRightBarrier == false){
@@ -120,8 +86,8 @@ public class Enemy3 extends GameObject implements EntityB{
 				//y +=16;
 			}
 			
-			if (y >= game.getHeight()){
-				game.gameOverBoolean = true;
+			if (y + this.getHeight() >= game.getHeight()){
+				game.Health -= 100;
 			}
 			
 			for(int i = 0; i < game.ea.size(); i++){
@@ -129,8 +95,8 @@ public class Enemy3 extends GameObject implements EntityB{
 				
 				if(Physics.Collision(this, tempEnt)){
 					if (game.eb.size() == 2)
-						game.enemySpeedIncrease+= 1.2;
-					game.enemySpeedIncrease+= 0.35; //0.7
+						game.enemySpeedIncrease+= 0.9;
+					game.enemySpeedIncrease+= 0.08; //0.7
 					animDeath.nextFrame();
 					animExplosion.nextFrame();
 					c.removeEntity(tempEnt);
@@ -146,7 +112,7 @@ public class Enemy3 extends GameObject implements EntityB{
 							else if (game.goomba3DeathSoundLoop.get(k) == game.goomba3DeathSoundLoop.getLast()){
 								game.goomba3DeathSoundLoop.add(this.goomba3DeathSoundLoop);
 								k++;
-							}else 
+							}else if(this.goomba3DeathSoundLoop.getVolume() -1.5f >= this.goomba3DeathSoundLoop.minimumVolume())
 								this.goomba3DeathSoundLoop.reduceSound(1.5f);
 						}
 						this.goomba3DeathSoundLoop.setSoundLoopBoolean(true);
@@ -188,7 +154,7 @@ public class Enemy3 extends GameObject implements EntityB{
 					else if (game.goomba3DeathSmokeSoundLoop.get(k) == game.goomba3DeathSmokeSoundLoop.getLast()){
 						game.goomba3DeathSmokeSoundLoop.add(this.goomba3DeathSmokeSoundLoop);
 						k++;
-					}else 
+					}else if(this.goomba3DeathSmokeSoundLoop.getVolume() -1.5f >= this.goomba3DeathSmokeSoundLoop.minimumVolume())
 						this.goomba3DeathSmokeSoundLoop.reduceSound(1.5f);
 				}
 				this.goomba3DeathSmokeSoundLoop.setSoundLoopBoolean(true);
@@ -204,9 +170,6 @@ public class Enemy3 extends GameObject implements EntityB{
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#render(java.awt.Graphics)
-	 */
 	public void render(Graphics g){
 		if(!goombaisDead)
 			anim.drawAnimation(g, x, y, 0);
@@ -233,63 +196,39 @@ public class Enemy3 extends GameObject implements EntityB{
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getBounds()
-	 */
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, 16, 16);
 	}
 	
-	/**
-	 * Sets the y.
-	 *
-	 * @param y the new y
-	 */
 	public void setY(double y){
 		this.y = y;
 	}
 	
-	/**
-	 * Sets the speed.
-	 *
-	 * @param speed the new speed
-	 */
 	public void setSpeed(double speed){
 		this.speedIncrease = speed;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getX()
-	 */
 	public double getX() {
 		return x;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getY()
-	 */
 	public double getY(){
 		return y;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getEntityBDead()
-	 */
 	public boolean getEntityBDead() {
 		return goombaisDead;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getWidth()
-	 */
 	public int getWidth() {
 		return 16;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.game.src.main.classes.EntityB#getHeight()
-	 */
 	public int getHeight() {
 		return 16;
+	}
+	
+	public String enemyType() {
+		return enemyType;
 	}
 }
