@@ -355,7 +355,10 @@ public class LeaderboardController {
     	Properties prop = new Properties();
     	InputStream input = null;
     	String s = "";
+    	String totalPoints = "";
     	String skin1Unlocked = "";
+    	String skin2Unlocked = "";
+    	String skin3Unlocked = "";
     	String track1Unlocked = "";
     	String fireball1Unlocked = "";
     	String item1Unlocked = "";
@@ -371,7 +374,10 @@ public class LeaderboardController {
     		input = new FileInputStream("settings.properties");
 			prop.load(input);
 			if(!prop.isEmpty()){
+				totalPoints = prop.getProperty("Total Points: ");
 				skin1Unlocked = prop.getProperty("skin1Unlocked");
+				skin2Unlocked = prop.getProperty("skin2Unlocked");
+				skin3Unlocked = prop.getProperty("skin3Unlocked");
 				track1Unlocked = prop.getProperty("track1Unlocked");
 				fireball1Unlocked = prop.getProperty("fireball1Unlocked");
 				item1Unlocked = prop.getProperty("item1Unlocked");
@@ -383,10 +389,20 @@ public class LeaderboardController {
 				volumeSliderPosition = prop.getProperty("volumeSliderPosition");
 				sfxMusicSliderPosition = prop.getProperty("sfxMusicSliderPosition");
 				skipAnimations = prop.getProperty("skipAnimations");
+				if(!totalPoints.equals(""))
+					Game.totalPoints = Integer.valueOf(totalPoints);
 				if(skin1Unlocked.equals("true"))
 					Game.skin1Unlocked = true;
 				else
 					Game.skin1Unlocked = false;
+				if(skin2Unlocked.equals("true"))
+					Game.skin2Unlocked = true;
+				else
+					Game.skin2Unlocked = false;
+				if(skin3Unlocked.equals("true"))
+					Game.skin3Unlocked = true;
+				else
+					Game.skin3Unlocked = false;
 				if(track1Unlocked.equals("true"))
 					Game.track1Unlocked = true;
 				else
@@ -410,9 +426,31 @@ public class LeaderboardController {
 					case "1":
 						Game.currentlySelectedCharacterSkin = 1;
 						break;
+					case "2":
+						Game.currentlySelectedCharacterSkin = 2;
+						break;
+					case "3":
+						Game.currentlySelectedCharacterSkin = 3;
+						break;
 					default: 
 						break;
 				}
+				switch(currentlySelectedTrack) {
+				case "0":
+					Game.currentlySelectedTrack = 0;
+					break;
+				case "1":
+					Game.currentlySelectedTrack = 1;
+					break;
+				case "2":
+					Game.currentlySelectedTrack = 2;
+					break;
+				case "3":
+					Game.currentlySelectedTrack = 3;
+					break;
+				default: 
+					break;
+			}
 				switch(volumeSliderPosition) {
 				case "1":
 					Game.volumeSliderPosition = 1;
@@ -460,6 +498,8 @@ public class LeaderboardController {
     	} catch(FileNotFoundException e) {
 			OutputStream output = new FileOutputStream("settings.properties");
 			settings.setProperty("skin1Unlocked","false");
+			settings.setProperty("skin2Unlocked","false");
+			settings.setProperty("skin3Unlocked","false");
 			settings.setProperty("track1Unlocked","false");
 			settings.setProperty("fireball1Unlocked","false");
 			settings.setProperty("item1Unlocked","false");
@@ -482,13 +522,25 @@ public class LeaderboardController {
 			InputStream input = new FileInputStream("settings.properties");
 			settings.load(input);
 			OutputStream output = new FileOutputStream("settings.properties");
-			String totalPoints = settings.getProperty("Total Points: ");
+			String totalPoints;
+			if(Game.totalPoints > 0)
+				totalPoints = String.valueOf(Game.totalPoints);
+			else
+				totalPoints = settings.getProperty("Total Points: ");
 			String volumeSliderIntPosition = String.valueOf(Game.volumeSliderPosition);
 			String sfxMusicSliderIntPosition = String.valueOf(Game.sfxMusicSliderPosition);
 				if(Game.skin1Unlocked == true)
 					settings.setProperty("skin1Unlocked","true");
 				else
 					settings.setProperty("skin1Unlocked","false");
+				if(Game.skin2Unlocked == true)
+					settings.setProperty("skin2Unlocked","true");
+				else
+					settings.setProperty("skin2Unlocked","false");
+				if(Game.skin3Unlocked == true)
+					settings.setProperty("skin3Unlocked","true");
+				else
+					settings.setProperty("skin3Unlocked","false");
 				if(Game.track1Unlocked == true)
 					settings.setProperty("track1Unlocked","true");
 				else
@@ -512,8 +564,30 @@ public class LeaderboardController {
 					case 1:
 						settings.setProperty("currentlySelectedCharacterSkin","1");
 						break;
+					case 2:
+						settings.setProperty("currentlySelectedCharacterSkin","2");
+						break;
+					case 3:
+						settings.setProperty("currentlySelectedCharacterSkin","3");
+						break;
 					default:
 						break;
+				}
+				switch(Game.currentlySelectedTrack) {
+				case 0:
+					settings.setProperty("currentlySelectedTrack","0");
+					break;
+				case 1:
+					settings.setProperty("currentlySelectedTrack","1");
+					break;
+				case 2:
+					settings.setProperty("currentlySelectedTrack","2");
+					break;
+				case 3:
+					settings.setProperty("currentlySelectedTrack","3");
+					break;
+				default:
+					break;
 				}
 				settings.setProperty("volumeSliderPosition", volumeSliderIntPosition);
 				settings.setProperty("sfxMusicSliderPosition", sfxMusicSliderIntPosition);
@@ -528,6 +602,8 @@ public class LeaderboardController {
     	} catch(FileNotFoundException e) {
 			OutputStream output = new FileOutputStream("settings.properties");
 			settings.setProperty("skin1Unlocked","false");
+			settings.setProperty("skin2Unlocked","false");
+			settings.setProperty("skin3Unlocked","false");
 			settings.setProperty("track1Unlocked","false");
 			settings.setProperty("fireball1Unlocked","false");
 			settings.setProperty("item1Unlocked","false");
@@ -553,6 +629,8 @@ public class LeaderboardController {
     	}catch(FileNotFoundException e) {
     		OutputStream output = new FileOutputStream("settings.properties");
 			settings.setProperty("skin1Unlocked","false");
+			settings.setProperty("skin2Unlocked","false");
+			settings.setProperty("skin3Unlocked","false");
 			settings.setProperty("track1Unlocked","false");
 			settings.setProperty("fireball1Unlocked","false");
 			settings.setProperty("item1Unlocked","false");

@@ -11,7 +11,11 @@ public class ShopController {
 	private Textures tex;
 	private Animation marioSkin0;
 	private Animation marioSkin1;
+	private Animation marioSkin2;
+	private Animation marioSkin3;
 	private Animation marioSkin1Silhouette;
+	private Animation marioSkin2Silhouette;
+	private Animation marioSkin3Silhouette;
 	private Animation track1;
 	private Animation fireball0;
 	private Animation fireball1;
@@ -31,21 +35,27 @@ public class ShopController {
 	public static BufferedImage pointsImage;
 	private boolean imagesSetup = false;
 	private int skin1Price = 100;//each int has 10 width
+	private int skin2Price = 1000;
+	private int skin3Price = 10000;
 	private int track1Price = 100;
 	private int fireball1Price = 100;
 	private int item1Price = 100;
 	private int item2Price = 1000;
-	private int currentSkinPrice = 0;
-	private int currentTrackPrice = 0;
-	private int currentFireballPrice = 0;
-	private int currentItemPrice = 0;
+	public static int currentSkinPrice = 0;
+	public static int currentTrackPrice = 0;
+	public static int currentFireballPrice = 0;
+	public static int currentItemPrice = 0;
 	
 	public ShopController(Textures tex, Game game) {
 		this.game = game;
 		this.tex = tex;
 		marioSkin0 = new Animation(6,tex.marioSkin1[0],tex.marioSkin1[1],tex.marioSkin1[2],tex.marioSkin1[1]);
 		marioSkin1 = new Animation(6,tex.playerNES[8],tex.playerNES[9],tex.playerNES[10],tex.playerNES[11]);
+		marioSkin2 = new Animation(6,tex.player3NES[8],tex.player3NES[9],tex.player3NES[10],tex.player3NES[11]);
+		marioSkin3 = new Animation(6,tex.playerSNESFireLuigi[8],tex.playerSNESFireLuigi[9],tex.playerSNESFireLuigi[10],tex.playerSNESFireLuigi[11]);
 		marioSkin1Silhouette = new Animation(6,tex.marioSilhouette[0],tex.marioSilhouette[1],tex.marioSilhouette[2],tex.marioSilhouette[1]);
+		marioSkin2Silhouette = new Animation(6,tex.marioSilhouette2[0],tex.marioSilhouette2[1],tex.marioSilhouette2[2],tex.marioSilhouette2[1]);
+		marioSkin3Silhouette = new Animation(6,tex.marioSilhouette3[0],tex.marioSilhouette3[1],tex.marioSilhouette3[2],tex.marioSilhouette3[1]);
 		fireball0 = new Animation(6,tex.fireball[0],tex.fireball[1],tex.fireball[2],tex.fireball[3]);
 		fireball1 = new Animation(4,tex.greenShell[0],tex.greenShell[1],tex.greenShell[2],tex.greenShell[3]);
 		fireball1Silhouette = new Animation(6,tex.fireball1Silhouette[0],tex.fireball1Silhouette[1],tex.fireball1Silhouette[2],tex.fireball1Silhouette[3]);
@@ -72,8 +82,16 @@ public class ShopController {
 			this.marioSkin0.setCount(0);
 			this.marioSkin1.nextFrame();
 			this.marioSkin1.setCount(0);
+			this.marioSkin2.nextFrame();
+			this.marioSkin2.setCount(0);
+			this.marioSkin3.nextFrame();
+			this.marioSkin3.setCount(0);
 			this.marioSkin1Silhouette.nextFrame();
 			this.marioSkin1Silhouette.setCount(0);
+			this.marioSkin2Silhouette.nextFrame();
+			this.marioSkin2Silhouette.setCount(0);
+			this.marioSkin3Silhouette.nextFrame();
+			this.marioSkin3Silhouette.setCount(0);
 			this.fireball0.nextFrame();
 			this.fireball0.setCount(0);
 			this.fireball1.nextFrame();
@@ -116,6 +134,54 @@ public class ShopController {
 					if(System.currentTimeMillis() % 30 == 0)
 						this.marioSkin1.runAnimation();
 					this.marioSkin1.drawAnimation(g, Game.WIDTH , 120,0);
+					break;
+				}
+			case 2:
+				if(Game.skin2Unlocked == false) {
+					if(!Game.currentSkinLocked) 
+						Game.currentSkinLocked = true;
+					if(skin2Price != currentSkinPrice) {
+						skinPriceImage = Game.resize(HUD.stringToMario3FontImage(Integer.toString(skin2Price)), 30, 15);
+						currentSkinPrice = skin2Price;
+					}
+					if(System.currentTimeMillis() % 30 == 0)
+						this.marioSkin2Silhouette.runAnimation();
+					this.marioSkin2Silhouette.drawAnimation(g, Game.WIDTH , 120,0);
+					HUD.clickyButton(g, buyTitle, buyTitleGlow, buyTitleClicked, Game.buy1Highlighted, Game.buy1Clicked, Game.backOnBuy1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - 5, 120 + 7);
+					g.drawImage(skinPriceImage, Game.WIDTH - 6, 120 + 35, null);
+					g.drawImage(pointsImage, Game.WIDTH - 6 + skinPriceImage.getWidth() + 4, 120 + 35 + 7, null);
+					break;
+				}
+				else {
+					if(Game.currentSkinLocked)
+						Game.currentSkinLocked = false;
+					if(System.currentTimeMillis() % 30 == 0)
+						this.marioSkin2.runAnimation();
+					this.marioSkin2.drawAnimation(g, Game.WIDTH , 120,0);
+					break;
+				}
+			case 3:
+				if(Game.skin3Unlocked == false) {
+					if(!Game.currentSkinLocked) 
+						Game.currentSkinLocked = true;
+					if(skin3Price != currentSkinPrice) {
+						skinPriceImage = Game.resize(HUD.stringToMario3FontImage(Integer.toString(skin3Price)), 30, 15);
+						currentSkinPrice = skin3Price;
+					}
+					if(System.currentTimeMillis() % 30 == 0)
+						this.marioSkin3Silhouette.runAnimation();
+					this.marioSkin3Silhouette.drawAnimation(g, Game.WIDTH , 120,0);
+					HUD.clickyButton(g, buyTitle, buyTitleGlow, buyTitleClicked, Game.buy1Highlighted, Game.buy1Clicked, Game.backOnBuy1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - 5, 120 + 7);
+					g.drawImage(skinPriceImage, Game.WIDTH - 6, 120 + 35, null);
+					g.drawImage(pointsImage, Game.WIDTH - 6 + skinPriceImage.getWidth() + 4, 120 + 35 + 7, null);
+					break;
+				}
+				else {
+					if(Game.currentSkinLocked)
+						Game.currentSkinLocked = false;
+					if(System.currentTimeMillis() % 30 == 0)
+						this.marioSkin3.runAnimation();
+					this.marioSkin3.drawAnimation(g, Game.WIDTH , 120,0);
 					break;
 				}
 			default:

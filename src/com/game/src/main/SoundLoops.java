@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
@@ -17,6 +18,7 @@ public class SoundLoops {
     private Clip clip;
     private boolean SoundLoopBoolean = false;
 	private FloatControl gainControl;
+	private BooleanControl booleanControl;
 	private float volume;
 	private float defaultVolume;
     public SoundLoops(String fileName) {
@@ -31,6 +33,8 @@ public class SoundLoops {
                 clip = AudioSystem.getClip();
                 clip.open(sound);
         		gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        		booleanControl = (BooleanControl) clip.getControl(BooleanControl.Type.MUTE);
+        		booleanControl.setValue(false);
         		defaultVolume = gainControl.getValue();
             }
             else {
@@ -105,6 +109,12 @@ public class SoundLoops {
     }
     public float minimumVolume() {
     	return this.gainControl.getMinimum();
+    }
+    public void mute() {
+    	this.booleanControl.setValue(true);
+    }
+    public void unMute() {
+    	this.booleanControl.setValue(false);
     }
     public long getLongFramePosition(){
     	long framePosition = clip.getLongFramePosition();

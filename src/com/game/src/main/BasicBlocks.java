@@ -66,7 +66,7 @@ public class BasicBlocks {
 						k++;
 					}
 				}
-				System.out.println(game.brickBreakingSFX.size());
+				//System.out.println(game.brickBreakingSFX.size());
 				game.brickBreakingSFX.getLast().play();
 				if(keepDestroyingBlock == 0 && game.brickBreakingSFX.size() == 1)
 					game.brickBreakingSFX.getLast().stop();

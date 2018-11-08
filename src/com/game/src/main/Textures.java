@@ -6,12 +6,20 @@ public class Textures {
 
 	public BufferedImage[] player = new BufferedImage[16];
 	public BufferedImage[] playerNES = new BufferedImage[20];
+	public BufferedImage[] player3NES = new BufferedImage[20];
+	public BufferedImage[] playerSNESFireLuigi = new BufferedImage[20];
 	public BufferedImage[] marioStar1 = new BufferedImage[16];
 	public BufferedImage[] marioStar2 = new BufferedImage[16];
 	public BufferedImage[] marioStar3 = new BufferedImage[16];
 	public BufferedImage[] marioStarNES1 = new BufferedImage[16];
 	public BufferedImage[] marioStarNES2 = new BufferedImage[16];
 	public BufferedImage[] marioStarNES3 = new BufferedImage[16];
+	public BufferedImage[] marioStar3NES1 = new BufferedImage[16];
+	public BufferedImage[] marioStar3NES2 = new BufferedImage[16];
+	public BufferedImage[] marioStar3NES3 = new BufferedImage[16];
+	public BufferedImage[] marioStarSNESFireLuigi1 = new BufferedImage[16];
+	public BufferedImage[] marioStarSNESFireLuigi2 = new BufferedImage[16];
+	public BufferedImage[] marioStarSNESFireLuigi3 = new BufferedImage[16];
 	public BufferedImage[] marioSlowingDown = new BufferedImage[2];
 	public BufferedImage[] fireball = new BufferedImage[4];
 	public BufferedImage[] fireball1Silhouette = new BufferedImage[4];
@@ -26,6 +34,9 @@ public class Textures {
 	public BufferedImage[] animatedShootingStar = new BufferedImage[12];
 	public BufferedImage[] mario1Star = new BufferedImage[4];
 	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[18];
+	public BufferedImage[] marioItemAnimationBeginning2 = new BufferedImage[18];
+	public BufferedImage[] marioItemAnimationBeginning3 = new BufferedImage[18];
+	public BufferedImage[] marioItemAnimationBeginning4 = new BufferedImage[18];
 	public BufferedImage[] bigChainChompItem = new BufferedImage[9];
 	public BufferedImage[] chainChomp = new BufferedImage[2];
 	public BufferedImage[] chainChompItem = new BufferedImage[25];
@@ -72,10 +83,18 @@ public class Textures {
 	public BufferedImage[] coin = new BufferedImage[3];
 	public BufferedImage[] marioEntrance = new BufferedImage[21];
 	public BufferedImage[] marioEntranceNES = new BufferedImage[21];
+	public BufferedImage[] marioEntranceNES3 = new BufferedImage[23];
+	public BufferedImage[] marioEntranceSNESFireLuigi = new BufferedImage[21];
 	public BufferedImage[] marioDeath = new BufferedImage[2];
 	public BufferedImage[] marioDeathNES = new BufferedImage[2];
+	public BufferedImage[] marioDeathNES3 = new BufferedImage[2];
+	public BufferedImage[] marioDeathSNESFireLuigi = new BufferedImage[2];
 	public BufferedImage[] marioSkin1 = new BufferedImage[3];
+	public BufferedImage[] marioSkin2 = new BufferedImage[4];
+	public BufferedImage[] marioSkin3 = new BufferedImage[4];
 	public BufferedImage[] marioSilhouette = new BufferedImage[3];
+	public BufferedImage[] marioSilhouette2 = new BufferedImage[4];
+	public BufferedImage[] marioSilhouette3 = new BufferedImage[4];
 	public BufferedImage[] songTrackImages = new BufferedImage[12];
 	public BufferedImage[] songTrackSilhouetteImages = new BufferedImage[12];
 	public BufferedImage[] itemSilhouette = new BufferedImage[6];
@@ -102,7 +121,11 @@ public class Textures {
 	
 	private SpriteSheet ss;
 	private SpriteSheet ssNES;
+	private SpriteSheet ssNES3;
+	private SpriteSheet ssSNESFireLuigi;
 	private SpriteSheet marioEntranceSprites;
+	private SpriteSheet marioNES3EntranceSprites;
+	private SpriteSheet marioSNESFireLuigiEntranceSprites;
 	private SpriteSheet starSprites;
 	private SpriteSheet shootingStarSprites;
 	private SpriteSheet mario1StarSprites;
@@ -112,6 +135,9 @@ public class Textures {
 	private SpriteSheet marioPlayerAnimationsSprites;
 	private SpriteSheet marioItemAnimationSprites;
 	private SpriteSheet bigMarioItemAnimationSprites;
+	private SpriteSheet bigMario2ItemAnimationSprites;
+	private SpriteSheet bigMario3ItemAnimationSprites;
+	private SpriteSheet bigMario4ItemAnimationSprites;
 	private SpriteSheet itemSilhouetteSprites;
 	private SpriteSheet chainChompItemGettingBiggerSprites;
 	private SpriteSheet chainChompSprites;
@@ -130,7 +156,11 @@ public class Textures {
 	public Textures(Game game){
 		ss = new SpriteSheet(game.getSpriteSheet());
 		ssNES = new SpriteSheet(game.getSpriteSheetNES());
+		ssNES3 = new SpriteSheet(game.getSpriteSheetNES3());
+		ssSNESFireLuigi = new SpriteSheet(game.getSpriteSheetSNESFireLuigi());
 		marioEntranceSprites = new SpriteSheet(game.getMarioEntranceSprites());
+		marioNES3EntranceSprites = new SpriteSheet(game.getMarioNES3EntranceSprites());
+		marioSNESFireLuigiEntranceSprites = new SpriteSheet(game.getMarioSNESFireLuigiEntranceSprites());
 		starSprites = new SpriteSheet(game.getAnimatedStar());
 		shootingStarSprites = new SpriteSheet(game.getAnimatedShootingStar());
 		mario1StarSprites = new SpriteSheet(game.getMario1StarSpriteSheet());
@@ -140,6 +170,9 @@ public class Textures {
 		marioPlayerAnimationsSprites = new SpriteSheet(game.getMarioPlayerStarAnimations());
 		marioItemAnimationSprites = new SpriteSheet(game.getMarioItemAnimationSheet());
 		bigMarioItemAnimationSprites = new SpriteSheet(game.getBigMarioItemAnimationSheet());
+		bigMario2ItemAnimationSprites = new SpriteSheet(game.getBigMario2ItemAnimationSheet());
+		bigMario3ItemAnimationSprites = new SpriteSheet(game.getBigMario3ItemAnimationSheet());
+		bigMario4ItemAnimationSprites = new SpriteSheet(game.getBigMario4ItemAnimationSheet());
 		itemSilhouetteSprites = new SpriteSheet(game.getItemSilhouetteSheet());
 		chainChompItemGettingBiggerSprites = new SpriteSheet(game.getChainChompItemGettingBiggerSheet());
 		chainChompSprites = new SpriteSheet(game.getChainChompSheet());
@@ -242,31 +275,31 @@ public class Textures {
 		marioSlowingDown[0] = marioSlowingDownSprites.grabExactImage(0, 0, MARIO_WIDTH, MARIO_HEIGHT);
 		marioSlowingDown[1] = marioSlowingDownSprites.grabExactImage(MARIO_WIDTH, 0, MARIO_WIDTH, MARIO_HEIGHT);
 		
-		playerNES[0] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[1] = ssNES.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[2] = ssNES.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[3] = ssNES.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[0] = ssNES.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[1] = ssNES.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[2] = ssNES.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[3] = ssNES.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
-		playerNES[4] = ssNES.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[5] = ssNES.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[6] = ssNES.grabMarioImage(3, 2, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[7] = ssNES.grabMarioImage(4, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[4] = ssNES.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[5] = ssNES.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[6] = ssNES.grabMarioImage(7, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[7] = ssNES.grabMarioImage(8, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		
-		playerNES[8] = ssNES.grabMarioImage(1, 4, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[9] = ssNES.grabMarioImage(2, 4, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[10] = ssNES.grabMarioImage(3, 4, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[11] = ssNES.grabMarioImage(4, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[8] = ssNES.grabMarioImage(5, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[9] = ssNES.grabMarioImage(6, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[10] = ssNES.grabMarioImage(7, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[11] = ssNES.grabMarioImage(8, 4, MARIO_WIDTH, MARIO_HEIGHT);
 		
-		playerNES[12] = ssNES.grabMarioImage(1, 3, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[13] = ssNES.grabMarioImage(2, 3, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[14] = ssNES.grabMarioImage(3, 3, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[15] = ssNES.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[12] = ssNES.grabMarioImage(5, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[13] = ssNES.grabMarioImage(6, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[14] = ssNES.grabMarioImage(7, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[15] = ssNES.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		
-		playerNES[16] = ssNES.grabMarioImage(1, 5, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[17] = ssNES.grabMarioImage(2, 5, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[18] = ssNES.grabMarioImage(3, 5, MARIO_WIDTH, MARIO_HEIGHT);
-		playerNES[19] = ssNES.grabMarioImage(4, 5, MARIO_WIDTH, MARIO_HEIGHT);
-
+		playerNES[16] = ssNES.grabMarioImage(5, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[17] = ssNES.grabMarioImage(6, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[18] = ssNES.grabMarioImage(7, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerNES[19] = ssNES.grabMarioImage(8, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		
 		marioStarNES1[0] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNES1[1] = ssNES.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNES1[2] = ssNES.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
@@ -326,6 +359,176 @@ public class Textures {
 		marioStarNES3[13] = ssNES.grabMarioImage(10, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNES3[14] = ssNES.grabMarioImage(11, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNES3[15] = ssNES.grabMarioImage(12, 3, MARIO_WIDTH, MARIO_HEIGHT);
+
+		player3NES[0] = ssNES3.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[1] = ssNES3.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[2] = ssNES3.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[3] = ssNES3.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		player3NES[4] = ssNES3.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[5] = ssNES3.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[6] = ssNES3.grabMarioImage(7, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[7] = ssNES3.grabMarioImage(8, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		player3NES[8] = ssNES3.grabMarioImage(5, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[9] = ssNES3.grabMarioImage(6, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[10] = ssNES3.grabMarioImage(7, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[11] = ssNES3.grabMarioImage(8, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		player3NES[12] = ssNES3.grabMarioImage(5, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[13] = ssNES3.grabMarioImage(6, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[14] = ssNES3.grabMarioImage(7, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[15] = ssNES3.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		player3NES[16] = ssNES3.grabMarioImage(5, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[17] = ssNES3.grabMarioImage(6, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[18] = ssNES3.grabMarioImage(7, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		player3NES[19] = ssNES3.grabMarioImage(8, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES1[0] = ssNES3.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[1] = ssNES3.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[2] = ssNES3.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[3] = ssNES3.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES1[4] = ssNES3.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[5] = ssNES3.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[6] = ssNES3.grabMarioImage(3, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[7] = ssNES3.grabMarioImage(4, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES1[8] = ssNES3.grabMarioImage(1, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[9] = ssNES3.grabMarioImage(2, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[10] = ssNES3.grabMarioImage(3, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[11] = ssNES3.grabMarioImage(4, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES1[12] = ssNES3.grabMarioImage(1, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[13] = ssNES3.grabMarioImage(2, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[14] = ssNES3.grabMarioImage(3, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[15] = ssNES3.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES2[0] = ssNES3.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[1] = ssNES3.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[2] = ssNES3.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[3] = ssNES3.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES2[4] = ssNES3.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[5] = ssNES3.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[6] = ssNES3.grabMarioImage(7, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[7] = ssNES3.grabMarioImage(8, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES2[8] = ssNES3.grabMarioImage(5, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[9] = ssNES3.grabMarioImage(6, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[10] = ssNES3.grabMarioImage(7, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[11] = ssNES3.grabMarioImage(8, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES2[12] = ssNES3.grabMarioImage(5, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[13] = ssNES3.grabMarioImage(6, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[14] = ssNES3.grabMarioImage(7, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[15] = ssNES3.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
+
+		marioStar3NES3[0] = ssNES3.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[1] = ssNES3.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[2] = ssNES3.grabMarioImage(11, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[3] = ssNES3.grabMarioImage(12, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES3[4] = ssNES3.grabMarioImage(9, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[5] = ssNES3.grabMarioImage(10, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[6] = ssNES3.grabMarioImage(11, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[7] = ssNES3.grabMarioImage(12, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES3[8] = ssNES3.grabMarioImage(9, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[9] = ssNES3.grabMarioImage(10, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[10] = ssNES3.grabMarioImage(11, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[11] = ssNES3.grabMarioImage(12, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStar3NES3[12] = ssNES3.grabMarioImage(9, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[13] = ssNES3.grabMarioImage(10, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[14] = ssNES3.grabMarioImage(11, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[15] = ssNES3.grabMarioImage(12, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerSNESFireLuigi[0] = ssSNESFireLuigi.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[1] = ssSNESFireLuigi.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[2] = ssSNESFireLuigi.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[3] = ssSNESFireLuigi.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerSNESFireLuigi[4] = ssSNESFireLuigi.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[5] = ssSNESFireLuigi.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[6] = ssSNESFireLuigi.grabMarioImage(7, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[7] = ssSNESFireLuigi.grabMarioImage(8, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerSNESFireLuigi[8] = ssSNESFireLuigi.grabMarioImage(5, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[9] = ssSNESFireLuigi.grabMarioImage(6, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[10] = ssSNESFireLuigi.grabMarioImage(7, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[11] = ssSNESFireLuigi.grabMarioImage(8, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerSNESFireLuigi[12] = ssSNESFireLuigi.grabMarioImage(5, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[13] = ssSNESFireLuigi.grabMarioImage(6, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[14] = ssSNESFireLuigi.grabMarioImage(7, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[15] = ssSNESFireLuigi.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		playerSNESFireLuigi[16] = ssSNESFireLuigi.grabMarioImage(5, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[17] = ssSNESFireLuigi.grabMarioImage(6, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[18] = ssSNESFireLuigi.grabMarioImage(7, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		playerSNESFireLuigi[19] = ssSNESFireLuigi.grabMarioImage(8, 5, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi1[0] = ssSNESFireLuigi.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[1] = ssSNESFireLuigi.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[2] = ssSNESFireLuigi.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[3] = ssSNESFireLuigi.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi1[4] = ssSNESFireLuigi.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[5] = ssSNESFireLuigi.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[6] = ssSNESFireLuigi.grabMarioImage(3, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[7] = ssSNESFireLuigi.grabMarioImage(4, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi1[8] = ssSNESFireLuigi.grabMarioImage(1, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[9] = ssSNESFireLuigi.grabMarioImage(2, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[10] = ssSNESFireLuigi.grabMarioImage(3, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[11] = ssSNESFireLuigi.grabMarioImage(4, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi1[12] = ssSNESFireLuigi.grabMarioImage(1, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[13] = ssSNESFireLuigi.grabMarioImage(2, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[14] = ssSNESFireLuigi.grabMarioImage(3, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[15] = ssSNESFireLuigi.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi2[0] = ssSNESFireLuigi.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[1] = ssSNESFireLuigi.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[2] = ssSNESFireLuigi.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[3] = ssSNESFireLuigi.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi2[4] = ssSNESFireLuigi.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[5] = ssSNESFireLuigi.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[6] = ssSNESFireLuigi.grabMarioImage(7, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[7] = ssSNESFireLuigi.grabMarioImage(8, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi2[8] = ssSNESFireLuigi.grabMarioImage(5, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[9] = ssSNESFireLuigi.grabMarioImage(6, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[10] = ssSNESFireLuigi.grabMarioImage(7, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[11] = ssSNESFireLuigi.grabMarioImage(8, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi2[12] = ssSNESFireLuigi.grabMarioImage(5, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[13] = ssSNESFireLuigi.grabMarioImage(6, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[14] = ssSNESFireLuigi.grabMarioImage(7, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[15] = ssSNESFireLuigi.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
+
+		marioStarSNESFireLuigi3[0] = ssSNESFireLuigi.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[1] = ssSNESFireLuigi.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[2] = ssSNESFireLuigi.grabMarioImage(11, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[3] = ssSNESFireLuigi.grabMarioImage(12, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi3[4] = ssSNESFireLuigi.grabMarioImage(9, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[5] = ssSNESFireLuigi.grabMarioImage(10, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[6] = ssSNESFireLuigi.grabMarioImage(11, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[7] = ssSNESFireLuigi.grabMarioImage(12, 2, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi3[8] = ssSNESFireLuigi.grabMarioImage(9, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[9] = ssSNESFireLuigi.grabMarioImage(10, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[10] = ssSNESFireLuigi.grabMarioImage(11, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[11] = ssSNESFireLuigi.grabMarioImage(12, 4, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioStarSNESFireLuigi3[12] = ssSNESFireLuigi.grabMarioImage(9, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[13] = ssSNESFireLuigi.grabMarioImage(10, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[14] = ssSNESFireLuigi.grabMarioImage(11, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[15] = ssSNESFireLuigi.grabMarioImage(12, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		animatedStar[0] = starSprites.grab6pxImage(1, 1, 6, 6);
 		animatedStar[1] = starSprites.grab6pxImage(2, 1, 6, 6);
@@ -390,6 +593,63 @@ public class Textures {
 		marioItemAnimationBeginning[15] = bigMarioItemAnimationSprites.grabExactImage(1496, 2828, 64, 116);
 		marioItemAnimationBeginning[16] = bigMarioItemAnimationSprites.grabExactImage(1496, 2944, 64, 116);
 		marioItemAnimationBeginning[17] = bigMarioItemAnimationSprites.grabExactImage(8, 3020, 64, 116);
+		
+		marioItemAnimationBeginning2[0] = bigMario2ItemAnimationSprites.grabExactImage(1200, 1500, 80, 140);
+		marioItemAnimationBeginning2[1] = bigMario2ItemAnimationSprites.grabExactImage(171 * 4, 755 * 4, 21 * 4, 29 * 4);
+		marioItemAnimationBeginning2[2] = bigMario2ItemAnimationSprites.grabExactImage(8 * 4, 156 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning2[3] = bigMario2ItemAnimationSprites.grabExactImage(169 * 4, 436 * 4, 15 * 4, 28 * 4);
+		marioItemAnimationBeginning2[4] = bigMario2ItemAnimationSprites.grabExactImage(8 * 4, 196 * 4, 17 * 4, 27 * 4);
+		marioItemAnimationBeginning2[5] = bigMario2ItemAnimationSprites.grabExactImage(48 * 4, 196 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning2[6] = bigMario2ItemAnimationSprites.grabExactImage(232 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning2[7] = bigMario2ItemAnimationSprites.grabExactImage(204 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning2[8] = bigMario2ItemAnimationSprites.grabExactImage(172 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning2[9] = bigMario2ItemAnimationSprites.grabExactImage(264 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning2[10] = bigMario2ItemAnimationSprites.grabExactImage(144 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning2[11] = bigMario2ItemAnimationSprites.grabExactImage(8, 2720, 80, 116);
+		marioItemAnimationBeginning2[12] = bigMario2ItemAnimationSprites.grabExactImage(92, 2720, 88, 116);
+		marioItemAnimationBeginning2[13] = bigMario2ItemAnimationSprites.grabExactImage(1376, 2708, 76, 116);
+		marioItemAnimationBeginning2[14] = bigMario2ItemAnimationSprites.grabExactImage(1452, 2708, 64, 116);
+		marioItemAnimationBeginning2[15] = bigMario2ItemAnimationSprites.grabExactImage(1496, 2828, 64, 116);
+		marioItemAnimationBeginning2[16] = bigMario2ItemAnimationSprites.grabExactImage(1496, 2944, 64, 116);
+		marioItemAnimationBeginning2[17] = bigMario2ItemAnimationSprites.grabExactImage(8, 3020, 64, 116);
+		
+		marioItemAnimationBeginning3[0] = bigMario3ItemAnimationSprites.grabExactImage(1200, 1500, 80, 140);
+		marioItemAnimationBeginning3[1] = bigMario3ItemAnimationSprites.grabExactImage(171 * 4, 755 * 4, 21 * 4, 29 * 4);
+		marioItemAnimationBeginning3[2] = bigMario3ItemAnimationSprites.grabExactImage(8 * 4, 156 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning3[3] = bigMario3ItemAnimationSprites.grabExactImage(169 * 4, 436 * 4, 15 * 4, 28 * 4);
+		marioItemAnimationBeginning3[4] = bigMario3ItemAnimationSprites.grabExactImage(8 * 4, 196 * 4, 17 * 4, 27 * 4);
+		marioItemAnimationBeginning3[5] = bigMario3ItemAnimationSprites.grabExactImage(48 * 4, 196 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning3[6] = bigMario3ItemAnimationSprites.grabExactImage(232 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning3[7] = bigMario3ItemAnimationSprites.grabExactImage(204 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning3[8] = bigMario3ItemAnimationSprites.grabExactImage(172 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning3[9] = bigMario3ItemAnimationSprites.grabExactImage(264 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning3[10] = bigMario3ItemAnimationSprites.grabExactImage(144 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning3[11] = bigMario3ItemAnimationSprites.grabExactImage(8, 2720, 80, 116);
+		marioItemAnimationBeginning3[12] = bigMario3ItemAnimationSprites.grabExactImage(92, 2720, 88, 116);
+		marioItemAnimationBeginning3[13] = bigMario3ItemAnimationSprites.grabExactImage(1376, 2708, 76, 116);
+		marioItemAnimationBeginning3[14] = bigMario3ItemAnimationSprites.grabExactImage(1452, 2708, 64, 116);
+		marioItemAnimationBeginning3[15] = bigMario3ItemAnimationSprites.grabExactImage(1496, 2828, 64, 116);
+		marioItemAnimationBeginning3[16] = bigMario3ItemAnimationSprites.grabExactImage(1496, 2944, 64, 116);
+		marioItemAnimationBeginning3[17] = bigMario3ItemAnimationSprites.grabExactImage(8, 3020, 64, 116);
+		
+		marioItemAnimationBeginning4[0] = bigMario4ItemAnimationSprites.grabExactImage(1200, 1500, 80, 140);
+		marioItemAnimationBeginning4[1] = bigMario4ItemAnimationSprites.grabExactImage(171 * 4, 755 * 4, 21 * 4, 29 * 4);
+		marioItemAnimationBeginning4[2] = bigMario4ItemAnimationSprites.grabExactImage(8 * 4, 156 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning4[3] = bigMario4ItemAnimationSprites.grabExactImage(169 * 4, 436 * 4, 15 * 4, 28 * 4);
+		marioItemAnimationBeginning4[4] = bigMario4ItemAnimationSprites.grabExactImage(8 * 4, 196 * 4, 17 * 4, 27 * 4);
+		marioItemAnimationBeginning4[5] = bigMario4ItemAnimationSprites.grabExactImage(48 * 4, 196 * 4, 16 * 4, 28 * 4);
+		marioItemAnimationBeginning4[6] = bigMario4ItemAnimationSprites.grabExactImage(232 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning4[7] = bigMario4ItemAnimationSprites.grabExactImage(204 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning4[8] = bigMario4ItemAnimationSprites.grabExactImage(172 * 4, 715 * 4, 20 * 4, 29 * 4);
+		marioItemAnimationBeginning4[9] = bigMario4ItemAnimationSprites.grabExactImage(264 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning4[10] = bigMario4ItemAnimationSprites.grabExactImage(144 * 4, 715 * 4, 16 * 4, 29 * 4);
+		marioItemAnimationBeginning4[11] = bigMario4ItemAnimationSprites.grabExactImage(8, 2720, 80, 116);
+		marioItemAnimationBeginning4[12] = bigMario4ItemAnimationSprites.grabExactImage(92, 2720, 88, 116);
+		marioItemAnimationBeginning4[13] = bigMario4ItemAnimationSprites.grabExactImage(1376, 2708, 76, 116);
+		marioItemAnimationBeginning4[14] = bigMario4ItemAnimationSprites.grabExactImage(1452, 2708, 64, 116);
+		marioItemAnimationBeginning4[15] = bigMario4ItemAnimationSprites.grabExactImage(1496, 2828, 64, 116);
+		marioItemAnimationBeginning4[16] = bigMario4ItemAnimationSprites.grabExactImage(1496, 2944, 64, 116);
+		marioItemAnimationBeginning4[17] = bigMario4ItemAnimationSprites.grabExactImage(8, 3020, 64, 116);
 		
 		bigChainChompItem[0] = marioItemAnimationSprites.grabExactImage(1776, 1841, 50, 48);
 		bigChainChompItem[1] = chainChompItemGettingBiggerSprites.grabExactImage(8, 288, 50, 48);
@@ -904,19 +1164,91 @@ public class Textures {
 		marioEntranceNES[19] = marioEntranceSprites.grabExactImage(262, 0, 15, 28);
 		marioEntranceNES[20] = marioEntranceSprites.grabExactImage(278, 0, 16, 28);
 		
+		marioEntranceNES3[0] = marioNES3EntranceSprites.grabExactImage(0, 0, 16, 15);
+		marioEntranceNES3[1] = marioNES3EntranceSprites.grabExactImage(16, 0, 12, 15);
+		marioEntranceNES3[2] = marioNES3EntranceSprites.grabExactImage(28, 0, 14, 15);
+		marioEntranceNES3[3] = marioNES3EntranceSprites.grabExactImage(42, 0, 12, 15);
+		marioEntranceNES3[4] = marioNES3EntranceSprites.grabExactImage(54, 0, 16, 14);
+		marioEntranceNES3[5] = marioNES3EntranceSprites.grabExactImage(70, 0, 16, 16);
+		marioEntranceNES3[6] = marioNES3EntranceSprites.grabExactImage(86, 0, 14, 16);
+		marioEntranceNES3[7] = marioNES3EntranceSprites.grabExactImage(100, 0, 16, 16);
+		marioEntranceNES3[8] = marioNES3EntranceSprites.grabExactImage(116, 0, 14, 16);
+		marioEntranceNES3[9] = marioNES3EntranceSprites.grabExactImage(130, 0, 12, 15);
+		marioEntranceNES3[10] = marioNES3EntranceSprites.grabExactImage(142, 0, 12, 15);
+		marioEntranceNES3[11] = marioNES3EntranceSprites.grabExactImage(182, 0, 16, 27);
+		marioEntranceNES3[12] = marioNES3EntranceSprites.grabExactImage(198, 0, 16, 26);
+		marioEntranceNES3[13] = marioNES3EntranceSprites.grabExactImage(214, 0, 21, 27);
+		marioEntranceNES3[14] = marioNES3EntranceSprites.grabExactImage(235, 0, 14, 27);
+		marioEntranceNES3[15] = marioNES3EntranceSprites.grabExactImage(249, 0, 14, 27);
+		marioEntranceNES3[16] = marioNES3EntranceSprites.grabExactImage(264, 0, 14, 27);
+		marioEntranceNES3[17] = marioNES3EntranceSprites.grabExactImage(278, 0, 13, 27);
+		marioEntranceNES3[18] = marioNES3EntranceSprites.grabExactImage(291, 0, 15, 28);
+		marioEntranceNES3[19] = marioNES3EntranceSprites.grabExactImage(306, 0, 16, 28);
+		marioEntranceNES3[20] = marioNES3EntranceSprites.grabExactImage(322, 0, 16, 28);
+		marioEntranceNES3[21] = marioNES3EntranceSprites.grabExactImage(154, 0, 14, 27);
+		marioEntranceNES3[22] = marioNES3EntranceSprites.grabExactImage(168, 0, 14, 27);
+		
+		marioEntranceSNESFireLuigi[0] = marioSNESFireLuigiEntranceSprites.grabExactImage(0, 0, 14, 22);
+		marioEntranceSNESFireLuigi[1] = marioSNESFireLuigiEntranceSprites.grabExactImage(14, 0, 14, 22);
+		marioEntranceSNESFireLuigi[2] = marioSNESFireLuigiEntranceSprites.grabExactImage(28, 0, 14, 22);
+		marioEntranceSNESFireLuigi[3] = marioSNESFireLuigiEntranceSprites.grabExactImage(42, 0, 14, 22);
+		marioEntranceSNESFireLuigi[4] = marioSNESFireLuigiEntranceSprites.grabExactImage(56, 0, 14, 22);
+		marioEntranceSNESFireLuigi[5] = marioSNESFireLuigiEntranceSprites.grabExactImage(70, 0, 16, 22);
+		marioEntranceSNESFireLuigi[6] = marioSNESFireLuigiEntranceSprites.grabExactImage(86, 0, 16, 22);
+		marioEntranceSNESFireLuigi[7] = marioSNESFireLuigiEntranceSprites.grabExactImage(102, 0, 16, 22);
+		marioEntranceSNESFireLuigi[8] = marioSNESFireLuigiEntranceSprites.grabExactImage(118, 0, 16, 22);
+		marioEntranceSNESFireLuigi[9] = marioSNESFireLuigiEntranceSprites.grabExactImage(134, 0, 21, 29);
+		marioEntranceSNESFireLuigi[10] = marioSNESFireLuigiEntranceSprites.grabExactImage(155, 0, 21, 29);
+		marioEntranceSNESFireLuigi[11] = marioSNESFireLuigiEntranceSprites.grabExactImage(176, 0, 16, 28);
+		marioEntranceSNESFireLuigi[12] = marioSNESFireLuigiEntranceSprites.grabExactImage(192, 0, 16, 28);
+		marioEntranceSNESFireLuigi[13] = marioSNESFireLuigiEntranceSprites.grabExactImage(208, 0, 15, 29);
+		marioEntranceSNESFireLuigi[14] = marioSNESFireLuigiEntranceSprites.grabExactImage(223, 0, 16, 28);
+		marioEntranceSNESFireLuigi[15] = marioSNESFireLuigiEntranceSprites.grabExactImage(239, 0, 20, 29);
+		marioEntranceSNESFireLuigi[16] = marioSNESFireLuigiEntranceSprites.grabExactImage(259, 0, 16, 29);
+		marioEntranceSNESFireLuigi[17] = marioSNESFireLuigiEntranceSprites.grabExactImage(275, 0, 20, 29);
+		marioEntranceSNESFireLuigi[18] = marioSNESFireLuigiEntranceSprites.grabExactImage(295, 0, 16, 29);
+		marioEntranceSNESFireLuigi[19] = marioSNESFireLuigiEntranceSprites.grabExactImage(311, 0, 16, 29);
+		marioEntranceSNESFireLuigi[20] = marioSNESFireLuigiEntranceSprites.grabExactImage(327, 0, 16, 28);
+		
 		marioDeath[0] = fullMarioSprites.grabExactImage(8, 38, 16, 24);
 		marioDeath[1] = fullMarioSprites.grabExactImage(368, 38, 16, 24);
 		
 		marioDeathNES[0] = marioEntranceSprites.grabExactImage(0, 14, 14, 14);
 		marioDeathNES[1] = marioEntranceSprites.grabExactImage(0, 0, 12, 14);
 		
+		marioDeathNES3[0] = ssNES3.grabExactImage(0, 56, 16, 16);
+		marioDeathNES3[1] = ssNES3.grabExactImage(16, 56, 16, 16);
+		
+		marioDeathSNESFireLuigi[0] = ssSNESFireLuigi.grabExactImage(0, 56, 15, 20);
+		marioDeathSNESFireLuigi[1] = ssSNESFireLuigi.grabExactImage(15, 56, 15, 20);
+		
 		marioSilhouette[0] = fullMarioBlackSprites.grabExactImage(208, 436, 15, 28);
 		marioSilhouette[1] = fullMarioBlackSprites.grabExactImage(368, 436, 16, 28);
 		marioSilhouette[2] = fullMarioBlackSprites.grabExactImage(328, 436, 16, 27);
 		
+		marioSilhouette2[0] = ssNES3.grabExactImage(64, 56, 16, 28);
+		marioSilhouette2[1] = ssNES3.grabExactImage(80, 56, 16, 28);
+		marioSilhouette2[2] = ssNES3.grabExactImage(96, 56, 16, 28);
+		marioSilhouette2[3] = ssNES3.grabExactImage(112, 56, 16, 28);
+
+		marioSilhouette3[0] = ssSNESFireLuigi.grabExactImage(64, 56, 16, 28);
+		marioSilhouette3[1] = ssSNESFireLuigi.grabExactImage(80, 56, 16, 28);
+		marioSilhouette3[2] = ssSNESFireLuigi.grabExactImage(96, 56, 16, 28);
+		marioSilhouette3[3] = ssSNESFireLuigi.grabExactImage(112, 56, 16, 28);
+		
 		marioSkin1[0] = fullMarioSprites.grabExactImage(208, 436, 15, 28);
 		marioSkin1[1] = fullMarioSprites.grabExactImage(368, 436, 16, 28);
 		marioSkin1[2] = fullMarioSprites.grabExactImage(328, 436, 16, 27);
+		
+		marioSkin2[0] = ssNES3.grabExactImage(64, 84, 16, 28);
+		marioSkin2[1] = ssNES3.grabExactImage(80, 84, 16, 28);
+		marioSkin2[2] = ssNES3.grabExactImage(96, 84, 16, 28);
+		marioSkin2[3] = ssNES3.grabExactImage(112, 84, 16, 28);
+		
+		marioSkin3[0] = ssSNESFireLuigi.grabExactImage(64, 84, 16, 28);
+		marioSkin3[1] = ssSNESFireLuigi.grabExactImage(80, 84, 16, 28);
+		marioSkin3[2] = ssSNESFireLuigi.grabExactImage(96, 84, 16, 28);
+		marioSkin3[3] = ssSNESFireLuigi.grabExactImage(112, 84, 16, 28);
 		
 		songTrackImages[0] = marioPaintSprites.grabExactImage(76, 76, 11, 16);//Song Note
 		songTrackImages[1] = marioPaintSprites.grabExactImage(132, 34, 16, 16);//Dinosaur

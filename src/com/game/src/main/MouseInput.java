@@ -631,7 +631,7 @@ public class MouseInput implements MouseListener {
 						if(Game.characterSkinPosition > 0)
 							Game.characterSkinPosition--;
 						else
-							Game.characterSkinPosition = 1;//Set to Max Skins
+							Game.characterSkinPosition = 3;//Set to Max Skins
 						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
 						if(Game.smb3Bump2SoundLoop.clipIsActive())
 							Game.smb3Bump2SoundLoop.stop();
@@ -677,7 +677,7 @@ public class MouseInput implements MouseListener {
 					if(my >= 120 && my <= 152 && Game.arrowR1Clicked) {
 						//ArrowR1 Functionality
 						buttonTimer = System.currentTimeMillis() + 200;
-						if(Game.characterSkinPosition == 1)//Max Skins
+						if(Game.characterSkinPosition == 3)//Max Skins
 							Game.characterSkinPosition = 0;
 						else {
 							Game.characterSkinPosition++;
@@ -726,15 +726,80 @@ public class MouseInput implements MouseListener {
 				if(mx >=  Game.WIDTH - 5 && mx <= Game.WIDTH + 24 && Game.State == Game.STATE.SHOP && buttonTimer < System.currentTimeMillis()) {
 					if(my >= 127 && my <= 144 && Game.buy1Clicked && Game.currentSkinLocked == true) {
 						buttonTimer = System.currentTimeMillis() + 200;
-						Game.skin1Unlocked = true;
-						Game.settingsSetup = false;
-						Game.characterSkinPosition = 1;
-						Game.currentlySelectedCharacterSkin = 1;
-						Game.currentSkinLocked = false;
-						Game.skinNumber = null;
-						if(Game.smb31PupSoundLoop.clipIsActive())
-							Game.smb31PupSoundLoop.stop();
-						Game.smb31PupSoundLoop.play();
+						switch(Game.characterSkinPosition){
+						case 1:
+							if(Game.totalPoints >= 100){
+								Game.skin1Unlocked = true;
+								//Game.settingsSetup = false;
+								Game.writeOnceToSettings = true;
+								Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+								Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+								Game.writeOnceToSettingswithPoints = true;
+								Game.writeOnceUnlock = "skin1Unlocked";
+								Game.characterSkinPosition = 1;
+								Game.currentlySelectedCharacterSkin = 1;
+								Game.currentSkinLocked = false;
+								Game.skinNumber = null;
+								Game.totalPoints -= 100;
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+							else{
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
+							break;
+						case 2:
+							if(Game.totalPoints >= 1000){
+								Game.skin2Unlocked = true;
+								//Game.settingsSetup = false;
+								Game.writeOnceToSettings = true;
+								Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+								Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+								Game.writeOnceToSettingswithPoints = true;
+								Game.writeOnceUnlock = "skin2Unlocked";
+								Game.characterSkinPosition = 2;
+								Game.currentlySelectedCharacterSkin = 2;
+								Game.currentSkinLocked = false;
+								Game.skinNumber = null;
+								Game.totalPoints -= 1000;
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+							else{
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
+							break;
+						case 3:
+							if(Game.totalPoints >= 10000){
+								Game.skin3Unlocked = true;
+								//Game.settingsSetup = false;
+								Game.writeOnceToSettings = true;
+								Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+								Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+								Game.writeOnceToSettingswithPoints = true;
+								Game.writeOnceUnlock = "skin3Unlocked";
+								Game.characterSkinPosition = 3;
+								Game.currentlySelectedCharacterSkin = 3;
+								Game.currentSkinLocked = false;
+								Game.skinNumber = null;
+								Game.totalPoints -= 10000;
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+							else{
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
+							break;
+						}
 					}else if(my >= 227 && my <= 244 && Game.buy2Clicked && Game.currentTrackLocked == true) {
 						buttonTimer = System.currentTimeMillis() + 200;
 						if(Game.smb31PupSoundLoop.clipIsActive())
@@ -764,7 +829,10 @@ public class MouseInput implements MouseListener {
 								Game.smb3ItemSoundLoop.play();
 							}
 							Game.currentlySelectedCharacterSkin = Game.characterSkinPosition;
-							Game.settingsSetup = false;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+							Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+							//Game.settingsSetup = false;
 						}
 					}else if(my >= 228 && my <= 244 && Game.set2Clicked) {
 						buttonTimer = System.currentTimeMillis() + 200;

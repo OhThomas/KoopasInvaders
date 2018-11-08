@@ -89,7 +89,7 @@ public class VolumeSlider {
 		case 1:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -110,7 +110,7 @@ public class VolumeSlider {
 		case 2:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -131,7 +131,7 @@ public class VolumeSlider {
 		case 3:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -152,7 +152,7 @@ public class VolumeSlider {
 		case 4:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -171,11 +171,13 @@ public class VolumeSlider {
 			}
 			break;
 		case 5:
-			sound.setVolume(-80f);
+			sound.mute();
 			break;
 		default:
 			break;
 	}
+		if(Game.volumeSliderPosition != 1 && Game.sfxMusicSliderPosition != 5)
+			sound.unMute();
 		//sfxMusicSliderChangingVolume = false;
 		//sfxMusicSliderSetup = false;
 	}
@@ -183,12 +185,12 @@ public class VolumeSlider {
 	public static void adjustMusic(SoundLoops sound) {
 		switch(Game.sfxMusicSliderPosition) {
 		case 1:
-			sound.setVolume(-80f);
+			sound.mute();
 			break;
 		case 2:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -209,7 +211,7 @@ public class VolumeSlider {
 		case 3:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -230,7 +232,7 @@ public class VolumeSlider {
 		case 4:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -251,7 +253,7 @@ public class VolumeSlider {
 		case 5:
 			switch(Game.volumeSliderPosition) {
 				case 1:
-					sound.setVolume(-80f);
+					sound.mute();
 					break;
 				case 2:
 					sound.setVolume(-35f);
@@ -272,6 +274,8 @@ public class VolumeSlider {
 		default:
 			break;
 	}
+		if(Game.volumeSliderPosition != 1 && Game.sfxMusicSliderPosition != 1)
+			sound.unMute();
 	}
 	
 }

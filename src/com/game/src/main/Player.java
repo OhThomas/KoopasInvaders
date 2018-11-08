@@ -473,6 +473,32 @@ public class Player extends GameObject implements EntityA{
 						pEntrance[16],pEntrance[17],pEntrance[17],pEntrance[18],
 						pEntrance[18],pEntrance[19],pEntrance[19],pEntrance[20]);
 				break;
+			case 2:
+				p = tex.player3NES;
+				pEntrance = tex.marioEntranceNES3;
+				pDeath = tex.marioDeathNES3;
+				pStar1 = tex.marioStar3NES1;
+				pStar2 = tex.marioStar3NES2;
+				pStar3 = tex.marioStar3NES3;
+				ss = new SpriteSheet(game.getSpriteSheetNES3());
+				marioEntranceTurningAroundAnim = new Animation(1, pEntrance[11],pEntrance[11],
+						pEntrance[12],pEntrance[12],pEntrance[15],pEntrance[16],
+						pEntrance[16],pEntrance[17],pEntrance[17],pEntrance[18],
+						pEntrance[18],pEntrance[19],pEntrance[19],pEntrance[20]);
+				break;
+			case 3:
+				p = tex.playerSNESFireLuigi;
+				pEntrance = tex.marioEntranceSNESFireLuigi;
+				pDeath = tex.marioDeathSNESFireLuigi;
+				pStar1 = tex.marioStarSNESFireLuigi1;
+				pStar2 = tex.marioStarSNESFireLuigi2;
+				pStar3 = tex.marioStarSNESFireLuigi3;
+				ss = new SpriteSheet(game.getSpriteSheetSNESFireLuigi());
+				marioEntranceTurningAroundAnim = new Animation(1, pEntrance[11],pEntrance[11],
+						pEntrance[12],pEntrance[12],pEntrance[15],pEntrance[16],
+						pEntrance[16],pEntrance[17],pEntrance[17],pEntrance[18],
+						pEntrance[18],pEntrance[19],pEntrance[19],pEntrance[20]);
+				break;
 			default:
 				p = tex.player;
 				pEntrance = tex.marioEntrance;
@@ -535,7 +561,7 @@ public class Player extends GameObject implements EntityA{
 					pEntrance[10],p[19],p[18],p[18]);
 			animl.nextFrame();
 			animr.nextFrame();
-			player = ss.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+			player = ss.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		}
 		else {
 			player = ss.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);

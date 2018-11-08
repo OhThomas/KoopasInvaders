@@ -45,7 +45,11 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 	private BufferedImage spriteSheet = null;
 	private BufferedImage spriteSheetNES = null;
+	private BufferedImage spriteSheetNES3 = null;
+	private BufferedImage spriteSheetSNESFireLuigi = null;
 	private BufferedImage marioEntranceSprites = null;
+	private BufferedImage marioNES3EntranceSprites = null;
+	private BufferedImage marioSNESFireLuigiEntranceSprites = null;
 	private BufferedImage animatedStar = null;
 	private BufferedImage animatedShootingStar = null;
 	private BufferedImage mario1StarSpriteSheet = null;
@@ -58,6 +62,9 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage marioItemAnimationSheet = null;
 	private BufferedImage marioItemAnimationBackgroundSheet = null;
 	private BufferedImage bigMarioItemAnimationSheet = null;
+	private BufferedImage bigMario2ItemAnimationSheet = null;
+	private BufferedImage bigMario3ItemAnimationSheet = null;
+	private BufferedImage bigMario4ItemAnimationSheet = null;
 	private BufferedImage itemSilhouetteSheet = null;
 	private BufferedImage currentItemImg = null;
 	private BufferedImage chainChompItemGettingBiggerSheet = null;
@@ -122,6 +129,8 @@ public class Game extends Canvas implements Runnable {
 	private boolean keepRunningAfterPauseL = false;
 	private boolean keepRunningAfterPauseR = false;
 	private boolean dontRunAfterPause = false;
+	public static boolean writeOnceToSettings = false;
+	public static boolean writeOnceToSettingswithPoints = false;
 	public static boolean settingsSetup = false;
 	public static boolean playHighlighted = false;
 	public static boolean shopHighlighted = false;
@@ -220,6 +229,8 @@ public class Game extends Canvas implements Runnable {
 	public static boolean backOnSet3 = false;
 	public static boolean backOnSet4 = false;
 	public static boolean skin1Unlocked = false;
+	public static boolean skin2Unlocked = false;
+	public static boolean skin3Unlocked = false;
 	public static boolean track1Unlocked = false;
 	public static boolean fireball1Unlocked = false;
 	public static boolean item1Unlocked = false;
@@ -235,6 +246,7 @@ public class Game extends Canvas implements Runnable {
 	public static boolean enterButtonPushedDown = false;
 	public static boolean skipAnimations = false;
 	public static boolean areYouSureBoolean = false;
+	public static int totalPoints = 0;
 	public static int selectorButtonPosition = 0;
 	public static int characterSkinPosition = 0;
 	public static int trackPosition = 0;
@@ -247,6 +259,9 @@ public class Game extends Canvas implements Runnable {
 	public static int volumeSliderPosition = 3;
 	public static int sfxMusicSliderPosition = 3;
 	public static int hudSFXPosition = 0;
+	public static String writeOnceProperty = "";
+	public static String writeOnceString = "";
+	public static String writeOnceUnlock = "";
 	private double myTime = 0.0;
 	private String itemName;
 	private int numberOfFireBallsShot = 0;
@@ -255,6 +270,7 @@ public class Game extends Canvas implements Runnable {
 	private float imageTranslucent = 0;
 	private double imageTranslucentVelocity = 0;
 	private long imageTranslucentTimer = 0;
+	private long traverseTime = 0;
 	private boolean imageIsGone = false;
 	long imageTranslucentTimer2=0;
 	boolean imageStayOn = false;
@@ -323,6 +339,7 @@ public class Game extends Canvas implements Runnable {
 	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> marioDanceSoundLoops = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> marioVoices = new LinkedList<SoundLoops>();
+	public static LinkedList<SoundLoops> luigiVoices = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> hudSFX = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> brickBreakingSFX = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> chainChompDeathSoundLoop = new LinkedList<SoundLoops>();
@@ -354,6 +371,7 @@ public class Game extends Canvas implements Runnable {
 	public static SoundLoops smb3BeepSoundLoop;
 	public static SoundLoops smb3CheckmarkSoundLoop;
 	public static SoundLoops smb3Checkmark2SoundLoop;
+	public static SoundLoops smwErrorSoundLoop;
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -508,7 +526,11 @@ public class Game extends Canvas implements Runnable {
 		try{
 			spriteSheet = loader.loadImage("/AnimationSpriteSheetNew.png");
 			spriteSheetNES = loader.loadImage("/AnimationSpriteSheetNewNES.png");
+			spriteSheetNES3 = loader.loadImage("/AnimationSpriteSheetNewNES3.png");
+			spriteSheetSNESFireLuigi = loader.loadImage("/AnimationSpriteSheetNewSNESFireLuigi.png");
 			marioEntranceSprites = loader.loadImage("/marioentrancesprites.png");
+			marioNES3EntranceSprites = loader.loadImage("/mario2entrancesprites.png");
+			marioSNESFireLuigiEntranceSprites = loader.loadImage("/mario3entrancesprites.png");
 			animatedStar = loader.loadImage("/animatedstar.png");
 			animatedShootingStar = loader.loadImage("/shootingstarworadiant.png");
 			mario1StarSpriteSheet = loader.loadImage("/mario1starspritesheet.png");
@@ -521,6 +543,9 @@ public class Game extends Canvas implements Runnable {
 			marioItemAnimationSheet = loader.loadImage("/marioitemanimations.png");
 			marioItemAnimationBackgroundSheet = loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur14.png");
 			bigMarioItemAnimationSheet = loader.loadImage("/mario-big.png");
+			bigMario2ItemAnimationSheet = loader.loadImage("/mario-big2.png");
+			bigMario3ItemAnimationSheet = loader.loadImage("/mario-big3.png");
+			bigMario4ItemAnimationSheet = loader.loadImage("/mario-big4.png");
 			itemSilhouetteSheet = loader.loadImage("/marioitemssilhouette.png");
 			chainChompItemGettingBiggerSheet = loader.loadImage("/Items/chainChompItemGettingBig.png");
 			chainChompSheet = loader.loadImage("/Items/Chain_Chomp_spritesss.png");
@@ -1561,6 +1586,34 @@ public class Game extends Canvas implements Runnable {
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				this.itemSwooshSoundLoop.play();
+				switch(currentlySelectedCharacterSkin){
+					case 0:
+						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning[0],tex.marioItemAnimationBeginning[0],
+								tex.marioItemAnimationBeginning[1],tex.marioItemAnimationBeginning[11],tex.marioItemAnimationBeginning[12],
+								tex.marioItemAnimationBeginning[13],tex.marioItemAnimationBeginning[14],tex.marioItemAnimationBeginning[15],
+								tex.marioItemAnimationBeginning[16],tex.marioItemAnimationBeginning[17]);
+						break;
+					case 1:
+						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning2[0],tex.marioItemAnimationBeginning2[0],
+							tex.marioItemAnimationBeginning2[1],tex.marioItemAnimationBeginning2[11],tex.marioItemAnimationBeginning2[12],
+							tex.marioItemAnimationBeginning2[13],tex.marioItemAnimationBeginning2[14],tex.marioItemAnimationBeginning2[15],
+							tex.marioItemAnimationBeginning2[16],tex.marioItemAnimationBeginning2[17]);
+						break;
+					case 2:
+						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning3[0],tex.marioItemAnimationBeginning3[0],
+							tex.marioItemAnimationBeginning3[1],tex.marioItemAnimationBeginning3[11],tex.marioItemAnimationBeginning3[12],
+							tex.marioItemAnimationBeginning3[13],tex.marioItemAnimationBeginning3[14],tex.marioItemAnimationBeginning3[15],
+							tex.marioItemAnimationBeginning3[16],tex.marioItemAnimationBeginning3[17]);
+						break;
+					case 3:
+						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning4[0],tex.marioItemAnimationBeginning4[0],
+							tex.marioItemAnimationBeginning4[1],tex.marioItemAnimationBeginning4[11],tex.marioItemAnimationBeginning4[12],
+							tex.marioItemAnimationBeginning4[13],tex.marioItemAnimationBeginning4[14],tex.marioItemAnimationBeginning4[15],
+							tex.marioItemAnimationBeginning4[16],tex.marioItemAnimationBeginning4[17]);
+						break;
+					default:
+						break;
+				}
 				marioTurningWithItem.nextFrame();
 					switch(hud.getItemName()){
 						case "chainChompItem":
@@ -1575,27 +1628,32 @@ public class Game extends Canvas implements Runnable {
 						default:
 							break;
 					}
+					//traverseTime = System.currentTimeMillis();
 			}
-			if(backgroundTraverse < itemBackground.size()-1 && System.currentTimeMillis() % 80 == 0){
+			if(backgroundTraverse < itemBackground.size()-1 && System.currentTimeMillis() % 80 == 0 && traverseTime != System.currentTimeMillis()){
+				//System.out.println(backgroundTraverse);
 				backgroundTraverse++;
+				traverseTime = System.currentTimeMillis();
 			}
 			else if(itemWaitTimer == 0 && backgroundTraverse >= itemBackground.size()-1)
 				itemWaitTimer = System.currentTimeMillis() + 400;
 			if(backgroundTraverse < itemBackground.size())
 				g.drawImage(itemBackground.get(backgroundTraverse), 0, 0, null);
-			if(itemWaitTimer != 0 && marioTurningWithItem.getCount() < 10 && System.currentTimeMillis() % 16 == 0){
+			if(itemWaitTimer != 0 && marioTurningWithItem.getCount() < 10 && System.currentTimeMillis() % 16 == 0 && traverseTime != System.currentTimeMillis()){
 				marioTurningWithItem.runAnimation();
+				traverseTime = System.currentTimeMillis();
 			}
 			if(itemWaitTimer != 0 && marioVoices.get(0).getSoundLoopBoolean() == false){
 				marioVoices.get(0).play();
 				marioVoices.get(0).setSoundLoopBoolean(true);
 			}
-			if(itemWaitTimer != 0 && System.currentTimeMillis() < itemWaitTimer - 100){
+			if(itemWaitTimer != 0 && System.currentTimeMillis() < itemWaitTimer - 100 && traverseTime != System.currentTimeMillis()){
 				if(marioTurningWithItem.getCount()<4 && System.currentTimeMillis() % 4 == 0)
 					itemFlyingAwayY -= .016;
 				itemFlyingTimer1 = System.currentTimeMillis() + 300;
+				traverseTime = System.currentTimeMillis();
 			}
-			else if(System.currentTimeMillis() < itemFlyingTimer1){
+			else if(System.currentTimeMillis() < itemFlyingTimer1 && traverseTime != System.currentTimeMillis()){
 				if(System.currentTimeMillis() % 2 == 0){
 					itemFlyingAwayX += .12;
 					itemFlyingAwayY += .1;
@@ -1603,13 +1661,17 @@ public class Game extends Canvas implements Runnable {
 				if(System.currentTimeMillis() % 3 == 0){
 					itemFlyingAwayY += .1;
 				}
+				traverseTime = System.currentTimeMillis();
 			}
 			else if(itemFlyingTimer1 != 0 && currentItemImg.getWidth() < 200){
-				if(currentItem.getCount() < 9 && System.currentTimeMillis() % 35 == 0)
-					currentItemImg = resize(currentItemImg,currentItemImg.getWidth()+20,currentItemImg.getHeight()+20);
-					//currentItem.runAnimation();
-				itemFlyingAwayX -= 0.8;
-				itemFlyingAwayY -= 1;
+				if(traverseTime != System.currentTimeMillis()){
+					if(currentItem.getCount() < 9 && System.currentTimeMillis() % 35 == 0)//MIGHT NEED TO ADD TRAVERSETIME HERE
+						currentItemImg = resize(currentItemImg,currentItemImg.getWidth()+20,currentItemImg.getHeight()+20);
+						//currentItem.runAnimation();
+					itemFlyingAwayX -= 0.8;
+					itemFlyingAwayY -= 1;
+					traverseTime = System.currentTimeMillis();
+				}
 				marioTurningWithItem.drawAnimation(g, Game.WIDTH, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22), 0);
 				g.drawImage(currentItemImg ,(int)(Game.WIDTH+42 + itemFlyingAwayX), (int)((Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22)-19 + itemFlyingAwayY),null);
 				//currentItem.drawAnimation(g, Game.WIDTH+42 + itemFlyingAwayX, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22)-19 + itemFlyingAwayY,0);
@@ -1622,6 +1684,7 @@ public class Game extends Canvas implements Runnable {
 				itemFlyingTimer1 = 0;
 				itemFlyingAwayX = 0;
 				itemFlyingAwayY = 0;
+				traverseTime = 0;
 				marioVoices.get(0).setSoundLoopBoolean(false);
 				marioTurningWithItem.setCount(0);
 				State = STATE.GAME;
@@ -2039,9 +2102,52 @@ public class Game extends Canvas implements Runnable {
 				itemNumber = resize(HUD.stringToMario3FontImage(Integer.toString(itemPosition+1)), 10, 10);
 				//LeaderboardController.writeToSettings("Total Score: ", "100");
 				//System.out.println(LeaderboardController.getFromSettings("Total Score: "));
+				if(writeOnceToSettings){
+					if(writeOnceProperty.equals("") || writeOnceString.equals("")){
+						writeOnceProperty = "";
+						writeOnceString = "";
+						writeOnceToSettings = false;
+					}
+					else{
+						if(writeOnceToSettingswithPoints && !Game.writeOnceUnlock.equals("")){
+							LeaderboardController.writeToSettings("Total Points: ", Integer.toString(totalPoints));
+							LeaderboardController.writeToSettings(Game.writeOnceUnlock, "true");
+							Game.writeOnceUnlock = "";
+							writeOnceToSettingswithPoints = false;
+						}
+						LeaderboardController.writeToSettings(writeOnceProperty, writeOnceString);
+						writeOnceProperty = "";
+						writeOnceString = "";
+						writeOnceToSettings = false;
+					}
+				}
+				if(!settingsSetup){
+					LeaderboardController.gameUnlocksToSettings();
+					leaderboard.settingsSetup();
+					settingsSetup = true;
+				}
 				if(!LeaderboardController.getFromSettings("Total Points: ").equals("")) {
 					totalPointsImage = HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: "));
 					totalPointsImage = Game.resize(HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: ")), totalPointsImage.getWidth()/2, totalPointsImage.getHeight()/2);
+				}
+			}
+			if(writeOnceToSettings){
+				if(writeOnceProperty.equals("") || writeOnceString.equals("")){
+					writeOnceProperty = "";
+					writeOnceString = "";
+					writeOnceToSettings = false;
+				}
+				else{
+					if(writeOnceToSettingswithPoints && !Game.writeOnceUnlock.equals("")){
+						LeaderboardController.writeToSettings("Total Points: ", Integer.toString(totalPoints));
+						LeaderboardController.writeToSettings(Game.writeOnceUnlock, "true");
+						Game.writeOnceUnlock = "";
+						writeOnceToSettingswithPoints = false;
+					}
+					LeaderboardController.writeToSettings(writeOnceProperty, writeOnceString);
+					writeOnceProperty = "";
+					writeOnceString = "";
+					writeOnceToSettings = false;
 				}
 			}
 			if(!settingsSetup) {
@@ -4379,11 +4485,14 @@ public class Game extends Canvas implements Runnable {
 								Game.smb3ItemSoundLoop.play();
 							}
 							Game.currentlySelectedCharacterSkin = Game.characterSkinPosition;
-							Game.settingsSetup = false;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+							Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+							//Game.settingsSetup = false;
 						}
 						break;
 					case -3:
-						if(Game.characterSkinPosition == 1)//Max Skins
+						if(Game.characterSkinPosition == 3)//Max Skins
 							Game.characterSkinPosition = 0;
 						else {
 							Game.characterSkinPosition++;
@@ -4396,15 +4505,89 @@ public class Game extends Canvas implements Runnable {
 					case -2:
 						//Skin Buy
 						if(currentSkinLocked) {
-							Game.skin1Unlocked = true;
-							Game.settingsSetup = false;
-							Game.characterSkinPosition = 1;
-							Game.currentlySelectedCharacterSkin = 1;
-							currentSkinLocked = false;
-							if(smb31PupSoundLoop.clipIsActive())
-								smb31PupSoundLoop.stop();
-							smb31PupSoundLoop.play();
+							switch(characterSkinPosition){
+								case 1:
+									if(totalPoints >= 100){
+										Game.skin1Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+										Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "skin1Unlocked";
+										Game.characterSkinPosition = 1;
+										Game.currentlySelectedCharacterSkin = 1;
+										currentSkinLocked = false;
+										skinNumber = null;
+										totalPoints -= 100;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -3;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 2:
+									if(totalPoints >= 1000){
+										Game.skin2Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+										Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "skin2Unlocked";
+										Game.characterSkinPosition = 2;
+										Game.currentlySelectedCharacterSkin = 2;
+										currentSkinLocked = false;
+										skinNumber = null;
+										totalPoints -= 1000;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -3;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 3:
+									if(totalPoints >= 10000){
+										Game.skin3Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+										Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "skin3Unlocked";
+										Game.characterSkinPosition = 3;
+										Game.currentlySelectedCharacterSkin = 3;
+										currentSkinLocked = false;
+										skinNumber = null;
+										totalPoints -= 10000;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -3;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+							
 						}
+						//else
+							//Play error noise
 						break;
 					case -1:
 						Game.selectorButtonPosition = 1;
@@ -4417,7 +4600,7 @@ public class Game extends Canvas implements Runnable {
 						if(Game.characterSkinPosition > 0)
 							Game.characterSkinPosition--;
 						else
-							Game.characterSkinPosition = 1;//Set to Max Skins
+							Game.characterSkinPosition = 3;//Set to Max Skins
 						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
@@ -4490,6 +4673,8 @@ public class Game extends Canvas implements Runnable {
 							break;	
 						case 1:
 							Game.skin1Unlocked = false;
+							Game.skin2Unlocked = false;
+							Game.skin3Unlocked = false;
 							Game.track1Unlocked = false;
 							Game.fireball1Unlocked = false;
 							Game.item1Unlocked = false;
@@ -4668,10 +4853,16 @@ public class Game extends Canvas implements Runnable {
 		String smb3BeepFile = "res/Sounds/SFX/smb3_beep.wav";
 		String smb3CheckmarkFile = "res/Sounds/SFX/checkmarksound1.wav";
 		String smb3Checkmark2File = "res/Sounds/SFX/checkmarksound2.wav";
+		String smwErrorFile = "res/Sounds/SFX/smw_lemmy_wendy_incorrect.wav";
 		String marioVoiceLetsGoFile = "res/Sounds/SFX/MarioVoice/mk64_mario02.wav";
 		String marioVoiceHereWeGoFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_33_mario_27.wav";
 		String marioVoiceYelpFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_22_mario_16.wav";
 		String marioVoiceWoohooFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_26_mario_20.wav";
+		String luigiVoiceLetsGoFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_25_31.wav";
+		String luigiVoiceYipeeFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_15.wav";
+		String luigiVoiceYahFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_16.wav";
+		String luigiVoiceAhhaFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_18.wav";
+		String luigiVoiceWoohooFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_24.wav";
 		String hudSFXFile1 = "res/Sounds/SFX/hudeffectnoises1.wav";
 		String hudSFXFile2 = "res/Sounds/SFX/hudeffectnoises2.wav";
 		String hudSFXFile3 = "res/Sounds/SFX/hudeffectnoises3.wav";
@@ -4729,10 +4920,16 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops smb3BeepSoundLoop = new SoundLoops(smb3BeepFile);
 		SoundLoops smb3CheckmarkSoundLoop = new SoundLoops(smb3CheckmarkFile);
 		SoundLoops smb3Checkmark2SoundLoop = new SoundLoops(smb3Checkmark2File);
+		SoundLoops smwErrorSoundLoop = new SoundLoops(smwErrorFile);
 		SoundLoops marioVoiceLetsGoSoundLoop = new SoundLoops(marioVoiceLetsGoFile);
 		SoundLoops marioVoiceHereWeGoSoundLoop = new SoundLoops(marioVoiceHereWeGoFile);
 		SoundLoops marioVoiceYelpSoundLoop = new SoundLoops(marioVoiceYelpFile);
 		SoundLoops marioVoiceWoohooSoundLoop = new SoundLoops(marioVoiceWoohooFile);
+		SoundLoops luigiVoiceLetsGoSoundLoop = new SoundLoops(luigiVoiceLetsGoFile);
+		SoundLoops luigiVoiceYipeeSoundLoop = new SoundLoops(luigiVoiceYipeeFile);
+		SoundLoops luigiVoiceYahSoundLoop = new SoundLoops(luigiVoiceYahFile);
+		SoundLoops luigiVoiceAhhaSoundLoop = new SoundLoops(luigiVoiceAhhaFile);
+		SoundLoops luigiVoiceWoohooSoundLoop = new SoundLoops(luigiVoiceWoohooFile);
 		SoundLoops hudSFXSoundLoop1 = new SoundLoops(hudSFXFile1);
 		SoundLoops hudSFXSoundLoop2 = new SoundLoops(hudSFXFile2);
 		SoundLoops hudSFXSoundLoop3 = new SoundLoops(hudSFXFile3);
@@ -4804,6 +5001,11 @@ public class Game extends Canvas implements Runnable {
 		game.marioVoices.add(marioVoiceHereWeGoSoundLoop);
 		game.marioVoices.add(marioVoiceYelpSoundLoop);
 		game.marioVoices.add(marioVoiceWoohooSoundLoop);
+		game.luigiVoices.add(luigiVoiceLetsGoSoundLoop);
+		game.luigiVoices.add(luigiVoiceYipeeSoundLoop);
+		game.luigiVoices.add(luigiVoiceYahSoundLoop);
+		game.luigiVoices.add(luigiVoiceAhhaSoundLoop);
+		game.luigiVoices.add(luigiVoiceWoohooSoundLoop);
 		game.hudSFX.add(hudSFXSoundLoop1);
 		game.hudSFX.add(hudSFXSoundLoop2);
 		game.hudSFX.add(hudSFXSoundLoop3);
@@ -4828,6 +5030,7 @@ public class Game extends Canvas implements Runnable {
 		game.smb3BeepSoundLoop = smb3BeepSoundLoop;
 		game.smb3CheckmarkSoundLoop = smb3CheckmarkSoundLoop;
 		game.smb3Checkmark2SoundLoop = smb3Checkmark2SoundLoop;
+		game.smwErrorSoundLoop = smwErrorSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		game.gameOverWinningSoundLoop = gameOverWinningSoundLoop;
 		game.gameOverIrisSoundLoop = gameOverIrisSoundLoop;
@@ -5155,8 +5358,24 @@ public class Game extends Canvas implements Runnable {
 		return spriteSheetNES;
 	}
 	
+	public BufferedImage getSpriteSheetNES3(){
+		return spriteSheetNES3;
+	}
+	
+	public BufferedImage getSpriteSheetSNESFireLuigi(){
+		return spriteSheetSNESFireLuigi;
+	}
+	
 	public BufferedImage getMarioEntranceSprites(){
 		return marioEntranceSprites;
+	}
+	
+	public BufferedImage getMarioNES3EntranceSprites(){
+		return marioNES3EntranceSprites;
+	}
+	
+	public BufferedImage getMarioSNESFireLuigiEntranceSprites(){
+		return marioSNESFireLuigiEntranceSprites;
 	}
 	
 	public BufferedImage getAnimatedStar(){
@@ -5177,6 +5396,18 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getBigMarioItemAnimationSheet(){
 		return bigMarioItemAnimationSheet;
+	}
+	
+	public BufferedImage getBigMario2ItemAnimationSheet(){
+		return bigMario2ItemAnimationSheet;
+	}
+	
+	public BufferedImage getBigMario3ItemAnimationSheet(){
+		return bigMario3ItemAnimationSheet;
+	}
+	
+	public BufferedImage getBigMario4ItemAnimationSheet(){
+		return bigMario4ItemAnimationSheet;
 	}
 	
 	public BufferedImage getItemSilhouetteSheet(){
