@@ -2116,6 +2116,8 @@ public class Game extends Canvas implements Runnable {
 							writeOnceToSettingswithPoints = false;
 						}
 						LeaderboardController.writeToSettings(writeOnceProperty, writeOnceString);
+						if((writeOnceProperty.toLowerCase().contains("skin".toLowerCase()))) 
+							p.changeAnimations(characterSkinPosition);
 						writeOnceProperty = "";
 						writeOnceString = "";
 						writeOnceToSettings = false;
@@ -2145,6 +2147,8 @@ public class Game extends Canvas implements Runnable {
 						writeOnceToSettingswithPoints = false;
 					}
 					LeaderboardController.writeToSettings(writeOnceProperty, writeOnceString);
+					if(writeOnceProperty.toLowerCase().contains("skin".toLowerCase())) 
+						p.changeAnimations(characterSkinPosition);
 					writeOnceProperty = "";
 					writeOnceString = "";
 					writeOnceToSettings = false;

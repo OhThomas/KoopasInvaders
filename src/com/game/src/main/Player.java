@@ -55,6 +55,7 @@ public class Player extends GameObject implements EntityA{
 	private long marioGravityTimer3 = 0;
 	private long marioGravityTimer4 = 0;
 	private long marioGravityTimer5 = 0;
+	private long traverseTime = 0;
 	public long playerWinTimer = 0;
 	Random r = new Random();
 	int random = r.nextInt((9-1)+1) + 1;		//int randomNum = rand.nextInt((max - min) + 1) + min;
@@ -328,7 +329,7 @@ public class Player extends GameObject implements EntityA{
 			}
 			if(System.currentTimeMillis() <= marioDeathTimer1){
 			}
-			else if(System.currentTimeMillis() <= marioDeathTimer2){
+			else if(System.currentTimeMillis() <= marioDeathTimer2 && traverseTime != System.currentTimeMillis()){
 				if(System.currentTimeMillis() % 5 == 0)
 					y-= 0.39;
 				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 200) && System.currentTimeMillis() % 5 == 0)
@@ -347,6 +348,7 @@ public class Player extends GameObject implements EntityA{
 					y-= 0.12;
 				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 10) && System.currentTimeMillis() % 5 == 0)
 					y-= 0.02;
+				traverseTime = System.currentTimeMillis();
 			}
 			else if(System.currentTimeMillis() <= marioDeathTimer3){/*
 				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
@@ -363,8 +365,9 @@ public class Player extends GameObject implements EntityA{
 					y+=0.45;*/
 				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
 					y += 0.00;
-				else if(System.currentTimeMillis() % 100 == 0){
+				else if(System.currentTimeMillis() % 100 == 0 && traverseTime != System.currentTimeMillis()){
 					velY += 0.01;
+					traverseTime = System.currentTimeMillis();
 				}
 				else
 					this.yProgression();

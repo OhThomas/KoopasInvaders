@@ -79,28 +79,40 @@ public class ShopController {
 	public void drawShop(Graphics g) {
 		if(!imagesSetup) {
 			this.marioSkin0.nextFrame();
+			this.marioSkin0.setSpeed(10);
 			this.marioSkin0.setCount(0);
 			this.marioSkin1.nextFrame();
+			this.marioSkin1.setSpeed(10);
 			this.marioSkin1.setCount(0);
 			this.marioSkin2.nextFrame();
+			this.marioSkin2.setSpeed(10);
 			this.marioSkin2.setCount(0);
 			this.marioSkin3.nextFrame();
+			this.marioSkin3.setSpeed(10);
 			this.marioSkin3.setCount(0);
 			this.marioSkin1Silhouette.nextFrame();
+			this.marioSkin1Silhouette.setSpeed(10);
 			this.marioSkin1Silhouette.setCount(0);
 			this.marioSkin2Silhouette.nextFrame();
+			this.marioSkin2Silhouette.setSpeed(10);
 			this.marioSkin2Silhouette.setCount(0);
 			this.marioSkin3Silhouette.nextFrame();
+			this.marioSkin3Silhouette.setSpeed(10);
 			this.marioSkin3Silhouette.setCount(0);
 			this.fireball0.nextFrame();
+			this.fireball0.setSpeed(10);
 			this.fireball0.setCount(0);
 			this.fireball1.nextFrame();
+			this.fireball1.setSpeed(10);
 			this.fireball1.setCount(0);
 			this.fireball1Silhouette.nextFrame();
+			this.fireball1Silhouette.setSpeed(10);
 			this.fireball1Silhouette.setCount(0);
 			this.item0.nextFrame();
+			this.item0.setSpeed(5);
 			this.item0.setCount(0);
 			this.item1Silhouette.nextFrame();
+			this.item1Silhouette.setSpeed(5);
 			this.item1Silhouette.setCount(0);
 			imagesSetup = true;
 		}
