@@ -27,10 +27,11 @@ public class LeaderboardController {
 	private long leaderboardBeginningTimer = 0;
 	private long leaderboardEndingTimer = 0;
 	private double velY = 0;
-	private double y = 0;
+	public static double y = 0;
 	private double dissapearingImageY = 0;
 	private boolean dissapearingImageIsOff = false;
 	private boolean initalized = false;
+	private long traverseTime = 0;
 	public static Properties settings = new Properties();
 	
 	public LeaderboardController(Game game) {
@@ -247,8 +248,10 @@ public class LeaderboardController {
     		for(int i = 0; i <= img.size()-1; i++) {
     			//g.drawImage(img.get(i), 44, (i*20) + 200 + (int)y, null);
     			if( (i*20) + 105 + (int)y < 100 && (i*20) + 105 + (int)y > 90) {
-    				if(dissapearingImageIsOff == false && dissapearingImageY < 16 && System.currentTimeMillis() % 15 == 0)
+    				if(dissapearingImageIsOff == false && dissapearingImageY < 16 && System.currentTimeMillis() % 15 == 0 && traverseTime != System.currentTimeMillis()) {
     					dissapearingImageY+=1;
+    					traverseTime = System.currentTimeMillis();
+    				}
     				else if(dissapearingImageIsOff)
     					dissapearingImageY = 0;
     				if(img.get(i).getHeight()-(int)dissapearingImageY <= 0) {
@@ -266,11 +269,14 @@ public class LeaderboardController {
         			dissapearingImageIsOff = false;
     			}
     		}
-    		if(velY < .00009)
-    			velY = -.021;
-    		else if(velY < .000009)
-    			velY-= 0.000008;
-    		y += velY;
+        	if(traverseTime != System.currentTimeMillis()) {
+	    		if(velY < .00009)
+	    			velY = -.021;
+	    		else if(velY < .000009)
+	    			velY-= 0.000008;
+	    		y += velY;
+	        	traverseTime = System.currentTimeMillis();
+    	}
     	}
 	}
     /*LEADERBOARD THAT CUTS OFF RIGHT UNDER LEADERBOARD TITLE IMG

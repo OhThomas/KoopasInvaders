@@ -479,6 +479,259 @@ public class MouseInput implements MouseListener {
 			public Rectangle quitButton = new Rectangle(Game.WIDTH / 2 + 120, 400, 128, 64);
 		 */
 		if(!Game.keysAreInUse) {
+			if(Game.State == Game.STATE.MENU) {//STAR EXPLOSION
+				Boolean b = false;
+				if(!(my >= 20 && my <= 36 && mx >= 54 && mx <= 86) && //help
+					!(my >= 20 && my <= 36 &&mx >= 312 && mx <= 376) && //settings
+					!(my >= 20 && my <= 36 && mx >=  Game.WIDTH / 2 + 380 && mx <= Game.WIDTH / 2 + 470) && //leaderboard
+					!(my >= 200 && my <= 264 && mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248) && //play
+					!(my >= 300 && my <= 364 && mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248) && //shop
+					!(my >= 400 && my <= 464 && mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248)) { //exit
+					/*
+					!(my >= 100 && my <= 164 && mx >= 70 && mx <= 302) && //title Koopa
+					!(my >= 100 && my <= 164 && mx >= 330 && mx <= 590) ||//title Invaders
+					(my >= 124 && my <= 128 && mx >= 586 && mx <= 590) ||//s space
+					(my >= 120 && my <= 124 && mx >= 582 && mx <= 590) ||//s space
+					(my >= 140 && my <= 144 && mx >= 562 && mx <= 566) ||//rs space
+					(my >= 136 && my <= 144 && mx >= 558 && mx <= 562) ||//rs space
+					(my >= 128 && my <= 140 && mx >= 554 && mx <= 558) ||//rs space
+					(my >= 132 && my <= 136 && mx >= 550 && mx <= 554) ||//rs space
+					(my >= 104 && my <= 108 && mx >= 554 && mx <= 558) ||//rs space
+					(my >= 100 && my <= 104 && mx >= 550 && mx <= 562) ||//rs space
+					(my >= 140 && my <= 164 && mx >= 538 && mx <= 542) ||//r space
+					(my >= 116 && my <= 122 && mx >= 538 && mx <= 542) ||//r space
+					(my >= 140 && my <= 148 && mx >= 506 && mx <= 518) ||//e space
+					(my >= 116 && my <= 124 && mx >= 506 && mx <= 518) ||//e space
+					(my >= 152 && my <= 164 && mx >= 418 && mx <= 422) ||//v space
+					(my >= 152 && my <= 164 && mx >= 398 && mx <= 402) ||//v space
+					(my >= 144 && my <= 164 && mx >= 394 && mx <= 398) ||//v space
+					(my >= 144 && my <= 164 && mx >= 422 && mx <= 426) ||//v space
+					(my >= 116 && my <= 148 && mx >= 354 && mx <= 362) ||//i space
+					(my >= 116 && my <= 148 && mx >= 330 && mx <= 338) ||//i space
+					(my >= 132 && my <= 164 && mx >= 238 && mx <= 270) ||//'s space
+					(my >= 124 && my <= 132 && mx >= 238 && mx <= 242) ||//'s space
+					(my >= 124 && my <= 132 && mx >= 266 && mx <= 270) ||//'s space
+					(my >= 128 && my <= 132 && mx >= 242 && mx <= 250) ||//'s space
+					(my >= 128 && my <= 132 && mx >= 258 && mx <= 266) ||//'s space
+					(my >= 144 && my <= 164 && mx >= 190 && mx <= 206) ||//pa space
+					(my >= 140 && my <= 144 && mx >= 202 && mx <= 206) ||//pa space
+					(my >= 120 && my <= 144 && mx >= 106 && mx <= 110) || (my >= 128 && my <= 144 && mx >= 102 && mx <= 106) ||
+					(my >= 132 && my <= 140 && mx >= 98 && mx <= 102) || (my >= 132 && my <= 136 && mx >= 94 && mx <= 98) ||
+					(my >= 100 && my <= 116 && mx >= 78 && mx <= 94) || (my >= 116 && my <= 120 && mx >= 86 && mx <= 90) ||
+					(my >= 152 && my <= 164 && mx >= 86 && mx <= 90) || (my >= 156 && my <= 164 && mx >= 90 && mx <= 98) //k space
+					*/
+					b = true;
+					if(mx >= 70 && mx <= Game.title.getWidth() + 70 && my >= 100 && my <= Game.title.getHeight() + 100) {
+						if (Game.isPixelTransparentinBufferedImage(Game.title, mx-70, my-100)) {
+							b = true;
+						}
+						else
+							b = false;
+					}
+					if(b) {
+						Game.starExplode = true;
+						Game.mx = mx;
+						Game.my = my;
+					}
+					
+					
+				}
+			}else if(Game.State == Game.STATE.SHOP) {
+				if(!(mx >=  Game.WIDTH - 48 && mx <= Game.WIDTH - 32 && //L buttons
+					((my >= 120 && my <= 152) || (my >= 220 && my <= 252) ||
+					(my >= 320 && my <= 352) || (my >= 420 && my <= 452))) &&
+					!(mx >=  Game.WIDTH + 48 && mx <= Game.WIDTH + 64 && //R buttons
+					((my >= 120 && my <= 152) || (my >= 220 && my <= 252) ||
+					(my >= 320 && my <= 352) || (my >= 420 && my <= 452))) &&
+					!(mx >=  Game.WIDTH - 5 && mx <= Game.WIDTH + 24 && // Buy Buttons
+					((my >= 127 && my <= 144 && Game.currentSkinLocked) || (my >= 227 && my <= 244 && Game.currentTrackLocked) ||
+					(my >= 327 && my <= 344 && Game.currentFireballLocked) || (my >= 427 && my <= 444 && Game.currentItemLocked)))&&
+					!(mx >=  Game.WIDTH + 108 && mx <= Game.WIDTH + 132 && //Set buttons
+					((my >= 128 && my <= 144) || ((my >= 228 && my <= 244) ||
+					((my >= 328 && my <= 344))))) &&
+					!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) &&//Back Button
+					!(mx >= Game.WIDTH - 54 && mx <= Game.WIDTH - 54 + 128 && my >= 20 && my <= 84) &&//Shop Title
+					!(mx >= 20 && mx <= 104 && my >= 120 && my <= 152) &&//Skin Title
+					!(mx >= 20 && mx <= 122 && my >= 220 && my <= 252) &&//Tracks Title
+					!(mx >= 20 && mx <= 166 && my >= 320 && my <= 352) &&//Fireball Title
+					!(mx >= 20 && mx <= 106 && my >= 420 && my <= 452) &&//Item Title
+					!(mx >= Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60 &&
+					  mx <= Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60 + Game.totalPointsImage.getWidth() &&
+					  my >= 20 && my <= 20 + Game.totalPointsImage.getHeight()) &&//Total Points
+					!(mx >= Game.WIDTH * Game.SCALE - 55 && mx <= Game.WIDTH * Game.SCALE - 55 + ShopController.pointsImage.getWidth() &&
+					my >= 20 + Game.totalPointsImage.getHeight()/2 -3 && my <= 20 + Game.totalPointsImage.getHeight()/2 -3 +
+					ShopController.pointsImage.getHeight()) &&//points title
+					!(mx >= Game.WIDTH && mx <= Game.WIDTH + 16 && my >= 120 && my <= 148) &&//Mario Skins
+					!(Game.trackPosition == 0 && mx >= Game.WIDTH + 2 && mx <= Game.WIDTH + 2 + ShopController.songTrackImages[0].getWidth()&&
+					my >= 227 && my <= 227+ShopController.songTrackImages[0].getHeight()) &&//Track Img 1
+					!(Game.trackPosition == 1 && mx >= Game.WIDTH && mx <= Game.WIDTH + ShopController.songTrackImages[1].getWidth()&&
+					my >= 223 && my <= 223+ShopController.songTrackImages[1].getHeight())&& //Track Img 2
+					!(!(Game.fireballPosition == 3) && mx >= Game.WIDTH && mx <= Game.WIDTH + 16 && my >= 328 && my <= 344) && //Fireballs
+					!((Game.fireballPosition == 3) && mx >= Game.WIDTH && mx <= Game.WIDTH + 16 && my >= 329 && my <= 343) &&//Fireballs(BuzzyBeetle)
+					!(!(Game.currentItemLocked) && mx >= Game.WIDTH && mx <= Game.WIDTH + 16 && my >= 428 && my <= 444) &&//Items unlocked
+					!((Game.currentItemLocked) && mx >= Game.WIDTH && mx <= Game.WIDTH + 18 && my >= 426 && my <= 444) &&//Items locked
+					!((Game.currentlySelectedCharacterSkin == Game.characterSkinPosition) && mx >= Game.WIDTH - 2 &&
+					mx <= Game.WIDTH +16 && my >= 101 && my <= 119) &&//Skin Position Selected
+					!((Game.currentlySelectedTrack == Game.trackPosition) && mx >= Game.WIDTH - 2 &&
+					mx <= Game.WIDTH +16 && my >= 201 && my <= 219) &&//Track Position Selected
+					!((Game.currentlySelectedFireball == Game.fireballPosition) && mx >= Game.WIDTH - 2 &&
+					mx <= Game.WIDTH +16 && my >= 301 && my <= 319) &&//Fireball Position Selected
+					!((Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH - 2 &&
+					mx <= Game.WIDTH +16 && my >= 401 && my <= 419) &&//Item Position Selected
+					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
+					mx <= Game.WIDTH +12 && my >= 105 && my <= 115) &&//Skin Position Unselected
+					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
+					mx <= Game.WIDTH +12 && my >= 205 && my <= 215) &&//Track Position Unselected
+					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
+					mx <= Game.WIDTH +12 && my >= 305 && my <= 315) &&//Fireball Position Unselected
+					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
+					mx <= Game.WIDTH +12 && my >= 405 && my <= 415)//Item Position Unselected
+					) {
+					Game.starExplode = true;
+					Game.mx = mx;
+					Game.my = my;
+				}
+			}else if(Game.State == Game.STATE.HELP) {
+				if(!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36)) {
+					Game.starExplode = true;
+					Game.mx = mx;
+					Game.my = my;
+				}
+			}else if(Game.State == Game.STATE.SETTINGS) {
+				if(!Game.areYouSureBoolean) {
+					if(!(mx >= Game.WIDTH - 125 && mx <= Game.WIDTH - 109 &&
+						((my >= 121 && my <= 153) || (my >= 221 && my <= 253))) &&//L Buttons
+						!(mx >= Game.WIDTH + 109 && mx <= Game.WIDTH + 125 &&
+						((my >= 121 && my <= 153) || (my >= 221 && my <= 253))) &&//R Buttons
+						!(mx >= Game.WIDTH - 69 && mx <= Game.WIDTH - 59 && 
+						((my >= 120 && my <= 154) || (my >= 220 && my <= 254))) &&//First Volume Slider Block
+						!(mx >= Game.WIDTH - 37 && mx <= Game.WIDTH - 27 && 
+						((my >= 120 && my <= 154) || (my >= 220 && my <= 254))) &&//Second Volume Slider Block
+						!(mx >= Game.WIDTH - 5 && mx <= Game.WIDTH + 5 && 
+						((my >= 120 && my <= 154) || (my >= 220 && my <= 254))) &&//Third Volume Slider Block
+						!(mx >= Game.WIDTH + 27 && mx <= Game.WIDTH + 37 && 
+						((my >= 120 && my <= 154) || (my >= 220 && my <= 254))) &&//Fourth Volume Slider Block
+						!(mx >= Game.WIDTH + 59 && mx <= Game.WIDTH + 69 && 
+						((my >= 120 && my <= 154) || (my >= 220 && my <= 254))) &&//Fifth Volume Slider Block
+						!(mx >= Game.WIDTH - 69 && mx <= Game.WIDTH + 69 && 
+						((my >= 134 && my <= 140) || (my >= 234 && my <= 240))) &&//Horizontal Volume Slider Line
+						!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) &&//Back Button
+						!(mx >= Game.WIDTH - 16 && mx <= Game.WIDTH + 16 && my >= 320 && my <= 352) &&//Checkmark Button	
+						!(mx >= Game.WIDTH - 89 && mx <= Game.WIDTH + 89 && my >= 420 && my <= 452) &&//Reset Stats Button
+						!(mx >= Game.WIDTH-128 && mx <= Game.WIDTH+128 && my >= 20 && my <= 84) &&//Settings Title
+						!(mx >= 20 && mx <= 122 && my >= 120 && my <= 152) &&//Volume Title
+						!(my >= 220 && my <= 252 && ((mx >= 20 && mx <= 68)|| (mx >= 102 && mx <= 188))) &&//SFX/Music Title
+						!((mx >= 76 && mx <= 81 && my >= 250 && my <= 252) || (mx >= 76 && mx <= 83 && my >= 241 && my <= 250) || 
+						(mx >= 79 && mx <= 86 && my >= 235 && my <= 246) || (mx >= 81 && mx <= 89 && my >= 228 && my <= 239) || 
+						(mx >= 84 && mx <= 92 && my >= 222 && my <= 232) || (mx >= 87 && mx <= 93 && my >= 220 && my <= 222)) &&// / Split Up
+						!(my >= 320 && my <= 352 && ((mx >= 20 && mx <= 88) || (mx >= 104 && mx <= 270)))
+						) {
+						Game.starExplode = true;
+						Game.mx = mx;
+						Game.my = my;
+					}
+				}
+			}else if (Game.State == Game.STATE.LEADERBOARD) {
+				Boolean b = false;
+				for(int i = 0; i <= Game.leaderboardImage.size() -1; i++) {
+					if(!(mx >= 44 && mx <= 44 + Game.leaderboardImage.get(i).getWidth() -16 && my >= (i*20) + 105 + (int) LeaderboardController.y && my <= (i*20) + 105 + (int) LeaderboardController.y + Game.leaderboardImage.get(i).getHeight()))
+						b = true;
+					else {
+						b = false;
+						break;
+					}
+				}
+				if(b && !(mx >= 40 && mx <= 88 && my >= 20 && my <= 36)) {
+					//System.out.println(Game.mx + " lead"+(Game.leaderboardImage.get(0).getWidth()+44));
+					Game.starExplode = true;
+					Game.mx = mx;
+					Game.my = my;
+				}
+			}else if(Game.State == Game.STATE.GAMEOVER) {
+				if(!(mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && my >= 200 && my <= 264) &&//Play button
+					!(mx >= Game.WIDTH / 2 + 114 && mx <= Game.WIDTH / 2 + 254 && my >= 300 && my <= 364) &&//Home button
+					!(mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && my >= 400 && my <= 464) &&//Exit button
+					!(my >= 20 && my <= 36 && ((mx >= 40 && mx <= 110) || (mx >=  Game.WIDTH / 2 + 380 && mx <= Game.WIDTH / 2 + 470))) &&//Set Score & Leaderboard Button
+					!(my >= 100 && my <= 164 && (mx >= 170 && mx <= 306) || (mx >= 362 && mx <= 490 && my >= 100 && my <= 164)) ||//Game Over
+					(mx >= 486 && mx <= 490 && my >= 128 && my <= 140)||//r space
+					(mx >= 482 && mx <= 486 && my >= 132 && my <= 136)||//r space
+					(mx >= 482 && mx <= 490 && my >= 100 && my <= 104)||//r space
+					(mx >= 486 && mx <= 490 && my >= 104 && my <= 108)||//r space
+					(mx >= 470 && mx <= 474 && my >= 116 && my <= 124)||//r space
+					(mx >= 470 && mx <= 474 && my >= 140 && my <= 164)||//r space
+					(mx >= 442 && mx <= 454 && my >= 116 && my <= 124)||//e space
+					(mx >= 442 && mx <= 454 && my >= 140 && my <= 148)||//e space
+					(mx >= 422 && mx <= 426 && my >= 144 && my <= 164)||//v space
+					(mx >= 394 && mx <= 398 && my >= 144 && my <= 164)||//v space
+					(mx >= 398 && mx <= 402 && my >= 152 && my <= 164)||//v space
+					(mx >= 418 && mx <= 422 && my >= 152 && my <= 164)||//v space
+					(mx >= 290 && mx <= 306 && my >= 116 && my <= 124)||//e space
+					(mx >= 290 && mx <= 306 && my >= 140 && my <= 148)||//e space
+					(mx >= 250 && mx <= 262 && my >= 100 && my <= 108)||//m space
+					(mx >= 254 && mx <= 258 && my >= 108 && my <= 120)||//m space
+					(mx >= 250 && mx <= 254 && my >= 152 && my <= 164)||//m space
+					(mx >= 254 && mx <= 258 && my >= 156 && my <= 164)||//m space
+					(mx >= 258 && mx <= 262 && my >= 152 && my <= 164)||//m space
+					(mx >= 186 && mx <= 202 && my >= 128 && my <= 132)//g space
+					) {
+					Game.starExplode = true;
+					Game.mx = mx;
+					Game.my = my;
+				}
+			}else if(Game.State == Game.STATE.SET_SCORE) {
+				Boolean b = false;/*
+				if(!Game.playerName.isEmpty() && mx >= Game.postLetterXPositionBeginning && mx <= Game.postLetterXPositionBeginning + Game.playerNameImage.getWidth() &&
+					my >= 200 && my <= 200 + Game.playerNameImage.getHeight()) {
+					if(Game.playerNameImage.getWidth()+Game.postLetterXPositionBeginning-mx >= 1)
+					if(Game.isPixelTransparentinBufferedImage(Game.playerNameImage,mx-Game.postLetterXPositionBeginning,my-200)) {
+						b = true;
+					}
+				}
+				if(!b) {*/
+					if(200 <= Game.postLetterXPositionBeginning) {
+						if((mx >= 200+Game.postLetterXPosition && mx <= 216+Game.postLetterXPosition && my >= 200 && my <= 264)) {
+							b = false;
+						}
+						else
+							b = true;
+					}
+					else {
+						if((mx >= Game.postLetterXPositionBeginning+Game.postLetterXPosition && mx <= Game.postLetterXPositionBeginning+Game.postLetterXPosition + 16 &&
+								my >= 200 && my <= 264)) {
+							b = false;
+						}
+						else 
+							b = true;
+					}
+					if(b) {
+						if((mx >= 40 && mx <= 88 && my >= 20 && my <= 36)) {
+							b = false;
+						}
+						else if(mx >= Game.WIDTH / 2 + 35 && mx <= Game.WIDTH / 2 + 315 && my >= 20 && my <= 84) {
+							if((Game.isPixelTransparentinBufferedImage(Game.setScoreTitleBigger,mx-(Game.WIDTH / 2 + 35),my-20)))
+								b = true;
+							else
+								b = false;
+						}
+					}
+					if(!Game.playerName.isEmpty() && mx >= Game.postLetterXPositionBeginning && mx <= Game.postLetterXPositionBeginning + Game.playerNameImage.getWidth() &&
+							my >= 200 && my <= 200 + Game.playerNameImage.getHeight()) {
+							if(Game.playerNameImage.getWidth()+Game.postLetterXPositionBeginning-mx >= 1)
+							if(Game.isPixelTransparentinBufferedImage(Game.playerNameImage,mx-Game.postLetterXPositionBeginning,my-200)) {
+								b = true;
+							}
+							else
+								b = false;
+						}
+					
+				if(b) {
+					Game.starExplode = true;
+					Game.mx = mx;
+					Game.my = my;
+				}
+				//System.out.println("Game.playerNameImage"+(Game.playerNameImage.getWidth()+200)+"mx="+mx);
+						
+			}//STAR EXPLOSION
 			// Play Button
 			if (mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.MENU ||
 					mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.GAMEOVER) {

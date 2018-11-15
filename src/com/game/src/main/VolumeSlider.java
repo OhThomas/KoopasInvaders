@@ -54,6 +54,9 @@ public class VolumeSlider {
 		for(int i = 0; i < Game.marioDanceSoundLoops.size(); i++) {
 			adjustSFX(Game.marioDanceSoundLoops.get(i));
 		}
+		for(int i = 0; i < Game.marioVoices.size(); i++) {
+			adjustSFX(Game.luigiVoices.get(i));
+		}
 		adjustSFX(Game.smb31PupSoundLoop);
 		adjustSFX(Game.smb3BeepSoundLoop);
 		adjustSFX(Game.smb3BumpSoundLoop);

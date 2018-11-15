@@ -81,14 +81,14 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage goombaDeathSpriteSheet = null;
 	private BufferedImage backButtonTitle = null;
 	private BufferedImage setScoreTitle = null;
-	private BufferedImage setScoreTitleBigger = null;
+	public static BufferedImage setScoreTitleBigger = null;
 	private BufferedImage textIndicator = null;
 	private BufferedImage leaderboardTitle = null;
 	private BufferedImage leaderboardTitleBigger = null;
 	private BufferedImage helpTitle = null;
 	private BufferedImage settingsTitle = null;
 	private BufferedImage settingsTitleBigger = null;
-	private BufferedImage playerNameImage = null;
+	public static BufferedImage playerNameImage = null;
 	private BufferedImage deletedLetter = null;
 	private BufferedImage transparentBlocks = null;
 	private BufferedImage volumeSlider = null;
@@ -100,7 +100,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage emptyVolumeSlider = null;
 	private BufferedImage areYouSure = null;
 	
-	private ArrayList<BufferedImage> leaderboardImage = new ArrayList<BufferedImage>();
+	public static ArrayList<BufferedImage> leaderboardImage = new ArrayList<BufferedImage>();
 	private ArrayList<BufferedImage> itemBackground = new ArrayList<BufferedImage>();
 	private int backgroundTraverse = 0;
 	
@@ -246,6 +246,9 @@ public class Game extends Canvas implements Runnable {
 	public static boolean enterButtonPushedDown = false;
 	public static boolean skipAnimations = false;
 	public static boolean areYouSureBoolean = false;
+	public static boolean starExplode = false;
+	public static int mx = 0;
+	public static int my = 0;
 	public static int totalPoints = 0;
 	public static int selectorButtonPosition = 0;
 	public static int characterSkinPosition = 0;
@@ -275,9 +278,9 @@ public class Game extends Canvas implements Runnable {
 	long imageTranslucentTimer2=0;
 	boolean imageStayOn = false;
 	boolean shiftOn = false;
-	private ArrayList<String> playerName = new ArrayList<String>();
-	private int postLetterXPosition = 0;
-	private int postLetterXPositionBeginning = 200;
+	public static ArrayList<String> playerName = new ArrayList<String>();
+	public static int postLetterXPosition = 0;
+	public static int postLetterXPositionBeginning = 200;
 	private double slowingDown = 0;
 	private long slowingDownTimerLong = 0;
 	public boolean slowingDownActivatedl = false;
@@ -292,6 +295,7 @@ public class Game extends Canvas implements Runnable {
 	private boolean runningTimerActivatedResponse = false;
 	private boolean soundSet = false;
 	private boolean soundTimerSet = false;
+	public static long starExplosionTimer = 0;
 	private long soundFXTimer = 0;
 	private long enemyHitPauseTimer = 0;
 	private boolean enemyHitPauseBoolean = false;
@@ -383,8 +387,9 @@ public class Game extends Canvas implements Runnable {
 	private LeaderboardController leaderboard;
 	private ShopController shop;
 	private MouseLocator mouseLocator;
+	private StarExplosion starExplosion;
 	
-	private BufferedImage title = null;
+	public static BufferedImage title = null;
 	private BufferedImage gameOverTitle = null;
 	private BufferedImage playTitle = null;
 	private BufferedImage shopTitle = null;
@@ -488,7 +493,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage volumeTitle = null;
 	private BufferedImage sfxMusicTitle = null;
 	private BufferedImage skipAnimationsTitle = null;
-	private BufferedImage totalPointsImage = null;
+	public static BufferedImage totalPointsImage = null;
 	public static BufferedImage skinNumber = null;
 	public static BufferedImage trackNumber = null;
 	public static BufferedImage fireballNumber = null;
@@ -695,6 +700,7 @@ public class Game extends Canvas implements Runnable {
 		leaderboard = new LeaderboardController(this);
 		shop = new ShopController(tex,this);
 		mouseLocator = new MouseLocator(this);
+		starExplosion = new StarExplosion();
 		
 		ea = c.getEntityA();
 		eb = c.getEntityB();
@@ -814,6 +820,8 @@ public class Game extends Canvas implements Runnable {
 		transparentBlocksAnim.runAnimation();
 		if((myTime / 10) == (int)(myTime/10) && shootingStarFrameStop == false)//(myTime > 10 && myTime < 22 || myTime > 30 && myTime < 42)
 			shootingStarAnim.runAnimation();
+		if(System.currentTimeMillis() < starExplosionTimer) 
+			starExplosion.tick();
 		if(spawnBulletBill && !paused) {
 			if((enemyHitRightBarrier || bulletBillSpawnSmokeR.getCount() != 0)&& bulletBillSpawnSmokeL.getCount() == 0)
 				bulletBillSpawnSmokeR.runAnimation();
@@ -912,9 +920,9 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			if(p.getMarioInvincible() == false && marioHasBeenInvincible == true){		//Setting up SoundFX in between Audio Clips
-				if(this.marioStarSoundLoop.getSoundLoopBoolean() == true){
-					this.marioStarSoundLoop.stop();
-					this.marioStarSoundLoop.setSoundLoopBoolean(false);
+				if(Game.marioStarSoundLoop.getSoundLoopBoolean() == true){
+					Game.marioStarSoundLoop.stop();
+					Game.marioStarSoundLoop.setSoundLoopBoolean(false);
 				}
 				
 				if(soundFXBoolean == true){
@@ -940,7 +948,7 @@ public class Game extends Canvas implements Runnable {
 					soundFXClip1Reset = false;
 					if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true && this.soundFXClip1SoundLoop.getSoundLoopBoolean() == true){
 						this.gameSoundLoops.get(this.soundRandomizer).continuePlaying();
-						this.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
+						Game.soundFXClip1SoundLoop.setSoundLoopBoolean(false);
 					}
 					soundTimerSet = false;
 				}
@@ -948,11 +956,11 @@ public class Game extends Canvas implements Runnable {
 					transparentBlocksAnim.drawAnimation(g,p.getX(), p.getY(), 0);
 					//add visual effect
 					if(!soundFXClip1Reset){
-						this.soundFXClip1SoundLoop.setSoundLoopBoolean(true);
-						this.soundFXClip1SoundLoop.play();
+						Game.soundFXClip1SoundLoop.setSoundLoopBoolean(true);
+						Game.soundFXClip1SoundLoop.play();
 						soundFXClip1Reset = true;
 					}
-					this.soundFXClip1SoundLoop.loop();
+					Game.soundFXClip1SoundLoop.loop();
 				}
 			}
 			if(p.getMarioInvincible() == true){											//Setting up Star Sound
@@ -970,8 +978,8 @@ public class Game extends Canvas implements Runnable {
 				if(System.currentTimeMillis() > pauseSoundFXTimer && pauseSoundFXSoundLoop.getSoundLoopBoolean() == true){
 					paused = false;
 					pauseSoundFXSoundLoop.setSoundLoopBoolean(false);
-					this.marioStarSoundLoop.continuePlaying();
-					this.marioStarSoundLoop.setSoundLoopBoolean(true);
+					Game.marioStarSoundLoop.continuePlaying();
+					Game.marioStarSoundLoop.setSoundLoopBoolean(true);
 				}
 				
 				if(System.currentTimeMillis() > soundFXTimer && soundFXisPlaying == true){							//checking if paused for soundFX Timer
@@ -1388,6 +1396,15 @@ public class Game extends Canvas implements Runnable {
 				this.menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(true);
 				menuSoundSet = true;
 			}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
 			//this.addMouseMotionListener(new MouseMotionListener);
 			mouseLocator.locateMouse();
 			g.drawImage(title, 70, 100, null);
@@ -1534,6 +1551,15 @@ public class Game extends Canvas implements Runnable {
 				this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
 				menuSoundSet = false;
 			}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
 			p.render(g);
 			if(p.isSpinningAnimationFinished() == false && this.marioSpinningSoundLoop.getSoundLoopBoolean() == false){
 				this.marioSpinningSoundLoop.play();
@@ -1576,8 +1602,12 @@ public class Game extends Canvas implements Runnable {
 				if(marioLetsGoPause == true && marioLetsGoPauseTimer < System.currentTimeMillis()){
 					Random rand = new Random();
 					marioVoiceRandomizer = rand.nextInt(4);
-					this.marioVoices.get(marioVoiceRandomizer).play();
-					this.marioVoices.get(marioVoiceRandomizer).setSoundLoopBoolean(true);
+					if(currentlySelectedCharacterSkin == 3) {
+						Game.luigiVoices.get(marioVoiceRandomizer).play();
+					}
+					else {
+						Game.marioVoices.get(marioVoiceRandomizer).play();
+					}
 					marioLetsGoPause = false;
 				}
 			}
@@ -1643,9 +1673,13 @@ public class Game extends Canvas implements Runnable {
 				marioTurningWithItem.runAnimation();
 				traverseTime = System.currentTimeMillis();
 			}
-			if(itemWaitTimer != 0 && marioVoices.get(0).getSoundLoopBoolean() == false){
+			if(itemWaitTimer != 0 && marioVoices.get(0).getSoundLoopBoolean() == false && currentlySelectedCharacterSkin != 3){
 				marioVoices.get(0).play();
 				marioVoices.get(0).setSoundLoopBoolean(true);
+			}
+			else if(itemWaitTimer != 0 && luigiVoices.get(0).getSoundLoopBoolean() == false && currentlySelectedCharacterSkin == 3) {
+				luigiVoices.get(0).play();
+				luigiVoices.get(0).setSoundLoopBoolean(true);
 			}
 			if(itemWaitTimer != 0 && System.currentTimeMillis() < itemWaitTimer - 100 && traverseTime != System.currentTimeMillis()){
 				if(marioTurningWithItem.getCount()<4 && System.currentTimeMillis() % 4 == 0)
@@ -1686,6 +1720,7 @@ public class Game extends Canvas implements Runnable {
 				itemFlyingAwayY = 0;
 				traverseTime = 0;
 				marioVoices.get(0).setSoundLoopBoolean(false);
+				luigiVoices.get(0).setSoundLoopBoolean(false);
 				marioTurningWithItem.setCount(0);
 				State = STATE.GAME;
 			}
@@ -1786,6 +1821,15 @@ public class Game extends Canvas implements Runnable {
 					leaderboard.setDissapearingImageY(0);
 					leaderboard.setLeaderboardBeginningTimer(0);
 					leaderboard.setLeaderboardEndingTimer(0);
+			}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
 			}
 			numberOfFireBallsShot = numberOfFireBallsShot - numberOfFireBallsShotDecoy;
 			mouseLocator.locateMouse();
@@ -1912,6 +1956,15 @@ public class Game extends Canvas implements Runnable {
 			//g.dispose();
 			//g2d.dispose();
 		}else if(State == STATE.SET_SCORE) {
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
 			mouseLocator.locateMouse();
 			g.drawImage(setScoreTitleBigger, Game.WIDTH / 2 + 35 , 20, null);
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
@@ -2048,6 +2101,15 @@ public class Game extends Canvas implements Runnable {
 		}else if(State == STATE.LEADERBOARD) {
 			if(Game.selectorButtonPosition != -1)
 				Game.selectorButtonPosition = -1;
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
 			mouseLocator.locateMouse();
 			g.drawImage(leaderboardTitleBigger, Game.WIDTH / 2, 20, null);
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
@@ -2158,6 +2220,15 @@ public class Game extends Canvas implements Runnable {
 				LeaderboardController.gameUnlocksToSettings();
 				leaderboard.settingsSetup();
 				settingsSetup = true;
+			}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
 			}
 			g.drawImage(shopTitle, Game.WIDTH - 54, 20, null);
 			g.drawImage(skinTitle, 20, 120, null);
@@ -2462,6 +2533,15 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 		}else if(State == STATE.HELP) {
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
 			mouseLocator.locateMouse();
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
 			if(Game.keysAreInUse) {
@@ -2525,6 +2605,15 @@ public class Game extends Canvas implements Runnable {
 				VolumeSlider.x2 = Game.WIDTH + 68 - 8 - ((5-sfxMusicSliderPosition) *32);
 				VolumeSlider.y2 = 221;
 				VolumeSlider.sfxMusicSliderSetup = true;
+			}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
 			}
 			mouseLocator.locateMouse();
 			g.drawImage(settingsTitleBigger,Game.WIDTH-128,20,null);
@@ -2719,6 +2808,10 @@ public class Game extends Canvas implements Runnable {
 			for(int i = 0; i < this.marioVoices.size(); i++) {
 				marioVoices.get(i).setSoundLoopBoolean(false);
 				marioVoices.get(i).setFramePosition(0);
+			}
+			for(int i = 0; i < this.luigiVoices.size(); i++) {
+				luigiVoices.get(i).setSoundLoopBoolean(false);
+				luigiVoices.get(i).setFramePosition(0);
 			}
 			for(int i = 0; i < this.gameSoundLoops.size(); i++) {
 				gameSoundLoops.get(i).resetVolume();
@@ -4790,7 +4883,19 @@ public class Game extends Canvas implements Runnable {
 			Game.escapePressedNegateAction = false;
 		}
 	}
-	
+	public static Boolean isPixelTransparentinBufferedImage(BufferedImage img, int x, int y) {
+		//System.out.println(img.getWidth()+"x is "+x);
+		if(x >= img.getWidth())
+			return false;
+		if(y >= img.getHeight())
+			return false;
+		int p = img.getRGB(x, y);
+		int a = (p>>24) & 0xff;
+		if (a == 0)
+			return true;
+		else
+			return false;
+	}
 	private AlphaComposite makeComposite(float alpha) {
 		  int type = AlphaComposite.SRC_OVER;
 		  return(AlphaComposite.getInstance(type, alpha));

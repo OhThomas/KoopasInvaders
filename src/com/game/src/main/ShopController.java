@@ -23,7 +23,7 @@ public class ShopController {
 	private Animation item0;
 	private Animation item1;
 	private Animation item1Silhouette;
-	private BufferedImage[] songTrackImages = new BufferedImage[12];
+	public static BufferedImage[] songTrackImages = new BufferedImage[12];
 	private BufferedImage[] songTrackImagesSilhouette = new BufferedImage[12];
 	private BufferedImage skinPriceImage;
 	private BufferedImage trackPriceImage;
