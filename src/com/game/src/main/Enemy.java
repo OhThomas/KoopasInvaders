@@ -3,6 +3,7 @@ package com.game.src.main;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+import com.game.src.main.Game.STATE;
 import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.libs.Animation;
@@ -34,7 +35,9 @@ public class Enemy extends GameObject implements EntityB{
 		anim = new Animation(6, tex.enemy[0],tex.enemy[1]);
 		animExplosion = new Animation(6, tex.enemyExplosion[0],tex.enemyExplosion[1],tex.enemyExplosion[2]);
 		coin = new Animation(6, tex.coin[0],tex.coin[1],tex.coin[2]);
-		
+		anim.setSpeed(6);
+		animExplosion.setSpeed(6);
+		coin.setSpeed(6);
 		String goombaDeathFile = "res/Sounds/SFX/smb3_kickspace.wav";
 		String coinFile = "res/Sounds/SFX/smw_coin.wav";
 		SoundLoops goombaDeathSoundLoop = new SoundLoops(goombaDeathFile);
@@ -47,123 +50,128 @@ public class Enemy extends GameObject implements EntityB{
 	}
 	
 	public void tick(){
-		if(!goombaisDead){
-			if (game.enemyHitRightBarrier == false){
-				x+=game.enemySpeedIncrease; //x+=1;
-			}
-			
-			if (x >= (Game.WIDTH * Game.SCALE) || game.enemyHitRightBarrier == true){
-				/*
-				for(int i = 0; i <= game.eb.size(); i++)
-				{
-					//game.eb.get(i)
-					//if(game.ea.isEmpty())
-					//	System.out.println("EMPTY");
-					System.out.println("HIGH");
-					//INCREASE ALL UP y+=16
-				}
-				*/
-				//game.enemySpeedIncrease += 0.1;
-				if (barrier == false)
-					y += 8;
-				barrier = true;
-				game.enemyHitRightBarrier = true;
-				//y +=16;
-			}
-			
-			if (game.enemyHitRightBarrier == true){
-				x-=game.enemySpeedIncrease; //x-= 1;
-			}
-			
-			if (x <= 0 || game.enemyHitRightBarrier == false){
-				//game.enemySpeedIncrease += 0.1;
-				if (barrier == true)
-					y +=16;
-				barrier = false;
-				game.enemyHitRightBarrier = false;
-				//y +=16;
-			}
-			
-			if (y+this.getHeight() >= game.getHeight()){
-				game.Health -=100;
-			}
-		
-		
-			for(int i = 0; i < game.ea.size(); i++){
-				EntityA tempEnt = game.ea.get(i);
-				
-				if(Physics.Collision(this, tempEnt)){
-					if (game.eb.size() == 2)
-						game.enemySpeedIncrease+= 0.3;
-					game.enemySpeedIncrease+= 0.06; //0.7
-					if(this.goombaDeathSoundLoop.getSoundLoopBoolean() == false){
-						for(int j = game.goombaDeathSoundLoop.size(); j > 0; j--){
-							if(game.goombaDeathSoundLoop.get(j-1) != null && !game.goombaDeathSoundLoop.get(j-1).clipIsActive()){
-								game.goombaDeathSoundLoop.remove(j-1);
-							}
-						}	
-						for(int k = 0; k < game.goombaDeathSoundLoop.size() || k == 0; k++){
-							if(game.goombaDeathSoundLoop.isEmpty())
-								game.goombaDeathSoundLoop.add(this.goombaDeathSoundLoop);
-							else if (game.goombaDeathSoundLoop.get(k) == game.goombaDeathSoundLoop.getLast()){
-								game.goombaDeathSoundLoop.add(this.goombaDeathSoundLoop);
-								k++;
-							}else if(this.goombaDeathSoundLoop.getVolume() -1.5f >= this.goombaDeathSoundLoop.minimumVolume())
-								this.goombaDeathSoundLoop.reduceSound(1.5f);
-						}
-						this.goombaDeathSoundLoop.setSoundLoopBoolean(true);
-						game.goombaDeathSoundLoop.getLast().play();
-					}
-					c.removeEntity(tempEnt);
-//if hit by item entity					game.setEnemyHitPauseTimer(System.currentTimeMillis() + 200);
-					game.getHUD().setScore(200);
-					goombaisDead = true;
-				}
-			}
+		if(Game.State == STATE.TRANSITION_ENTRANCE) {
 			anim.runAnimation();
 		}
-		else if(goombaisDead){
-			if(game.getGoombaDeathSoundPauseBoolean() == true && !game.isPaused()){
-				for(int l = game.goombaDeathSoundLoop.size()-1; l >= 0; l--){
-					if(!game.goombaDeathSoundLoop.get(l).clipIsActive())
-						game.goombaDeathSoundLoop.get(l).continuePlaying();
+		else {
+			if(!goombaisDead){
+				if (game.enemyHitRightBarrier == false){
+					x+=game.enemySpeedIncrease; //x+=1;
 				}
-				game.setGoombaDeathSoundPauseBoolean(false);
-			}
-			
-			if(game.getCoinSoundPauseBoolean() == true && !game.isPaused()){
-				for(int l = game.coinSoundLoop.size()-1; l >= 0; l--){
-					if(!game.coinSoundLoop.get(l).clipIsActive())
-						game.coinSoundLoop.get(l).continuePlaying();
-				}
-				game.setCoinSoundPauseBoolean(false);
-			}
-			
-			if(animExplosion.getCount() == 3 && this.coinSoundLoop.getSoundLoopBoolean() == false){
-				for(int j = game.coinSoundLoop.size(); j > 0; j--){
-					if(game.coinSoundLoop.get(j-1) != null && !game.coinSoundLoop.get(j-1).clipIsActive()){
-						game.coinSoundLoop.remove(j-1);
+				
+				if (x >= (Game.WIDTH * Game.SCALE) || game.enemyHitRightBarrier == true){
+					/*
+					for(int i = 0; i <= game.eb.size(); i++)
+					{
+						//game.eb.get(i)
+						//if(game.ea.isEmpty())
+						//	System.out.println("EMPTY");
+						System.out.println("HIGH");
+						//INCREASE ALL UP y+=16
 					}
-				}	
-				for(int k = 0; k < game.coinSoundLoop.size() || k == 0; k++){
-					if(game.coinSoundLoop.isEmpty())
-						game.coinSoundLoop.add(this.coinSoundLoop);
-					else if (game.coinSoundLoop.get(k) == game.coinSoundLoop.getLast()){
-						game.coinSoundLoop.add(this.coinSoundLoop);
-						k++;
-					}else if(this.coinSoundLoop.getVolume() -1.5f >= this.coinSoundLoop.minimumVolume())
-						this.coinSoundLoop.reduceSound(1.5f);
+					*/
+					//game.enemySpeedIncrease += 0.1;
+					if (barrier == false)
+						y += 8;
+					barrier = true;
+					game.enemyHitRightBarrier = true;
+					//y +=16;
 				}
-				this.coinSoundLoop.setSoundLoopBoolean(true);
-				game.coinSoundLoop.getLast().play();
-			}
+				
+				if (game.enemyHitRightBarrier == true){
+					x-=game.enemySpeedIncrease; //x-= 1;
+				}
+				
+				if (x <= 0 || game.enemyHitRightBarrier == false){
+					//game.enemySpeedIncrease += 0.1;
+					if (barrier == true)
+						y +=16;
+					barrier = false;
+					game.enemyHitRightBarrier = false;
+					//y +=16;
+				}
+				
+				if (y+this.getHeight() >= game.getHeight()){
+					game.Health -=100;
+				}
 			
-			if(animExplosion.getCount() != 3)
-				animExplosion.runAnimation();
-			else if(animExplosion.getCount() == 3 && coin.getCount() != 3)
-				coin.runAnimation();
-			else if(coin.getCount() == 3)
-				c.removeEntity(this);
+			
+				for(int i = 0; i < game.ea.size(); i++){
+					EntityA tempEnt = game.ea.get(i);
+					
+					if(Physics.Collision(this, tempEnt)){
+						if (game.eb.size() == 2)
+							game.enemySpeedIncrease+= 0.3;
+						game.enemySpeedIncrease+= 0.06; //0.7
+						if(this.goombaDeathSoundLoop.getSoundLoopBoolean() == false){
+							for(int j = game.goombaDeathSoundLoop.size(); j > 0; j--){
+								if(game.goombaDeathSoundLoop.get(j-1) != null && !game.goombaDeathSoundLoop.get(j-1).clipIsActive()){
+									game.goombaDeathSoundLoop.remove(j-1);
+								}
+							}	
+							for(int k = 0; k < game.goombaDeathSoundLoop.size() || k == 0; k++){
+								if(game.goombaDeathSoundLoop.isEmpty())
+									game.goombaDeathSoundLoop.add(this.goombaDeathSoundLoop);
+								else if (game.goombaDeathSoundLoop.get(k) == game.goombaDeathSoundLoop.getLast()){
+									game.goombaDeathSoundLoop.add(this.goombaDeathSoundLoop);
+									k++;
+								}else if(this.goombaDeathSoundLoop.getVolume() -1.5f >= this.goombaDeathSoundLoop.minimumVolume())
+									this.goombaDeathSoundLoop.reduceSound(1.5f);
+							}
+							this.goombaDeathSoundLoop.setSoundLoopBoolean(true);
+							game.goombaDeathSoundLoop.getLast().play();
+						}
+						c.removeEntity(tempEnt);
+	//if hit by item entity					game.setEnemyHitPauseTimer(System.currentTimeMillis() + 200);
+						game.getHUD().setScore(200);
+						goombaisDead = true;
+					}
+				}
+				anim.runAnimation();
+			}
+			else if(goombaisDead){
+				if(game.getGoombaDeathSoundPauseBoolean() == true && !game.isPaused()){
+					for(int l = game.goombaDeathSoundLoop.size()-1; l >= 0; l--){
+						if(!game.goombaDeathSoundLoop.get(l).clipIsActive())
+							game.goombaDeathSoundLoop.get(l).continuePlaying();
+					}
+					game.setGoombaDeathSoundPauseBoolean(false);
+				}
+				
+				if(game.getCoinSoundPauseBoolean() == true && !game.isPaused()){
+					for(int l = game.coinSoundLoop.size()-1; l >= 0; l--){
+						if(!game.coinSoundLoop.get(l).clipIsActive())
+							game.coinSoundLoop.get(l).continuePlaying();
+					}
+					game.setCoinSoundPauseBoolean(false);
+				}
+				
+				if(animExplosion.getCount() == 3 && this.coinSoundLoop.getSoundLoopBoolean() == false){
+					for(int j = game.coinSoundLoop.size(); j > 0; j--){
+						if(game.coinSoundLoop.get(j-1) != null && !game.coinSoundLoop.get(j-1).clipIsActive()){
+							game.coinSoundLoop.remove(j-1);
+						}
+					}	
+					for(int k = 0; k < game.coinSoundLoop.size() || k == 0; k++){
+						if(game.coinSoundLoop.isEmpty())
+							game.coinSoundLoop.add(this.coinSoundLoop);
+						else if (game.coinSoundLoop.get(k) == game.coinSoundLoop.getLast()){
+							game.coinSoundLoop.add(this.coinSoundLoop);
+							k++;
+						}else if(this.coinSoundLoop.getVolume() -1.5f >= this.coinSoundLoop.minimumVolume())
+							this.coinSoundLoop.reduceSound(1.5f);
+					}
+					this.coinSoundLoop.setSoundLoopBoolean(true);
+					game.coinSoundLoop.getLast().play();
+				}
+				
+				if(animExplosion.getCount() != 3)
+					animExplosion.runAnimation();
+				else if(animExplosion.getCount() == 3 && coin.getCount() != 3)
+					coin.runAnimation();
+				else if(coin.getCount() == 3)
+					c.removeEntity(this);
+			}
 		}
 	}
 	

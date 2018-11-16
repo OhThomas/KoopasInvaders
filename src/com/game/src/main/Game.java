@@ -327,6 +327,8 @@ public class Game extends Canvas implements Runnable {
 	private int soundRandomizer = 0;
 	private int menuSoundLoopRandomizer = 0;
 	private int marioVoiceRandomizer = 0;
+	private int spawningEnemiesinTransition = 0;
+	private int spawningEnemiesDanceSync = 0;
 	public static double currentEECollisionX = 0;
 	public static double currentEECollisionY = 0;
 	public static double currentEECollisionWidth = 0;
@@ -817,6 +819,8 @@ public class Game extends Canvas implements Runnable {
 		}
 		if(!(State == STATE.TRANSITION_ITEM))
 			starAnim.runAnimation();
+		if(State == STATE.TRANSITION_ENTRANCE)
+			c.tick();
 		transparentBlocksAnim.runAnimation();
 		if((myTime / 10) == (int)(myTime/10) && shootingStarFrameStop == false)//(myTime > 10 && myTime < 22 || myTime > 30 && myTime < 42)
 			shootingStarAnim.runAnimation();
@@ -1088,7 +1092,7 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			//SPAWN ENEMIES
-			/*
+			/**/
 			if (spawnDone == false){													//Spawning enemies
 				for(int i = 0; i < (Game.WIDTH * Game.SCALE); i+=64){
 					c.addEntity(new Enemy(i,0, tex, c , this));
@@ -1128,7 +1132,7 @@ public class Game extends Canvas implements Runnable {
 					c.addEntity(new Enemy3(i,52, tex, c , this));
 				}
 				spawnDone3 = true;
-			}*/
+			}
 			if(eb.isEmpty() && spawnDone4 == false){								//Spawning Bowser
 				this.enemyHitRightBarrier = false;
 				this.enemySpeedIncrease = 1.0;
@@ -1561,6 +1565,37 @@ public class Game extends Canvas implements Runnable {
 				starExplosion.Explosion(g);
 			}
 			p.render(g);
+			c.render(g);
+			int y = 0;
+			int x = 0;
+			spawningEnemiesDanceSync = p.getDanceProgressionCount();
+			if(p.getDanceProgressionCount() >= 5) {
+				spawningEnemiesDanceSync = p.getDanceProgressionCount()+1;
+				if(p.getDanceProgressionCount() >= 10) {
+					spawningEnemiesDanceSync = p.getDanceProgressionCount()+2;
+					if(p.getDanceProgressionCount() >= 15) 
+						spawningEnemiesDanceSync = p.getDanceProgressionCount()+3;
+				}
+			}
+			for(int i = 0; i <= spawningEnemiesDanceSync; i++) {
+				if(!p.isSpinningAnimationFinished())
+					break;
+				x = i*64;
+				if(i >= 10) {
+					y = 26;
+					x = (i*64) - 640;
+				}
+				if(i >= 20) {
+					y = 52;
+					x = (i*64) - 1280;
+				}
+				if(spawningEnemiesinTransition == i) {
+					if(spawningEnemiesinTransition >= 29)
+						spawnDone = true;
+					c.addEntity(new Enemy(x, y, tex,this.c,this));
+					spawningEnemiesinTransition++;
+				}
+			}
 			if(p.isSpinningAnimationFinished() == false && this.marioSpinningSoundLoop.getSoundLoopBoolean() == false){
 				this.marioSpinningSoundLoop.play();
 				this.marioSpinningSoundLoop.setSoundLoopBoolean(true);
@@ -2883,6 +2918,9 @@ public class Game extends Canvas implements Runnable {
 			gameOverBoolean = false;
 			backToGameOver = false;
 			Health = 100;
+			spawningEnemiesinTransition = 0;
+			starExplode = false;
+			starExplosionTimer = 0;
 			this.gameOverIrisSoundLoop.setSoundLoopBoolean(false);
 			this.marioSpinningSoundLoop.setSoundLoopBoolean(false);
 			this.marioGrowthPosePause = false;
