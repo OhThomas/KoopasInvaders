@@ -4825,6 +4825,7 @@ public class Game extends Canvas implements Runnable {
 							Game.fireballPosition = 0;
 							Game.itemPosition = 0;
 							skinNumber = null;
+							Game.totalPoints = 0;
 							Game.skipAnimations = false;
 							try {
 								LeaderboardController.resetScore();

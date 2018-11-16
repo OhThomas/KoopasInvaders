@@ -626,11 +626,33 @@ public class LeaderboardController {
     	}
     }
     public static void resetScore() throws IOException{
-    	try {
+    	//try {
+    		File file = new File("settings.properties");
+    		file.delete();
+    		OutputStream output = new FileOutputStream("settings.properties");
+			settings.setProperty("skin1Unlocked","false");
+			settings.setProperty("skin2Unlocked","false");
+			settings.setProperty("skin3Unlocked","false");
+			settings.setProperty("track1Unlocked","false");
+			settings.setProperty("fireball1Unlocked","false");
+			settings.setProperty("item1Unlocked","false");
+			settings.setProperty("item2Unlocked","false");
+			settings.setProperty("currentlySelectedCharacterSkin", "0");
+			settings.setProperty("currentlySelectedTrack", "0");
+			settings.setProperty("currentlySelectedFireball", "0");
+			settings.setProperty("currentlySelectedItem", "0");
+			settings.setProperty("volumeSliderPosition","3");
+			settings.setProperty("sfxMusicSliderPosition","3");
+			settings.setProperty("skipAnimations","false");
+			settings.setProperty("Total Points: ","");
+			settings.store(output, null);
+    		/*
     		InputStream input = new FileInputStream("settings.properties");
 			settings.load(input);
 			OutputStream output = new FileOutputStream("settings.properties");
+			System.out.println(settings.getProperty("Total Points: "));
 			settings.setProperty("Total Points: ", "");
+			System.out.println(settings.getProperty("Total Points: "));
 			settings.store(output, null);
     	}catch(FileNotFoundException e) {
     		OutputStream output = new FileOutputStream("settings.properties");
@@ -650,7 +672,7 @@ public class LeaderboardController {
 			settings.setProperty("skipAnimations","false");
 			settings.setProperty("Total Points: ","");
 			settings.store(output, null);
-    	}
+    	}*/
     }
 	public void initialize() {
 		try {

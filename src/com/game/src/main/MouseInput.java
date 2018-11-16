@@ -1129,6 +1129,7 @@ public class MouseInput implements MouseListener {
 							Game.fireballPosition = 0;
 							Game.itemPosition = 0;
 							Game.skinNumber = null;
+							Game.totalPoints = 0;
 							Game.skipAnimations = false;
 							try {
 								LeaderboardController.resetScore();
