@@ -87,7 +87,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage leaderboardTitleBigger = null;
 	private BufferedImage helpTitle = null;
 	private BufferedImage settingsTitle = null;
-	private BufferedImage settingsTitleBigger = null;
+	public static BufferedImage settingsTitleBigger = null;
 	public static BufferedImage playerNameImage = null;
 	private BufferedImage deletedLetter = null;
 	private BufferedImage transparentBlocks = null;
@@ -118,7 +118,7 @@ public class Game extends Canvas implements Runnable {
 	private boolean yUBoolean = false;
 	private boolean yDBoolean = false;
 	private boolean isShooting = false;
-	private boolean spawnDone = false;
+	public static boolean spawnDone = false;
 	private boolean spawnDone2 = false;
 	private boolean spawnDone3 = false;
 	private boolean spawnDone4 = false;
@@ -129,6 +129,8 @@ public class Game extends Canvas implements Runnable {
 	private boolean keepRunningAfterPauseL = false;
 	private boolean keepRunningAfterPauseR = false;
 	private boolean dontRunAfterPause = false;
+	public static boolean askToSkipSequence = false;
+	public static boolean skipSequence = false;
 	public static boolean writeOnceToSettings = false;
 	public static boolean writeOnceToSettingswithPoints = false;
 	public static boolean settingsSetup = false;
@@ -148,6 +150,7 @@ public class Game extends Canvas implements Runnable {
 	public static boolean resetStatsHighlighted = false;
 	public static boolean yesHighlighted = false;
 	public static boolean noHighlighted = false;
+	public static boolean skipHighlighted = false;
 	public static boolean playClicked = false;
 	public static boolean backOnPlay = false;
 	public static boolean shopClicked = false;
@@ -180,6 +183,8 @@ public class Game extends Canvas implements Runnable {
 	public static boolean backOnYes = false;
 	public static boolean noClicked = false;
 	public static boolean backOnNo = false;
+	public static boolean skipClicked = false;
+	public static boolean backOnSkip = false;
 	public static boolean arrowL1Highlighted = false;
 	public static boolean arrowR1Highlighted = false;
 	public static boolean arrowL2Highlighted = false;
@@ -392,9 +397,9 @@ public class Game extends Canvas implements Runnable {
 	private StarExplosion starExplosion;
 	
 	public static BufferedImage title = null;
-	private BufferedImage gameOverTitle = null;
+	public static BufferedImage gameOverTitle = null;
 	private BufferedImage playTitle = null;
-	private BufferedImage shopTitle = null;
+	public static BufferedImage shopTitle = null;
 	private BufferedImage exitTitle = null;
 	private BufferedImage resumeTitle = null;
 	private BufferedImage homeTitle = null;
@@ -487,14 +492,20 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage noTitleSelected = null;
 	private BufferedImage noTitleSelectedClicked = null;
 	private BufferedImage noTitleSelectedNormal = null;
+	private BufferedImage skipTitle = null;
+	private BufferedImage skipTitleGlow = null;
+	private BufferedImage skipTitleClicked = null;
+	private BufferedImage skipTitleSelected = null;
+	private BufferedImage skipTitleSelectedClicked = null;
+	private BufferedImage skipTitleSelectedNormal = null;
 	private BufferedImage currentlySelected10x10 = null;
-	private BufferedImage skinTitle = null;
-	private BufferedImage tracksTitle = null;
-	private BufferedImage fireballsTitle = null;
-	private BufferedImage itemsTitle = null;
-	private BufferedImage volumeTitle = null;
-	private BufferedImage sfxMusicTitle = null;
-	private BufferedImage skipAnimationsTitle = null;
+	public static BufferedImage skinTitle = null;
+	public static BufferedImage tracksTitle = null;
+	public static BufferedImage fireballsTitle = null;
+	public static BufferedImage itemsTitle = null;
+	public static BufferedImage volumeTitle = null;
+	public static BufferedImage sfxMusicTitle = null;
+	public static BufferedImage skipAnimationsTitle = null;
 	public static BufferedImage totalPointsImage = null;
 	public static BufferedImage skinNumber = null;
 	public static BufferedImage trackNumber = null;
@@ -670,6 +681,12 @@ public class Game extends Canvas implements Runnable {
 			noTitleSelected = loader.loadImage("/newnobuttonselected.png");
 			noTitleSelectedClicked = loader.loadImage("/newnobuttonselectedclicked.png");
 			noTitleSelectedNormal = loader.loadImage("/newnobuttonselectednormal.png");
+			skipTitle = loader.loadImage("/newskipbutton.png");
+			skipTitleGlow = loader.loadImage("/newskipbuttonglow.png");
+			skipTitleClicked = loader.loadImage("/newskipbuttonclicked.png");
+			skipTitleSelected = loader.loadImage("/newskipbuttonselected.png");
+			skipTitleSelectedClicked = loader.loadImage("/newskipbuttonselectedclicked.png");
+			skipTitleSelectedNormal = loader.loadImage("/newskipbuttonselectednormal.png");
 			volumeSlider = loader.loadImage("/volumeslider.png");
 			volumeSliderGlow = loader.loadImage("/volumesliderglow.png");
 			volumeSliderClicked = loader.loadImage("/volumesliderclicked.png");
@@ -1564,8 +1581,52 @@ public class Game extends Canvas implements Runnable {
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
 			}
+			if(skipSequence) {
+				if(!spawnDone) {
+					if(!c.getEntityB().isEmpty()) {
+						for(int i = 0; i <= c.getEntityB().size()-1; i++) {
+							c.removeEntity(c.getEntityB().get(i));
+							i--;
+						}
+					}
+				}
+				Game.State = STATE.GAME;
+				skipSequence = false;
+				askToSkipSequence = false;
+			}
+			if(askToSkipSequence) 
+				HUD.clickyButton(g, skipTitle, skipTitleGlow, skipTitleClicked, skipHighlighted, skipClicked, backOnSkip, mouseIsOffClickedObjectAndHeldDown, mouseIsClickedDown, Game.WIDTH -73, Game.HEIGHT-32);
+			mouseLocator.locateMouse();
 			p.render(g);
 			c.render(g);
+			if(Game.keysAreInUse) {
+				if(Game.skipHighlighted) 
+					Game.skipHighlighted = false;
+				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(skipTitleSelectedClicked,Game.WIDTH -96, Game.HEIGHT-55,null);
+						g.drawImage(skipTitleClicked,Game.WIDTH -73, Game.HEIGHT-32,null);
+						break;
+					}
+				}
+				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(skipTitleSelectedNormal,Game.WIDTH -96, Game.HEIGHT-55,null);
+						g.drawImage(skipTitle,Game.WIDTH -73, Game.HEIGHT-32,null);
+						break;
+					}
+				}
+				else {
+					switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(skipTitleSelected,Game.WIDTH -90, Game.HEIGHT-49,null);
+							g.drawImage(skipTitleGlow,Game.WIDTH -73, Game.HEIGHT-32,null);
+							break;
+					}
+				}
+			}
 			int y = 0;
 			int x = 0;
 			spawningEnemiesDanceSync = p.getDanceProgressionCount();
@@ -1704,6 +1765,54 @@ public class Game extends Canvas implements Runnable {
 				itemWaitTimer = System.currentTimeMillis() + 400;
 			if(backgroundTraverse < itemBackground.size())
 				g.drawImage(itemBackground.get(backgroundTraverse), 0, 0, null);
+			if(skipSequence) {
+				spawnItem = true;
+				enemyHitPauseTimer = System.currentTimeMillis() + 800;
+				backgroundTraverse = 0;
+				itemWaitTimer = 0;
+				itemFlyingTimer1 = 0;
+				itemFlyingAwayX = 0;
+				itemFlyingAwayY = 0;
+				traverseTime = 0;
+				marioVoices.get(0).setSoundLoopBoolean(false);
+				luigiVoices.get(0).setSoundLoopBoolean(false);
+				marioTurningWithItem.setCount(0);
+				State = STATE.GAME;
+				skipSequence = false;
+				askToSkipSequence = false;
+			}
+			if(askToSkipSequence) 
+				HUD.clickyButton(g, skipTitle, skipTitleGlow, skipTitleClicked, skipHighlighted, skipClicked, backOnSkip, mouseIsOffClickedObjectAndHeldDown, mouseIsClickedDown, Game.WIDTH -73, Game.HEIGHT-32);
+			mouseLocator.locateMouse();
+			if(Game.keysAreInUse) {
+				if(Game.skipHighlighted) 
+					Game.skipHighlighted = false;
+				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(skipTitleSelectedClicked,Game.WIDTH -96, Game.HEIGHT-55,null);
+						g.drawImage(skipTitleClicked,Game.WIDTH -73, Game.HEIGHT-32,null);
+						break;
+					}
+				}
+				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(skipTitleSelectedNormal,Game.WIDTH -96, Game.HEIGHT-55,null);
+						g.drawImage(skipTitle,Game.WIDTH -73, Game.HEIGHT-32,null);
+						break;
+					}
+				}
+				else {
+					switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(skipTitleSelected,Game.WIDTH -90, Game.HEIGHT-49,null);
+							g.drawImage(skipTitleGlow,Game.WIDTH -73, Game.HEIGHT-32,null);
+							break;
+					}
+				}
+			}
+			
 			if(itemWaitTimer != 0 && marioTurningWithItem.getCount() < 10 && System.currentTimeMillis() % 16 == 0 && traverseTime != System.currentTimeMillis()){
 				marioTurningWithItem.runAnimation();
 				traverseTime = System.currentTimeMillis();
@@ -1791,7 +1900,6 @@ public class Game extends Canvas implements Runnable {
 			c.render(g);
 		}else if(State == STATE.TRANSITION_WIN) {
 
-			p.render(g);
 			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
@@ -1800,6 +1908,43 @@ public class Game extends Canvas implements Runnable {
 			if(this.gameOverIrisSoundLoop.getSoundLoopBoolean() == false) {
 				this.gameOverIrisSoundLoop.play();
 				this.gameOverIrisSoundLoop.setSoundLoopBoolean(true);
+			}
+			if(skipSequence) {
+				Game.State = STATE.GAMEOVER;
+				skipSequence = false;
+				askToSkipSequence = false;
+			}
+			if(askToSkipSequence) 
+				HUD.clickyButton(g, skipTitle, skipTitleGlow, skipTitleClicked, skipHighlighted, skipClicked, backOnSkip, mouseIsOffClickedObjectAndHeldDown, mouseIsClickedDown, Game.WIDTH -73, Game.HEIGHT-32);
+			mouseLocator.locateMouse();
+			p.render(g);
+			if(Game.keysAreInUse) {
+				if(Game.skipHighlighted) 
+					Game.skipHighlighted = false;
+				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(skipTitleSelectedClicked,Game.WIDTH -96, Game.HEIGHT-55,null);
+						g.drawImage(skipTitleClicked,Game.WIDTH -73, Game.HEIGHT-32,null);
+						break;
+					}
+				}
+				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(skipTitleSelectedNormal,Game.WIDTH -96, Game.HEIGHT-55,null);
+						g.drawImage(skipTitle,Game.WIDTH -73, Game.HEIGHT-32,null);
+						break;
+					}
+				}
+				else {
+					switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(skipTitleSelected,Game.WIDTH -90, Game.HEIGHT-49,null);
+							g.drawImage(skipTitleGlow,Game.WIDTH -73, Game.HEIGHT-32,null);
+							break;
+					}
+				}
 			}
 			if(youWon == false)
 				youWon = true;
@@ -3452,6 +3597,19 @@ public class Game extends Canvas implements Runnable {
 				default:
 					break;
 			}
+		}else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_ITEM || State == STATE.TRANSITION_WIN) {
+			switch(key) {
+			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+				}
+				else
+					Game.enterButtonPushedDown = true;
+				break;
+			default:
+				Game.keysAreInUse = true;
+				break;
+			}
 		}else if(State == STATE.GAMEOVER) {
 			switch(key) {
 			case KeyEvent.VK_SHIFT:
@@ -4319,12 +4477,49 @@ public class Game extends Canvas implements Runnable {
 						spawnItem = true;
 						//enemyHitPauseTimer = System.currentTimeMillis() + 800;
 					}
-					else
+					else {
 						State = STATE.TRANSITION_ITEM;
+						Game.keysAreInUse = false;
+					}
 					this.itemName = hud.getItemName();
 					hud.setItemObtained(false);
 				}
+			} else if(key == KeyEvent.VK_ESCAPE) {
+				if(!Game.keysAreInUse)
+					Game.keysAreInUse = true;
 			}
+		}
+		else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN) {
+			switch(key) {
+				case KeyEvent.VK_ESCAPE:
+					if(Game.enterButtonPushedDown) {
+						Game.escapePressedNegateAction = true;
+						break;
+					}
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+					else {
+						askToSkipSequence = false;
+						Game.keysAreInUse = false;
+					}
+					break;
+				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
+					if(askToSkipSequence && Game.escapePressedNegateAction == false)
+						skipSequence = true;
+					Game.keysAreInUse = true;
+					break;
+				default:
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+					Game.keysAreInUse = true;
+					break;
+				}
+			if(!askToSkipSequence) {
+				askToSkipSequence = true;
+			}
+			
 		}
 		else if(State == STATE.TRANSITION_ITEM) {
 			p.setVelX(0);
@@ -4337,6 +4532,36 @@ public class Game extends Canvas implements Runnable {
 			this.runningTimerActivated = false;
 			this.runningTimerActivatedResponse = false;
 			this.runningTimerLong = 0;
+			switch(key) {
+				case KeyEvent.VK_ESCAPE:
+					if(Game.enterButtonPushedDown) {
+						Game.escapePressedNegateAction = true;
+						break;
+					}
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+					else {
+						askToSkipSequence = false;
+						Game.keysAreInUse = false;
+					}
+					break;
+				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
+					if(askToSkipSequence && Game.escapePressedNegateAction == false)
+						skipSequence = true;
+					Game.keysAreInUse = true;
+					break;
+				default:
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+					Game.keysAreInUse = true;
+					break;
+				}
+			if(!askToSkipSequence) {
+				askToSkipSequence = true;
+			}
+			
 			/*
 			if(xLBoolean || xRBoolean) {
 				if(this.slowingDownActivatedl) {
@@ -4378,7 +4603,7 @@ public class Game extends Canvas implements Runnable {
 		}
 		else if(State == STATE.MENU) {
 			switch(key) {
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
@@ -4408,6 +4633,7 @@ public class Game extends Canvas implements Runnable {
 								State = STATE.GAME;
 							else
 								State = STATE.TRANSITION_ENTRANCE;
+							Game.keysAreInUse = false;
 							smb3CoinSoundLoop.play();
 							break;
 						case 1:
@@ -4924,9 +5150,9 @@ public class Game extends Canvas implements Runnable {
 	}
 	public static Boolean isPixelTransparentinBufferedImage(BufferedImage img, int x, int y) {
 		//System.out.println(img.getWidth()+"x is "+x);
-		if(x >= img.getWidth())
+		if(x >= img.getWidth() || x < 0)
 			return false;
-		if(y >= img.getHeight())
+		if(y >= img.getHeight() || y < 0)
 			return false;
 		int p = img.getRGB(x, y);
 		int a = (p>>24) & 0xff;

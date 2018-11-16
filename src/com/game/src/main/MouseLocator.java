@@ -352,6 +352,32 @@ public class MouseLocator {
 				}
 				else if(Game.backOnLeaderboard)
 					Game.backOnLeaderboard = false;
+				
+				//Skip Button
+				if(mx >= Game.WIDTH-73 && mx <= Game.WIDTH+93 && (Game.State == Game.STATE.TRANSITION_ENTRANCE || Game.State == Game.STATE.TRANSITION_ITEM || Game.State == Game.STATE.TRANSITION_WIN)) {
+					if(my >= Game.HEIGHT-32 && my <= Game.HEIGHT+32 && Game.askToSkipSequence) {
+						if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.skipClicked)
+							Game.backOnSkip = true;
+						else if(!Game.mouseIsClickedDown)
+							Game.skipHighlighted = true;
+					}
+					else if(Game.skipHighlighted == true || Game.skipClicked == true) {
+						if(Game.skipClicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.skipHighlighted = false;
+						Game.backOnSkip = false;
+					}
+					else if(Game.backOnSkip)
+						Game.backOnSkip = false;
+				}
+				else if(Game.skipHighlighted == true || Game.skipClicked == true) {
+					if(Game.skipClicked == true) 
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.skipHighlighted = false;
+					Game.backOnSkip = false;
+				}
+				else if(Game.backOnSkip)
+					Game.backOnSkip = false;
 				if(Game.State == Game.STATE.SHOP) {
 					//ArrowL1 Button
 					if(mx >=  Game.WIDTH - 48 && mx <= Game.WIDTH - 32 && Game.State == Game.STATE.SHOP) {
@@ -1096,6 +1122,7 @@ public class MouseLocator {
 			Game.resetStatsHighlighted = false;
 			Game.yesHighlighted = false;
 			Game.noHighlighted = false;
+			Game.skipHighlighted = false;
 			
 		}
 		

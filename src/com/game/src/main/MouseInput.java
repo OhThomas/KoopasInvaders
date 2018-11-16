@@ -164,6 +164,15 @@ public class MouseInput implements MouseListener {
 		}
 		else if(Game.leaderboardClicked)
 			Game.leaderboardClicked = false;
+		//Skip Button
+		if(mx >= Game.WIDTH-73 && mx <= Game.WIDTH+93 && (Game.State == Game.STATE.TRANSITION_ENTRANCE || Game.State == Game.STATE.TRANSITION_ITEM)) {
+			if(my >= Game.HEIGHT-32 && my <= Game.HEIGHT+32 && Game.askToSkipSequence) 
+				Game.skipClicked = true;
+			else if(Game.skipClicked)
+				Game.skipClicked = false;
+		}
+		else if(Game.skipClicked)
+			Game.skipClicked = false;
 		if(Game.State == Game.STATE.SHOP) {
 			//ArrowL1 Button
 			if(mx >=  Game.WIDTH - 48 && mx <= Game.WIDTH - 32 && Game.State == Game.STATE.SHOP) {
@@ -550,17 +559,17 @@ public class MouseInput implements MouseListener {
 					((my >= 128 && my <= 144) || ((my >= 228 && my <= 244) ||
 					((my >= 328 && my <= 344))))) &&
 					!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) &&//Back Button
-					!(mx >= Game.WIDTH - 54 && mx <= Game.WIDTH - 54 + 128 && my >= 20 && my <= 84) &&//Shop Title
-					!(mx >= 20 && mx <= 104 && my >= 120 && my <= 152) &&//Skin Title
-					!(mx >= 20 && mx <= 122 && my >= 220 && my <= 252) &&//Tracks Title
-					!(mx >= 20 && mx <= 166 && my >= 320 && my <= 352) &&//Fireball Title
-					!(mx >= 20 && mx <= 106 && my >= 420 && my <= 452) &&//Item Title
+					!(mx >= Game.WIDTH - 54 && mx <= Game.WIDTH - 54 + 128 && my >= 20 && my <= 84 && !(Game.isPixelTransparentinBufferedImage(Game.shopTitle, mx-(Game.WIDTH - 54), my-20))) &&//Shop Title
+					!(mx >= 20 && mx <= 104 && my >= 120 && my <= 152 && !(Game.isPixelTransparentinBufferedImage(Game.skinTitle, mx-20, my-120))) &&//Skin Title
+					!(mx >= 20 && mx <= 122 && my >= 220 && my <= 252 && !(Game.isPixelTransparentinBufferedImage(Game.tracksTitle, mx-20, my-220))) &&//Tracks Title
+					!(mx >= 20 && mx <= 166 && my >= 320 && my <= 352 && !(Game.isPixelTransparentinBufferedImage(Game.fireballsTitle, mx-20, my-320))) &&//Fireball Title
+					!(mx >= 20 && mx <= 106 && my >= 420 && my <= 452 && !(Game.isPixelTransparentinBufferedImage(Game.itemsTitle, mx-20, my-420))) &&//Item Title
 					!(mx >= Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60 &&
 					  mx <= Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60 + Game.totalPointsImage.getWidth() &&
-					  my >= 20 && my <= 20 + Game.totalPointsImage.getHeight()) &&//Total Points
+					  my >= 20 && my <= 20 + Game.totalPointsImage.getHeight() && !(Game.isPixelTransparentinBufferedImage(Game.totalPointsImage, mx-(Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60), my-20))) &&//Total Points
 					!(mx >= Game.WIDTH * Game.SCALE - 55 && mx <= Game.WIDTH * Game.SCALE - 55 + ShopController.pointsImage.getWidth() &&
 					my >= 20 + Game.totalPointsImage.getHeight()/2 -3 && my <= 20 + Game.totalPointsImage.getHeight()/2 -3 +
-					ShopController.pointsImage.getHeight()) &&//points title
+					ShopController.pointsImage.getHeight() && !(Game.isPixelTransparentinBufferedImage(ShopController.pointsImage, mx-(Game.WIDTH * Game.SCALE - 55), my-(20 + Game.totalPointsImage.getHeight()/2 -3)))) &&//points title
 					!(mx >= Game.WIDTH && mx <= Game.WIDTH + 16 && my >= 120 && my <= 148) &&//Mario Skins
 					!(Game.trackPosition == 0 && mx >= Game.WIDTH + 2 && mx <= Game.WIDTH + 2 + ShopController.songTrackImages[0].getWidth()&&
 					my >= 227 && my <= 227+ShopController.songTrackImages[0].getHeight()) &&//Track Img 1
@@ -578,11 +587,11 @@ public class MouseInput implements MouseListener {
 					mx <= Game.WIDTH +16 && my >= 301 && my <= 319) &&//Fireball Position Selected
 					!((Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH - 2 &&
 					mx <= Game.WIDTH +16 && my >= 401 && my <= 419) &&//Item Position Selected
-					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
+					!(!(Game.currentlySelectedCharacterSkin == Game.characterSkinPosition) && mx >= Game.WIDTH + 2 &&
 					mx <= Game.WIDTH +12 && my >= 105 && my <= 115) &&//Skin Position Unselected
-					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
+					!(!(Game.currentlySelectedTrack == Game.trackPosition) && mx >= Game.WIDTH + 2 &&
 					mx <= Game.WIDTH +12 && my >= 205 && my <= 215) &&//Track Position Unselected
-					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
+					!(!(Game.currentlySelectedFireball == Game.fireballPosition) && mx >= Game.WIDTH + 2 &&
 					mx <= Game.WIDTH +12 && my >= 305 && my <= 315) &&//Fireball Position Unselected
 					!(!(Game.currentlySelectedItem == Game.itemPosition) && mx >= Game.WIDTH + 2 &&
 					mx <= Game.WIDTH +12 && my >= 405 && my <= 415)//Item Position Unselected
@@ -618,12 +627,17 @@ public class MouseInput implements MouseListener {
 						!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) &&//Back Button
 						!(mx >= Game.WIDTH - 16 && mx <= Game.WIDTH + 16 && my >= 320 && my <= 352) &&//Checkmark Button	
 						!(mx >= Game.WIDTH - 89 && mx <= Game.WIDTH + 89 && my >= 420 && my <= 452) &&//Reset Stats Button
-						!(mx >= Game.WIDTH-128 && mx <= Game.WIDTH+128 && my >= 20 && my <= 84) &&//Settings Title
-						!(mx >= 20 && mx <= 122 && my >= 120 && my <= 152) &&//Volume Title
-						!(my >= 220 && my <= 252 && ((mx >= 20 && mx <= 68)|| (mx >= 102 && mx <= 188))) &&//SFX/Music Title
+						!(mx >= Game.WIDTH-128 && mx <= Game.WIDTH+128 && my >= 20 && my <= 84 &&
+						!(Game.isPixelTransparentinBufferedImage(Game.settingsTitleBigger, mx-(Game.WIDTH-128), my-20))) &&//Settings Title
+						!(mx >= 20 && mx <= 122 && my >= 120 && my <= 152 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.volumeTitle, mx-20, my-120))) &&//Volume Title
+						!(my >= 220 && my <= 252 && (mx >= 20 && mx <= 188) &&
+						!(Game.isPixelTransparentinBufferedImage(Game.sfxMusicTitle, mx-20, my-220))) &&//SFX/Music Title
+						/*
 						!((mx >= 76 && mx <= 81 && my >= 250 && my <= 252) || (mx >= 76 && mx <= 83 && my >= 241 && my <= 250) || 
 						(mx >= 79 && mx <= 86 && my >= 235 && my <= 246) || (mx >= 81 && mx <= 89 && my >= 228 && my <= 239) || 
 						(mx >= 84 && mx <= 92 && my >= 222 && my <= 232) || (mx >= 87 && mx <= 93 && my >= 220 && my <= 222)) &&// / Split Up
+						*/
 						!(my >= 320 && my <= 352 && ((mx >= 20 && mx <= 88) || (mx >= 104 && mx <= 270)))
 						) {
 						Game.starExplode = true;
@@ -637,8 +651,9 @@ public class MouseInput implements MouseListener {
 					if(!(mx >= 44 && mx <= 44 + Game.leaderboardImage.get(i).getWidth() -16 && my >= (i*20) + 105 + (int) LeaderboardController.y && my <= (i*20) + 105 + (int) LeaderboardController.y + Game.leaderboardImage.get(i).getHeight()))
 						b = true;
 					else {
-						b = false;
-						break;
+						if(!(Game.isPixelTransparentinBufferedImage( Game.leaderboardImage.get(i), mx-44, my-((i*20) + 105 + (int) LeaderboardController.y)))) { //THIS WILL CHECK FOR TRANSPARENCY IN LEADERBOARD
+						b = false;//																												I WANT TO DISABLE BECAUSE SCROLLING PAST THE TOPS IMG Y LOCATIONS ARE OFF
+						break;}
 					}
 				}
 				if(b && !(mx >= 40 && mx <= 88 && my >= 20 && my <= 36)) {
@@ -652,7 +667,8 @@ public class MouseInput implements MouseListener {
 					!(mx >= Game.WIDTH / 2 + 114 && mx <= Game.WIDTH / 2 + 254 && my >= 300 && my <= 364) &&//Home button
 					!(mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && my >= 400 && my <= 464) &&//Exit button
 					!(my >= 20 && my <= 36 && ((mx >= 40 && mx <= 110) || (mx >=  Game.WIDTH / 2 + 380 && mx <= Game.WIDTH / 2 + 470))) &&//Set Score & Leaderboard Button
-					!(my >= 100 && my <= 164 && (mx >= 170 && mx <= 306) || (mx >= 362 && mx <= 490 && my >= 100 && my <= 164)) ||//Game Over
+					!(my >= 100 && my <= 164 && mx >= 170 && mx <= 490 &&
+					!(Game.isPixelTransparentinBufferedImage(Game.gameOverTitle, mx-170, my-100))) /*||//Game Over
 					(mx >= 486 && mx <= 490 && my >= 128 && my <= 140)||//r space
 					(mx >= 482 && mx <= 486 && my >= 132 && my <= 136)||//r space
 					(mx >= 482 && mx <= 490 && my >= 100 && my <= 104)||//r space
@@ -673,6 +689,7 @@ public class MouseInput implements MouseListener {
 					(mx >= 254 && mx <= 258 && my >= 156 && my <= 164)||//m space
 					(mx >= 258 && mx <= 262 && my >= 152 && my <= 164)||//m space
 					(mx >= 186 && mx <= 202 && my >= 128 && my <= 132)//g space
+					*/
 					) {
 					Game.starExplode = true;
 					Game.mx = mx;
@@ -870,6 +887,19 @@ public class MouseInput implements MouseListener {
 					Game.selectorButtonPosition = -1;
 					buttonTimer = System.currentTimeMillis() + 200;
 					Game.State = Game.STATE.LEADERBOARD;
+					if(Game.smb3OpenSoundLoop.clipIsActive())
+						Game.smb3OpenSoundLoop.stop();
+					Game.smb3OpenSoundLoop.play();
+				}
+			}
+			
+			//Skip Button
+			if(mx >= Game.WIDTH-73 && mx <= Game.WIDTH+93 && (Game.State == Game.STATE.TRANSITION_ENTRANCE || 
+					Game.State == Game.STATE.TRANSITION_ITEM || Game.State == Game.STATE.TRANSITION_WIN) && buttonTimer < System.currentTimeMillis()) {
+				if(my >= Game.HEIGHT-32 && my <= Game.HEIGHT+32 && Game.askToSkipSequence && Game.skipClicked) {
+					// Pressed Skip
+					Game.skipSequence = true;
+					buttonTimer = System.currentTimeMillis() + 200;
 					if(Game.smb3OpenSoundLoop.clipIsActive())
 						Game.smb3OpenSoundLoop.stop();
 					Game.smb3OpenSoundLoop.play();
@@ -1316,5 +1346,7 @@ public class MouseInput implements MouseListener {
 		Game.yesClicked = false;
 		Game.backOnNo = false;
 		Game.noClicked = false;
+		Game.backOnSkip = false;
+		Game.skipClicked = false;
 	}
 }
