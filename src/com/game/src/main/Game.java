@@ -84,7 +84,7 @@ public class Game extends Canvas implements Runnable {
 	public static BufferedImage setScoreTitleBigger = null;
 	private BufferedImage textIndicator = null;
 	private BufferedImage leaderboardTitle = null;
-	private BufferedImage leaderboardTitleBigger = null;
+	public static BufferedImage leaderboardTitleBigger = null;
 	private BufferedImage helpTitle = null;
 	private BufferedImage settingsTitle = null;
 	public static BufferedImage settingsTitleBigger = null;
@@ -4881,6 +4881,9 @@ public class Game extends Canvas implements Runnable {
 										currentSkinLocked = false;
 										skinNumber = null;
 										totalPoints -= 100;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -4906,6 +4909,9 @@ public class Game extends Canvas implements Runnable {
 										currentSkinLocked = false;
 										skinNumber = null;
 										totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -4931,6 +4937,9 @@ public class Game extends Canvas implements Runnable {
 										currentSkinLocked = false;
 										skinNumber = null;
 										totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();

@@ -647,16 +647,21 @@ public class MouseInput implements MouseListener {
 				}
 			}else if (Game.State == Game.STATE.LEADERBOARD) {
 				Boolean b = false;
-				for(int i = 0; i <= Game.leaderboardImage.size() -1; i++) {
-					if(!(mx >= 44 && mx <= 44 + Game.leaderboardImage.get(i).getWidth() -16 && my >= (i*20) + 105 + (int) LeaderboardController.y && my <= (i*20) + 105 + (int) LeaderboardController.y + Game.leaderboardImage.get(i).getHeight()))
-						b = true;
-					else {
-						if(!(Game.isPixelTransparentinBufferedImage( Game.leaderboardImage.get(i), mx-44, my-((i*20) + 105 + (int) LeaderboardController.y)))) { //THIS WILL CHECK FOR TRANSPARENCY IN LEADERBOARD
-						b = false;//																												I WANT TO DISABLE BECAUSE SCROLLING PAST THE TOPS IMG Y LOCATIONS ARE OFF
-						break;}
+				if(my > 84) {
+					for(int i = 0; i <= Game.leaderboardImage.size() -1; i++) {
+						if(!(mx >= 44 && mx <= 44 + Game.leaderboardImage.get(i).getWidth() -16 && my >= (i*20) + 105 + (int) LeaderboardController.y && my <= (i*20) + 105 + (int) LeaderboardController.y + Game.leaderboardImage.get(i).getHeight()))
+							b = true;
+						else {
+							if(!(Game.isPixelTransparentinBufferedImage( Game.leaderboardImage.get(i), mx-44, my-((i*20) + 105 + (int) LeaderboardController.y)))) { //THIS WILL CHECK FOR TRANSPARENCY IN LEADERBOARD
+							b = false;//																												I WANT TO DISABLE BECAUSE SCROLLING PAST THE TOPS IMG Y LOCATIONS ARE OFF
+							break;}
+						}
 					}
 				}
-				if(b && !(mx >= 40 && mx <= 88 && my >= 20 && my <= 36)) {
+				else if(!(mx >= (Game.WIDTH/2) && mx <= (Game.WIDTH/2)+360 && my >= 20 && my <= 84 &&
+						!(Game.isPixelTransparentinBufferedImage(Game.leaderboardTitleBigger, mx-(Game.WIDTH/2), my-20))))
+					b = true;
+				if(b && !(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) ) {
 					//System.out.println(Game.mx + " lead"+(Game.leaderboardImage.get(0).getWidth()+44));
 					Game.starExplode = true;
 					Game.mx = mx;
@@ -1024,6 +1029,9 @@ public class MouseInput implements MouseListener {
 								Game.currentSkinLocked = false;
 								Game.skinNumber = null;
 								Game.totalPoints -= 100;
+								Game.starExplode = true;
+								Game.mx = mx;
+								Game.my = my;
 								if(Game.smb31PupSoundLoop.clipIsActive())
 									Game.smb31PupSoundLoop.stop();
 								Game.smb31PupSoundLoop.play();
@@ -1048,6 +1056,9 @@ public class MouseInput implements MouseListener {
 								Game.currentSkinLocked = false;
 								Game.skinNumber = null;
 								Game.totalPoints -= 1000;
+								Game.starExplode = true;
+								Game.mx = mx;
+								Game.my = my;
 								if(Game.smb31PupSoundLoop.clipIsActive())
 									Game.smb31PupSoundLoop.stop();
 								Game.smb31PupSoundLoop.play();
@@ -1072,6 +1083,9 @@ public class MouseInput implements MouseListener {
 								Game.currentSkinLocked = false;
 								Game.skinNumber = null;
 								Game.totalPoints -= 10000;
+								Game.starExplode = true;
+								Game.mx = mx;
+								Game.my = my;
 								if(Game.smb31PupSoundLoop.clipIsActive())
 									Game.smb31PupSoundLoop.stop();
 								Game.smb31PupSoundLoop.play();
@@ -1144,6 +1158,8 @@ public class MouseInput implements MouseListener {
 							//Yes Button Functionality
 							buttonTimer = System.currentTimeMillis() + 200;
 							Game.skin1Unlocked = false;
+							Game.skin2Unlocked = false;
+							Game.skin3Unlocked = false;
 							Game.track1Unlocked = false;
 							Game.fireball1Unlocked = false;
 							Game.item1Unlocked = false;
