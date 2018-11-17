@@ -4494,7 +4494,7 @@ public class Game extends Canvas implements Runnable {
 				xLBoolean = false;
 				p.setRunningStartL(false);
 				if(xRBoolean == true){
-					p.setRunningStartUp(2);
+					p.setRunningStartUp(1.2);
 					p.setVelX(p.getRunningStartUp());
 					runningTimerActivated = true;
 					p.setRunningStartR(true);
@@ -4523,8 +4523,9 @@ public class Game extends Canvas implements Runnable {
 				xRBoolean = false;
 				p.setRunningStartR(false);
 				if(xLBoolean == true){
-					p.setRunningStartUp(-2);
+					p.setRunningStartUp(-1.2);
 					p.setVelX(p.getRunningStartUp());
+					System.out.println(p.getVelX());
 					runningTimerActivated = true;
 					p.setRunningStartL(true);
 				}
