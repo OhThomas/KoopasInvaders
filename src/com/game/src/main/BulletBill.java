@@ -152,7 +152,7 @@ public class BulletBill extends GameObject implements EntityC{
 				}
 					
 				//game.ec.remove(this);
-				if(!game.ea.isEmpty())
+				if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 					game.ea.remove(game.ea.getLast());
 			}
 		}

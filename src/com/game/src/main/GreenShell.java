@@ -46,7 +46,7 @@ public class GreenShell extends GameObject implements EntityC{
 					
 					if(Physics.Collision(this, tempEnt)){
 						greenShellisDead = true;
-						if(!game.ea.isEmpty())
+						if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 							game.ea.remove(game.ea.getLast());
 						shellHit.play();
 					}

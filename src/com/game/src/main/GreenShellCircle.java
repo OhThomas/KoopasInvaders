@@ -93,7 +93,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 				
 				if(Physics.Collision(this, tempEnt)){
 					greenShellisDead = true;
-					if(!game.ea.isEmpty())
+					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
 				}
 			}
@@ -105,7 +105,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 				
 				if(Physics.Collision(this, tempEnt)){
 					greenShellisDead = true;
-					if(!game.ea.isEmpty())
+					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
 					shellHit.play();
 				}
@@ -123,7 +123,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 				
 				if(Physics.Collision(this, tempEnt)){
 					greenShellisDead = true;
-					if(!game.ea.isEmpty())
+					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
 					shellHit.play();
 				}

@@ -43,7 +43,7 @@ public class BasicBlocks {
 				Random rand = new Random();
 				int r = rand.nextInt(5);
 				keepDestroyingBlock += r;
-				if(!game.ea.isEmpty() && r == 0 && keepDestroyingBlock > 20){
+				if(!game.ea.isEmpty() && r == 0 && keepDestroyingBlock > 20 && Game.currentlySelectedFireball != 3){
 					game.ea.remove(game.ea.getLast());
 					keepDestroyingBlock = 0;
 				}

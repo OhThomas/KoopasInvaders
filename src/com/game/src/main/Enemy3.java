@@ -99,7 +99,8 @@ public class Enemy3 extends GameObject implements EntityB{
 					game.enemySpeedIncrease+= 0.08; //0.7
 					animDeath.nextFrame();
 					animExplosion.nextFrame();
-					c.removeEntity(tempEnt);
+					if(Game.currentlySelectedFireball != 3)
+						c.removeEntity(tempEnt);
 					if(this.goomba3DeathSoundLoop.getSoundLoopBoolean() == false){
 						for(int j = game.goomba3DeathSoundLoop.size(); j > 0; j--){
 							if(game.goomba3DeathSoundLoop.get(j-1) != null && !game.goomba3DeathSoundLoop.get(j-1).clipIsActive()){

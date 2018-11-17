@@ -367,6 +367,8 @@ public class LeaderboardController {
     	String skin3Unlocked = "";
     	String track1Unlocked = "";
     	String fireball1Unlocked = "";
+    	String fireball2Unlocked = "";
+    	String fireball3Unlocked = "";
     	String item1Unlocked = "";
     	String item2Unlocked = "";
     	String currentlySelectedCharacterSkin = "";
@@ -386,6 +388,8 @@ public class LeaderboardController {
 				skin3Unlocked = prop.getProperty("skin3Unlocked");
 				track1Unlocked = prop.getProperty("track1Unlocked");
 				fireball1Unlocked = prop.getProperty("fireball1Unlocked");
+				fireball2Unlocked = prop.getProperty("fireball2Unlocked");
+				fireball3Unlocked = prop.getProperty("fireball3Unlocked");
 				item1Unlocked = prop.getProperty("item1Unlocked");
 				item2Unlocked = prop.getProperty("item2Unlocked");
 				currentlySelectedCharacterSkin = prop.getProperty("currentlySelectedCharacterSkin");
@@ -417,6 +421,14 @@ public class LeaderboardController {
 					Game.fireball1Unlocked = true;
 				else
 					Game.fireball1Unlocked = false;
+				if(fireball2Unlocked.equals("true"))
+					Game.fireball2Unlocked = true;
+				else
+					Game.fireball2Unlocked = false;
+				if(fireball3Unlocked.equals("true"))
+					Game.fireball3Unlocked = true;
+				else
+					Game.fireball3Unlocked = false;
 				if(item1Unlocked.equals("true"))
 					Game.item1Unlocked = true;
 				else
@@ -456,7 +468,23 @@ public class LeaderboardController {
 					break;
 				default: 
 					break;
-			}
+				}
+				switch(currentlySelectedFireball) {
+				case "0":
+					Game.currentlySelectedFireball = 0;
+					break;
+				case "1":
+					Game.currentlySelectedFireball = 1;
+					break;
+				case "2":
+					Game.currentlySelectedFireball = 2;
+					break;
+				case "3":
+					Game.currentlySelectedFireball = 3;
+					break;
+				default: 
+					break;
+				}
 				switch(volumeSliderPosition) {
 				case "1":
 					Game.volumeSliderPosition = 1;
@@ -508,6 +536,8 @@ public class LeaderboardController {
 			settings.setProperty("skin3Unlocked","false");
 			settings.setProperty("track1Unlocked","false");
 			settings.setProperty("fireball1Unlocked","false");
+			settings.setProperty("fireball2Unlocked","false");
+			settings.setProperty("fireball3Unlocked","false");
 			settings.setProperty("item1Unlocked","false");
 			settings.setProperty("item2Unlocked","false");
 			settings.setProperty("currentlySelectedCharacterSkin", "0");
@@ -555,6 +585,14 @@ public class LeaderboardController {
 					settings.setProperty("fireball1Unlocked","true");
 				else
 					settings.setProperty("fireball1Unlocked","false");
+				if(Game.fireball2Unlocked == true)
+					settings.setProperty("fireball2Unlocked","true");
+				else
+					settings.setProperty("fireball2Unlocked","false");
+				if(Game.fireball3Unlocked == true)
+					settings.setProperty("fireball3Unlocked","true");
+				else
+					settings.setProperty("fireball3Unlocked","false");
 				if(Game.item1Unlocked == true)
 					settings.setProperty("item1Unlocked","true");
 				else
@@ -595,6 +633,22 @@ public class LeaderboardController {
 				default:
 					break;
 				}
+				switch(Game.currentlySelectedFireball) {
+				case 0:
+					settings.setProperty("currentlySelectedFireball","0");
+					break;
+				case 1:
+					settings.setProperty("currentlySelectedFireball","1");
+					break;
+				case 2:
+					settings.setProperty("currentlySelectedFireball","2");
+					break;
+				case 3:
+					settings.setProperty("currentlySelectedFireball","3");
+					break;
+				default:
+					break;
+				}
 				settings.setProperty("volumeSliderPosition", volumeSliderIntPosition);
 				settings.setProperty("sfxMusicSliderPosition", sfxMusicSliderIntPosition);
 				if(Game.skipAnimations == true)
@@ -612,6 +666,8 @@ public class LeaderboardController {
 			settings.setProperty("skin3Unlocked","false");
 			settings.setProperty("track1Unlocked","false");
 			settings.setProperty("fireball1Unlocked","false");
+			settings.setProperty("fireball2Unlocked","false");
+			settings.setProperty("fireball3Unlocked","false");
 			settings.setProperty("item1Unlocked","false");
 			settings.setProperty("item2Unlocked","false");
 			settings.setProperty("currentlySelectedCharacterSkin", "0");
@@ -635,6 +691,8 @@ public class LeaderboardController {
 			settings.setProperty("skin3Unlocked","false");
 			settings.setProperty("track1Unlocked","false");
 			settings.setProperty("fireball1Unlocked","false");
+			settings.setProperty("fireball2Unlocked","false");
+			settings.setProperty("fireball3Unlocked","false");
 			settings.setProperty("item1Unlocked","false");
 			settings.setProperty("item2Unlocked","false");
 			settings.setProperty("currentlySelectedCharacterSkin", "0");

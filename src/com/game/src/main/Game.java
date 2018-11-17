@@ -238,6 +238,8 @@ public class Game extends Canvas implements Runnable {
 	public static boolean skin3Unlocked = false;
 	public static boolean track1Unlocked = false;
 	public static boolean fireball1Unlocked = false;
+	public static boolean fireball2Unlocked = false;
+	public static boolean fireball3Unlocked = false;
 	public static boolean item1Unlocked = false;
 	public static boolean item2Unlocked = false;
 	public static boolean currentSkinLocked = false;
@@ -1533,15 +1535,15 @@ public class Game extends Canvas implements Runnable {
 					switch(Game.selectorButtonPosition) {
 						case -3:
 							g.drawImage(leaderboardTitleSelected,Game.WIDTH /2 + 380 -7, 20 -7,null);
-							g.drawImage(leaderboardTitle,Game.WIDTH /2 + 380, 20,null);
+							g.drawImage(leaderboardTitleGlow,Game.WIDTH /2 + 380, 20,null);
 							break;
 						case -2:
 							g.drawImage(settingsTitleSelected,280 + 32 -7, 20 -7,null);
-							g.drawImage(settingsTitle,280 + 32, 20,null);
+							g.drawImage(settingsTitleGlow,280 + 32, 20,null);
 							break;
 						case -1:
 							g.drawImage(helpTitleSelected,54 -7, 20 -7,null);
-							g.drawImage(helpTitle,54, 20,null);
+							g.drawImage(helpTitleGlow,54, 20,null);
 							break;
 						case 0:
 							g.drawImage(playTitleSelected,Game.WIDTH / 2 + 120 -18, 200 -18,null);
@@ -3218,7 +3220,22 @@ public class Game extends Canvas implements Runnable {
 			if (key == KeyEvent.VK_SPACE && !isShooting){											//Fireballs
 				isShooting = true;
 				if(ea.isEmpty() && !paused){
-					c.addEntity(new Fireball(p.getX(),p.getY() + 32,tex, this));
+					switch(currentlySelectedFireball) {
+						case 0:
+							c.addEntity(new Fireball(p.getX(),p.getY() + 32,tex, this));
+							break;
+						case 1:
+							c.addEntity(new GreenShellFireball(p.getX(),p.getY()+32,tex,p.getVelX(),this));
+							break;
+						case 2:
+							c.addEntity(new RedShellFireball(p.getX(),p.getY()+32,tex,p.getVelX(),this));
+							break;
+						case 3:
+							c.addEntity(new BuzzyBeetleShellFireball(p.getX(),p.getY()+32,tex,p.getVelX(),this));
+							break;
+						default:
+							break;
+					}
 					animationTimer1 = 10;
 					numberOfFireBallsShot++;
 					if(fireballSFX.clipIsActive())
@@ -4525,7 +4542,6 @@ public class Game extends Canvas implements Runnable {
 				if(xLBoolean == true){
 					p.setRunningStartUp(-1.2);
 					p.setVelX(p.getRunningStartUp());
-					System.out.println(p.getVelX());
 					runningTimerActivated = true;
 					p.setRunningStartL(true);
 				}
@@ -4876,12 +4892,21 @@ public class Game extends Canvas implements Runnable {
 						break;
 					case -10:
 						//Fireballs Set
-						if(smb3ItemSoundLoop.clipIsActive())
-							smb3ItemSoundLoop.stop();
-						smb3ItemSoundLoop.play();
+						if(!Game.currentFireballLocked) {
+							if(Game.currentlySelectedFireball != Game.fireballPosition) {
+								if(Game.smb3ItemSoundLoop.clipIsActive())
+									Game.smb3ItemSoundLoop.stop();
+								Game.smb3ItemSoundLoop.play();
+							}
+							Game.currentlySelectedFireball = Game.fireballPosition;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "currentlySelectedFireball";
+							Game.writeOnceString = Integer.toString(Game.fireballPosition);
+							//Game.settingsSetup = false;
+						}
 						break;
 					case -9:
-						if(Game.fireballPosition == 1)//Max Fireballs
+						if(Game.fireballPosition == 3)//Max Fireballs
 							Game.fireballPosition = 0;
 						else
 							Game.fireballPosition++;
@@ -4892,9 +4917,99 @@ public class Game extends Canvas implements Runnable {
 						break;
 					case -8:
 						//Fireballs Buy
-						if(smb31PupSoundLoop.clipIsActive())
-							smb31PupSoundLoop.stop();
-						smb31PupSoundLoop.play();
+						if(currentFireballLocked) {
+							switch(fireballPosition){
+								case 1:
+									if(totalPoints >= 100){
+										Game.fireball1Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedFireball";
+										Game.writeOnceString = Integer.toString(Game.fireballPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "fireball1Unlocked";
+										Game.fireballPosition = 1;
+										Game.currentlySelectedFireball = 1;
+										currentFireballLocked = false;
+										skinNumber = null;
+										totalPoints -= 100;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 336;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -9;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 2:
+									if(totalPoints >= 1000){
+										Game.fireball2Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedFireball";
+										Game.writeOnceString = Integer.toString(Game.fireballPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "fireball2Unlocked";
+										Game.fireballPosition = 2;
+										Game.currentlySelectedFireball = 2;
+										currentFireballLocked = false;
+										skinNumber = null;
+										totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 336;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -9;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 3:
+									if(totalPoints >= 10000){
+										Game.fireball3Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedFireball";
+										Game.writeOnceString = Integer.toString(Game.fireballPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "fireball3Unlocked";
+										Game.fireballPosition = 3;
+										Game.currentlySelectedFireball = 3;
+										currentFireballLocked = false;
+										skinNumber = null;
+										totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 336;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -9;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+							
+						}
+						//else
+							//Play error noise
 						break;
 					case -7:
 						//Tracks Set
@@ -5071,7 +5186,7 @@ public class Game extends Canvas implements Runnable {
 						if(Game.fireballPosition > 0)
 							Game.fireballPosition--;
 						else
-							Game.fireballPosition = 1;//Set to Max Fireballs
+							Game.fireballPosition = 3;//Set to Max Fireballs
 						Game.fireballNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.fireballPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
@@ -5128,6 +5243,8 @@ public class Game extends Canvas implements Runnable {
 							Game.skin3Unlocked = false;
 							Game.track1Unlocked = false;
 							Game.fireball1Unlocked = false;
+							Game.fireball2Unlocked = false;
+							Game.fireball3Unlocked = false;
 							Game.item1Unlocked = false;
 							Game.item2Unlocked = false;
 							Game.currentlySelectedCharacterSkin = 0;

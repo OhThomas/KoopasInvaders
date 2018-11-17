@@ -564,10 +564,10 @@ public class MouseInput implements MouseListener {
 					!(mx >= 20 && mx <= 122 && my >= 220 && my <= 252 && !(Game.isPixelTransparentinBufferedImage(Game.tracksTitle, mx-20, my-220))) &&//Tracks Title
 					!(mx >= 20 && mx <= 166 && my >= 320 && my <= 352 && !(Game.isPixelTransparentinBufferedImage(Game.fireballsTitle, mx-20, my-320))) &&//Fireball Title
 					!(mx >= 20 && mx <= 106 && my >= 420 && my <= 452 && !(Game.isPixelTransparentinBufferedImage(Game.itemsTitle, mx-20, my-420))) &&//Item Title
-					!(mx >= Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60 &&
+					Game.totalPoints != 0 && !(mx >= Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60 &&
 					  mx <= Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60 + Game.totalPointsImage.getWidth() &&
 					  my >= 20 && my <= 20 + Game.totalPointsImage.getHeight() && !(Game.isPixelTransparentinBufferedImage(Game.totalPointsImage, mx-(Game.WIDTH * Game.SCALE - Game.totalPointsImage.getWidth() - 60), my-20))) &&//Total Points
-					!(mx >= Game.WIDTH * Game.SCALE - 55 && mx <= Game.WIDTH * Game.SCALE - 55 + ShopController.pointsImage.getWidth() &&
+					Game.totalPoints != 0 && !(mx >= Game.WIDTH * Game.SCALE - 55 && mx <= Game.WIDTH * Game.SCALE - 55 + ShopController.pointsImage.getWidth() &&
 					my >= 20 + Game.totalPointsImage.getHeight()/2 -3 && my <= 20 + Game.totalPointsImage.getHeight()/2 -3 +
 					ShopController.pointsImage.getHeight() && !(Game.isPixelTransparentinBufferedImage(ShopController.pointsImage, mx-(Game.WIDTH * Game.SCALE - 55), my-(20 + Game.totalPointsImage.getHeight()/2 -3)))) &&//points title
 					!(mx >= Game.WIDTH && mx <= Game.WIDTH + 16 && my >= 120 && my <= 148) &&//Mario Skins
@@ -942,7 +942,7 @@ public class MouseInput implements MouseListener {
 						if(Game.fireballPosition > 0)
 							Game.fireballPosition--;
 						else
-							Game.fireballPosition = 1;//Set to Max Fireballs
+							Game.fireballPosition = 3;//Set to Max Fireballs
 						Game.fireballNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.fireballPosition+1)), 10, 10);
 						if(Game.smb3Bump2SoundLoop.clipIsActive())
 							Game.smb3Bump2SoundLoop.stop();
@@ -989,7 +989,7 @@ public class MouseInput implements MouseListener {
 					}else if(my >= 320 && my <= 352 && Game.arrowR3Clicked) {
 						//ArrowR3 Functionality
 						buttonTimer = System.currentTimeMillis() + 200;
-						if(Game.fireballPosition == 1)//Max Fireballs
+						if(Game.fireballPosition == 3)//Max Fireballs
 							Game.fireballPosition = 0;
 						else
 							Game.fireballPosition++;
@@ -1105,9 +1105,89 @@ public class MouseInput implements MouseListener {
 						Game.smb31PupSoundLoop.play();
 					}else if(my >= 327 && my <= 344 && Game.buy3Clicked && Game.currentFireballLocked == true) {
 						buttonTimer = System.currentTimeMillis() + 200;
-						if(Game.smb31PupSoundLoop.clipIsActive())
-							Game.smb31PupSoundLoop.stop();
-						Game.smb31PupSoundLoop.play();
+						switch(Game.fireballPosition){
+						case 1:
+							if(Game.totalPoints >= 100){
+								Game.fireball1Unlocked = true;
+								//Game.settingsSetup = false;
+								Game.writeOnceToSettings = true;
+								Game.writeOnceProperty = "currentlySelectedFireball";
+								Game.writeOnceString = Integer.toString(Game.fireballPosition);
+								Game.writeOnceToSettingswithPoints = true;
+								Game.writeOnceUnlock = "fireball1Unlocked";
+								Game.fireballPosition = 1;
+								Game.currentlySelectedFireball = 1;
+								Game.currentFireballLocked = false;
+								Game.skinNumber = null;
+								Game.totalPoints -= 100;
+								Game.starExplode = true;
+								Game.mx = mx;
+								Game.my = my;
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+							else{
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
+							break;
+						case 2:
+							if(Game.totalPoints >= 1000){
+								Game.fireball2Unlocked = true;
+								//Game.settingsSetup = false;
+								Game.writeOnceToSettings = true;
+								Game.writeOnceProperty = "currentlySelectedFireball";
+								Game.writeOnceString = Integer.toString(Game.fireballPosition);
+								Game.writeOnceToSettingswithPoints = true;
+								Game.writeOnceUnlock = "fireball2Unlocked";
+								Game.fireballPosition = 2;
+								Game.currentlySelectedFireball = 2;
+								Game.currentFireballLocked = false;
+								Game.skinNumber = null;
+								Game.totalPoints -= 1000;
+								Game.starExplode = true;
+								Game.mx = mx;
+								Game.my = my;
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+							else{
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
+							break;
+						case 3:
+							if(Game.totalPoints >= 10000){
+								Game.fireball3Unlocked = true;
+								//Game.settingsSetup = false;
+								Game.writeOnceToSettings = true;
+								Game.writeOnceProperty = "currentlySelectedFireball";
+								Game.writeOnceString = Integer.toString(Game.fireballPosition);
+								Game.writeOnceToSettingswithPoints = true;
+								Game.writeOnceUnlock = "fireball3Unlocked";
+								Game.fireballPosition = 3;
+								Game.currentlySelectedFireball = 3;
+								Game.currentFireballLocked = false;
+								Game.skinNumber = null;
+								Game.totalPoints -= 10000;
+								Game.starExplode = true;
+								Game.mx = mx;
+								Game.my = my;
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+							else{
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
+							break;
+						}
 					}else if(my >= 427 && my <= 444 && Game.buy4Clicked && Game.currentItemLocked == true) {
 						buttonTimer = System.currentTimeMillis() + 200;
 						if(Game.smb31PupSoundLoop.clipIsActive())
@@ -1132,6 +1212,11 @@ public class MouseInput implements MouseListener {
 							Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
 							//Game.settingsSetup = false;
 						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 					}else if(my >= 228 && my <= 244 && Game.set2Clicked) {
 						buttonTimer = System.currentTimeMillis() + 200;
 						if(Game.smb3ItemSoundLoop.clipIsActive())
@@ -1139,9 +1224,23 @@ public class MouseInput implements MouseListener {
 						Game.smb3ItemSoundLoop.play();
 					}else if(my >= 328 && my <= 344 && Game.set3Clicked) {
 						buttonTimer = System.currentTimeMillis() + 200;
-						if(Game.smb3ItemSoundLoop.clipIsActive())
-							Game.smb3ItemSoundLoop.stop();
-						Game.smb3ItemSoundLoop.play();
+						if(!Game.currentFireballLocked) {
+							if(Game.currentlySelectedFireball != Game.fireballPosition) {
+								if(Game.smb3ItemSoundLoop.clipIsActive())
+									Game.smb3ItemSoundLoop.stop();
+								Game.smb3ItemSoundLoop.play();
+							}
+							Game.currentlySelectedFireball = Game.fireballPosition;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "currentlySelectedFireball";
+							Game.writeOnceString = Integer.toString(Game.fireballPosition);
+							//Game.settingsSetup = false;
+						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 					}else if(my >= 428 && my <= 444 && Game.set4Clicked) {
 						buttonTimer = System.currentTimeMillis() + 200;
 						if(Game.smb3ItemSoundLoop.clipIsActive())
@@ -1163,6 +1262,8 @@ public class MouseInput implements MouseListener {
 							Game.skin3Unlocked = false;
 							Game.track1Unlocked = false;
 							Game.fireball1Unlocked = false;
+							Game.fireball2Unlocked = false;
+							Game.fireball3Unlocked = false;
 							Game.item1Unlocked = false;
 							Game.item2Unlocked = false;
 							Game.currentlySelectedCharacterSkin = 0;

@@ -129,7 +129,8 @@ public class Enemy2 extends GameObject implements EntityB{
 						this.goomba2DeathSoundLoop.setSoundLoopBoolean(true);
 						game.goombaDeathSoundLoop.getLast().play();
 					}
-					c.removeEntity(tempEnt);
+					if(Game.currentlySelectedFireball != 3)
+						c.removeEntity(tempEnt);
 					animDeathBounceL.nextFrame();
 					animDeathBounceR.nextFrame();
 					animDeathL.nextFrame();

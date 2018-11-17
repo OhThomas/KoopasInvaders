@@ -23,6 +23,7 @@ public class Textures {
 	public BufferedImage[] marioSlowingDown = new BufferedImage[2];
 	public BufferedImage[] fireball = new BufferedImage[4];
 	public BufferedImage[] fireball1Silhouette = new BufferedImage[4];
+	public BufferedImage[] fireball3Silhouette = new BufferedImage[4];
 	public BufferedImage[] enemy = new BufferedImage[2];
 	public BufferedImage[] enemy2 = new BufferedImage[2];
 	public BufferedImage[] enemy3 = new BufferedImage[2];
@@ -30,6 +31,8 @@ public class Textures {
 	public BufferedImage[] greenShellDead = new BufferedImage[8];
 	public BufferedImage[] buzzyBeetleShell = new BufferedImage[4];
 	public BufferedImage[] buzzyBeetleShellDead = new BufferedImage[7];
+	public BufferedImage[] redShell = new BufferedImage[4];
+	public BufferedImage[] redShellDead = new BufferedImage[8];
 	public BufferedImage[] animatedStar = new BufferedImage[20];
 	public BufferedImage[] animatedShootingStar = new BufferedImage[12];
 	public BufferedImage[] mario1Star = new BufferedImage[4];
@@ -717,7 +720,21 @@ public class Textures {
 		greenShellDead[5] = goombaDeathSprites.grabExactImage(91, 239, 6, 5);
 		greenShellDead[6] = goombaDeathSprites.grabExactImage(91, 244, 4, 4);
 		greenShellDead[7] = goombaDeathSprites.grabExactImage(91, 248, 3, 3);
-
+		
+		redShell[0] = ss.grabSmallImage(5, 4, 16, 16);
+		redShell[1] = ss.grabSmallImage(6, 4, 16, 16);
+		redShell[2] = ss.grabSmallImage(7, 4, 16, 16);
+		redShell[3] = ss.grabSmallImage(8, 4, 16, 16);
+		
+		redShellDead[0] = goombaDeathSprites.grabExactImage(131, 179, 16, 16);
+		redShellDead[1] = goombaDeathSprites.grabExactImage(131, 195, 14, 14);
+		redShellDead[2] = goombaDeathSprites.grabExactImage(131, 209, 12, 12);
+		redShellDead[3] = goombaDeathSprites.grabExactImage(131, 221, 10, 10);
+		redShellDead[4] = goombaDeathSprites.grabExactImage(131, 231, 8, 8);
+		redShellDead[5] = goombaDeathSprites.grabExactImage(131, 239, 6, 5);
+		redShellDead[6] = goombaDeathSprites.grabExactImage(131, 244, 4, 4);
+		redShellDead[7] = goombaDeathSprites.grabExactImage(131, 248, 3, 3);
+		
 		buzzyBeetleShell[0] = ss.grabExactImage(0, 143, 16, 14);
 		buzzyBeetleShell[1] = ss.grabExactImage(16, 143, 16, 14);
 		buzzyBeetleShell[2] = ss.grabExactImage(32, 143, 16, 14);
@@ -735,6 +752,11 @@ public class Textures {
 		fireball1Silhouette[1] = ss.grabSmallImage(6, 3, 16, 16);
 		fireball1Silhouette[2] = ss.grabSmallImage(7, 3, 16, 16);
 		fireball1Silhouette[3] = ss.grabSmallImage(8, 3, 16, 16);
+
+		fireball3Silhouette[0] = ss.grabExactImage(0, 157, 16, 14);
+		fireball3Silhouette[1] = ss.grabExactImage(16, 157, 16, 14);
+		fireball3Silhouette[2] = ss.grabExactImage(32, 157, 16, 14);
+		fireball3Silhouette[3] = ss.grabExactImage(48, 157, 16, 14);
 		
 		//enemy[0] = ss.grabMarioImage(5, 5, 16, 16);
 		enemy[0] = ss.grabSmallImage(5, 8, 16, 16);

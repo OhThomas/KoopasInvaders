@@ -19,7 +19,10 @@ public class ShopController {
 	private Animation track1;
 	private Animation fireball0;
 	private Animation fireball1;
+	private Animation fireball2;
+	private Animation fireball3;
 	private Animation fireball1Silhouette;
+	private Animation fireball3Silhouette;
 	private Animation item0;
 	private Animation item1;
 	private Animation item1Silhouette;
@@ -39,6 +42,8 @@ public class ShopController {
 	private int skin3Price = 10000;
 	private int track1Price = 100;
 	private int fireball1Price = 100;
+	private int fireball2Price = 1000;
+	private int fireball3Price = 10000;
 	private int item1Price = 100;
 	private int item2Price = 1000;
 	public static int currentSkinPrice = 0;
@@ -58,7 +63,10 @@ public class ShopController {
 		marioSkin3Silhouette = new Animation(6,tex.marioSilhouette3[0],tex.marioSilhouette3[1],tex.marioSilhouette3[2],tex.marioSilhouette3[1]);
 		fireball0 = new Animation(6,tex.fireball[0],tex.fireball[1],tex.fireball[2],tex.fireball[3]);
 		fireball1 = new Animation(4,tex.greenShell[0],tex.greenShell[1],tex.greenShell[2],tex.greenShell[3]);
+		fireball2 = new Animation(4,tex.redShell[0],tex.redShell[1],tex.redShell[2],tex.redShell[3]);
+		fireball3 = new Animation(4,tex.buzzyBeetleShell[0],tex.buzzyBeetleShell[1],tex.buzzyBeetleShell[2],tex.buzzyBeetleShell[3]);
 		fireball1Silhouette = new Animation(6,tex.fireball1Silhouette[0],tex.fireball1Silhouette[1],tex.fireball1Silhouette[2],tex.fireball1Silhouette[3]);
+		fireball3Silhouette = new Animation(6,tex.fireball3Silhouette[0],tex.fireball3Silhouette[1],tex.fireball3Silhouette[2],tex.fireball3Silhouette[3]);
 		item0 = new Animation(1, tex.chainChompItem[0], tex.chainChompItem[1], tex.chainChompItem[2], tex.chainChompItem[3],
 				tex.chainChompItem[4], tex.chainChompItem[5], tex.chainChompItem[6], tex.chainChompItem[7],
 				tex.chainChompItem[8], tex.chainChompItem[9], tex.chainChompItem[10], tex.chainChompItem[11],
@@ -105,9 +113,18 @@ public class ShopController {
 			this.fireball1.nextFrame();
 			this.fireball1.setSpeed(10);
 			this.fireball1.setCount(0);
+			this.fireball2.nextFrame();
+			this.fireball2.setSpeed(10);
+			this.fireball2.setCount(0);
+			this.fireball3.nextFrame();
+			this.fireball3.setSpeed(10);
+			this.fireball3.setCount(0);
 			this.fireball1Silhouette.nextFrame();
 			this.fireball1Silhouette.setSpeed(10);
 			this.fireball1Silhouette.setCount(0);
+			this.fireball3Silhouette.nextFrame();
+			this.fireball3Silhouette.setSpeed(10);
+			this.fireball3Silhouette.setCount(0);
 			this.item0.nextFrame();
 			this.item0.setSpeed(5);
 			this.item0.setCount(0);
@@ -250,6 +267,59 @@ public class ShopController {
 					break;
 				}
 				else {
+					if(Game.currentFireballLocked)
+						Game.currentFireballLocked = false;
+					if(System.currentTimeMillis() % 30 == 0)
+						this.fireball1.runAnimation();
+					this.fireball1.drawAnimation(g, Game.WIDTH , 320+8,0);
+					break;
+				}
+			case 2:
+				if(Game.fireball2Unlocked == false) {
+					if(!Game.currentFireballLocked) 
+						Game.currentFireballLocked = true;
+					if(fireball2Price != currentFireballPrice) {
+						fireballPriceImage = Game.resize(HUD.stringToMario3FontImage(Integer.toString(fireball2Price)), 30, 15);
+						currentFireballPrice = fireball2Price;
+					}
+					if(System.currentTimeMillis() % 30 == 0)
+						this.fireball1Silhouette.runAnimation();
+					this.fireball1Silhouette.drawAnimation(g, Game.WIDTH , 320+8,0);
+					HUD.clickyButton(g, buyTitle, buyTitleGlow, buyTitleClicked, Game.buy3Highlighted, Game.buy3Clicked, Game.backOnBuy3, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - 5, 320 + 7);
+					g.drawImage(fireballPriceImage, Game.WIDTH - 6, 320 + 35, null);
+					g.drawImage(pointsImage, Game.WIDTH - 6 + fireballPriceImage.getWidth() + 4, 320 + 35 + 7, null);
+					break;
+				}
+				else {
+					if(Game.currentFireballLocked)
+						Game.currentFireballLocked = false;
+					if(System.currentTimeMillis() % 30 == 0)
+						this.fireball2.runAnimation();
+					this.fireball2.drawAnimation(g, Game.WIDTH , 320+8,0);
+					break;
+				}
+			case 3:
+				if(Game.fireball3Unlocked == false) {
+					if(!Game.currentFireballLocked) 
+						Game.currentFireballLocked = true;
+					if(fireball3Price != currentFireballPrice) {
+						fireballPriceImage = Game.resize(HUD.stringToMario3FontImage(Integer.toString(fireball3Price)), 30, 15);
+						currentFireballPrice = fireball3Price;
+					}
+					if(System.currentTimeMillis() % 30 == 0)
+						this.fireball3Silhouette.runAnimation();
+					this.fireball3Silhouette.drawAnimation(g, Game.WIDTH , 320+9,0);
+					HUD.clickyButton(g, buyTitle, buyTitleGlow, buyTitleClicked, Game.buy3Highlighted, Game.buy3Clicked, Game.backOnBuy3, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - 5, 320 + 7);
+					g.drawImage(fireballPriceImage, Game.WIDTH - 6, 320 + 35, null);
+					g.drawImage(pointsImage, Game.WIDTH - 6 + fireballPriceImage.getWidth() + 4, 320 + 35 + 7, null);
+					break;
+				}
+				else {
+					if(Game.currentFireballLocked)
+						Game.currentFireballLocked = false;
+					if(System.currentTimeMillis() % 30 == 0)
+						this.fireball3.runAnimation();
+					this.fireball3.drawAnimation(g, Game.WIDTH , 320+9,0);
 					break;
 				}
 				default:

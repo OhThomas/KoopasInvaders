@@ -121,7 +121,8 @@ public class Enemy extends GameObject implements EntityB{
 							this.goombaDeathSoundLoop.setSoundLoopBoolean(true);
 							game.goombaDeathSoundLoop.getLast().play();
 						}
-						c.removeEntity(tempEnt);
+						if(Game.currentlySelectedFireball != 3)
+							c.removeEntity(tempEnt);
 	//if hit by item entity					game.setEnemyHitPauseTimer(System.currentTimeMillis() + 200);
 						game.getHUD().setScore(200);
 						goombaisDead = true;

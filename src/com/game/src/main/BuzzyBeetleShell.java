@@ -91,7 +91,7 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 				
 				if(Physics.Collision(this, tempEnt)){
 					buzzyBeetleShellisDead = true;
-					if(!game.ea.isEmpty())
+					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
 					game.getHUD().setScore(500);
 					shellHit.play();
@@ -156,7 +156,7 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 				
 				if(Physics.Collision(this, tempEnt)){
 					buzzyBeetleShellisDead = true;
-					if(!game.ea.isEmpty())
+					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
 					game.getHUD().setScore(500);
 					shellHit.play();
