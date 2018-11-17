@@ -34,6 +34,8 @@ public class Player extends GameObject implements EntityA{
 	private boolean playerEntranceTurningAroundSetup = false;
 	private boolean playerDeathSetup = false;
 	private boolean firstTimeAnimationRun = false;
+	private boolean runningStartL = false;
+	private boolean runningStartR = false;
 	public boolean playerWinSetup = false;
 	public boolean gameOver = false;
 
@@ -45,6 +47,7 @@ public class Player extends GameObject implements EntityA{
 	private boolean marioInvincible = false;	//To make Player invincible w/ star
 	private int timer1 = 100;					//Timer for how long Player is invincible
 	private int timer2 = 0;
+	private double runningStartUp = 0;
 	private int danceProgressionCount = 0;
 	private long animationTimer1 = 0;
 	private long marioDeathTimer1 = 0;
@@ -155,6 +158,49 @@ public class Player extends GameObject implements EntityA{
 	}
 	
 	public void tick(){
+		if(runningStartL) {
+			if(runningStartUp >= 0) {
+				animl.setSpeed(10);
+				velX = -1.2;
+				runningStartUp = -1.2;
+			}
+			if((runningStartUp <= -3 && runningStartUp >= -5)) {
+				animl.setSpeed(8);
+				velX -= 0.33;
+				runningStartUp -= 0.33;
+			}
+			else {
+				velX -= 0.13;
+				runningStartUp -= 0.13;
+			}
+			if(runningStartUp <= -5) {
+				animl.setSpeed(6);
+				velX = -5;
+				runningStartUp = -5;
+				runningStartL = false;
+			}
+		}if(runningStartR) {
+			if(runningStartUp <= 0) {
+				animr.setSpeed(10);
+				velX = 1.2;
+				runningStartUp = 1.2;
+			}
+			if((runningStartUp >= 3 && runningStartUp <= 5)) {
+				animr.setSpeed(8);
+				velX += 0.33;
+				runningStartUp += 0.33;
+			}
+			else {
+				velX += 0.13;
+				runningStartUp += 0.13;
+			}
+			if(runningStartUp >= 5) {
+				animr.setSpeed(6);
+				velX = 5;
+				runningStartUp = 5;
+				runningStartR = false;
+			}
+		}
 		x+=velX;
 		y+=velY;
 		
@@ -653,6 +699,10 @@ public class Player extends GameObject implements EntityA{
 		this.y = y;
 	}
 	
+	public double getVelX(){
+		return velX;
+	}
+	
 	public void setVelX(double velX){
 		this.velX = velX;
 	}
@@ -660,7 +710,31 @@ public class Player extends GameObject implements EntityA{
 	public void setVelY(double velY){
 		this.velY = velY;
 	}
+
+	public boolean getRunningStartL() {
+		return runningStartL;
+	}
+
+	public void setRunningStartL(boolean runningStartL) {
+		this.runningStartL = runningStartL;
+	}
+
+	public boolean getRunningStartR() {
+		return runningStartR;
+	}
+
+	public void setRunningStartR(boolean runningStartR) {
+		this.runningStartR = runningStartR;
+	}
 	
+	public double getRunningStartUp() {
+		return runningStartUp;
+	}
+
+	public void setRunningStartUp(double runningStartUp) {
+		this.runningStartUp = runningStartUp;
+	}
+
 	public boolean getMarioInvincible(){
 		return marioInvincible;
 	}

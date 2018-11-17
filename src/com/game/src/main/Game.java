@@ -3137,7 +3137,44 @@ public class Game extends Canvas implements Runnable {
 				//p.setVelY(-5);
 				//yUBoolean = true;
 			} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
-				p.setVelX(-5);
+				p.setRunningStartR(false);
+				p.setRunningStartL(true);
+				if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
+					p.setRunningStartUp(0);
+				//if(runningStartUpTimer != System.currentTimeMillis()) {
+					/*
+					if(runningStartUp >= 0)
+						runningStartUp = -0.666;
+					if(runningStartUp >= -2)
+						runningStartUp -= 1;
+					else if(runningStartUp <= -2 && runningStartUp >= -3)
+						runningStartUp -= 0.09;
+					else if(runningStartUp <= -3 && runningStartUp >= -4)
+						runningStartUp -= 0.14;
+					else
+						runningStartUp -= 0.02;
+					if(runningStartUp < -5)
+						runningStartUp = -5;
+						*/
+				/*
+					if(runningStartUp >= 0) {
+						p.animl.setSpeed(10);
+						runningStartUp = -1.2;
+					}
+					if((runningStartUp <= -3 && runningStartUp >= -5)) {
+						p.animl.setSpeed(8);
+						runningStartUp -= 0.33;
+					}
+					else
+						runningStartUp -= 0.13;
+					if(runningStartUp <= -5) {
+						p.animl.setSpeed(6);
+						runningStartUp = -5;
+					}
+					runningStartUpTimer = System.currentTimeMillis();
+				}*/
+				//System.out.println(runningStartUp);
+				//p.setVelX(runningStartUp);
 				xLBoolean = true;
 				slowingDownTimerLong = 0;
 				slowingDownActivatedl = false;
@@ -3148,7 +3185,29 @@ public class Game extends Canvas implements Runnable {
 				//p.setVelY(5);
 				//yDBoolean = true;
 			} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
-				p.setVelX(5);
+				p.setRunningStartR(true);
+				p.setRunningStartL(false);
+				if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
+					p.setRunningStartUp(0);
+				/*
+				if(runningStartUpTimer != System.currentTimeMillis()) {
+					if(runningStartUp <= 0) {
+						p.animl.setSpeed(10);
+						runningStartUp = 1.2;
+					}
+					if((runningStartUp >= 3 && runningStartUp <= 5)) {
+						p.animl.setSpeed(8);
+						runningStartUp += 0.33;
+					}
+					else
+						runningStartUp += 0.13;
+					if(runningStartUp >= 5) {
+						p.animl.setSpeed(6);
+						runningStartUp = 5;
+					}
+					runningStartUpTimer = System.currentTimeMillis();
+				}*/
+				//p.setVelX(runningStartUp);
 				xRBoolean = true;
 				slowingDownTimerLong = 0;
 				slowingDownActivatedl = false;
@@ -4433,12 +4492,15 @@ public class Game extends Canvas implements Runnable {
 			} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
 				p.setVelX(0);
 				xLBoolean = false;
+				p.setRunningStartL(false);
 				if(xRBoolean == true){
-					p.setVelX(5);
+					p.setRunningStartUp(2);
+					p.setVelX(p.getRunningStartUp());
 					runningTimerActivated = true;
+					p.setRunningStartR(true);
 				}
 				else{
-					if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for left side
+					if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5)){														//This activates sliding animation for left side
 						slowingDownActivatedl = true;
 						slowingDownTimerLong = System.currentTimeMillis() + 200;
 						slowingDown = -1.73;
@@ -4459,12 +4521,15 @@ public class Game extends Canvas implements Runnable {
 			} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
 				p.setVelX(0);
 				xRBoolean = false;
+				p.setRunningStartR(false);
 				if(xLBoolean == true){
-					p.setVelX(-5);
+					p.setRunningStartUp(-2);
+					p.setVelX(p.getRunningStartUp());
 					runningTimerActivated = true;
+					p.setRunningStartL(true);
 				}
 				else{
-					if(System.currentTimeMillis() - runningTimerLong > 666/2){														//This activates sliding animation for right side
+					if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5)){														//This activates sliding animation for right side
 						slowingDownActivatedr = true;
 						slowingDownTimerLong = System.currentTimeMillis() + 200;
 						slowingDown = 1.73;
