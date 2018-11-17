@@ -638,7 +638,8 @@ public class MouseInput implements MouseListener {
 						(mx >= 79 && mx <= 86 && my >= 235 && my <= 246) || (mx >= 81 && mx <= 89 && my >= 228 && my <= 239) || 
 						(mx >= 84 && mx <= 92 && my >= 222 && my <= 232) || (mx >= 87 && mx <= 93 && my >= 220 && my <= 222)) &&// / Split Up
 						*/
-						!(my >= 320 && my <= 352 && ((mx >= 20 && mx <= 88) || (mx >= 104 && mx <= 270)))
+						!(my >= 320 && my <= 352 && mx >= 20 &&mx <= 270 &&
+						!(Game.isPixelTransparentinBufferedImage(Game.skipAnimationsTitle, mx-20, my-320)))
 						) {
 						Game.starExplode = true;
 						Game.mx = mx;

@@ -1599,7 +1599,7 @@ public class Game extends Canvas implements Runnable {
 			mouseLocator.locateMouse();
 			p.render(g);
 			c.render(g);
-			if(Game.keysAreInUse) {
+			if(Game.keysAreInUse && askToSkipSequence) {
 				if(Game.skipHighlighted) 
 					Game.skipHighlighted = false;
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
@@ -3112,6 +3112,8 @@ public class Game extends Canvas implements Runnable {
 			ee = c.getEntityE();
 			
 			if(!Game.dontStartOver) {
+				LeaderboardController.gameUnlocksToSettings();
+				leaderboard.settingsSetup();
 				if(skipAnimations)
 					State = STATE.GAME;
 				else
@@ -3599,11 +3601,24 @@ public class Game extends Canvas implements Runnable {
 			}
 		}else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_ITEM || State == STATE.TRANSITION_WIN) {
 			switch(key) {
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
+				else {
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				else if(Game.keysAreInUse)
+					Game.keysAreInUse = false;
+				else
+					Game.keysAreInUse = true;
+				}
 			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
 				}
-				else
+				else if(Game.escapePressedNegateAction == false)
 					Game.enterButtonPushedDown = true;
 				break;
 			default:
@@ -4492,10 +4507,8 @@ public class Game extends Canvas implements Runnable {
 		else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN) {
 			switch(key) {
 				case KeyEvent.VK_ESCAPE:
-					if(Game.enterButtonPushedDown) {
-						Game.escapePressedNegateAction = true;
+					if(Game.enterButtonPushedDown)
 						break;
-					}
 					if(!askToSkipSequence) {
 						askToSkipSequence = true;
 					}
@@ -4508,6 +4521,8 @@ public class Game extends Canvas implements Runnable {
 					if(askToSkipSequence && Game.escapePressedNegateAction == false)
 						skipSequence = true;
 					Game.keysAreInUse = true;
+					Game.enterButtonPushedDown = false;
+					Game.escapePressedNegateAction = false;
 					break;
 				default:
 					if(!askToSkipSequence) {
@@ -4516,9 +4531,9 @@ public class Game extends Canvas implements Runnable {
 					Game.keysAreInUse = true;
 					break;
 				}
-			if(!askToSkipSequence) {
-				askToSkipSequence = true;
-			}
+			//if(!askToSkipSequence) {
+			//	askToSkipSequence = true;
+			//}
 			
 		}
 		else if(State == STATE.TRANSITION_ITEM) {
@@ -4534,10 +4549,8 @@ public class Game extends Canvas implements Runnable {
 			this.runningTimerLong = 0;
 			switch(key) {
 				case KeyEvent.VK_ESCAPE:
-					if(Game.enterButtonPushedDown) {
-						Game.escapePressedNegateAction = true;
+					if(Game.enterButtonPushedDown)
 						break;
-					}
 					if(!askToSkipSequence) {
 						askToSkipSequence = true;
 					}
@@ -4550,6 +4563,8 @@ public class Game extends Canvas implements Runnable {
 					if(askToSkipSequence && Game.escapePressedNegateAction == false)
 						skipSequence = true;
 					Game.keysAreInUse = true;
+					Game.enterButtonPushedDown = false;
+					Game.escapePressedNegateAction = false;
 					break;
 				default:
 					if(!askToSkipSequence) {
@@ -4557,10 +4572,10 @@ public class Game extends Canvas implements Runnable {
 					}
 					Game.keysAreInUse = true;
 					break;
-				}
-			if(!askToSkipSequence) {
-				askToSkipSequence = true;
 			}
+			//if(!askToSkipSequence) {
+			//	askToSkipSequence = true;
+			//}
 			
 			/*
 			if(xLBoolean || xRBoolean) {
