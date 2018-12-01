@@ -246,7 +246,13 @@ public class Player extends GameObject implements EntityA{
 		}
 		for(int i = 0; i < game.ed.size(); i ++){
 			EntityD tempEnt = game.ed.get(i);
-			if(Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "chainChompItem"){
+			if(Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "chainChompItem" ||
+					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "bulletBillItem" ||
+					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "bombOmbItem" ||
+					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "cheepCheepsItem" ||
+					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "ampItem" ||
+					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "wigglerItem" ||
+					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "lakituItem"){
 				tempEnt.getItemSoundLoop().play();
 				controller.removeEntity(tempEnt);
 				game.getHUD().setItemObtained(true);

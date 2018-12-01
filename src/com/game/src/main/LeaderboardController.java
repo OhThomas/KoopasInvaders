@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -62,10 +63,14 @@ public class LeaderboardController {
 			File score = new File("Score.txt");
 			File file = new File("Leaderboard.txt");
 			File filee = new File("NewLeaderboard.txt");
+		    List<String> lines = new ArrayList<String>();
 			for(int i = 0; i <= game.getPlayerName().size() - 1; i++) {
 				string = string + game.getPlayerName().get(i);
 			}
 			if(file.exists() && filee.exists() && score.exists()) {
+				if(game.getScoreEntered()) {
+					
+				}
 				Scanner scoreInput = new Scanner(score);
 				while(scoreInput.hasNextLine()) {
 					scoreString = scoreInput.nextLine();
@@ -76,8 +81,18 @@ public class LeaderboardController {
 				while (input.hasNextLine()) {
 				    //previousFileString += "\n";
 				    previousFileString = input.nextLine();
-				    fileWriter.write(previousFileString);
-				    fileWriter.newLine();
+				    if(!game.getScoreEntered()) {
+				    	fileWriter.write(previousFileString);
+				    	fileWriter.newLine();
+				    }
+				    else
+				    	lines.add(previousFileString);
+				}
+				if(game.getScoreEntered()) {
+					for(int i =0; i <= lines.size()-2; i++) {
+						fileWriter.write(lines.get(i));
+				    	fileWriter.newLine();
+					}
 				}
 				input.close();
 				if(previousFileString == null) {
@@ -224,6 +239,8 @@ public class LeaderboardController {
     }
     
     public void drawLeaderboard(Graphics g,ArrayList<BufferedImage> img) {
+    	if(img.isEmpty())
+    		return;
     	if(img.get(img.size()-1).getHeight() + ((img.size()-1) * 20) + 105 < (Game.HEIGHT * Game.SCALE)) {
     		for(int i = 0; i <= img.size()-1; i++) {
     			g.drawImage(img.get(i), 44, (i*20) + 105, null);
@@ -369,8 +386,9 @@ public class LeaderboardController {
     	String fireball1Unlocked = "";
     	String fireball2Unlocked = "";
     	String fireball3Unlocked = "";
-    	String item1Unlocked = "";
-    	String item2Unlocked = "";
+    	String item4Unlocked = "";
+    	String item5Unlocked = "";
+    	String item6Unlocked = "";
     	String currentlySelectedCharacterSkin = "";
     	String currentlySelectedTrack = "";
     	String currentlySelectedFireball = "";
@@ -390,8 +408,9 @@ public class LeaderboardController {
 				fireball1Unlocked = prop.getProperty("fireball1Unlocked");
 				fireball2Unlocked = prop.getProperty("fireball2Unlocked");
 				fireball3Unlocked = prop.getProperty("fireball3Unlocked");
-				item1Unlocked = prop.getProperty("item1Unlocked");
-				item2Unlocked = prop.getProperty("item2Unlocked");
+				item4Unlocked = prop.getProperty("item4Unlocked");
+				item5Unlocked = prop.getProperty("item5Unlocked");
+				item6Unlocked = prop.getProperty("item6Unlocked");
 				currentlySelectedCharacterSkin = prop.getProperty("currentlySelectedCharacterSkin");
 				currentlySelectedTrack = prop.getProperty("currentlySelectedTrack");
 				currentlySelectedFireball = prop.getProperty("currentlySelectedFireball");
@@ -429,14 +448,18 @@ public class LeaderboardController {
 					Game.fireball3Unlocked = true;
 				else
 					Game.fireball3Unlocked = false;
-				if(item1Unlocked.equals("true"))
-					Game.item1Unlocked = true;
+				if(item4Unlocked.equals("true"))
+					Game.item4Unlocked = true;
 				else
-					Game.item1Unlocked = false;
-				if(item2Unlocked.equals("true"))
-					Game.item2Unlocked = true;
+					Game.item4Unlocked = false;
+				if(item5Unlocked.equals("true"))
+					Game.item5Unlocked = true;
 				else
-					Game.item2Unlocked = false;
+					Game.item5Unlocked = false;
+				if(item6Unlocked.equals("true"))
+					Game.item6Unlocked = true;
+				else
+					Game.item6Unlocked = false;
 				switch(currentlySelectedCharacterSkin) {
 					case "0":
 						Game.currentlySelectedCharacterSkin = 0;
@@ -481,6 +504,31 @@ public class LeaderboardController {
 					break;
 				case "3":
 					Game.currentlySelectedFireball = 3;
+					break;
+				default: 
+					break;
+				}
+				switch(currentlySelectedItem) {
+				case "0":
+					Game.currentlySelectedItem = 0;
+					break;
+				case "1":
+					Game.currentlySelectedItem = 1;
+					break;
+				case "2":
+					Game.currentlySelectedItem = 2;
+					break;
+				case "3":
+					Game.currentlySelectedItem = 3;
+					break;
+				case "4":
+					Game.currentlySelectedItem = 4;
+					break;
+				case "5":
+					Game.currentlySelectedItem = 5;
+					break;
+				case "6":
+					Game.currentlySelectedItem = 6;
 					break;
 				default: 
 					break;
@@ -538,8 +586,9 @@ public class LeaderboardController {
 			settings.setProperty("fireball1Unlocked","false");
 			settings.setProperty("fireball2Unlocked","false");
 			settings.setProperty("fireball3Unlocked","false");
-			settings.setProperty("item1Unlocked","false");
-			settings.setProperty("item2Unlocked","false");
+			settings.setProperty("item4Unlocked","false");
+			settings.setProperty("item5Unlocked","false");
+			settings.setProperty("item6Unlocked","false");
 			settings.setProperty("currentlySelectedCharacterSkin", "0");
 			settings.setProperty("currentlySelectedTrack", "0");
 			settings.setProperty("currentlySelectedFireball", "0");
@@ -593,14 +642,18 @@ public class LeaderboardController {
 					settings.setProperty("fireball3Unlocked","true");
 				else
 					settings.setProperty("fireball3Unlocked","false");
-				if(Game.item1Unlocked == true)
-					settings.setProperty("item1Unlocked","true");
+				if(Game.item4Unlocked == true)
+					settings.setProperty("item4Unlocked","true");
 				else
-					settings.setProperty("item1Unlocked","false");
-				if(Game.item2Unlocked == true)
-					settings.setProperty("item2Unlocked","true");
+					settings.setProperty("item4Unlocked","false");
+				if(Game.item5Unlocked == true)
+					settings.setProperty("item5Unlocked","true");
 				else
-					settings.setProperty("item2Unlocked","false");
+					settings.setProperty("item5Unlocked","false");
+				if(Game.item6Unlocked == true)
+					settings.setProperty("item6Unlocked","true");
+				else
+					settings.setProperty("item6Unlocked","false");
 				switch(Game.currentlySelectedCharacterSkin) {
 					case 0:
 						settings.setProperty("currentlySelectedCharacterSkin","0");
@@ -649,6 +702,31 @@ public class LeaderboardController {
 				default:
 					break;
 				}
+				switch(Game.currentlySelectedItem) {
+				case 0:
+					settings.setProperty("currentlySelectedItem","0");
+					break;
+				case 1:
+					settings.setProperty("currentlySelectedItem","1");
+					break;
+				case 2:
+					settings.setProperty("currentlySelectedItem","2");
+					break;
+				case 3:
+					settings.setProperty("currentlySelectedItem","3");
+					break;
+				case 4:
+					settings.setProperty("currentlySelectedItem","4");
+					break;
+				case 5:
+					settings.setProperty("currentlySelectedItem","5");
+					break;
+				case 6:
+					settings.setProperty("currentlySelectedItem","6");
+					break;
+				default:
+					break;
+				}
 				settings.setProperty("volumeSliderPosition", volumeSliderIntPosition);
 				settings.setProperty("sfxMusicSliderPosition", sfxMusicSliderIntPosition);
 				if(Game.skipAnimations == true)
@@ -668,8 +746,9 @@ public class LeaderboardController {
 			settings.setProperty("fireball1Unlocked","false");
 			settings.setProperty("fireball2Unlocked","false");
 			settings.setProperty("fireball3Unlocked","false");
-			settings.setProperty("item1Unlocked","false");
-			settings.setProperty("item2Unlocked","false");
+			settings.setProperty("item4Unlocked","false");
+			settings.setProperty("item5Unlocked","false");
+			settings.setProperty("item6Unlocked","false");
 			settings.setProperty("currentlySelectedCharacterSkin", "0");
 			settings.setProperty("currentlySelectedTrack", "0");
 			settings.setProperty("currentlySelectedFireball", "0");
@@ -693,8 +772,9 @@ public class LeaderboardController {
 			settings.setProperty("fireball1Unlocked","false");
 			settings.setProperty("fireball2Unlocked","false");
 			settings.setProperty("fireball3Unlocked","false");
-			settings.setProperty("item1Unlocked","false");
-			settings.setProperty("item2Unlocked","false");
+			settings.setProperty("item4Unlocked","false");
+			settings.setProperty("item5Unlocked","false");
+			settings.setProperty("item6Unlocked","false");
 			settings.setProperty("currentlySelectedCharacterSkin", "0");
 			settings.setProperty("currentlySelectedTrack", "0");
 			settings.setProperty("currentlySelectedFireball", "0");

@@ -52,6 +52,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage marioSNESFireLuigiEntranceSprites = null;
 	private BufferedImage animatedStar = null;
 	private BufferedImage animatedShootingStar = null;
+	private BufferedImage ufoSprites = null;
 	private BufferedImage mario1StarSpriteSheet = null;
 	private BufferedImage marioItemsSpriteSheet = null;
 	private BufferedImage background = null;
@@ -123,7 +124,7 @@ public class Game extends Canvas implements Runnable {
 	private boolean spawnDone3 = false;
 	private boolean spawnDone4 = false;
 	private boolean youWon = false;
-	private boolean scoreEntered = false;
+	public static boolean scoreEntered = false;
 	private boolean marioHasBeenInvincible = false;
 	private boolean slowingDownFromPause = false;
 	private boolean keepRunningAfterPauseL = false;
@@ -151,6 +152,7 @@ public class Game extends Canvas implements Runnable {
 	public static boolean yesHighlighted = false;
 	public static boolean noHighlighted = false;
 	public static boolean skipHighlighted = false;
+	public static boolean submitHighlighted = false;
 	public static boolean playClicked = false;
 	public static boolean backOnPlay = false;
 	public static boolean shopClicked = false;
@@ -185,6 +187,8 @@ public class Game extends Canvas implements Runnable {
 	public static boolean backOnNo = false;
 	public static boolean skipClicked = false;
 	public static boolean backOnSkip = false;
+	public static boolean submitClicked = false;
+	public static boolean backOnSubmit = false;
 	public static boolean arrowL1Highlighted = false;
 	public static boolean arrowR1Highlighted = false;
 	public static boolean arrowL2Highlighted = false;
@@ -240,8 +244,9 @@ public class Game extends Canvas implements Runnable {
 	public static boolean fireball1Unlocked = false;
 	public static boolean fireball2Unlocked = false;
 	public static boolean fireball3Unlocked = false;
-	public static boolean item1Unlocked = false;
-	public static boolean item2Unlocked = false;
+	public static boolean item4Unlocked = false;
+	public static boolean item5Unlocked = false;
+	public static boolean item6Unlocked = false;
 	public static boolean currentSkinLocked = false;
 	public static boolean currentTrackLocked = false;
 	public static boolean currentFireballLocked = false;
@@ -254,6 +259,8 @@ public class Game extends Canvas implements Runnable {
 	public static boolean skipAnimations = false;
 	public static boolean areYouSureBoolean = false;
 	public static boolean starExplode = false;
+	public static boolean ufoSpawned = false;
+	public static boolean alienisDead = false;
 	public static int mx = 0;
 	public static int my = 0;
 	public static int totalPoints = 0;
@@ -276,11 +283,12 @@ public class Game extends Canvas implements Runnable {
 	private String itemName;
 	private int numberOfFireBallsShot = 0;
 	private int numberOfFireBallsShotDecoy = 0;
-	private char postLetter = '=';
-	private float imageTranslucent = 0;
+	public static char postLetter = '=';
+	public static float imageTranslucent = 0;
 	private double imageTranslucentVelocity = 0;
 	private long imageTranslucentTimer = 0;
 	private long traverseTime = 0;
+	private long traverseTime2 = 0;
 	private boolean imageIsGone = false;
 	long imageTranslucentTimer2=0;
 	boolean imageStayOn = false;
@@ -397,6 +405,7 @@ public class Game extends Canvas implements Runnable {
 	private ShopController shop;
 	private MouseLocator mouseLocator;
 	private StarExplosion starExplosion;
+	private UFO ufo;
 	
 	public static BufferedImage title = null;
 	public static BufferedImage gameOverTitle = null;
@@ -500,6 +509,12 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage skipTitleSelected = null;
 	private BufferedImage skipTitleSelectedClicked = null;
 	private BufferedImage skipTitleSelectedNormal = null;
+	private BufferedImage submitTitle = null;
+	private BufferedImage submitTitleGlow = null;
+	private BufferedImage submitTitleClicked = null;
+	private BufferedImage submitTitleSelected = null;
+	private BufferedImage submitTitleSelectedClicked = null;
+	private BufferedImage submitTitleSelectedNormal = null;
 	private BufferedImage currentlySelected10x10 = null;
 	public static BufferedImage skinTitle = null;
 	public static BufferedImage tracksTitle = null;
@@ -553,6 +568,7 @@ public class Game extends Canvas implements Runnable {
 			marioSNESFireLuigiEntranceSprites = loader.loadImage("/mario3entrancesprites.png");
 			animatedStar = loader.loadImage("/animatedstar.png");
 			animatedShootingStar = loader.loadImage("/shootingstarworadiant.png");
+			ufoSprites = loader.loadImage("/ufoalien.png");
 			mario1StarSpriteSheet = loader.loadImage("/mario1starspritesheet.png");
 			marioItemsSpriteSheet = loader.loadImage("/marioItemssmaller.png");
 			background = loader.loadImage("/starsbackgroundbigger.png");
@@ -689,6 +705,12 @@ public class Game extends Canvas implements Runnable {
 			skipTitleSelected = loader.loadImage("/newskipbuttonselected.png");
 			skipTitleSelectedClicked = loader.loadImage("/newskipbuttonselectedclicked.png");
 			skipTitleSelectedNormal = loader.loadImage("/newskipbuttonselectednormal.png");
+			submitTitle = loader.loadImage("/newsubmitbutton.png");
+			submitTitleGlow = loader.loadImage("/newsubmitbuttonglow.png");
+			submitTitleClicked = loader.loadImage("/newsubmitbuttonclicked.png");
+			submitTitleSelected = loader.loadImage("/newsubmitbuttonselected.png");
+			submitTitleSelectedClicked = loader.loadImage("/newsubmitbuttonselectedclicked.png");
+			submitTitleSelectedNormal = loader.loadImage("/newsubmitbuttonselectednormal.png");
 			volumeSlider = loader.loadImage("/volumeslider.png");
 			volumeSliderGlow = loader.loadImage("/volumesliderglow.png");
 			volumeSliderClicked = loader.loadImage("/volumesliderclicked.png");
@@ -836,6 +858,54 @@ public class Game extends Canvas implements Runnable {
 				bb.tick();
 			}
 		}
+		else if(State == State.MENU) {
+			Random rand = new Random();
+			if(rand.nextInt(50000) == 1 && ufoSpawned == false) {
+				if(rand.nextInt(2) == 1) {
+					switch(rand.nextInt(4)) {
+						case 0:
+							c.addEntity(new UFO(Game.WIDTH * Game.SCALE,70,tex,c,this));
+							break;
+						case 1:
+							c.addEntity(new UFO(Game.WIDTH * Game.SCALE,170,tex,c,this));
+							break;
+						case 2:
+							c.addEntity(new UFO(Game.WIDTH * Game.SCALE,270,tex,c,this));
+							break;
+						case 3:
+							c.addEntity(new UFO(Game.WIDTH * Game.SCALE,370,tex,c,this));
+							break;
+						default:
+							c.addEntity(new UFO(Game.WIDTH * Game.SCALE,70,tex,c,this));
+							break;
+					}
+				}
+				else {
+					switch(rand.nextInt(4)) {
+						case 0:
+							c.addEntity(new UFO(-40,70,tex,c,this));
+							break;
+						case 1:
+							c.addEntity(new UFO(-40,170,tex,c,this));
+							break;
+						case 2:
+							c.addEntity(new UFO(-40,270,tex,c,this));
+							break;
+						case 3:
+							c.addEntity(new UFO(-40,370,tex,c,this));
+							break;
+						default:
+							c.addEntity(new UFO(-40,70,tex,c,this));
+							break;
+					}
+				}
+				ufoSpawned = true;
+			}
+			if(ufoSpawned)
+				c.tick();
+		}
+		else if(State != STATE.TRANSITION_ENTRANCE && ufoSpawned)
+			c.tick();
 		if(!(State == STATE.TRANSITION_ITEM))
 			starAnim.runAnimation();
 		if(State == STATE.TRANSITION_ENTRANCE)
@@ -1084,7 +1154,7 @@ public class Game extends Canvas implements Runnable {
 			if(spawnItem == true){
 				switch(this.itemName){
 				case "chainChompItem":
-					c.addEntity(new ChainChomp(p.getX(),p.getY()-50, tex, this));
+					c.addEntity(new ChainChompItem(p.getX(),p.getY()-50, tex, this));
 					//spawnChainChomp
 					break;
 				default:
@@ -1266,11 +1336,11 @@ public class Game extends Canvas implements Runnable {
 			}
 			
 		//if (i == rand.nextInt())
-			if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false){	
+			if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false && traverseTime2 != System.currentTimeMillis()){	
 				boolean spawnShell = true;
 				Random rand = new Random();
 				int i = rand.nextInt(eb.size());
-				if(eb.get(i).getEntityBDead() == false) {
+				if(eb.get(i).getEntityBDead() == false && rand.nextInt(780) == 1) {
 					for(int j =0; j < eb.size(); j++) {
 						if((eb.get(i).getX() <= eb.get(j).getX() + eb.get(j).getWidth() && eb.get(i).getX() >= eb.get(j).getX() && eb.get(j).getEntityBDead() == false) ||
 						(eb.get(i).getX() + eb.get(i).getWidth() >= eb.get(j).getX() && eb.get(j).getX() >= eb.get(i).getX() && eb.get(j).getEntityBDead() == false) ||
@@ -1300,6 +1370,7 @@ public class Game extends Canvas implements Runnable {
 					if (spawnShell)
 						c.addEntity(new GreenShell(eb.get(i).getX(),eb.get(i).getY() - 32,tex, this));
 				}
+				traverseTime2 = System.currentTimeMillis();
 			}
 			if(spawnDone4 == true){												//Spawning Bowser Mechanics
 				hud.render(g);
@@ -1356,15 +1427,15 @@ public class Game extends Canvas implements Runnable {
 				int k = rand.nextInt(2);
 				if(k == 0){
 					if(j == 0)
-						c.addEntity(new ChainChompItem(-16,this.playerY() - 32,tex, this));
+						c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));
 					else if(j == 1)
-						c.addEntity(new ChainChompItem(-16,this.playerY() - 32,tex, this));
+						c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));
 				}
 				else{
 					if(j == 0)
-						c.addEntity(new ChainChompItem((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
+						c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
 					else if(j == 1)
-						c.addEntity(new ChainChompItem((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
+						c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
 				}
 			}
 			if (animationTimer1 != 0){													//if they shoot a fireball this stops them
@@ -1427,6 +1498,9 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
+			}
+			if(ufoSpawned) {
+				c.render(g);
 			}
 			//this.addMouseMotionListener(new MouseMotionListener);
 			mouseLocator.locateMouse();
@@ -1745,13 +1819,46 @@ public class Game extends Canvas implements Runnable {
 				marioTurningWithItem.nextFrame();
 					switch(hud.getItemName()){
 						case "chainChompItem":
-							currentItem = new Animation(6,tex.bigChainChompItem[0],
-									tex.bigChainChompItem[1],tex.bigChainChompItem[2],tex.bigChainChompItem[3],
-									tex.bigChainChompItem[4],tex.bigChainChompItem[5],tex.bigChainChompItem[6],
-									tex.bigChainChompItem[7],tex.bigChainChompItem[8]);
+							currentItem = new Animation(6,tex.bigChainChompItemBall[0],
+									tex.bigChainChompItemBall[1],tex.bigChainChompItemBall[2],tex.bigChainChompItemBall[3],
+									tex.bigChainChompItemBall[4],tex.bigChainChompItemBall[5],tex.bigChainChompItemBall[6],
+									tex.bigChainChompItemBall[7],tex.bigChainChompItemBall[8]);
 							currentItem.nextFrame();
-							currentItemImg = tex.bigChainChompItem[0];
+							currentItemImg = tex.bigChainChompItemBall[0];
 							//useChainChompAnimation
+							break;
+						case "bulletBillItem":
+							currentItem = new Animation(6,tex.bigBulletBillItemBall,
+									tex.bigBulletBillItemBall,tex.bigBulletBillItemBall,tex.bigBulletBillItemBall,
+									tex.bigBulletBillItemBall,tex.bigBulletBillItemBall,tex.bigBulletBillItemBall,
+									tex.bigBulletBillItemBall,tex.bigBulletBillItemBall);
+							currentItem.nextFrame();
+							currentItemImg = tex.bigBulletBillItemBall;
+							break;
+						case "bombOmbItem":
+							currentItem = new Animation(6,tex.bigBombOmbItemBall,
+									tex.bigBombOmbItemBall,tex.bigBombOmbItemBall,tex.bigBombOmbItemBall,
+									tex.bigBombOmbItemBall,tex.bigBombOmbItemBall,tex.bigBombOmbItemBall,
+									tex.bigBombOmbItemBall,tex.bigBombOmbItemBall);
+							currentItem.nextFrame();
+							currentItemImg = tex.bigBombOmbItemBall;
+							break;
+						case "cheepCheepsItem":
+							currentItem = new Animation(6,tex.bigCheepCheepsItemBall,
+								tex.bigCheepCheepsItemBall,tex.bigCheepCheepsItemBall,tex.bigCheepCheepsItemBall,
+								tex.bigCheepCheepsItemBall,tex.bigCheepCheepsItemBall,tex.bigCheepCheepsItemBall,
+								tex.bigCheepCheepsItemBall,tex.bigCheepCheepsItemBall);
+							currentItem.nextFrame();
+							currentItemImg = tex.bigCheepCheepsItemBall;
+							break;
+						case "ampItem":
+							currentItemImg = tex.bigAmpItemBall;
+							break;
+						case "wigglerItem":
+							currentItemImg = tex.bigWigglerItemBall;
+							break;
+						case "lakituItem":
+							currentItemImg = tex.bigLakituItemBall;
 							break;
 						default:
 							break;
@@ -2150,6 +2257,8 @@ public class Game extends Canvas implements Runnable {
 			mouseLocator.locateMouse();
 			g.drawImage(setScoreTitleBigger, Game.WIDTH / 2 + 35 , 20, null);
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
+			HUD.clickyButton(g, submitTitle, submitTitleGlow, submitTitleClicked, Game.submitHighlighted, Game.submitClicked, Game.backOnSubmit, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH-51, 300);
+			
 			/*
 			if(!this.backHighlighted)
 				g.drawImage(backButtonTitle, 40, 20, null);
@@ -2157,15 +2266,21 @@ public class Game extends Canvas implements Runnable {
 				g.drawImage(backButtonTitleGlow, 40, 20, null);
 			*/
 			if(Game.keysAreInUse) {
-				if(Game.backHighlighted || Game.backClicked) {
+				if(Game.backHighlighted || Game.backClicked || Game.submitHighlighted || Game.submitClicked) {
 					Game.backHighlighted = false;
 					Game.backClicked = false;
+					Game.submitHighlighted = false;
+					Game.submitClicked = false;
 				}
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 					case -1:
 						g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleClicked,40, 20,null);
+						break;
+					case 1:
+						g.drawImage(submitTitleSelectedClicked,Game.WIDTH-51-7, 300 -7,null);
+						g.drawImage(submitTitleClicked, Game.WIDTH-51, 300,null);
 						break;
 					}
 				}
@@ -2175,6 +2290,10 @@ public class Game extends Canvas implements Runnable {
 						g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitle,40, 20,null);
 						break;
+					case 1:
+						g.drawImage(submitTitleSelectedNormal,Game.WIDTH-51-7, 300 -7,null);
+						g.drawImage(submitTitle, Game.WIDTH-51, 300,null);
+						break;
 					}
 				}
 				else {
@@ -2182,6 +2301,10 @@ public class Game extends Canvas implements Runnable {
 					case -1:
 						g.drawImage(backTitleSelected,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleGlow,40, 20,null);
+						break;
+					case 1:
+						g.drawImage(submitTitleSelected,Game.WIDTH-51-7, 300 -7,null);
+						g.drawImage(submitTitleGlow, Game.WIDTH-51, 300,null);
 						break;
 					}
 				}
@@ -2239,16 +2362,29 @@ public class Game extends Canvas implements Runnable {
 						Game.selectorButtonPosition = 0;
 						State = STATE.GAMEOVER;
 						postLetter = '=';
+						if(Game.smb31PupSoundLoop.clipIsActive())
+							Game.smb31PupSoundLoop.stop();
+						Game.smb31PupSoundLoop.play();
 						break;
 					}
 					else if(this.scoreEntered == true) {
+						leaderboard.setNameDecoy("");
+						leaderboard.setScoreDecoy("");
+						leaderboard.setStringDecoy("");
 						Game.selectorButtonPosition = 0;
 						State = STATE.GAMEOVER;
+						leaderboard.writeScore();
 						postLetter = '=';
+						if(Game.smb31PupSoundLoop.clipIsActive())
+							Game.smb31PupSoundLoop.stop();
+						Game.smb31PupSoundLoop.play();
 						break;
 					}
 					else {
 						postLetter = '=';
+						if(Game.smwErrorSoundLoop.clipIsActive())
+							Game.smwErrorSoundLoop.stop();
+						Game.smwErrorSoundLoop.play();
 						break;
 					}
 				}
@@ -2291,6 +2427,9 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
+			}
+			if(ufoSpawned) {
+				c.render(g);
 			}
 			mouseLocator.locateMouse();
 			g.drawImage(leaderboardTitleBigger, Game.WIDTH / 2, 20, null);
@@ -2411,6 +2550,9 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
+			}
+			if(ufoSpawned) {
+				c.render(g);
 			}
 			g.drawImage(shopTitle, Game.WIDTH - 54, 20, null);
 			g.drawImage(skinTitle, 20, 120, null);
@@ -2724,6 +2866,9 @@ public class Game extends Canvas implements Runnable {
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
 			}
+			if(ufoSpawned) {
+				c.render(g);
+			}
 			mouseLocator.locateMouse();
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
 			if(Game.keysAreInUse) {
@@ -2796,6 +2941,9 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
+			}
+			if(ufoSpawned) {
+				c.render(g);
 			}
 			mouseLocator.locateMouse();
 			g.drawImage(settingsTitleBigger,Game.WIDTH-128,20,null);
@@ -3283,12 +3431,11 @@ public class Game extends Canvas implements Runnable {
 		else if(State == STATE.SET_SCORE) {
 			if(Game.keysAreInUse) {
 				switch(key) {
-					case KeyEvent.VK_W: case KeyEvent.VK_UP:
-					case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
-						if(!Game.keysAreInUse) {
-							Game.keysAreInUse = true;
-							break;
-						}
+					case KeyEvent.VK_W:
+						if(Game.enterButtonPushedDown)
+							Game.escapePressedNegateAction = true;
+						break;
+					case KeyEvent.VK_S:
 						if(Game.enterButtonPushedDown)
 							Game.escapePressedNegateAction = true;
 						break;
@@ -3301,9 +3448,44 @@ public class Game extends Canvas implements Runnable {
 							break;
 						}
 					case KeyEvent.VK_ESCAPE:
-					case KeyEvent.VK_S: case KeyEvent.VK_RIGHT:
-					case KeyEvent.VK_D: case KeyEvent.VK_DOWN:
-						Game.keysAreInUse = false;
+						if(!Game.keysAreInUse) {
+							Game.keysAreInUse = true;
+							break;
+						}
+						if(Game.enterButtonPushedDown)
+							Game.escapePressedNegateAction = true;
+						break;
+					case KeyEvent.VK_UP:
+						if(Game.enterButtonPushedDown)
+							Game.escapePressedNegateAction = true;
+						if(!Game.keysAreInUse) {
+							Game.keysAreInUse = true;
+							Game.selectorButtonPosition = -1;
+							break;
+						}
+						if(Game.selectorButtonPosition == 1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition--;
+						}
+						if(Game.selectorButtonPosition > -1)
+							Game.selectorButtonPosition--;
+						break;
+					case KeyEvent.VK_DOWN:
+						if(Game.enterButtonPushedDown)
+							Game.escapePressedNegateAction = true;
+						if(!Game.keysAreInUse) {
+							Game.keysAreInUse = true;
+							Game.selectorButtonPosition = 1;
+							break;
+						}
+						if(Game.selectorButtonPosition == -1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition++;
+						}
+						if(Game.selectorButtonPosition < 1)
+							Game.selectorButtonPosition++;
+						break;
+					default:
 						break;
 				}
 			}
@@ -3439,9 +3621,40 @@ public class Game extends Canvas implements Runnable {
 						postLetter = '+';
 						break;
 					case KeyEvent.VK_ENTER:
+						Game.enterButtonPushedDown = true;
 						break;
 					case KeyEvent.VK_ESCAPE:
 						Game.keysAreInUse = true;
+						break;
+					case KeyEvent.VK_UP:
+						if(Game.enterButtonPushedDown)
+							Game.escapePressedNegateAction = true;
+						if(!Game.keysAreInUse) {
+							Game.keysAreInUse = true;
+							Game.selectorButtonPosition = -1;
+							break;
+						}
+						if(Game.selectorButtonPosition == 1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition--;
+						}
+						if(Game.selectorButtonPosition > -1)
+							Game.selectorButtonPosition--;
+						break;
+					case KeyEvent.VK_DOWN:
+						if(Game.enterButtonPushedDown)
+							Game.escapePressedNegateAction = true;
+						if(!Game.keysAreInUse) {
+							Game.keysAreInUse = true;
+							Game.selectorButtonPosition = 1;
+							break;
+						}
+						if(Game.selectorButtonPosition == -1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition++;
+						}
+						if(Game.selectorButtonPosition < 1)
+							Game.selectorButtonPosition++;
 						break;
 					default:
 						break;
@@ -4600,6 +4813,10 @@ public class Game extends Canvas implements Runnable {
 					}
 					break;
 				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+						break;
+					}
 					if(askToSkipSequence && Game.escapePressedNegateAction == false)
 						skipSequence = true;
 					Game.keysAreInUse = true;
@@ -4642,6 +4859,10 @@ public class Game extends Canvas implements Runnable {
 					}
 					break;
 				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+						break;
+					}
 					if(askToSkipSequence && Game.escapePressedNegateAction == false)
 						skipSequence = true;
 					Game.keysAreInUse = true;
@@ -4678,8 +4899,18 @@ public class Game extends Canvas implements Runnable {
 				case KeyEvent.VK_ENTER:
 					Game.enterButtonPushedDown = false;
 					if(!Game.escapePressedNegateAction) {
-						Game.selectorButtonPosition = -2;
-						Game.State = Game.STATE.GAMEOVER;
+						switch(Game.selectorButtonPosition) {
+							case -1:
+								Game.selectorButtonPosition = -2;
+								Game.State = Game.STATE.GAMEOVER;
+								break;
+							case 1:
+								postLetter = '~';
+								break;
+							default:
+								break;
+								
+						}
 					}
 					Game.escapePressedNegateAction = false;
 					break;
@@ -4691,7 +4922,8 @@ public class Game extends Canvas implements Runnable {
 						shiftOn = false;
 						break;
 					case KeyEvent.VK_ENTER:
-						postLetter = '~';
+						if(!Game.escapePressedNegateAction) 
+							postLetter = '~';
 						Game.enterButtonPushedDown = false;
 						Game.escapePressedNegateAction = false;
 						break;
@@ -4875,7 +5107,7 @@ public class Game extends Canvas implements Runnable {
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 					case -12:
-						if(Game.itemPosition == 2)//Max Items
+						if(Game.itemPosition == 6)//Max Items
 							Game.itemPosition = 0;
 						else
 							Game.itemPosition++;
@@ -5196,7 +5428,7 @@ public class Game extends Canvas implements Runnable {
 						if(Game.itemPosition > 0)
 							Game.itemPosition--;
 						else
-							Game.itemPosition = 2;//Set to Max Items
+							Game.itemPosition = 6;//Set to Max Items
 						Game.itemNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.itemPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
@@ -5245,8 +5477,9 @@ public class Game extends Canvas implements Runnable {
 							Game.fireball1Unlocked = false;
 							Game.fireball2Unlocked = false;
 							Game.fireball3Unlocked = false;
-							Game.item1Unlocked = false;
-							Game.item2Unlocked = false;
+							Game.item4Unlocked = false;
+							Game.item5Unlocked = false;
+							Game.item6Unlocked = false;
 							Game.currentlySelectedCharacterSkin = 0;
 							Game.currentlySelectedTrack = 0;
 							Game.currentlySelectedFireball = 0;
@@ -5357,9 +5590,13 @@ public class Game extends Canvas implements Runnable {
 	}
 	public static Boolean isPixelTransparentinBufferedImage(BufferedImage img, int x, int y) {
 		//System.out.println(img.getWidth()+"x is "+x);
+		if(x == img.getWidth())
+			x--;
+		if(y == img.getHeight())
+			y--;
 		if(x >= img.getWidth() || x < 0)
 			return false;
-		if(y >= img.getHeight() || y < 0)
+		if(y >= img.getHeight() || y < 0) 
 			return false;
 		int p = img.getRGB(x, y);
 		int a = (p>>24) & 0xff;
@@ -5965,6 +6202,10 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getAnimatedShootingStar(){
 		return animatedShootingStar;
+	}
+	
+	public BufferedImage getUFOSprites(){
+		return ufoSprites;
 	}
 	
 	public BufferedImage getMario1StarSpriteSheet(){

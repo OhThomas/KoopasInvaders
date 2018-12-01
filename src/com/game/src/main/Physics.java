@@ -122,6 +122,22 @@ public static boolean Collision(EntityC entc, EntityB entb){
 		return false;
 	}
 	
+	public static boolean Collision(Rectangle rect, EntityB entb){
+		
+		if(rect.getBounds().intersects(entb.getBounds())){
+			return true;
+		}
+		return false;
+		}
+	
+	public static boolean Collision(EntityB entb, Rectangle rect){
+		
+		if(entb.getBounds().intersects(rect.getBounds())){
+			return true;
+		}
+		return false;
+	}
+	
 	public static boolean Collision(EntityA enta, BasicBlocks bb){
 		for(int i = 0; i < bb.wall.size(); i++){
 			if(enta.getBounds().intersects(bb.wall.get(i).getBounds2D()))

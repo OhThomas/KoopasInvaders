@@ -23,22 +23,65 @@ public class RedShellFireball extends GameObject implements EntityA {
 		super(x, y);
 		this.tex = tex;
 		this.game = game;
+		if(Game.WIDTH * Game.SCALE <= this.x+16) {
+			this.x-=11;
+			if(velX > 0)
+				velX = 0.0;
+		}
+		else if(x <= 0) {
+			this.x+=1;
+			if(velX < 0)
+				velX = 0.0;
+		}
 		if(velX < 0) {
-			this.velX = -5;
-			ySpeed = 8;
+			this.velX = -2.4;
+			ySpeed = 6;//8
 		}
 		else if(velX > 0) {
-			this.velX = 5;
-			ySpeed = 8;
+			this.velX = 2.4;
+			ySpeed = 6;//8
 		}
 		else if(velX == 0)
 			ySpeed = 6;
+		if(!game.eb.isEmpty()){
+			for(int i = 0; i < game.eb.size(); i++){
+
+				EntityB tempEnt = game.eb.get(i);
+				if((Math.abs((int)this.getX() - (int)game.eb.get(i).getX()) < xDestination) || game.eb.size() == 1){
+						xDestination = Math.abs((int)this.getX() - (int)game.eb.get(i).getX());
+						ebMarked = i;
+				}
+				if(Physics.Collision(this, tempEnt)){
+					if(!tempEnt.enemyType().equals("Bowser")) {
+						//if(this.itemSoundLoop.getSoundLoopBoolean() == false) {
+						//	this.itemSoundLoop.play();
+						//	this.itemSoundLoop.setSoundLoopBoolean(true);
+						//}
+						ebMarked = -1;
+					}
+					else {
+						HUD.HEALTH -= 4;
+						//chainChompisDead = true;
+						//MAKE EXPLOSION SOUND
+						//Death Sound
+					}
+				}
+			}
+			if(ebMarked != -1 && ebMarked < game.eb.size()){
+				if(game.eb.get(ebMarked).getX() < this.getX())
+					xDirection = 1;//x--
+				else
+					xDirection = 0;
+			}
+		}
 		anim = new Animation(5,tex.redShell[0],tex.redShell[1],tex.redShell[2],tex.redShell[3]);
 	}
 	
 	public void tick(){
 		if(!Physics.Collision(this, game.getBb())){
 			y -= ySpeed;
+			if(xDestination < 15 && y < 370)
+				x+=velX*1.5;
 			x+=velX;
 			if (this.getY() <= -8)
 				game.ea.remove(this);
@@ -52,12 +95,6 @@ public class RedShellFireball extends GameObject implements EntityA {
 					velX = velX + 0.05;
 			}
 			if(!game.eb.isEmpty()){
-				if(ebMarked != -1 && ebMarked < game.eb.size()){
-					if(game.eb.get(ebMarked).getX() < this.getX())
-						xDirection = 0;//x--
-					else
-						xDirection = 1;
-				}
 				for(int i = 0; i < game.eb.size(); i++){
 	
 					EntityB tempEnt = game.eb.get(i);
@@ -85,6 +122,13 @@ public class RedShellFireball extends GameObject implements EntityA {
 			else if(game.eb.isEmpty()){
 				xDirection = -1;
 			}
+			if(ebMarked != -1 && ebMarked < game.eb.size()){
+				if(xDirection == 0 && game.eb.get(ebMarked).getX() < this.getX())
+					xDirection = 1;//x--
+				else if(xDirection == 1 && game.eb.get(ebMarked).getX() > this.getX())
+					xDirection = 0;
+			}
+			
 			/*
 			if(Physics.Collision(this, game.eb)){
 				System.out.println("Collision detected!");
@@ -159,6 +203,12 @@ public class RedShellFireball extends GameObject implements EntityA {
 			}
 			else if(game.eb.isEmpty()){
 				xDirection = -1;
+			}
+			if(ebMarked != -1 && ebMarked < game.eb.size()){
+				if(xDirection == 0 && game.eb.get(ebMarked).getX() < this.getX())
+					xDirection = 1;//x--
+				else if(xDirection == 1 && game.eb.get(ebMarked).getX() > this.getX())
+					xDirection = 0;
 			}
 			y-=0.5;
 			x+=(velX/6);

@@ -31,6 +31,12 @@ public class HUD {
 	private BufferedImage marioAdditionSign = null;
 	private BufferedImage itemFrame = null;
 	private BufferedImage chainChompItemFrameDisplay = null;
+	private BufferedImage bulletBillItemFrameDisplay = null;
+	private BufferedImage bombOmbItemFrameDisplay = null;
+	private BufferedImage cheepCheepsItemFrameDisplay = null;
+	private BufferedImage ampItemFrameDisplay = null;
+	private BufferedImage wigglerItemFrameDisplay = null;
+	private BufferedImage lakituItemFrameDisplay = null;
 	private BufferedImage pressE = null;
 	
 	private SoundLoops itemEnemySoundLoop = null;
@@ -44,6 +50,12 @@ public class HUD {
 		this.marioAdditionSign = tex.marioNumbersSmall[11];
 		this.itemFrame = tex.itemFrame;
 		this.chainChompItemFrameDisplay = tex.chainChompItemFrameDisplay;
+		this.bulletBillItemFrameDisplay = tex.bulletBillItemFrameDisplay;
+		this.bombOmbItemFrameDisplay = tex.bombOmbItemFrameDisplay;
+		this.cheepCheepsItemFrameDisplay = tex.cheepCheepsItemFrameDisplay;
+		this.ampItemFrameDisplay = tex.ampItemFrameDisplay;
+		this.wigglerItemFrameDisplay = tex.wigglerItemFrameDisplay;
+		this.lakituItemFrameDisplay = tex.lakituItemFrameDisplay;
 		this.pressE = tex.pressE;
 		String itemEnemyFile = "res/Sounds/SFX/smb3_sound_effects_inventory_open_close.wav";
 		SoundLoops itemEnemySoundLoops = new SoundLoops(itemEnemyFile);
@@ -121,8 +133,31 @@ public class HUD {
 			stringToScore(g, scoreString);
 			g.drawImage(itemFrame, Game.WIDTH,0, null);
 			if(itemObtained == true){
-				if (itemName == "chainChompItem")
-					g.drawImage(chainChompItemFrameDisplay, Game.WIDTH+2,2, null);
+					switch(itemName) {
+					case "chainChompItem":
+						g.drawImage(chainChompItemFrameDisplay, Game.WIDTH+2,2, null);
+						break;
+					case "bulletBillItem":
+						g.drawImage(bulletBillItemFrameDisplay, Game.WIDTH+2,2, null);
+						break;
+					case "bombOmbItem":
+						g.drawImage(bombOmbItemFrameDisplay, Game.WIDTH+2,2, null);
+						break;
+					case "cheepCheepsItem":
+						g.drawImage(cheepCheepsItemFrameDisplay, Game.WIDTH+2,2, null);
+						break;
+					case "ampItem":
+						g.drawImage(ampItemFrameDisplay, Game.WIDTH+2,2, null);
+						break;
+					case "wigglerItem":
+						g.drawImage(wigglerItemFrameDisplay, Game.WIDTH+2,2, null);
+						break;
+					case "lakituItem":
+						g.drawImage(lakituItemFrameDisplay, Game.WIDTH+2,2, null);
+						break;
+					default:
+						break;
+					}
 				
 				Graphics2D g2d = (Graphics2D)g.create();
 				g2d.setComposite(makeComposite(imageTranslucent));
@@ -177,9 +212,33 @@ public class HUD {
 			stringToScore(g, scoreString);
 			g.drawImage(itemFrame, Game.WIDTH,0, null);
 			if(itemObtained == true){
-				if (itemName == "chainChompItem")
+				switch(itemName) {
+				case "chainChompItem":
 					g.drawImage(chainChompItemFrameDisplay, Game.WIDTH+2,2, null);
-				
+					break;
+				case "bulletBillItem":
+					g.drawImage(bulletBillItemFrameDisplay, Game.WIDTH+2,2, null);
+					break;
+				case "bombOmbItem":
+					g.drawImage(bombOmbItemFrameDisplay, Game.WIDTH+2,2, null);
+					break;
+				case "cheepCheepsItem":
+					g.drawImage(cheepCheepsItemFrameDisplay, Game.WIDTH+2,2, null);
+					break;
+				case "ampItem":
+					g.drawImage(ampItemFrameDisplay, Game.WIDTH+2,2, null);
+					break;
+				case "wigglerItem":
+					g.drawImage(wigglerItemFrameDisplay, Game.WIDTH+2,2, null);
+					break;
+				case "lakituItem":
+					g.drawImage(lakituItemFrameDisplay, Game.WIDTH+2,2, null);
+					break;
+				default:
+					break;
+				}
+				//if (itemName == "chainChompItem")
+					//g.drawImage(chainChompItemFrameDisplay, Game.WIDTH+2,2, null);
 				Graphics2D g2d = (Graphics2D)g.create();
 				g2d.setComposite(makeComposite(imageTranslucent));
 				g2d.drawImage(pressE,Game.WIDTH-10,28,null);

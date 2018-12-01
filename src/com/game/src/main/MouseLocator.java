@@ -1017,6 +1017,34 @@ public class MouseLocator {
 							Game.backOnResetStats = false;
 					}
 				}
+				
+				if(Game.State == STATE.SET_SCORE) {
+					//Submit Score Button in Settings Menu
+					if(mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH + 51) {
+						if(my >= 300 && my <= 332) {
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.submitClicked )
+									Game.backOnSubmit = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.submitHighlighted = true;
+						}
+						else if(Game.submitHighlighted == true || Game.submitClicked == true) {
+							if(Game.submitClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.submitHighlighted = false;
+							Game.backOnSubmit = false;
+						}
+						else if(Game.backOnSubmit)
+							Game.backOnSubmit = false;
+					}
+					else if(Game.submitHighlighted == true || Game.submitClicked == true) {
+						if(Game.submitClicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.submitHighlighted = false;
+						Game.backOnSubmit = false;
+					}
+					else if(Game.backOnSubmit)
+						Game.backOnSubmit = false;
+				}
 				/*
 					//Help Button Highlighted
 					if (mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.MENU ||
@@ -1123,6 +1151,7 @@ public class MouseLocator {
 			Game.yesHighlighted = false;
 			Game.noHighlighted = false;
 			Game.skipHighlighted = false;
+			Game.submitHighlighted = false;
 			
 		}
 		

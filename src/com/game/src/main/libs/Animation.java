@@ -1,7 +1,10 @@
 package com.game.src.main.libs;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 
 public class Animation {
 
@@ -1831,6 +1834,36 @@ public class Animation {
 		g.drawImage(currentImg, (int)x - offset, (int)y, null);
 	}
 	
+	 public BufferedImage rotateImage(BufferedImage img, double angle) {
+
+         double rads = Math.toRadians(angle);
+         double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+         int w = img.getWidth();
+         int h = img.getHeight();
+         int newWidth = (int) Math.floor(w * cos + h * sin);
+         int newHeight = (int) Math.floor(h * cos + w * sin);
+
+         BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+         Graphics2D g2d = rotated.createGraphics();
+         AffineTransform at = new AffineTransform();
+         at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+         int x = w / 2;
+         int y = h / 2;
+
+         at.rotate(rads, x, y);
+         g2d.setTransform(at);
+         g2d.drawImage(img, 0, 0, null);
+         g2d.dispose();
+
+         return rotated;
+     }
+	public BufferedImage getCurrentImage() {
+		return currentImg;
+	}
+	public void setCurrentImage(BufferedImage img) {
+		currentImg = img;
+	}
 	public void setCount(int count){
 		this.count = count;
 	}

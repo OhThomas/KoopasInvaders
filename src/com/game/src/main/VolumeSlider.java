@@ -68,6 +68,7 @@ public class VolumeSlider {
 		adjustSFX(Game.smb3KickSoundLoop);
 		adjustSFX(Game.smb3OpenSoundLoop);
 		adjustSFX(Game.smb3TailSoundLoop);
+		adjustSFX(Game.smwErrorSoundLoop);
 		adjustSFX(Game.itemSwooshSoundLoop);
 		adjustSFX(Game.fireballSFX);
 		adjustSFX(Game.pauseSoundFXSoundLoop);

@@ -18,10 +18,22 @@ public class BuzzyBeetleShellFireball extends GameObject implements EntityA {
 		super(x, y);
 		this.tex = tex;
 		this.game = game;
-		if(velX < 0)
-			this.velX = -5;
-		else if(velX > 0)
-			this.velX = 5;
+		if(velX!=0) {
+			if(Game.WIDTH * Game.SCALE <= this.x+16) {
+				this.x-=11;
+				if(velX > 0)
+					velX = 0.0;
+			}
+			else if(x <= 0) {
+				this.x+=1;
+				if(velX < 0)
+					velX = 0.0;
+			}
+			if(velX < 0)
+				this.velX = -5;
+			else if(velX > 0)
+				this.velX = 5;
+		}
 		anim = new Animation(5,tex.buzzyBeetleShell[0],tex.buzzyBeetleShell[1],tex.buzzyBeetleShell[2],tex.buzzyBeetleShell[3]);
 	}
 	
