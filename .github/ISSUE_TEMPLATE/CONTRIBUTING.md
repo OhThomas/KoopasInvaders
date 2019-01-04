@@ -2,7 +2,7 @@
 
 ## Bug Report
 
-Report bugs [here.](ISSUE_TEMPLATE/bug_report.md)
+Report bugs [here.](../bug_report.md)
 
 ## Pull Requests
 
