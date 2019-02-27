@@ -1355,7 +1355,7 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			//SPAWN ENEMIES
-			/*
+			/**/
 			if (spawnDone == false){													//Spawning enemies
 				for(int i = 0; i < (Game.WIDTH * Game.SCALE); i+=64){
 					c.addEntity(new Enemy(i,0, tex, c , this));
@@ -1381,7 +1381,7 @@ public class Game extends Canvas implements Runnable {
 					c.addEntity(new Enemy2(i,52, tex, c , this));
 				}
 				spawnDone2 = true;
-			}*/
+			}
 			if(eb.isEmpty() && spawnDone3 == false){
 				this.enemyHitRightBarrier = false;
 				this.enemySpeedIncrease = 1.2;
