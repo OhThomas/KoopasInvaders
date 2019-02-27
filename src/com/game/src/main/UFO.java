@@ -148,9 +148,24 @@ public class UFO extends GameObject implements EntityB{
 	public boolean getEntityBDead() {
 		return ufoisDead;
 	}
+	
+	public void setEntityBDead(boolean dead) {
+		this.ufoisDead = dead;
+	}
 
 	public String enemyType() {
 		return enemyType;
 	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
 
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public void close() {
+		return;
+	}
 }

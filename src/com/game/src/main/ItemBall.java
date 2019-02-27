@@ -44,7 +44,7 @@ public class ItemBall extends GameObject implements EntityD{
 		if(Game.item6Unlocked)
 			randomIPlus++;
 		Random rand = new Random();
-		randomItem = rand.nextInt(4) + randomIPlus;
+		randomItem = rand.nextInt(7) + (-3+randomIPlus);
 		switch(randomItem) {
 		case 0:
 			anim = new Animation(1, tex.chainChompItemBall[0], tex.chainChompItemBall[1], tex.chainChompItemBall[2], tex.chainChompItemBall[3],
@@ -75,7 +75,7 @@ public class ItemBall extends GameObject implements EntityD{
 					tex.bulletBillItemBall[12], tex.bulletBillItemBall[13], tex.bulletBillItemBall[14], tex.bulletBillItemBall[15],
 					tex.bulletBillItemBall[16], tex.bulletBillItemBall[17], tex.bulletBillItemBall[18], tex.bulletBillItemBall[19],
 					tex.bulletBillItemBall[20], tex.bulletBillItemBall[21], tex.bulletBillItemBall[22], tex.bulletBillItemBall[23]);
-			animBackwards = new Animation(1, tex.bulletBillItemBall[23], tex.bulletBillItemBall[22], tex.chainChompItemBall[21],
+			animBackwards = new Animation(1, tex.bulletBillItemBall[23], tex.bulletBillItemBall[22], tex.bulletBillItemBall[21],
 					tex.bulletBillItemBall[20], tex.bulletBillItemBall[19], tex.bulletBillItemBall[18], tex.bulletBillItemBall[17],
 					tex.bulletBillItemBall[16], tex.bulletBillItemBall[15], tex.bulletBillItemBall[14], tex.bulletBillItemBall[13],
 					tex.bulletBillItemBall[12], tex.bulletBillItemBall[11], tex.bulletBillItemBall[10], tex.bulletBillItemBall[9],
@@ -373,6 +373,10 @@ public class ItemBall extends GameObject implements EntityD{
 
 	public void setItemSoundLoop(SoundLoops itemSoundLoop) {
 		this.itemSoundLoop = itemSoundLoop;
+	}
+
+	public void close() {
+		itemSoundLoop.close();
 	}
 	
 }

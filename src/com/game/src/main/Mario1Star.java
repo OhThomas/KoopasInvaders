@@ -113,4 +113,8 @@ public class Mario1Star extends GameObject implements EntityD{
 		return itemSoundLoop;
 	}
 
+	public void close() {
+		itemSoundLoop.close();
+	}
+
 }

@@ -95,6 +95,8 @@ public class GreenShellCircle extends GameObject implements EntityC{
 					greenShellisDead = true;
 					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
+					shellHit.play();
+					game.getHUD().setScore(200);
 				}
 			}
 		}
@@ -108,6 +110,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
 					shellHit.play();
+					game.getHUD().setScore(200);
 				}
 			}
 		}
@@ -126,6 +129,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
 					shellHit.play();
+					game.getHUD().setScore(200);
 				}
 			}
 		}
@@ -257,6 +261,16 @@ public class GreenShellCircle extends GameObject implements EntityC{
 	}
 
 	public void setEntityCDead(boolean dead) {
+		if(dead) {
+			game.getHUD().setScore(200);
+			shellHit.play();
+		}
 		greenShellisDead = dead;
+	}
+
+	public void close() {
+		shellHit.close();
+		shellSpawn.close();
+		shellSentOut.close();
 	}
 }

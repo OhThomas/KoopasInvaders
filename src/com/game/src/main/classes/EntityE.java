@@ -11,5 +11,10 @@ public interface EntityE {
 	
 	public double getX();
 	public double getY();
-	
+	public String entityName();
+	public void setHitIndicator(boolean b);
+	public boolean getHitIndicator();
+	public boolean getEntityEDead();
+	public void setEntityEDead(boolean dead);
+	public void close();
 }

@@ -26,8 +26,18 @@ import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.classes.EntityE;
+import com.game.src.main.classes.EntityF;
 import com.game.src.main.libs.Animation;
-
+import com.github.strikerx3.jxinput.XInputAxes;
+import com.github.strikerx3.jxinput.XInputAxesDelta;
+import com.github.strikerx3.jxinput.XInputButtons;
+import com.github.strikerx3.jxinput.XInputButtonsDelta;
+import com.github.strikerx3.jxinput.XInputComponents;
+import com.github.strikerx3.jxinput.XInputComponentsDelta;
+import com.github.strikerx3.jxinput.XInputDevice;
+import com.github.strikerx3.jxinput.XInputDevice14;
+import com.github.strikerx3.jxinput.enums.XInputButton;
+import com.github.strikerx3.jxinput.natives.XInputConstants;
 public class Game extends Canvas implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
@@ -41,24 +51,33 @@ public class Game extends Canvas implements Runnable {
 	private boolean running = false;
 	private static boolean paused = false;
 	private Thread thread;
-	
+
+	XInputDevice device;
+	XInputDevice14 device14;
 	private BufferedImage image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 	private BufferedImage spriteSheet = null;
 	private BufferedImage spriteSheetNES = null;
 	private BufferedImage spriteSheetNES3 = null;
 	private BufferedImage spriteSheetSNESFireLuigi = null;
+	private BufferedImage spriteSheetNESMikeTyson = null;
+	private BufferedImage spriteSheetNESContra = null;
 	private BufferedImage marioEntranceSprites = null;
 	private BufferedImage marioNES3EntranceSprites = null;
 	private BufferedImage marioSNESFireLuigiEntranceSprites = null;
+	private BufferedImage marioNESMikeTysonEntranceSprites = null;
+	private BufferedImage marioNESContraEntranceSprites = null;
 	private BufferedImage animatedStar = null;
 	private BufferedImage animatedShootingStar = null;
 	private BufferedImage ufoSprites = null;
+	private BufferedImage xboxButtonsSpriteSheet = null;
+	private BufferedImage directInputButtonsSpriteSheet = null;
 	private BufferedImage mario1StarSpriteSheet = null;
 	private BufferedImage marioItemsSpriteSheet = null;
 	private BufferedImage background = null;
 	private BufferedImage marioLives = null;
 	private BufferedImage bowserSpriteSheet = null;
 	private BufferedImage bulletBillSpriteSheet = null;
+	private BufferedImage bombOmbSpriteSheet = null;
 	private BufferedImage marioPlayerStarAnimations = null;
 	private BufferedImage marioItemAnimationSheet = null;
 	private BufferedImage marioItemAnimationBackgroundSheet = null;
@@ -66,6 +85,8 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage bigMario2ItemAnimationSheet = null;
 	private BufferedImage bigMario3ItemAnimationSheet = null;
 	private BufferedImage bigMario4ItemAnimationSheet = null;
+	private BufferedImage bigMario5ItemAnimationSheet = null;
+	private BufferedImage bigMario6ItemAnimationSheet = null;
 	private BufferedImage itemSilhouetteSheet = null;
 	private BufferedImage currentItemImg = null;
 	private BufferedImage chainChompItemGettingBiggerSheet = null;
@@ -79,6 +100,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage marioPaintSilhouetteSpriteSheet = null;
 	private BufferedImage mario3FontNumbersSmallSpriteSheet = null;
 	private BufferedImage mario3FontSpriteSheet = null;
+	private BufferedImage wasdButtonImagesSpriteSheet = null;
 	private BufferedImage goombaDeathSpriteSheet = null;
 	private BufferedImage backButtonTitle = null;
 	private BufferedImage setScoreTitle = null;
@@ -88,8 +110,11 @@ public class Game extends Canvas implements Runnable {
 	public static BufferedImage leaderboardTitleBigger = null;
 	private BufferedImage helpTitle = null;
 	private BufferedImage settingsTitle = null;
+	public static BufferedImage controlsTitle = null;
+	public static BufferedImage tracklistTitle = null;
 	public static BufferedImage settingsTitleBigger = null;
 	public static BufferedImage playerNameImage = null;
+	public static BufferedImage gamepadLetterImage = null;
 	private BufferedImage deletedLetter = null;
 	private BufferedImage transparentBlocks = null;
 	private BufferedImage volumeSlider = null;
@@ -100,6 +125,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage volumeSliderSelectedClicked = null;
 	private BufferedImage emptyVolumeSlider = null;
 	private BufferedImage areYouSure = null;
+	private BufferedImage dotdotdot = null;
 	
 	public static ArrayList<BufferedImage> leaderboardImage = new ArrayList<BufferedImage>();
 	private ArrayList<BufferedImage> itemBackground = new ArrayList<BufferedImage>();
@@ -125,11 +151,14 @@ public class Game extends Canvas implements Runnable {
 	private boolean spawnDone4 = false;
 	private boolean youWon = false;
 	public static boolean scoreEntered = false;
+	public static boolean bEntityRemoved = false;
 	private boolean marioHasBeenInvincible = false;
 	private boolean slowingDownFromPause = false;
 	private boolean keepRunningAfterPauseL = false;
 	private boolean keepRunningAfterPauseR = false;
 	private boolean dontRunAfterPause = false;
+	private boolean sceneAcknowledgement = false;
+	private boolean pauseHoldOff = false;
 	public static boolean askToSkipSequence = false;
 	public static boolean skipSequence = false;
 	public static boolean writeOnceToSettings = false;
@@ -149,10 +178,13 @@ public class Game extends Canvas implements Runnable {
 	public static boolean sfxMusicSliderHighlighted = false;
 	public static boolean checkMarkHighlighted = false;
 	public static boolean resetStatsHighlighted = false;
+	public static boolean resetHighlighted = false;
 	public static boolean yesHighlighted = false;
 	public static boolean noHighlighted = false;
 	public static boolean skipHighlighted = false;
 	public static boolean submitHighlighted = false;
+	public static boolean gamepadImageHighlighted = false;
+	public static boolean noteImageHighlighted = false;
 	public static boolean playClicked = false;
 	public static boolean backOnPlay = false;
 	public static boolean shopClicked = false;
@@ -179,6 +211,8 @@ public class Game extends Canvas implements Runnable {
 	public static boolean backOnSFXMusicSlider = false;
 	public static boolean resetStatsClicked = false;
 	public static boolean backOnResetStats = false;
+	public static boolean resetClicked = false;
+	public static boolean backOnReset = false;
 	public static boolean checkMarkClicked = false;
 	public static boolean backOnCheckMark = false;
 	public static boolean yesClicked = false;
@@ -189,6 +223,10 @@ public class Game extends Canvas implements Runnable {
 	public static boolean backOnSkip = false;
 	public static boolean submitClicked = false;
 	public static boolean backOnSubmit = false;
+	public static boolean gamepadImageClicked = false;
+	public static boolean backOnGamepadImage = false;
+	public static boolean noteImageClicked = false;
+	public static boolean backOnNoteImage = false;
 	public static boolean arrowL1Highlighted = false;
 	public static boolean arrowR1Highlighted = false;
 	public static boolean arrowL2Highlighted = false;
@@ -254,13 +292,24 @@ public class Game extends Canvas implements Runnable {
 	public static boolean mouseIsClickedDown = false;
 	public static boolean mouseIsOffClickedObjectAndHeldDown = false;
 	public static boolean keysAreInUse = false;
+	public static boolean gameControllerInUse = false;
 	public static boolean escapePressedNegateAction = false;
 	public static boolean enterButtonPushedDown = false;
 	public static boolean skipAnimations = false;
 	public static boolean areYouSureBoolean = false;
+	public static boolean revertControllerSettings = false;
+	public static boolean scoreFollowingBoolean = false;
 	public static boolean starExplode = false;
 	public static boolean ufoSpawned = false;
 	public static boolean alienisDead = false;
+	public static int upKey = KeyEvent.VK_W;
+	public static int downKey = KeyEvent.VK_S;
+	public static int leftKey = KeyEvent.VK_A;
+	public static int rightKey = KeyEvent.VK_D;
+	public static int shootKey = KeyEvent.VK_SPACE;
+	public static int itemKey = KeyEvent.VK_E;
+	public static int pauseKey = KeyEvent.VK_ENTER;
+	public static int cancelKey = KeyEvent.VK_ESCAPE;
 	public static int mx = 0;
 	public static int my = 0;
 	public static int totalPoints = 0;
@@ -276,9 +325,13 @@ public class Game extends Canvas implements Runnable {
 	public static int volumeSliderPosition = 3;
 	public static int sfxMusicSliderPosition = 3;
 	public static int hudSFXPosition = 0;
+	public static int gamepadKeyboardLetterPosition = 0;
 	public static String writeOnceProperty = "";
+	public static ArrayList<String> writeMultipleProperty = new ArrayList<String>();
 	public static String writeOnceString = "";
+	public static ArrayList<String> writeMultipleString = new ArrayList<String>();
 	public static String writeOnceUnlock = "";
+	public static int selectorBPMP = 0;
 	private double myTime = 0.0;
 	private String itemName;
 	private int numberOfFireBallsShot = 0;
@@ -289,6 +342,7 @@ public class Game extends Canvas implements Runnable {
 	private long imageTranslucentTimer = 0;
 	private long traverseTime = 0;
 	private long traverseTime2 = 0;
+	private long controllerSensitivityTimer = 0;
 	private boolean imageIsGone = false;
 	long imageTranslucentTimer2=0;
 	boolean imageStayOn = false;
@@ -327,6 +381,8 @@ public class Game extends Canvas implements Runnable {
 	private long marioLetsGoPauseTimer = 0;
 	private long itemWaitTimer = 0;
 	private long itemFlyingTimer1 = 0;
+	private long joystickTimer = 0;
+	private long waitToPause = 0;
 	private double itemFlyingAwayY = 0;
 	private double itemFlyingAwayX = 0;
 	private boolean fileScoreWritten = false;
@@ -356,6 +412,8 @@ public class Game extends Canvas implements Runnable {
 	private boolean goomba3DeathSoundPauseBoolean = false;
 	private boolean goomba3DeathSmokeSoundPauseBoolean = false;
 	private boolean brickBreakingSFXSoundPauseBoolean = false;
+	private boolean bowserSpawnSetupBoolean = false;
+	private long bowserSpawnSetup = 0;
 	LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> marioDanceSoundLoops = new LinkedList<SoundLoops>();
@@ -393,6 +451,7 @@ public class Game extends Canvas implements Runnable {
 	public static SoundLoops smb3CheckmarkSoundLoop;
 	public static SoundLoops smb3Checkmark2SoundLoop;
 	public static SoundLoops smwErrorSoundLoop;
+	//public static LinkedList<Clip> clipGarbageCollection = new LinkedList<Clip>();
 	private Player p;
 	private Controller c;
 	private Enemy e;
@@ -405,6 +464,7 @@ public class Game extends Canvas implements Runnable {
 	private ShopController shop;
 	private MouseLocator mouseLocator;
 	private StarExplosion starExplosion;
+	private ControlsController controlsController;
 	private UFO ufo;
 	
 	public static BufferedImage title = null;
@@ -491,6 +551,12 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage resetStatsTitleSelected = null;
 	private BufferedImage resetStatsTitleSelectedClicked = null;
 	private BufferedImage resetStatsTitleSelectedNormal = null;
+	private BufferedImage resetTitle = null;
+	private BufferedImage resetTitleGlow = null;
+	private BufferedImage resetTitleClicked = null;
+	private BufferedImage resetTitleSelected = null;
+	private BufferedImage resetTitleSelectedClicked = null;
+	private BufferedImage resetTitleSelectedNormal = null;
 	private BufferedImage yesTitle = null;
 	private BufferedImage yesTitleGlow = null;
 	private BufferedImage yesTitleClicked = null;
@@ -515,6 +581,27 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage submitTitleSelected = null;
 	private BufferedImage submitTitleSelectedClicked = null;
 	private BufferedImage submitTitleSelectedNormal = null;
+	private BufferedImage gamepadImageTitle = null;
+	private BufferedImage gamepadImageTitleGlow = null;
+	private BufferedImage gamepadImageTitleClicked = null;
+	private BufferedImage gamepadImageTitleSelected = null;
+	private BufferedImage gamepadImageTitleSelectedClicked = null;
+	private BufferedImage gamepadImageTitleSelectedNormal = null;
+	private BufferedImage noteImageTitle = null;
+	private BufferedImage noteImageTitleGlow = null;
+	private BufferedImage noteImageTitleClicked = null;
+	private BufferedImage noteImageTitleSelected = null;
+	private BufferedImage noteImageTitleSelectedClicked = null;
+	private BufferedImage noteImageTitleSelectedNormal = null;
+	private BufferedImage aButtonImage = null;
+	private BufferedImage aButtonImageGlow = null;
+	private BufferedImage aButtonImageClicked = null;
+	private BufferedImage ltButtonImage = null;
+	private BufferedImage ltButtonImageGlow = null;
+	private BufferedImage ltButtonImageClicked = null;
+	private BufferedImage gamepadButtonHolder = null;
+	private BufferedImage gamepadButtonHolderGlow = null;
+	private BufferedImage gamepadButtonHolderClicked = null;
 	private BufferedImage currentlySelected10x10 = null;
 	public static BufferedImage skinTitle = null;
 	public static BufferedImage tracksTitle = null;
@@ -523,6 +610,17 @@ public class Game extends Canvas implements Runnable {
 	public static BufferedImage volumeTitle = null;
 	public static BufferedImage sfxMusicTitle = null;
 	public static BufferedImage skipAnimationsTitle = null;
+	public static BufferedImage keyboardTitle = null;
+	public static BufferedImage xInputTitle = null;
+	public static BufferedImage directInputTitle = null;
+	public static BufferedImage upImageTitle = null;
+	public static BufferedImage downImageTitle = null;
+	public static BufferedImage leftImageTitle = null;
+	public static BufferedImage rightImageTitle = null;
+	public static BufferedImage shootImageTitle = null;
+	public static BufferedImage itemImageTitle = null;
+	public static BufferedImage pauseImageTitle = null;
+	public static BufferedImage cancelImageTitle = null;
 	public static BufferedImage totalPointsImage = null;
 	public static BufferedImage skinNumber = null;
 	public static BufferedImage trackNumber = null;
@@ -534,6 +632,7 @@ public class Game extends Canvas implements Runnable {
 	public LinkedList<EntityC> ec;
 	public LinkedList<EntityD> ed;
 	public LinkedList<EntityE> ee;
+	public LinkedList<EntityF> ef;
 	
 	public static int Health = 100;
 	
@@ -550,6 +649,8 @@ public class Game extends Canvas implements Runnable {
 		LEADERBOARD,
 		SHOP,
 		SETTINGS,
+		CONTROLS,
+		TRACKLIST,
 		HELP,
 		RESET
 	};
@@ -563,18 +664,25 @@ public class Game extends Canvas implements Runnable {
 			spriteSheetNES = loader.loadImage("/AnimationSpriteSheetNewNES.png");
 			spriteSheetNES3 = loader.loadImage("/AnimationSpriteSheetNewNES3.png");
 			spriteSheetSNESFireLuigi = loader.loadImage("/AnimationSpriteSheetNewSNESFireLuigi.png");
+			spriteSheetNESMikeTyson = loader.loadImage("/AnimationSpriteSheetNewNESMikeTyson.png");
+			spriteSheetNESContra = loader.loadImage("/AnimationSpriteSheetNewNESContra.png");
 			marioEntranceSprites = loader.loadImage("/marioentrancesprites.png");
 			marioNES3EntranceSprites = loader.loadImage("/mario2entrancesprites.png");
 			marioSNESFireLuigiEntranceSprites = loader.loadImage("/mario3entrancesprites.png");
+			marioNESMikeTysonEntranceSprites = loader.loadImage("/mario4entrancesprites.png");
+			marioNESContraEntranceSprites = loader.loadImage("/mario5entrancesprites.png");
 			animatedStar = loader.loadImage("/animatedstar.png");
 			animatedShootingStar = loader.loadImage("/shootingstarworadiant.png");
 			ufoSprites = loader.loadImage("/ufoalien.png");
+			xboxButtonsSpriteSheet = loader.loadImage("/xboxButtonsSpriteSheet.png");
+			directInputButtonsSpriteSheet = loader.loadImage("/directInputButtonsSpriteSheet.png");
 			mario1StarSpriteSheet = loader.loadImage("/mario1starspritesheet.png");
 			marioItemsSpriteSheet = loader.loadImage("/marioItemssmaller.png");
 			background = loader.loadImage("/starsbackgroundbigger.png");
 			marioLives = loader.loadImage("/mariolivessprite.png");
 			bowserSpriteSheet = loader.loadImage("/bowserspritesheet.png");
 			bulletBillSpriteSheet = loader.loadImage("/bulletbillspritesheet.png");
+			bombOmbSpriteSheet = loader.loadImage("/bombombbb.png");
 			marioPlayerStarAnimations = loader.loadImage("/marioplayerstaranimations.png");
 			marioItemAnimationSheet = loader.loadImage("/marioitemanimations.png");
 			marioItemAnimationBackgroundSheet = loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur14.png");
@@ -582,6 +690,8 @@ public class Game extends Canvas implements Runnable {
 			bigMario2ItemAnimationSheet = loader.loadImage("/mario-big2.png");
 			bigMario3ItemAnimationSheet = loader.loadImage("/mario-big3.png");
 			bigMario4ItemAnimationSheet = loader.loadImage("/mario-big4.png");
+			bigMario5ItemAnimationSheet = loader.loadImage("/mario-big5.png");
+			bigMario6ItemAnimationSheet = loader.loadImage("/mario-big6.png");
 			itemSilhouetteSheet = loader.loadImage("/marioitemssilhouette.png");
 			chainChompItemGettingBiggerSheet = loader.loadImage("/Items/chainChompItemGettingBig.png");
 			chainChompSheet = loader.loadImage("/Items/Chain_Chomp_spritesss.png");
@@ -594,6 +704,7 @@ public class Game extends Canvas implements Runnable {
 			marioPaintSilhouetteSpriteSheet = loader.loadImage("/mariopaintsheetsilhouette.png");
 			mario3FontNumbersSmallSpriteSheet = loader.loadImage("/mario3fonteNUMBERSSMALLERR.png");
 			mario3FontSpriteSheet = loader.loadImage("/mario3fonteLAYEDOUT.png");
+			wasdButtonImagesSpriteSheet = loader.loadImage("/mario3fonteLAYEDOUTSMALLERSpriteSheet.png");
 			goombaDeathSpriteSheet = loader.loadImage("/goombadeath.png");
 			title = loader.loadImage("/koopasinvaderstitlebigger.png");
 			gameOverTitle = loader.loadImage("/gameover1bigger.png");
@@ -610,6 +721,8 @@ public class Game extends Canvas implements Runnable {
 			helpTitle = loader.loadImage("/newhelpbuttonSmaller.png");
 			settingsTitle = loader.loadImage("/newsettingsbutton.png");
 			settingsTitleBigger = loader.loadImage("/newsettingstitle.png");
+			controlsTitle = loader.loadImage("/newcontrolstitle.png");
+			tracklistTitle = loader.loadImage("/newtrackstitle.png");
 			playTitleGlow = loader.loadImage("/newplaybuttonglow.png");
 			shopTitleGlow = loader.loadImage("/newshopbuttonglow.png");
 			exitTitleGlow = loader.loadImage("/newexitbuttonglow.png");
@@ -687,6 +800,12 @@ public class Game extends Canvas implements Runnable {
 			resetStatsTitleSelected = loader.loadImage("/newresetstatsbuttonselected.png");
 			resetStatsTitleSelectedClicked = loader.loadImage("/newresetstatsbuttonselectedclicked.png");
 			resetStatsTitleSelectedNormal = loader.loadImage("/newresetstatsbuttonselectednormal.png");
+			resetTitle = loader.loadImage("/newresetbutton.png");
+			resetTitleGlow = loader.loadImage("/newresetbuttonglow.png");
+			resetTitleClicked = loader.loadImage("/newresetbuttonclicked.png");
+			resetTitleSelected = loader.loadImage("/newresetbuttonselected.png");
+			resetTitleSelectedClicked = loader.loadImage("/newresetbuttonselectedclicked.png");
+			resetTitleSelectedNormal = loader.loadImage("/newresetbuttonselectednormal.png");
 			yesTitle = loader.loadImage("/newyesbutton.png");
 			yesTitleGlow = loader.loadImage("/newyesbuttonglow.png");
 			yesTitleClicked = loader.loadImage("/newyesbuttonclicked.png");
@@ -711,6 +830,21 @@ public class Game extends Canvas implements Runnable {
 			submitTitleSelected = loader.loadImage("/newsubmitbuttonselected.png");
 			submitTitleSelectedClicked = loader.loadImage("/newsubmitbuttonselectedclicked.png");
 			submitTitleSelectedNormal = loader.loadImage("/newsubmitbuttonselectednormal.png");
+			gamepadImageTitle = loader.loadImage("/gamepadImage.png");
+			gamepadImageTitleGlow = loader.loadImage("/gamepadImageglow.png");
+			gamepadImageTitleClicked = loader.loadImage("/gamepadImageclicked.png");
+			gamepadImageTitleSelected = loader.loadImage("/gamepadImageselected.png");
+			gamepadImageTitleSelectedClicked = loader.loadImage("/gamepadImageselectedclicked.png");
+			gamepadImageTitleSelectedNormal = loader.loadImage("/gamepadImageselectednormal.png");
+			noteImageTitle = loader.loadImage("/noteImage.png");
+			noteImageTitleGlow = loader.loadImage("/noteImageglow.png");
+			noteImageTitleClicked = loader.loadImage("/noteImageclicked.png");
+			noteImageTitleSelected = loader.loadImage("/noteImageselected.png");
+			noteImageTitleSelectedClicked = loader.loadImage("/noteImageselectedclicked.png");
+			noteImageTitleSelectedNormal = loader.loadImage("/noteImageselectednormal.png");
+			aButtonImage = loader.loadImage("/aButtonImage.png");
+			ltButtonImage = loader.loadImage("/ltButtonImage.png");
+			gamepadButtonHolder = loader.loadImage("/gamepadButtonHolder.png");
 			volumeSlider = loader.loadImage("/volumeslider.png");
 			volumeSliderGlow = loader.loadImage("/volumesliderglow.png");
 			volumeSliderClicked = loader.loadImage("/volumesliderclicked.png");
@@ -719,6 +853,7 @@ public class Game extends Canvas implements Runnable {
 			volumeSliderSelectedClicked = loader.loadImage("/volumesliderselectedclicked.png");
 			emptyVolumeSlider = loader.loadImage("/emptyvolumeslider.png");
 			areYouSure = loader.loadImage("/areyousure.png");
+			dotdotdot = loader.loadImage("/dotdotdot.png");
 			currentlySelected10x10 = loader.loadImage("/currentlyselected10x10.png");
 			skinTitle = loader.loadImage("/newskinbutton.png"); 
 			tracksTitle = loader.loadImage("/newtracksbutton.png");
@@ -727,6 +862,17 @@ public class Game extends Canvas implements Runnable {
 			volumeTitle = loader.loadImage("/newvolumebutton.png");
 			sfxMusicTitle = loader.loadImage("/newsfxmusicbutton.png");
 			skipAnimationsTitle = loader.loadImage("/newskipanimationsbutton.png");
+			keyboardTitle = loader.loadImage("/newkeyboardbutton.png");
+			xInputTitle = loader.loadImage("/newxinputbutton.png");
+			directInputTitle = loader.loadImage("/newdirectinputbutton.png");
+			upImageTitle = loader.loadImage("/newupbutton.png");
+			downImageTitle = loader.loadImage("/newdownbutton.png");
+			leftImageTitle = loader.loadImage("/newleftbutton.png");
+			rightImageTitle = loader.loadImage("/newrightbutton.png");
+			shootImageTitle = loader.loadImage("/newshootselectbutton.png");
+			itemImageTitle = loader.loadImage("/newuseitembutton.png");
+			pauseImageTitle = loader.loadImage("/newpausestartbutton.png");
+			cancelImageTitle = loader.loadImage("/newcancelbutton.png");
 			transparentBlocks = loader.loadImage("/randomtransparentblocks.png");
 			itemBackground = loader.loadImagesfromFolder("/res/BackgroundBlur");
 			
@@ -744,6 +890,7 @@ public class Game extends Canvas implements Runnable {
 		shop = new ShopController(tex,this);
 		mouseLocator = new MouseLocator(this);
 		starExplosion = new StarExplosion();
+		controlsController = new ControlsController(tex,this);
 		
 		ea = c.getEntityA();
 		eb = c.getEntityB();
@@ -921,6 +1068,9 @@ public class Game extends Canvas implements Runnable {
 			else if(bulletBillSpawnSmokeR.getCount() == 0)
 				bulletBillSpawnSmokeL.runAnimation();
 		}
+		if(device.poll()) 
+			deviceInput();
+		device.poll();
 	}
 	
 	private void render() throws IOException{
@@ -1152,12 +1302,36 @@ public class Game extends Canvas implements Runnable {
 				slowingDownActivatedr = false;
 			}
 			if(spawnItem == true){
+				if(itemName == null) {
+					if(hud.getItemName() == null)
+						itemName = "chainChompItem";
+					else
+						itemName = hud.getItemName();
+				}
 				switch(this.itemName){
 				case "chainChompItem":
 					c.addEntity(new ChainChompItem(p.getX(),p.getY()-50, tex, this));
 					//spawnChainChomp
 					break;
+				case "bulletBillItem":
+					c.addEntity(new BulletBillItem(p.getX(),p.getY()-50, tex, this));
+					//spawnBulletBill
+					break;
+				case "bombOmbItem":
+					c.addEntity(new BombOmbItem(p.getX(),p.getY()-50, tex, this));
+					//spawnBombOmb
+					break;
+				case "cheepCheepsItem":
+					c.addEntity(new CheepCheepsItemSpawner(p.getX(),p.getY()-50, tex, this));
+					//spawnCheepCheeps
+					break;
+				case "ampItem":
+					c.addEntity(new AmpItem(p.getX(),p.getY()-50, tex, this));
+					//spawnCheepCheeps
+					break;
 				default:
+					c.addEntity(new BulletBillItem(p.getX(),p.getY()-50, tex, this));
+					//spawnBulletBill
 					break;
 				}
 				spawnItem = false;
@@ -1181,7 +1355,7 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			//SPAWN ENEMIES
-			/**/
+			/*
 			if (spawnDone == false){													//Spawning enemies
 				for(int i = 0; i < (Game.WIDTH * Game.SCALE); i+=64){
 					c.addEntity(new Enemy(i,0, tex, c , this));
@@ -1207,7 +1381,7 @@ public class Game extends Canvas implements Runnable {
 					c.addEntity(new Enemy2(i,52, tex, c , this));
 				}
 				spawnDone2 = true;
-			}
+			}*/
 			if(eb.isEmpty() && spawnDone3 == false){
 				this.enemyHitRightBarrier = false;
 				this.enemySpeedIncrease = 1.2;
@@ -1223,10 +1397,25 @@ public class Game extends Canvas implements Runnable {
 				spawnDone3 = true;
 			}
 			if(eb.isEmpty() && spawnDone4 == false){								//Spawning Bowser
-				this.enemyHitRightBarrier = false;
-				this.enemySpeedIncrease = 1.0;
-				c.addEntity(new Bowser(0,50, tex, c , this));
-				spawnDone4 = true;
+				if(bowserSpawnSetupBoolean == false) {
+					bowserSpawnSetup = System.currentTimeMillis() + 2000;
+					bowserSpawnSetupBoolean = true;
+				}
+				if((gameSoundLoops.get(soundRandomizer).clipIsActive() && gameSoundLoops.get(soundRandomizer).getVolume() >= -70f) && System.currentTimeMillis() % 60 == 0){
+					gameSoundLoops.get(soundRandomizer).shiftVolume(gameSoundLoops.get(soundRandomizer).getVolume(), gameSoundLoops.get(soundRandomizer).getVolume()-1f, 200);
+				}
+				if(!(System.currentTimeMillis() < bowserSpawnSetup)) {
+					gameSoundLoops.get(soundRandomizer).stop();
+					gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(false);
+					Random rand = new Random();
+					soundRandomizer = rand.nextInt(1)+2;
+					gameSoundLoops.get(soundRandomizer).loop();
+					gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+					this.enemyHitRightBarrier = false;
+					this.enemySpeedIncrease = 1.0;
+					c.addEntity(new Bowser(0,50, tex, c , this));
+					spawnDone4 = true;
+				}
 			}
 			//SPAWN ENEMIES FINISHED
 			if(!userHasPaused){
@@ -1376,7 +1565,7 @@ public class Game extends Canvas implements Runnable {
 				hud.render(g);
 				if((int)HUD.getTimer1() <= 0){
 					//SPAWN BULLET BILLS
-					if(bowserBulletBillSpawningTimer < System.currentTimeMillis()) {
+					if(bowserBulletBillSpawningTimer < System.currentTimeMillis() && c.getEntityB().get(0).getEntityBDead() == false) {
 						Random rand = new Random();
 						int i = rand.nextInt(2);//20000
 						if(i == 1 && ec.size() < 6 && !spawnBulletBill){
@@ -1675,6 +1864,7 @@ public class Game extends Canvas implements Runnable {
 			mouseLocator.locateMouse();
 			p.render(g);
 			c.render(g);
+			bb.drawEntrance(g2d);
 			if(Game.keysAreInUse && askToSkipSequence) {
 				if(Game.skipHighlighted) 
 					Game.skipHighlighted = false;
@@ -1705,15 +1895,27 @@ public class Game extends Canvas implements Runnable {
 			}
 			int y = 0;
 			int x = 0;
-			spawningEnemiesDanceSync = p.getDanceProgressionCount();
-			if(p.getDanceProgressionCount() >= 5) {
+			if(p.getDanceProgressionCount() >= 15 && spawningEnemiesDanceSync != p.getDanceProgressionCount()+3)
+				spawningEnemiesDanceSync = p.getDanceProgressionCount()+3;
+			else if(p.getDanceProgressionCount() < 15 && p.getDanceProgressionCount() >= 10 && spawningEnemiesDanceSync != p.getDanceProgressionCount()+2)
+				spawningEnemiesDanceSync = p.getDanceProgressionCount()+2;
+			else if(p.getDanceProgressionCount() < 10 && p.getDanceProgressionCount() >= 5 && spawningEnemiesDanceSync != p.getDanceProgressionCount()+1)
 				spawningEnemiesDanceSync = p.getDanceProgressionCount()+1;
+			else if(p.getDanceProgressionCount() < 5 && spawningEnemiesDanceSync != p.getDanceProgressionCount())
+				spawningEnemiesDanceSync = p.getDanceProgressionCount();
+			/*
+			if(spawningEnemiesDanceSync != p.getDanceProgressionCount())
+				spawningEnemiesDanceSync = p.getDanceProgressionCount();
+			if(p.getDanceProgressionCount() >= 5) {
+				if(spawningEnemiesDanceSync != p.getDanceProgressionCount()+1)
+					spawningEnemiesDanceSync = p.getDanceProgressionCount()+1;
 				if(p.getDanceProgressionCount() >= 10) {
-					spawningEnemiesDanceSync = p.getDanceProgressionCount()+2;
-					if(p.getDanceProgressionCount() >= 15) 
+					if(spawningEnemiesDanceSync != p.getDanceProgressionCount()+2)
+						spawningEnemiesDanceSync = p.getDanceProgressionCount()+2;
+					if(p.getDanceProgressionCount() >= 15 && spawningEnemiesDanceSync != p.getDanceProgressionCount()+3) 
 						spawningEnemiesDanceSync = p.getDanceProgressionCount()+3;
 				}
-			}
+			}*/
 			for(int i = 0; i <= spawningEnemiesDanceSync; i++) {
 				if(!p.isSpinningAnimationFinished())
 					break;
@@ -1813,6 +2015,17 @@ public class Game extends Canvas implements Runnable {
 							tex.marioItemAnimationBeginning4[13],tex.marioItemAnimationBeginning4[14],tex.marioItemAnimationBeginning4[15],
 							tex.marioItemAnimationBeginning4[16],tex.marioItemAnimationBeginning4[17]);
 						break;
+					case 4:
+						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning5[0],tex.marioItemAnimationBeginning5[0],
+							tex.marioItemAnimationBeginning5[1],tex.marioItemAnimationBeginning5[11],tex.marioItemAnimationBeginning5[12],
+							tex.marioItemAnimationBeginning5[13],tex.marioItemAnimationBeginning5[14],tex.marioItemAnimationBeginning5[15],
+							tex.marioItemAnimationBeginning5[16],tex.marioItemAnimationBeginning5[17]);
+					case 5:
+						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning6[0],tex.marioItemAnimationBeginning6[0],
+							tex.marioItemAnimationBeginning6[1],tex.marioItemAnimationBeginning6[11],tex.marioItemAnimationBeginning6[12],
+							tex.marioItemAnimationBeginning6[13],tex.marioItemAnimationBeginning6[14],tex.marioItemAnimationBeginning6[15],
+							tex.marioItemAnimationBeginning6[16],tex.marioItemAnimationBeginning6[17]);
+						break;
 					default:
 						break;
 				}
@@ -1852,6 +2065,11 @@ public class Game extends Canvas implements Runnable {
 							currentItemImg = tex.bigCheepCheepsItemBall;
 							break;
 						case "ampItem":
+							currentItem = new Animation(6,tex.bigAmpItemBall,
+									tex.bigAmpItemBall,tex.bigAmpItemBall,tex.bigAmpItemBall,
+									tex.bigAmpItemBall,tex.bigAmpItemBall,tex.bigAmpItemBall,
+									tex.bigAmpItemBall,tex.bigAmpItemBall);
+							currentItem.nextFrame();
 							currentItemImg = tex.bigAmpItemBall;
 							break;
 						case "wigglerItem":
@@ -1990,18 +2208,20 @@ public class Game extends Canvas implements Runnable {
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				soundSet = false;
 			}
-			
 			if (paused == false)
 				paused = true;
-			
 			if(marioDeathSoundLoop.getSoundLoopBoolean() == false){
 				marioDeathSoundLoop.play();
 				marioDeathSoundLoop.setSoundLoopBoolean(true);
 			}
-			
 			if(marioDeathSoundLoop.soundPlaying() == false){
 				marioDeathSoundLoop.setSoundLoopBoolean(false);
 				State = STATE.GAMEOVER;
+				if(Game.gameControllerInUse) {
+					joystickTimer = 0;
+					Game.keysAreInUse = true;
+				}
+				Game.selectorButtonPosition = 0;
 			}
 			
 			bb.draw(g2d);													//BLOCKS
@@ -2020,6 +2240,11 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(skipSequence) {
 				Game.State = STATE.GAMEOVER;
+				if(Game.gameControllerInUse) {
+					joystickTimer = 0;
+					Game.keysAreInUse = true;
+				}
+				Game.selectorButtonPosition = 0;
 				skipSequence = false;
 				askToSkipSequence = false;
 			}
@@ -2058,6 +2283,11 @@ public class Game extends Canvas implements Runnable {
 			if(youWon == false)
 				youWon = true;
 			if(p.gameOver == true) {
+				if(Game.gameControllerInUse) {
+					joystickTimer = 0;
+					Game.keysAreInUse = true;
+				}
+				Game.selectorButtonPosition = 0;
 				State = STATE.GAMEOVER;
 				if(LeaderboardController.getFromSettings("Total Points: ").equals("")) {
 					if(hud.getScore() < 999999)
@@ -2334,11 +2564,21 @@ public class Game extends Canvas implements Runnable {
 				imageTranslucent += imageTranslucentVelocity;
 			Graphics2D g2d2 = (Graphics2D)g.create();
 			g2d2.setComposite(makeComposite(imageTranslucent));
-			if(!Game.keysAreInUse)
-				if(200 <= postLetterXPositionBeginning)
+			if(!Game.keysAreInUse) {
+				if(200 <= postLetterXPositionBeginning && !gameControllerInUse)
 					g2d2.drawImage(textIndicator,200+postLetterXPosition,200,null);
-				else 
+				else if(!gameControllerInUse)
 					g2d2.drawImage(textIndicator,postLetterXPositionBeginning+postLetterXPosition,200,null);
+				if(gameControllerInUse) {
+					//draw translucent letter
+					if(gamepadLetterImage == null)
+						gamepadLetterImage = HUD.mario3FontCharBufferedImage(gamepadKeyboardLetterPosition);
+					if(200 <= postLetterXPositionBeginning)
+						g2d2.drawImage(gamepadLetterImage,200+postLetterXPosition,200,null);
+					else 
+						g2d2.drawImage(gamepadLetterImage,postLetterXPositionBeginning+postLetterXPosition,200,null);
+				}
+			}
 			while(postLetter != '=') {
 				if(postLetterXPositionBeginning-44 < 0 && Game.WIDTH * Game.SCALE < postLetterXPosition + postLetterXPositionBeginning + 44 && postLetter != '+' && postLetter != '~') {//Max Characters
 					postLetter = '=';
@@ -2362,6 +2602,8 @@ public class Game extends Canvas implements Runnable {
 						Game.selectorButtonPosition = 0;
 						State = STATE.GAMEOVER;
 						postLetter = '=';
+						if(gameControllerInUse)
+							Game.keysAreInUse = true;
 						if(Game.smb31PupSoundLoop.clipIsActive())
 							Game.smb31PupSoundLoop.stop();
 						Game.smb31PupSoundLoop.play();
@@ -2559,7 +2801,7 @@ public class Game extends Canvas implements Runnable {
 			g.drawImage(tracksTitle, 20, 220, null);
 			g.drawImage(fireballsTitle, 20, 320, null);
 			g.drawImage(itemsTitle, 20, 420, null);
-			if(!LeaderboardController.getFromSettings("Total Points: ").equals("")) {
+			if(totalPoints != 0) {//if(!LeaderboardController.getFromSettings("Total Points: ").equals("")) {
 				g.drawImage(totalPointsImage, Game.WIDTH * Game.SCALE - totalPointsImage.getWidth() - 60, 20, null);
 				g.drawImage(ShopController.pointsImage,Game.WIDTH * Game.SCALE - 55, 20 + totalPointsImage.getHeight()/2 -3, null);
 			}
@@ -2952,6 +3194,13 @@ public class Game extends Canvas implements Runnable {
 			g.drawImage(volumeTitle,20,120,null);
 			g.drawImage(sfxMusicTitle,20,220,null);
 			g.drawImage(skipAnimationsTitle,20,320,null);
+			//g.drawImage(gamepadImageTitle,Game.WIDTH+168,42,null);
+			//g.drawImage(wasdImageTitle,Game.WIDTH+247,34,null);
+			//g.drawImage(noteImageTitle,Game.WIDTH+306,42,null);
+			//g.drawImage(gamepadImageTitle,Game.WIDTH+178,42,null);
+			//g.drawImage(noteImageTitle,Game.WIDTH+268,41,null);
+			//g.drawImage(gamepadImageTitleSelectedNormal, Game.WIDTH+171, 35, null);
+			//g.drawImage(noteImageTitleSelectedNormal, Game.WIDTH+261, 34, null);
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
 			HUD.clickyButton(g, arrowL, arrowLGlow, arrowLClicked, Game.arrowL1Highlighted, Game.arrowL1Clicked, Game.backOnArrowL1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  - 69 - 40 - 16, 121);
 			HUD.clickyButton(g, arrowR, arrowRGlow, arrowRClicked, Game.arrowR1Highlighted, Game.arrowR1Clicked, Game.backOnArrowR1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  + 69 + 40, 121);
@@ -2960,6 +3209,8 @@ public class Game extends Canvas implements Runnable {
 			HUD.clickyButton(g, arrowR, arrowRGlow, arrowRClicked, Game.arrowR2Highlighted, Game.arrowR2Clicked, Game.backOnArrowR2, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  + 69 + 40, 221);
 			HUD.clickyButton(g, volumeSlider, volumeSliderGlow, volumeSliderClicked, Game.sfxMusicSliderHighlighted, Game.sfxMusicSliderBooleanClicked, Game.backOnSFXMusicSlider, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, VolumeSlider.x2, VolumeSlider.y2);
 			HUD.clickyButton(g, resetStatsTitle, resetStatsTitleGlow, resetStatsTitleClicked, Game.resetStatsHighlighted, Game.resetStatsClicked, Game.backOnResetStats, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - (resetStatsTitle.getWidth()/2), 420);
+			HUD.clickyButton(g, gamepadImageTitle, gamepadImageTitleGlow, gamepadImageTitleClicked, Game.gamepadImageHighlighted, Game.gamepadImageClicked, Game.backOnGamepadImage, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH+178,42);
+			HUD.clickyButton(g, noteImageTitle, noteImageTitleGlow, noteImageTitleClicked, Game.noteImageHighlighted, Game.noteImageClicked, Game.backOnNoteImage, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown,Game.WIDTH+268,41);
 			if(!Game.skipAnimations) 
 				HUD.clickyButton(g, noCheckMarkTitle, noCheckMarkTitleGlow, noCheckMarkTitleClicked, Game.checkMarkHighlighted, Game.checkMarkClicked, Game.backOnCheckMark, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - (checkMarkTitle.getWidth()/2), 320);
 			else 
@@ -2970,10 +3221,30 @@ public class Game extends Canvas implements Runnable {
 				HUD.clickyButton(g, yesTitle, yesTitleGlow, yesTitleClicked, Game.yesHighlighted, Game.yesClicked, Game.backOnYes, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH + 18,375);
 			}
 			if(Game.keysAreInUse) {
-				if(Game.backHighlighted ||
-				   Game.backClicked) {
+				if(Game.backHighlighted || Game.arrowL1Highlighted || Game.arrowL2Highlighted ||
+				   Game.arrowR1Highlighted || Game.arrowR2Highlighted || Game.checkMarkHighlighted ||
+				   Game.resetStatsHighlighted || Game.gamepadImageHighlighted || Game.noteImageHighlighted ||
+				   Game.backClicked || Game.arrowL1Clicked || Game.arrowL2Clicked || Game.arrowR1Clicked ||
+				   Game.arrowR2Clicked || Game.checkMarkClicked || Game.resetStatsClicked || 
+				   Game.gamepadImageClicked || Game.noteImageClicked) {
 					backHighlighted = false;
 					backClicked = false;
+					arrowL1Highlighted = false;
+					arrowL1Clicked = false;
+					arrowL2Highlighted = false;
+					arrowL2Clicked = false;
+					arrowR1Highlighted = false;
+					arrowR1Clicked = false;
+					arrowR2Highlighted = false;
+					arrowR2Clicked = false;
+					checkMarkHighlighted = false;
+					checkMarkClicked = false;
+					resetStatsHighlighted = false;
+					resetStatsClicked = false;
+					gamepadImageHighlighted = false;
+					gamepadImageClicked = false;
+					noteImageHighlighted = false;
+					noteImageClicked = false;
 				}//0 = arrowL1, 1 = arrowL2, 2 = skip animations, 3 = reset stats, -2 = arrowR1, -3 = arrowR2
 				if(areYouSureBoolean) {
 					if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
@@ -3023,6 +3294,14 @@ public class Game extends Canvas implements Runnable {
 					
 					if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
 						switch(Game.selectorButtonPosition) {
+						case -5:
+							g.drawImage(noteImageTitleSelectedClicked, Game.WIDTH+261, 34, null);
+							g.drawImage(noteImageTitleClicked,Game.WIDTH+268,41,null);
+							break;
+						case -4:
+							g.drawImage(gamepadImageTitleSelectedClicked, Game.WIDTH+171, 35, null);
+							g.drawImage(gamepadImageTitleClicked,Game.WIDTH+178,42,null);
+							break;
 						case -3:
 							g.drawImage(arrowSelectedClicked,40 +Game.WIDTH  + 69 - 7, 221 -7,null);
 							g.drawImage(arrowRClicked,40 +Game.WIDTH  + 69, 221,null);
@@ -3058,6 +3337,14 @@ public class Game extends Canvas implements Runnable {
 					}
 					else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
 						switch(Game.selectorButtonPosition) {
+						case -5:
+							g.drawImage(noteImageTitleSelectedNormal, Game.WIDTH+261, 34, null);
+							g.drawImage(noteImageTitle,Game.WIDTH+268,41,null);
+							break;
+						case -4:
+							g.drawImage(gamepadImageTitleSelectedNormal, Game.WIDTH+171, 35, null);
+							g.drawImage(gamepadImageTitle,Game.WIDTH+178,42,null);
+							break;
 						case -3:
 							g.drawImage(arrowSelectedNormal,40 +Game.WIDTH  + 69 - 7, 221 -7,null);
 							g.drawImage(arrowR,40 +Game.WIDTH  + 69, 221,null);
@@ -3092,6 +3379,14 @@ public class Game extends Canvas implements Runnable {
 					}
 					else {
 						switch(Game.selectorButtonPosition) {
+						case -5:
+							g.drawImage(noteImageTitleSelected, Game.WIDTH+261, 34, null);
+							g.drawImage(noteImageTitleGlow,Game.WIDTH+268,41,null);
+							break;
+						case -4:
+							g.drawImage(gamepadImageTitleSelected, Game.WIDTH+171, 35, null);
+							g.drawImage(gamepadImageTitleGlow,Game.WIDTH+178,42,null);
+							break;
 						case -3:
 							g.drawImage(arrowSelected,40 +Game.WIDTH  + 69 - 7, 221 -7,null);
 							g.drawImage(arrowRGlow,40 +Game.WIDTH  + 69, 221,null);
@@ -3126,7 +3421,564 @@ public class Game extends Canvas implements Runnable {
 					}
 				}
 			}
-		}else if(State == STATE.RESET) {
+		}
+		else if(State == STATE.CONTROLS) {
+			if(writeOnceToSettings){
+				if(writeOnceProperty.equals("") || writeOnceString.equals("")){
+					writeOnceProperty = "";
+					writeOnceString = "";
+					writeOnceToSettings = false;
+				}
+				else{
+					LeaderboardController.writeToSettings(writeOnceProperty, writeOnceString);
+					writeOnceProperty = "";
+					writeOnceString = "";
+					writeOnceToSettings = false;
+					if(!writeMultipleProperty.isEmpty()) {
+						for(int i = 0; i <= writeMultipleProperty.size()-1; i++) {
+							LeaderboardController.writeToSettings(writeMultipleProperty.get(i), writeMultipleString.get(i));
+							writeMultipleProperty.set(i, null);
+							writeMultipleString.set(i, null);
+							writeMultipleProperty.remove(i);
+							writeMultipleString.remove(i);
+							i--;
+						}
+						writeMultipleProperty.clear();
+						writeMultipleString.clear();
+						controlsController.updateControls();
+					}
+				}
+			}
+    		if(revertControllerSettings == true && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+    			revertControllerSettings = false;
+    			leaderboard.settingsSetup();
+    		}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
+			if(ufoSpawned) {
+				c.render(g);
+			}
+			if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+				mouseLocator.locateMouse();
+			g.drawImage(controlsTitle,Game.WIDTH-130,20,null);
+			g.drawImage(keyboardTitle, Game.WIDTH-73, 94, null);
+			g.drawImage(xInputTitle, 373, 94, null);
+			g.drawImage(directInputTitle, 470, 94, null);
+			g.drawImage(upImageTitle, 20, 120, null);
+			g.drawImage(downImageTitle, 20, 165, null);
+			g.drawImage(leftImageTitle, 20, 210, null);
+			g.drawImage(rightImageTitle, 20, 255, null);
+			g.drawImage(shootImageTitle, 20, 300, null);
+			g.drawImage(itemImageTitle, 20, 345, null);
+			g.drawImage(pauseImageTitle, 20, 390, null);
+			g.drawImage(cancelImageTitle, 20, 435, null);
+			controlsController.draw(g);
+			//g.drawImage(gamepadButtonHolder,Game.WIDTH-51,305,null);
+			//g.drawImage(tex.ltButtonImage[0],Game.WIDTH-48,308,null);
+			//g.drawImage(aButtonImage,Game.WIDTH-44,308,null);
+			
+			//g.drawImage(gamepadButtonHolder,Game.WIDTH-91,157,null);
+			//g.drawImage(ltButtonImage,Game.WIDTH-88,160,null);
+			//g.drawImage(aButtonImage,Game.WIDTH-84,160,null);
+			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
+			HUD.clickyButton(g, resetTitle, resetTitleGlow, resetTitleClicked, Game.resetHighlighted, Game.resetClicked, Game.backOnReset, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 564, 443);
+			//g.drawImage(resetTitle,524+40,443,null);
+			//g.drawImage(resetTitleSelectedNormal,524+33,436,null);
+			if(Game.keysAreInUse) {
+				if(Game.backHighlighted || Game.resetHighlighted || ControlsController.gamepadButtonHolderHighlighted[0] ||
+						ControlsController.gamepadButtonHolderHighlighted[1] || ControlsController.gamepadButtonHolderHighlighted[2] ||
+						ControlsController.gamepadButtonHolderHighlighted[3] ||ControlsController.gamepadButtonHolderHighlighted[4] ||
+						ControlsController.gamepadButtonHolderHighlighted[5] ||ControlsController.gamepadButtonHolderHighlighted[6] ||
+						ControlsController.gamepadButtonHolderHighlighted[7] ||ControlsController.gamepadButtonHolderHighlighted[8] ||
+						ControlsController.gamepadButtonHolderHighlighted[9] ||ControlsController.gamepadButtonHolderHighlighted[10] ||
+						ControlsController.gamepadButtonHolderHighlighted[11] ||ControlsController.gamepadButtonHolderHighlighted[12] ||
+						ControlsController.gamepadButtonHolderHighlighted[13] ||ControlsController.gamepadButtonHolderHighlighted[14] ||
+						ControlsController.gamepadButtonHolderHighlighted[15] ||ControlsController.gamepadButtonHolderHighlighted[16] ||
+						ControlsController.gamepadButtonHolderHighlighted[17] ||ControlsController.gamepadButtonHolderHighlighted[18] ||
+						ControlsController.gamepadButtonHolderHighlighted[19] ||ControlsController.gamepadButtonHolderHighlighted[20] ||
+						ControlsController.gamepadButtonHolderHighlighted[21] ||ControlsController.gamepadButtonHolderHighlighted[22] ||
+						ControlsController.gamepadButtonHolderHighlighted[23] ||
+						Game.backClicked || Game.resetClicked || ControlsController.gamepadButtonHolderClicked[0] ||
+						ControlsController.gamepadButtonHolderClicked[1] || ControlsController.gamepadButtonHolderClicked[2] ||
+						ControlsController.gamepadButtonHolderClicked[3] ||ControlsController.gamepadButtonHolderClicked[4] ||
+						ControlsController.gamepadButtonHolderClicked[5] ||ControlsController.gamepadButtonHolderClicked[6] ||
+						ControlsController.gamepadButtonHolderClicked[7] ||ControlsController.gamepadButtonHolderClicked[8] ||
+						ControlsController.gamepadButtonHolderClicked[9] ||ControlsController.gamepadButtonHolderClicked[10] ||
+						ControlsController.gamepadButtonHolderClicked[11] ||ControlsController.gamepadButtonHolderClicked[12] ||
+						ControlsController.gamepadButtonHolderClicked[13] ||ControlsController.gamepadButtonHolderClicked[14] ||
+						ControlsController.gamepadButtonHolderClicked[15] ||ControlsController.gamepadButtonHolderClicked[16] ||
+						ControlsController.gamepadButtonHolderClicked[17] ||ControlsController.gamepadButtonHolderClicked[18] ||
+						ControlsController.gamepadButtonHolderClicked[19] ||ControlsController.gamepadButtonHolderClicked[20] ||
+						ControlsController.gamepadButtonHolderClicked[21] ||ControlsController.gamepadButtonHolderClicked[22] ||
+						ControlsController.gamepadButtonHolderClicked[23] ) {
+					for(int i = 0; i <= ControlsController.gamepadButtonHolderHighlighted.length-1; i++) {
+						ControlsController.gamepadButtonHolderHighlighted[i] = false;
+						ControlsController.gamepadButtonHolderClicked[i] = false;
+					}
+					backHighlighted = false;
+					backClicked = false;
+					resetHighlighted = false;
+					resetClicked = false;
+				}
+				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
+						g.drawImage(backButtonTitleClicked,40, 20,null);
+						break;
+					case -2:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyWASD()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -3:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyWASD()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -4:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyWASD()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -5:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyWASD()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -6:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyWASD()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -7:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyWASD()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -8:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyWASD()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -9:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], Game.WIDTH - 51, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyWASD()[2],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyWASD()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -10:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyXDevice()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -11:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyXDevice()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -12:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyXDevice()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -13:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyXDevice()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -14:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyXDevice()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -15:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyXDevice()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -16:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyXDevice()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -17:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 385, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyXDevice()[2],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyXDevice()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -18:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyDirectInput()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -19:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyDirectInput()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -20:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyDirectInput()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -21:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyDirectInput()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -22:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyDirectInput()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -23:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyDirectInput()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -24:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyDirectInput()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -25:
+						g.drawImage(controlsController.getGamepadButtonHolder()[2], 501, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyDirectInput()[2],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyDirectInput()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -26:
+						//RESET BUTTON
+						g.drawImage(resetTitleSelectedClicked,564-7,443-7,null);
+						g.drawImage(resetTitleClicked,564,443,null);
+						break;
+					}
+				}
+				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
+						g.drawImage(backButtonTitle,40, 20,null);
+						break;
+					case -2:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyWASD()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -3:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyWASD()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -4:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyWASD()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -5:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyWASD()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -6:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyWASD()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -7:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyWASD()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -8:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyWASD()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -9:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], Game.WIDTH - 51, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyWASD()[0],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyWASD()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -10:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyXDevice()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -11:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyXDevice()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -12:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyXDevice()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -13:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyXDevice()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -14:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyXDevice()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -15:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyXDevice()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -16:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyXDevice()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -17:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 385, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyXDevice()[0],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyXDevice()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -18:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyDirectInput()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -19:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyDirectInput()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -20:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyDirectInput()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -21:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyDirectInput()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -22:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyDirectInput()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -23:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyDirectInput()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -24:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyDirectInput()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -25:
+						g.drawImage(controlsController.getGamepadButtonHolder()[0], 501, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyDirectInput()[0],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyDirectInput()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -26:
+						//RESET BUTTON
+						g.drawImage(resetTitleSelectedNormal,564-7,443-7,null);
+						g.drawImage(resetTitle,564,443,null);
+						break;
+					}
+				}
+				else {
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						g.drawImage(backTitleSelected,40 -7, 20 -7,null);
+						g.drawImage(backButtonTitleGlow,40, 20,null);
+						break;
+					case -2:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyWASD()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -3:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyWASD()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -4:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyWASD()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -5:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyWASD()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -6:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyWASD()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -7:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyWASD()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -8:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyWASD()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -9:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], Game.WIDTH - 51, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyWASD()[1],Game.WIDTH - 51 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyWASD()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyWASD()[0].getHeight())/2), null);
+						break;
+					case -10:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyXDevice()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -11:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyXDevice()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -12:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyXDevice()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -13:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyXDevice()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -14:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyXDevice()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -15:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyXDevice()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -16:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyXDevice()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -17:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 385, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyXDevice()[1],385 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyXDevice()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyXDevice()[0].getHeight())/2), null);
+						break;
+					case -18:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 125, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getUpKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getUpKeyDirectInput()[0].getWidth())/2), 125+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getUpKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -19:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 170, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getDownKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getDownKeyDirectInput()[0].getWidth())/2), 170+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getDownKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -20:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 215, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getLeftKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getLeftKeyDirectInput()[0].getWidth())/2), 215+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getLeftKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -21:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 260, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getRightKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getRightKeyDirectInput()[0].getWidth())/2), 260+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getRightKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -22:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 305, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getShootKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getShootKeyDirectInput()[0].getWidth())/2), 305+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getShootKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -23:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 350, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getItemKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getItemKeyDirectInput()[0].getWidth())/2), 350+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getItemKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -24:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 395, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getPauseKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getPauseKeyDirectInput()[0].getWidth())/2), 395+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getPauseKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -25:
+						g.drawImage(controlsController.getGamepadButtonHolder()[1], 501, 440, null);
+						if(!(System.currentTimeMillis() < ControlsController.buttonChangeTimer))
+							g.drawImage(controlsController.getCancelKeyDirectInput()[1],501 +((controlsController.getGamepadButtonHolder()[0].getWidth()-controlsController.getCancelKeyDirectInput()[0].getWidth())/2), 440+((controlsController.getGamepadButtonHolder()[0].getHeight()-controlsController.getCancelKeyDirectInput()[0].getHeight())/2), null);
+						break;
+					case -26:
+						//RESET BUTTON
+						g.drawImage(resetTitleSelected,564-7,443-7,null);
+						g.drawImage(resetTitleGlow,564,443,null);
+						break;
+					}
+				}
+			}
+			
+		}
+		else if(State == STATE.TRACKLIST) {
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
+			if(ufoSpawned) {
+				c.render(g);
+			}
+			mouseLocator.locateMouse();
+			g.drawImage(tracklistTitle,Game.WIDTH-102,20,null);
+			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
+			
+			if(Game.keysAreInUse) {
+				if(Game.backHighlighted ||
+				   Game.backClicked) {
+					backHighlighted = false;
+					backClicked = false;
+				}
+				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
+						g.drawImage(backButtonTitleClicked,40, 20,null);
+						break;
+					}
+				}
+				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
+						g.drawImage(backButtonTitle,40, 20,null);
+						break;
+					}
+				}
+				else {
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						g.drawImage(backTitleSelected,40 -7, 20 -7,null);
+						g.drawImage(backButtonTitleGlow,40, 20,null);
+						break;
+					}
+				}
+			}
+		}
+		else if(State == STATE.RESET) {
 			if(gameOverSoundLoop.clipIsActive())
 				gameOverSoundLoop.stop();
 			if(gameOverWinningSoundLoop.clipIsActive())
@@ -3176,6 +4028,7 @@ public class Game extends Canvas implements Runnable {
 			this.animationTimer1 = 0;
 			this.enemyHitPauseTimer = 0;
 			this.marioLetsGoPauseTimer = 0;
+			this.marioLetsGoPause = false;
 			this.pauseSoundFXTimer = 0;
 			this.visualPauseTimer = 0;
 			this.enemyHitPauseBoolean = false;
@@ -3202,7 +4055,10 @@ public class Game extends Canvas implements Runnable {
 			this.keepRunningAfterPauseL = false;
 			this.keepRunningAfterPauseR = false;
 			this.dontRunAfterPause = false;
+			this.pauseHoldOff = false;
 			playerName.clear();
+			gamepadLetterImage = null;
+			gamepadKeyboardLetterPosition = 0;
 			settingsSetup = false;
 			skinNumber = null;
 			spawnDone = false;
@@ -3216,30 +4072,52 @@ public class Game extends Canvas implements Runnable {
 			spawningEnemiesinTransition = 0;
 			starExplode = false;
 			starExplosionTimer = 0;
+			traverseTime = 0;
+			traverseTime2 = 0;
+			waitToPause = 0;
+			bowserBulletBillSpawningTimer = 0;
+			spawnBulletBill = false;
 			this.gameOverIrisSoundLoop.setSoundLoopBoolean(false);
 			this.marioSpinningSoundLoop.setSoundLoopBoolean(false);
 			this.marioGrowthPosePause = false;
 			this.marioGrowthPosePauseTimer = 0;
 			this.marioDancePosePause = false;
 			this.marioDancePosePauseTimer = 0;
-			this.getHUD().setScore(0);
+			this.getHUD().resetScore();
 			this.getHUD().HEALTH = 100;
 			this.getHUD().setTimer1(100);
 			this.getHUD().setTimer2(100);
 			p.setX(Game.WIDTH);
 			p.setY((Game.HEIGHT * SCALE) - MARIO_HEIGHT);
+			p.setVelX(0);
+			p.setVelY(0);
 			p.gameOver = false;
 			p.playerWinSetup = false;
 			p.playerWinTimer = 0;
+			p.setMarioInvincible(false);
+			p.setPlayerDeathSetup(false);
 			p.setDanceProgressionCount(0);
 			p.setDancingInProgress(false);
 			p.setGrowingAnimationFinished(false);
 			p.setSpinningAnimationFinished(false);
 			p.setDancingAnimationFinished(false);
+			p.setTurningAroundAnimationFinished(false);
 			p.marioEntranceDancingAnim.setCount(0);
 			p.marioEntranceGrowingAnim.setCount(0);
 			p.marioEntranceSpinningAnim.setCount(0);
 			p.marioEntranceTurningAroundAnim.setCount(0);
+			p.marioDeathAnim.setCount(0);
+			p.setRunningStartL(false);
+			p.setRunningStartR(false);
+			p.setRunningStartUp(0);
+			p.setAnimationTimer1(0);
+			p.setMarioGravityTimer(0);
+			p.setMarioDeathTimer1(0);
+			p.setMarioDeathTimer2(0);
+			p.setMarioDeathTimer3(0);
+			p.setTraverseTime(0);
+			p.setTimer1(100);
+			p.setTimer2(0);
 			bb.reset();
 			leaderboard.setInitalized(false);
 			leaderboard.getNames().clear();
@@ -3247,20 +4125,26 @@ public class Game extends Canvas implements Runnable {
 			leaderboard.setNameDecoy("");
 			leaderboard.setScoreDecoy("");
 			leaderboard.setStringDecoy("");
+			sceneAcknowledgement = false;
 			paused = false;
+			bowserSpawnSetupBoolean = false;
+			bowserSpawnSetup = 0;
+			c.reset();
+			//tex.flush();
+			/*
 			tex = new Textures(this);
 			bb = new BasicBlocks(tex,this);												//BLOCKS
 			c = new Controller(tex, this);
 			p = new Player(Game.WIDTH,(Game.HEIGHT * SCALE) - MARIO_HEIGHT,tex,this,c);
 			hud = new HUD(tex,this);
 			menu = new Menu();
-			
+			*/
 			ea = c.getEntityA();
 			eb = c.getEntityB();
 			ec = c.getEntityC();
 			ed = c.getEntityD();
 			ee = c.getEntityE();
-			
+	        System.gc(); 
 			if(!Game.dontStartOver) {
 				LeaderboardController.gameUnlocksToSettings();
 				leaderboard.settingsSetup();
@@ -3281,8 +4165,49 @@ public class Game extends Canvas implements Runnable {
 	}
 	public void keyPressed(KeyEvent e){
 		int key = e.getKeyCode();
-		
-		if(State == STATE.GAME && !Game.userHasPaused){
+		if(State != STATE.SET_SCORE && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+			/*
+			if(key == KeyEvent.VK_W && upKey != KeyEvent.VK_W)
+				key = -1;
+			else if(key == KeyEvent.VK_S && downKey != KeyEvent.VK_S)
+				key = -1;
+			else if(key == KeyEvent.VK_A && leftKey != KeyEvent.VK_A)
+				key = -1;
+			else if(key == KeyEvent.VK_D && rightKey != KeyEvent.VK_D)
+				key = -1;
+			else if(key == KeyEvent.VK_SPACE && shootKey != KeyEvent.VK_SPACE)
+				key = -1;
+			else if(key == KeyEvent.VK_E && itemKey != KeyEvent.VK_E)
+				key = -1;
+			else if(key == KeyEvent.VK_ENTER && pauseKey != KeyEvent.VK_ENTER)
+				key = -1;
+			else if(key == KeyEvent.VK_ESCAPE && cancelKey != KeyEvent.VK_ESCAPE)
+				key = -1;
+			*/
+			if(key == upKey) {
+				key = KeyEvent.VK_W;
+			}else if(key == downKey) {
+				key = KeyEvent.VK_S;
+			}else if(key == leftKey) {
+				key = KeyEvent.VK_A;
+			}else if(key == rightKey) {
+				key = KeyEvent.VK_D;
+			}else if(key == shootKey) {
+				key = KeyEvent.VK_SPACE;
+			}else if(key == itemKey) {
+				key = KeyEvent.VK_E;
+			//}else if(key == pauseKey && State == STATE.GAME && !userHasPaused && !paused) {
+				//key = KeyEvent.VK_P;
+			}else if(key == pauseKey) {
+				key = KeyEvent.VK_ENTER;
+			}else if(key == cancelKey) {
+				key = KeyEvent.VK_ESCAPE;
+			}else if(key == KeyEvent.VK_W || key == KeyEvent.VK_S || key == KeyEvent.VK_A || key == KeyEvent.VK_D ||
+					key == KeyEvent.VK_SPACE || key == KeyEvent.VK_E || key == KeyEvent.VK_ENTER || 
+					key == KeyEvent.VK_ESCAPE)
+				key = -1;
+		}
+		if(State == STATE.GAME && !(Game.userHasPaused) && !(System.currentTimeMillis() < pauseSoundFXTimer) ){
 			if(key == KeyEvent.VK_W || key == KeyEvent.VK_UP){
 				//p.setVelY(-5);
 				//yUBoolean = true;
@@ -3381,6 +4306,12 @@ public class Game extends Canvas implements Runnable {
 						case 3:
 							c.addEntity(new BuzzyBeetleShellFireball(p.getX(),p.getY()+32,tex,p.getVelX(),this));
 							break;
+						case 4:
+							c.addEntity(new GloveFireball(p.getX(),p.getY()+32,tex,this));
+							break;
+						case 5:
+							c.addEntity(new ContraFireball(p.getX(),p.getY()+32,tex,this));
+							break;
 						default:
 							break;
 					}
@@ -3391,7 +4322,7 @@ public class Game extends Canvas implements Runnable {
 					fireballSFX.play();
 				}
 			}
-			if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_P){
+			if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_P || key == KeyEvent.VK_ENTER){
 				if(paused == false && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
 					if(p.getMarioInvincible() == true)
 						this.marioStarSoundLoop.stop();
@@ -3426,20 +4357,53 @@ public class Game extends Canvas implements Runnable {
 					else if(xRBoolean == true)
 						keepRunningAfterPauseR = true;
 				}
+				Game.keysAreInUse = true;
 			}
 		}
 		else if(State == STATE.SET_SCORE) {
 			if(Game.keysAreInUse) {
+				/*
+				if(key == KeyEvent.VK_W && upKey != KeyEvent.VK_W)
+					key = -1;
+				else if(key == KeyEvent.VK_S && downKey != KeyEvent.VK_S)
+					key = -1;
+				else if(key == KeyEvent.VK_A && leftKey != KeyEvent.VK_A)
+					key = -1;
+				else if(key == KeyEvent.VK_D && rightKey != KeyEvent.VK_D)
+					key = -1;
+				else if(key == KeyEvent.VK_SPACE && shootKey != KeyEvent.VK_SPACE)
+					key = -1;
+				else if(key == KeyEvent.VK_E && itemKey != KeyEvent.VK_E)
+					key = -1;
+				else if(key == KeyEvent.VK_ENTER && pauseKey != KeyEvent.VK_ENTER)
+					key = -1;
+				else if(key == KeyEvent.VK_ESCAPE && cancelKey != KeyEvent.VK_ESCAPE)
+					key = -1;
+				*/
+				if(key == upKey) {
+					key = KeyEvent.VK_W;
+				}else if(key == downKey) {
+					key = KeyEvent.VK_S;
+				}else if(key == leftKey) {
+					key = KeyEvent.VK_A;
+				}else if(key == rightKey) {
+					key = KeyEvent.VK_D;
+				}else if(key == shootKey) {
+					key = KeyEvent.VK_SPACE;
+				}else if(key == itemKey) {
+					key = KeyEvent.VK_E;
+				//}else if(key == pauseKey && State == STATE.GAME && !userHasPaused && !paused) {
+					//key = KeyEvent.VK_P;
+				}else if(key == pauseKey) {
+					key = KeyEvent.VK_ENTER;
+				}else if(key == cancelKey) {
+					key = KeyEvent.VK_ESCAPE;
+				}else if(key == KeyEvent.VK_W || key == KeyEvent.VK_S || key == KeyEvent.VK_A || key == KeyEvent.VK_D ||
+						key == KeyEvent.VK_SPACE || key == KeyEvent.VK_E || key == KeyEvent.VK_ENTER || 
+						key == KeyEvent.VK_ESCAPE)
+					key = -1;
 				switch(key) {
-					case KeyEvent.VK_W:
-						if(Game.enterButtonPushedDown)
-							Game.escapePressedNegateAction = true;
-						break;
-					case KeyEvent.VK_S:
-						if(Game.enterButtonPushedDown)
-							Game.escapePressedNegateAction = true;
-						break;
-					case KeyEvent.VK_ENTER:
+					case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
 						if(!Game.keysAreInUse) {
 							Game.keysAreInUse = true;
 							break;
@@ -3448,14 +4412,21 @@ public class Game extends Canvas implements Runnable {
 							break;
 						}
 					case KeyEvent.VK_ESCAPE:
-						if(!Game.keysAreInUse) {
-							Game.keysAreInUse = true;
+						if(Game.mouseIsClickedDown) {
+							if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+									Game.submitHighlighted))
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.backClicked = false;
+							Game.submitClicked = false;
+							Game.settingsClicked = false;
+							Game.leaderboardClicked = false;
+							Game.escapePressedNegateAction = true;
 							break;
 						}
 						if(Game.enterButtonPushedDown)
 							Game.escapePressedNegateAction = true;
 						break;
-					case KeyEvent.VK_UP:
+					case KeyEvent.VK_UP: case KeyEvent.VK_W:
 						if(Game.enterButtonPushedDown)
 							Game.escapePressedNegateAction = true;
 						if(!Game.keysAreInUse) {
@@ -3470,7 +4441,7 @@ public class Game extends Canvas implements Runnable {
 						if(Game.selectorButtonPosition > -1)
 							Game.selectorButtonPosition--;
 						break;
-					case KeyEvent.VK_DOWN:
+					case KeyEvent.VK_DOWN: case KeyEvent.VK_S:
 						if(Game.enterButtonPushedDown)
 							Game.escapePressedNegateAction = true;
 						if(!Game.keysAreInUse) {
@@ -3495,136 +4466,190 @@ public class Game extends Canvas implements Runnable {
 						shiftOn = true;
 						break;
 					case KeyEvent.VK_A:
-						postLetter = 'A';
+						if(postLetter == '=')
+							postLetter = 'A';
 						break;
 					case KeyEvent.VK_B:
-						postLetter = 'B';
+						if(postLetter == '=')
+							postLetter = 'B';
 						break;
 					case KeyEvent.VK_C:
-						postLetter = 'C';
+						if(postLetter == '=')
+							postLetter = 'C';
 						break;
 					case KeyEvent.VK_D:
-						postLetter = 'D';
+						if(postLetter == '=')
+							postLetter = 'D';
 						break;
 					case KeyEvent.VK_E:
-						postLetter = 'E';
+						if(postLetter == '=')
+							postLetter = 'E';
 						break;
 					case KeyEvent.VK_F:
-						postLetter = 'F';
+						if(postLetter == '=')
+							postLetter = 'F';
 						break;
 					case KeyEvent.VK_G:
-						postLetter = 'G';
+						if(postLetter == '=')
+							postLetter = 'G';
 						break;
 					case KeyEvent.VK_H:
-						postLetter = 'H';
+						if(postLetter == '=')
+							postLetter = 'H';
 						break;
 					case KeyEvent.VK_I:
-						postLetter = 'I';
+						if(postLetter == '=')
+							postLetter = 'I';
 						break;
 					case KeyEvent.VK_J:
-						postLetter = 'J';
+						if(postLetter == '=')
+							postLetter = 'J';
 						break;
 					case KeyEvent.VK_K:
-						postLetter = 'K';
+						if(postLetter == '=')
+							postLetter = 'K';
 						break;
 					case KeyEvent.VK_L:
-						postLetter = 'L';
+						if(postLetter == '=')
+							postLetter = 'L';
 						break;
 					case KeyEvent.VK_M:
-						postLetter = 'M';
+						if(postLetter == '=')
+							postLetter = 'M';
 						break;
 					case KeyEvent.VK_N:
-						postLetter = 'N';
+						if(postLetter == '=')
+							postLetter = 'N';
 						break;
 					case KeyEvent.VK_O:
-						postLetter = 'O';
+						if(postLetter == '=')
+							postLetter = 'O';
 						break;
 					case KeyEvent.VK_P:
-						postLetter = 'P';
+						if(postLetter == '=')
+							postLetter = 'P';
 						break;
 					case KeyEvent.VK_Q:
-						postLetter = 'Q';
+						if(postLetter == '=')
+							postLetter = 'Q';
 						break;
 					case KeyEvent.VK_R:
-						postLetter = 'R';
+						if(postLetter == '=')
+							postLetter = 'R';
 						break;
 					case KeyEvent.VK_S:
-						postLetter = 'S';
+						if(postLetter == '=')
+							postLetter = 'S';
 						break;
 					case KeyEvent.VK_T:
-						postLetter = 'T';
+						if(postLetter == '=')
+							postLetter = 'T';
 						break;
 					case KeyEvent.VK_U:
-						postLetter = 'U';
+						if(postLetter == '=')
+							postLetter = 'U';
 						break;
 					case KeyEvent.VK_V:
-						postLetter = 'V';
+						if(postLetter == '=')
+							postLetter = 'V';
 						break;
 					case KeyEvent.VK_W:
-						postLetter = 'W';
+						if(postLetter == '=')
+							postLetter = 'W';
 						break;
 					case KeyEvent.VK_X:
-						postLetter = 'X';
+						if(postLetter == '=')
+							postLetter = 'X';
 						break;
 					case KeyEvent.VK_Y:
-						postLetter = 'Y';
+						if(postLetter == '=')
+							postLetter = 'Y';
 						break;
 					case KeyEvent.VK_Z:
-						postLetter = 'Z';
+						if(postLetter == '=')
+							postLetter = 'Z';
 						break;
 					case KeyEvent.VK_1:
-						if(shiftOn)
-							postLetter = '!';
-						else
-							postLetter = '1';
+						if(postLetter == '=') {
+							if(shiftOn)
+								postLetter = '!';
+							else
+								postLetter = '1';
+							}
 						break;
 					case KeyEvent.VK_2:
-						postLetter = '2';
+						if(postLetter == '=')
+							postLetter = '2';
 						break;
 					case KeyEvent.VK_3:
-						postLetter = '3';
+						if(postLetter == '=')
+							postLetter = '3';
 						break;
 					case KeyEvent.VK_4:
-						postLetter = '4';
+						if(postLetter == '=')
+							postLetter = '4';
 						break;
 					case KeyEvent.VK_5:
-						postLetter = '5';
+						if(postLetter == '=')
+							postLetter = '5';
 						break;
 					case KeyEvent.VK_6:
-						postLetter = '6';
+						if(postLetter == '=')
+							postLetter = '6';
 						break;
 					case KeyEvent.VK_7:
-						postLetter = '7';
+						if(postLetter == '=')
+							postLetter = '7';
 						break;
 					case KeyEvent.VK_8:
-						postLetter = '8';
+						if(postLetter == '=')
+							postLetter = '8';
 						break;
 					case KeyEvent.VK_9:
-						postLetter = '9';
+						if(postLetter == '=')
+							postLetter = '9';
 						break;
 					case KeyEvent.VK_0:
-						postLetter = '0';
+						if(postLetter == '=')
+							postLetter = '0';
 						break;
 					case KeyEvent.VK_PERIOD:
-						postLetter = '.';
+						if(postLetter == '=')
+							postLetter = '.';
 						break;
 					case KeyEvent.VK_BACK_QUOTE: case KeyEvent.VK_QUOTE:
-						postLetter = '\'';
+						if(postLetter == '=')
+							postLetter = '\'';
 						break;
 					case KeyEvent.VK_EXCLAMATION_MARK:
-						postLetter = '!';
+						if(postLetter == '=')
+							postLetter = '!';
 						break;
 					case KeyEvent.VK_SPACE:
-						postLetter = ' ';
+						if(postLetter == '=')
+							postLetter = ' ';
 						break;
 					case KeyEvent.VK_BACK_SPACE:
-						postLetter = '+';
+						if(postLetter == '=')
+							postLetter = '+';
 						break;
 					case KeyEvent.VK_ENTER:
 						Game.enterButtonPushedDown = true;
 						break;
 					case KeyEvent.VK_ESCAPE:
-						Game.keysAreInUse = true;
+						if(Game.mouseIsClickedDown) {
+							if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+									Game.submitHighlighted))
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.backClicked = false;
+							Game.submitClicked = false;
+							Game.settingsClicked = false;
+							Game.leaderboardClicked = false;
+							Game.escapePressedNegateAction = true;
+							break;
+						}
+						if(Game.enterButtonPushedDown)
+							Game.escapePressedNegateAction = true;
 						break;
 					case KeyEvent.VK_UP:
 						if(Game.enterButtonPushedDown)
@@ -3867,21 +4892,31 @@ public class Game extends Canvas implements Runnable {
 				case KeyEvent.VK_EXCLAMATION_MARK:
 					Game.keysAreInUse = true;
 					break;
-				case KeyEvent.VK_SPACE:
-					Game.keysAreInUse = true;
-					break;
 				case KeyEvent.VK_BACK_SPACE:
 					Game.keysAreInUse = true;
 					break;
-				case KeyEvent.VK_ENTER:
+				case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 					if(!Game.keysAreInUse) {
-						Game.keysAreInUse = true;
 						break;
 					}else {
 						Game.enterButtonPushedDown = true;
 						break;
 					}
 				case KeyEvent.VK_ESCAPE:
+					if(Game.mouseIsClickedDown) {
+						if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.playHighlighted ||
+								Game.shopHighlighted || Game.exitHighlighted || Game.helpHighlighted ||
+								Game.settingsHighlighted || Game.leaderboardHighlighted))
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.playClicked = false;
+						Game.shopClicked = false;
+						Game.exitClicked = false;
+						Game.helpClicked = false;
+						Game.settingsClicked = false;
+						Game.leaderboardClicked = false;
+						Game.escapePressedNegateAction = true;
+						break;
+					}
 					if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
 					break;
@@ -3890,22 +4925,39 @@ public class Game extends Canvas implements Runnable {
 			}
 		}else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_ITEM || State == STATE.TRANSITION_WIN) {
 			switch(key) {
+			case KeyEvent.VK_W: case KeyEvent.VK_UP:
+			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
+			case KeyEvent.VK_S: case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				break;
 			case KeyEvent.VK_ESCAPE:
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.skipHighlighted)
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.skipClicked = false;
+					Game.escapePressedNegateAction = true;
+					break;
+				}
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
+					sceneAcknowledgement = true;
 					break;
 				}
 				else {
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
-				else if(Game.keysAreInUse)
-					Game.keysAreInUse = false;
-				else
-					Game.keysAreInUse = true;
+				//else if(Game.keysAreInUse)
+					//Game.keysAreInUse = false;
+				//else
+					//Game.keysAreInUse = true;
 				}
+				break;
 			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
+					sceneAcknowledgement = true;
 				}
 				else if(Game.escapePressedNegateAction == false)
 					Game.enterButtonPushedDown = true;
@@ -4091,13 +5143,10 @@ public class Game extends Canvas implements Runnable {
 			case KeyEvent.VK_EXCLAMATION_MARK:
 				Game.keysAreInUse = true;
 				break;
-			case KeyEvent.VK_SPACE:
-				Game.keysAreInUse = true;
-				break;
 			case KeyEvent.VK_BACK_SPACE:
 				Game.keysAreInUse = true;
 				break;
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
 					break;
@@ -4106,70 +5155,32 @@ public class Game extends Canvas implements Runnable {
 					break;
 				}
 			case KeyEvent.VK_ESCAPE:
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.setScoreHighlighted ||
+							Game.playHighlighted || Game.exitHighlighted || Game.homeHighlighted|| 
+							Game.leaderboardHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.playClicked = false;
+					Game.homeClicked = false;
+					Game.exitClicked = false;
+					Game.setScoreClicked = false;
+					Game.leaderboardClicked = false;
+					Game.escapePressedNegateAction = true;
+					break;
+				}
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
-				else if(Game.keysAreInUse)
-					Game.keysAreInUse = false;
-				else
-					Game.keysAreInUse = true;
+				//else if(Game.keysAreInUse)
+					//Game.keysAreInUse = false;
+				//else
+					//Game.keysAreInUse = true;
 				break;
 			default:
 				break;
 			}
-		}else if(State == STATE.GAME && Game.userHasPaused){
+		}else if(State == STATE.GAME && (Game.userHasPaused || System.currentTimeMillis() < pauseSoundFXTimer) ){
 			switch(key) {
 			case KeyEvent.VK_SHIFT:
-				break;
-			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_B:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_C:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_E:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_F:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_G:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_H:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_I:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_J:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_K:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_L:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_M:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_N:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_O:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_Q:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_R:
-				Game.keysAreInUse = true;
 				break;
 			case KeyEvent.VK_S: case KeyEvent.VK_DOWN:
 				if(!Game.keysAreInUse) {
@@ -4187,15 +5198,6 @@ public class Game extends Canvas implements Runnable {
 					hudSFX.get(hudSFXPosition).play();
 				}
 				break;
-			case KeyEvent.VK_T:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_U:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_V:
-				Game.keysAreInUse = true;
-				break;
 			case KeyEvent.VK_W: case KeyEvent.VK_UP:
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
@@ -4212,61 +5214,7 @@ public class Game extends Canvas implements Runnable {
 					hudSFX.get(hudSFXPosition).play();
 				}
 				break;
-			case KeyEvent.VK_X:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_Y:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_Z:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_1:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_2:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_3:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_4:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_5:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_6:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_7:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_8:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_9:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_0:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_PERIOD:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_BACK_QUOTE: case KeyEvent.VK_QUOTE:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_EXCLAMATION_MARK:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_SPACE:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_BACK_SPACE:
-				Game.keysAreInUse = true;
-				break;
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
 					break;
@@ -4275,6 +5223,16 @@ public class Game extends Canvas implements Runnable {
 					break;
 				}
 			case KeyEvent.VK_ESCAPE: case KeyEvent.VK_P:
+				if(Game.mouseIsClickedDown && key != KeyEvent.VK_P) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.resumeHighlighted ||
+							Game.homeHighlighted || Game.exitHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.resumeClicked = false;
+					Game.homeClicked = false;
+					Game.exitClicked = false;
+					Game.escapePressedNegateAction = true;
+					break;
+				}
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				else if(paused == true && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
@@ -4291,6 +5249,7 @@ public class Game extends Canvas implements Runnable {
 						}
 						userHasPaused = false;
 					}
+				
 				break;
 			default:
 				break;
@@ -4301,15 +5260,32 @@ public class Game extends Canvas implements Runnable {
 			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
 			case KeyEvent.VK_S: case KeyEvent.VK_RIGHT:
 			case KeyEvent.VK_D: case KeyEvent.VK_DOWN:
-			case KeyEvent.VK_P: case KeyEvent.VK_ESCAPE:
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
+					break;
+				}
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.backHighlighted)
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
 					break;
 				}
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				break;
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ESCAPE:
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.backHighlighted)
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				break;
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
 					break;
@@ -4323,6 +5299,14 @@ public class Game extends Canvas implements Runnable {
 			switch(key) {
 			case KeyEvent.VK_W: case KeyEvent.VK_UP:
 				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+						Game.selectorButtonPosition = 1;
+					else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+						Game.selectorButtonPosition = 2;
+					else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+						Game.selectorButtonPosition = 3;
 					Game.keysAreInUse = true;
 					break;
 				}
@@ -4373,6 +5357,14 @@ public class Game extends Canvas implements Runnable {
 				break;
 			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
 				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+						Game.selectorButtonPosition = 1;
+					else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+						Game.selectorButtonPosition = 2;
+					else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+						Game.selectorButtonPosition = 3;
 					Game.keysAreInUse = true;
 					break;
 				}
@@ -4428,6 +5420,14 @@ public class Game extends Canvas implements Runnable {
 				break;
 			case KeyEvent.VK_S: case KeyEvent.VK_DOWN:
 				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+						Game.selectorButtonPosition = 1;
+					else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+						Game.selectorButtonPosition = 2;
+					else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+						Game.selectorButtonPosition = 3;
 					Game.keysAreInUse = true;
 					break;
 				}
@@ -4478,6 +5478,14 @@ public class Game extends Canvas implements Runnable {
 				break;
 			case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
 				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+						Game.selectorButtonPosition = 1;
+					else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+						Game.selectorButtonPosition = 2;
+					else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+						Game.selectorButtonPosition = 3;
 					Game.keysAreInUse = true;
 					break;
 				}
@@ -4524,16 +5532,42 @@ public class Game extends Canvas implements Runnable {
 				}
 				break;
 			case KeyEvent.VK_ESCAPE:
-				if(!Game.keysAreInUse) {
-					Game.keysAreInUse = true;
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+							Game.arrowL1Highlighted || Game.arrowR1Highlighted ||
+							Game.arrowL2Highlighted || Game.arrowR2Highlighted ||
+							Game.arrowL3Highlighted || Game.arrowR3Highlighted ||
+							Game.arrowL4Highlighted || Game.arrowR4Highlighted ||
+							Game.set1Highlighted || Game.buy1Highlighted ||
+							Game.set2Highlighted || Game.buy2Highlighted ||
+							Game.set3Highlighted || Game.buy3Highlighted ||
+							Game.set4Highlighted || Game.buy4Highlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.arrowL1Clicked = false;
+					Game.arrowR1Clicked = false;
+					Game.arrowL2Clicked = false;
+					Game.arrowR2Clicked = false;
+					Game.arrowL3Clicked = false;
+					Game.arrowR3Clicked = false;
+					Game.arrowL4Clicked = false;
+					Game.arrowR4Clicked = false;
+					Game.set1Clicked = false;
+					Game.buy1Clicked = false;
+					Game.set2Clicked = false;
+					Game.buy2Clicked = false;
+					Game.set3Clicked = false;
+					Game.buy3Clicked = false;
+					Game.set4Clicked = false;
+					Game.buy4Clicked = false;
+					Game.escapePressedNegateAction = true;
 					break;
 				}
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				break;
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
-					Game.keysAreInUse = true;
 					break;
 				}else {
 					Game.enterButtonPushedDown = true;
@@ -4546,19 +5580,19 @@ public class Game extends Canvas implements Runnable {
 			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
 			case KeyEvent.VK_S: case KeyEvent.VK_RIGHT:
 			case KeyEvent.VK_D: case KeyEvent.VK_DOWN:
-			case KeyEvent.VK_P: case KeyEvent.VK_ESCAPE:
-				if(!Game.keysAreInUse) {
-					Game.keysAreInUse = true;
-					Game.selectorButtonPosition = -1;
+			case KeyEvent.VK_ESCAPE:
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
 					break;
 				}
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				break;
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
-					Game.keysAreInUse = true;
-					Game.selectorButtonPosition = -1;
 					break;
 				}else {
 					Game.enterButtonPushedDown = true;
@@ -4586,7 +5620,7 @@ public class Game extends Canvas implements Runnable {
 					else if(selectorButtonPosition == -3)
 						selectorButtonPosition = -2;
 					else if(selectorButtonPosition == -2)
-						selectorButtonPosition = -1;
+						selectorButtonPosition = -4;
 				}
 				if(Game.selectorButtonPosition != selector) {
 					if(Game.hudSFXPosition == 3)
@@ -4614,6 +5648,11 @@ public class Game extends Canvas implements Runnable {
 						selectorButtonPosition = 0;
 					else if(selectorButtonPosition == -3)
 						selectorButtonPosition = 1;
+					else if(selectorButtonPosition == -4)
+						selectorButtonPosition = -1;
+					else if(selectorButtonPosition == -5)
+						selectorButtonPosition = -4;
+						
 				}
 				if(Game.selectorButtonPosition != selector) {
 					if(Game.hudSFXPosition == 3)
@@ -4642,6 +5681,8 @@ public class Game extends Canvas implements Runnable {
 						selectorButtonPosition = -3;
 					else if(selectorButtonPosition == -3)
 						selectorButtonPosition = 2;
+					else if(selectorButtonPosition == -4 || selectorButtonPosition == -5)
+						selectorButtonPosition = -2;
 				}
 				if(Game.selectorButtonPosition != selector) {
 					if(Game.hudSFXPosition == 3)
@@ -4669,6 +5710,10 @@ public class Game extends Canvas implements Runnable {
 						selectorButtonPosition = -2;
 					else if(selectorButtonPosition == 1)
 						selectorButtonPosition = -3;
+					else if(selectorButtonPosition == -2 || selectorButtonPosition == -1)
+						selectorButtonPosition = -4;
+					else if(selectorButtonPosition == -4)
+						selectorButtonPosition = -5;
 				}
 				if(Game.selectorButtonPosition != selector) {
 					if(Game.hudSFXPosition == 3)
@@ -4678,21 +5723,36 @@ public class Game extends Canvas implements Runnable {
 					hudSFX.get(hudSFXPosition).play();
 				}
 				break;
-			case KeyEvent.VK_P: case KeyEvent.VK_ESCAPE:
-				if(!Game.keysAreInUse) {
-					if(areYouSureBoolean)
-						Game.selectorButtonPosition = 0;
-					Game.keysAreInUse = true;
+			case KeyEvent.VK_ESCAPE:
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.yesHighlighted || Game.noHighlighted ||
+							Game.arrowL1Highlighted || Game.arrowR1Highlighted ||
+							Game.arrowL2Highlighted || Game.arrowR2Highlighted ||
+							Game.resetStatsHighlighted || Game.checkMarkHighlighted ||
+							Game.gamepadImageHighlighted || Game.noteImageHighlighted ||
+							Game.backHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.yesClicked = false;
+					Game.noClicked = false;
+					Game.arrowL1Clicked = false;
+					Game.arrowR1Clicked = false;
+					Game.arrowL2Clicked = false;
+					Game.arrowR2Clicked = false;
+					Game.resetStatsClicked = false;
+					Game.checkMarkClicked = false;
+					Game.gamepadImageClicked = false;
+					Game.noteImageClicked = false;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
 					break;
 				}
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				break;
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
 					if(areYouSureBoolean)
 						Game.selectorButtonPosition = 0;
-					Game.keysAreInUse = true;
 					break;
 				}else {
 					if(Game.selectorButtonPosition == 2 && !Game.enterButtonPushedDown) {
@@ -4707,11 +5767,235 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 		}
+		else if(State == STATE.CONTROLS) {
+			if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+			}
+			else {
+				switch(key) {
+				case KeyEvent.VK_W: case KeyEvent.VK_UP:
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						break;
+					}
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					else {
+						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == -10 ||
+								Game.selectorButtonPosition == -18) {
+							Game.selectorButtonPosition = -1;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition != -1){
+							Game.selectorButtonPosition++;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+					}
+					break;
+				case KeyEvent.VK_S: case KeyEvent.VK_DOWN:
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						break;
+					}
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					else {
+						if(Game.selectorButtonPosition == -9 || Game.selectorButtonPosition == -17 ||
+								Game.selectorButtonPosition == -25)
+							break;
+						else if(Game.selectorButtonPosition != -26){
+							Game.selectorButtonPosition--;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+					}
+					break;
+				case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						break;
+					}
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					else {
+						if(Game.selectorButtonPosition == -2) {
+							Game.selectorButtonPosition = -1;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition == -26){
+							Game.selectorButtonPosition = -25;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if (Game.selectorButtonPosition < -9){
+							Game.selectorButtonPosition += 8;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+					}
+					break;
+				case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						break;
+					}
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					else {
+						if(Game.selectorButtonPosition == -1) {
+							Game.selectorButtonPosition = -2;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition == -25){
+							Game.selectorButtonPosition = -26;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if (Game.selectorButtonPosition > -18){
+							Game.selectorButtonPosition -= 8;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+					}
+					break;
+				case KeyEvent.VK_ESCAPE:
+					if(Game.mouseIsClickedDown) {
+						if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted || Game.resetHighlighted))
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						else if(!Game.mouseIsOffClickedObjectAndHeldDown) {
+							for(int i = 0; i <= ControlsController.gamepadButtonHolderHighlighted.length-1; i++) {
+								if(ControlsController.gamepadButtonHolderHighlighted[i] == true) {
+									Game.mouseIsOffClickedObjectAndHeldDown = true;
+									break;
+								}
+							}
+						}
+						for(int i = 0; i <= ControlsController.gamepadButtonHolderClicked.length-1; i++) {
+							ControlsController.gamepadButtonHolderClicked[i] = false;
+						}
+						Game.backClicked = false;
+						Game.resetClicked = false;
+						Game.escapePressedNegateAction = true;
+						break;
+					}
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					break;
+				case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
+					if(!Game.keysAreInUse) {
+						break;
+					}else {
+						Game.enterButtonPushedDown = true;
+						break;
+					}
+				default:
+					break;
+				}
+			}
+		}
+		else if(State == STATE.TRACKLIST) {
+			switch(key) {
+			case KeyEvent.VK_ESCAPE:
+				if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				break;
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
+				if(!Game.keysAreInUse) {
+					break;
+				}else {
+					Game.enterButtonPushedDown = true;
+					break;
+				}
+			default:
+				break;
+			}
+		}
+		if(gameControllerInUse)
+			gameControllerInUse = false;
 	}
 	
 	public void keyReleased(KeyEvent e){
 		int key = e.getKeyCode();
-		if(State == STATE.GAME && !Game.userHasPaused){
+		if(State != STATE.SET_SCORE && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+			/*
+			if(key == KeyEvent.VK_W && upKey != KeyEvent.VK_W)
+				key = -1;
+			else if(key == KeyEvent.VK_S && downKey != KeyEvent.VK_S)
+				key = -1;
+			else if(key == KeyEvent.VK_A && leftKey != KeyEvent.VK_A)
+				key = -1;
+			else if(key == KeyEvent.VK_D && rightKey != KeyEvent.VK_D)
+				key = -1;
+			else if(key == KeyEvent.VK_SPACE && shootKey != KeyEvent.VK_SPACE)
+				key = -1;
+			else if(key == KeyEvent.VK_E && itemKey != KeyEvent.VK_E)
+				key = -1;
+			else if(key == KeyEvent.VK_ENTER && pauseKey != KeyEvent.VK_ENTER)
+				key = -1;
+			else if(key == KeyEvent.VK_ESCAPE && cancelKey != KeyEvent.VK_ESCAPE)
+				key = -1;
+			*/
+			if(key == upKey) {
+				key = KeyEvent.VK_W;
+			}else if(key == downKey) {
+				key = KeyEvent.VK_S;
+			}else if(key == leftKey) {
+				key = KeyEvent.VK_A;
+			}else if(key == rightKey) {
+				key = KeyEvent.VK_D;
+			}else if(key == shootKey) {
+				key = KeyEvent.VK_SPACE;
+			}else if(key == itemKey) {
+				key = KeyEvent.VK_E;
+			//}else if(key == pauseKey && State == STATE.GAME && !userHasPaused && !paused) {
+				//key = KeyEvent.VK_P;
+			}else if(key == pauseKey) {
+				key = KeyEvent.VK_ENTER;
+			}else if(key == cancelKey) {
+				key = KeyEvent.VK_ESCAPE;
+			}else if(key == KeyEvent.VK_W || key == KeyEvent.VK_S || key == KeyEvent.VK_A || key == KeyEvent.VK_D ||
+					key == KeyEvent.VK_SPACE || key == KeyEvent.VK_E || key == KeyEvent.VK_ENTER || 
+					key == KeyEvent.VK_ESCAPE)
+				key = -1;
+		}
+		if(State == STATE.GAME && !(Game.userHasPaused) && !(System.currentTimeMillis() < pauseSoundFXTimer) ){
 			if(key == KeyEvent.VK_W || key == KeyEvent.VK_UP){
 				/*
 				p.setVelY(0);
@@ -4720,7 +6004,6 @@ public class Game extends Canvas implements Runnable {
 					p.setVelY(5);
 				*/
 			} else if(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT){
-				p.setVelX(0);
 				xLBoolean = false;
 				p.setRunningStartL(false);
 				if(xRBoolean == true){
@@ -4730,7 +6013,7 @@ public class Game extends Canvas implements Runnable {
 					p.setRunningStartR(true);
 				}
 				else{
-					if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5)){														//This activates sliding animation for left side
+					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5)) && p.getVelX() != 0){														//This activates sliding animation for left side
 						slowingDownActivatedl = true;
 						slowingDownTimerLong = System.currentTimeMillis() + 200;
 						slowingDown = -1.73;
@@ -4738,6 +6021,8 @@ public class Game extends Canvas implements Runnable {
 						runningTimerLong = 0;
 						runningTimerActivatedResponse = false;
 					}
+					else
+						p.setVelX(0);
 				}
 	
 				runningTimerActivatedResponse = false;
@@ -4749,7 +6034,6 @@ public class Game extends Canvas implements Runnable {
 					p.setVelY(-5);
 				*/
 			} else if(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT){
-				p.setVelX(0);
 				xRBoolean = false;
 				p.setRunningStartR(false);
 				if(xLBoolean == true){
@@ -4759,7 +6043,7 @@ public class Game extends Canvas implements Runnable {
 					p.setRunningStartL(true);
 				}
 				else{
-					if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5)){														//This activates sliding animation for right side
+					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5)) && p.getVelX() != 0){														//This activates sliding animation for right side
 						slowingDownActivatedr = true;
 						slowingDownTimerLong = System.currentTimeMillis() + 200;
 						slowingDown = 1.73;
@@ -4767,6 +6051,8 @@ public class Game extends Canvas implements Runnable {
 						runningTimerLong = 0;
 						runningTimerActivatedResponse = false;
 					}
+					else
+						p.setVelX(0);
 				}
 	
 				runningTimerActivatedResponse = false;
@@ -4802,6 +6088,9 @@ public class Game extends Canvas implements Runnable {
 		else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN) {
 			switch(key) {
 				case KeyEvent.VK_ESCAPE:
+					if(Game.mouseIsClickedDown) {
+						break;
+					}
 					if(Game.enterButtonPushedDown)
 						break;
 					if(!askToSkipSequence) {
@@ -4810,24 +6099,30 @@ public class Game extends Canvas implements Runnable {
 					else {
 						askToSkipSequence = false;
 						Game.keysAreInUse = false;
+						sceneAcknowledgement = false;
 					}
 					break;
 				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
-					if(!askToSkipSequence) {
-						askToSkipSequence = true;
-						break;
-					}
-					if(askToSkipSequence && Game.escapePressedNegateAction == false)
-						skipSequence = true;
-					Game.keysAreInUse = true;
-					Game.enterButtonPushedDown = false;
-					Game.escapePressedNegateAction = false;
+						if(!askToSkipSequence) {
+							askToSkipSequence = true;
+							break;
+						}
+						if(askToSkipSequence && Game.escapePressedNegateAction == false)
+							skipSequence = true;
+						Game.keysAreInUse = true;
+						Game.enterButtonPushedDown = false;
+						Game.escapePressedNegateAction = false;
+						sceneAcknowledgement = false;
+					
 					break;
 				default:
-					if(!askToSkipSequence) {
-						askToSkipSequence = true;
+					if(sceneAcknowledgement) {
+						if(!askToSkipSequence) {
+							askToSkipSequence = true;
+						}
+						Game.keysAreInUse = true;
+						sceneAcknowledgement = false;
 					}
-					Game.keysAreInUse = true;
 					break;
 				}
 			//if(!askToSkipSequence) {
@@ -4836,44 +6131,64 @@ public class Game extends Canvas implements Runnable {
 			
 		}
 		else if(State == STATE.TRANSITION_ITEM) {
-			p.setVelX(0);
-			this.xLBoolean = false;
-			this.xRBoolean = false;
-			this.slowingDownActivatedl = false;
-			this.slowingDownActivatedr = false;
-			this.slowingDown = 0;
-			this.slowingDownTimerLong = 0;
-			this.runningTimerActivated = false;
-			this.runningTimerActivatedResponse = false;
-			this.runningTimerLong = 0;
+			if(p.getVelX() != 0)
+				p.setVelX(0);
+			if(xLBoolean == true)
+				this.xLBoolean = false;
+			if(xRBoolean == true)
+				this.xRBoolean = false;
+			if(slowingDownActivatedl == true)
+				this.slowingDownActivatedl = false;
+			if(slowingDownActivatedr == true)
+				this.slowingDownActivatedr = false;
+			if(slowingDown != 0)
+				this.slowingDown = 0;
+			if(slowingDownTimerLong != 0)
+				this.slowingDownTimerLong = 0;
+			if(runningTimerActivated == true)
+				this.runningTimerActivated = false;
+			if(runningTimerActivatedResponse == true)
+				this.runningTimerActivatedResponse = false;
+			if(runningTimerLong != 0)
+				this.runningTimerLong = 0;
 			switch(key) {
 				case KeyEvent.VK_ESCAPE:
-					if(Game.enterButtonPushedDown)
+					if(Game.mouseIsClickedDown) {
 						break;
-					if(!askToSkipSequence) {
-						askToSkipSequence = true;
 					}
-					else {
-						askToSkipSequence = false;
-						Game.keysAreInUse = false;
+					if(sceneAcknowledgement) {
+						if(Game.enterButtonPushedDown)
+							break;
+						if(!askToSkipSequence) {
+							askToSkipSequence = true;
+						}
+						else {
+							askToSkipSequence = false;
+							Game.keysAreInUse = false;
+						}
+						sceneAcknowledgement = false;
 					}
 					break;
 				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
-					if(!askToSkipSequence) {
-						askToSkipSequence = true;
-						break;
-					}
-					if(askToSkipSequence && Game.escapePressedNegateAction == false)
-						skipSequence = true;
-					Game.keysAreInUse = true;
-					Game.enterButtonPushedDown = false;
-					Game.escapePressedNegateAction = false;
+						if(!askToSkipSequence) {
+							askToSkipSequence = true;
+							break;
+						}
+						if(askToSkipSequence && Game.escapePressedNegateAction == false)
+							skipSequence = true;
+						Game.keysAreInUse = true;
+						Game.enterButtonPushedDown = false;
+						Game.escapePressedNegateAction = false;
+						sceneAcknowledgement = false;
 					break;
 				default:
-					if(!askToSkipSequence) {
-						askToSkipSequence = true;
+					if(sceneAcknowledgement) {
+						if(!askToSkipSequence) {
+							askToSkipSequence = true;
+						}
+						Game.keysAreInUse = true;
+						sceneAcknowledgement = false;
 					}
-					Game.keysAreInUse = true;
 					break;
 			}
 			//if(!askToSkipSequence) {
@@ -4895,13 +6210,53 @@ public class Game extends Canvas implements Runnable {
 		}
 		else if(State == STATE.SET_SCORE) {
 			if(Game.keysAreInUse) {
+				/*
+				if(key == KeyEvent.VK_W && upKey != KeyEvent.VK_W)
+					key = -1;
+				else if(key == KeyEvent.VK_S && downKey != KeyEvent.VK_S)
+					key = -1;
+				else if(key == KeyEvent.VK_A && leftKey != KeyEvent.VK_A)
+					key = -1;
+				else if(key == KeyEvent.VK_D && rightKey != KeyEvent.VK_D)
+					key = -1;
+				else if(key == KeyEvent.VK_SPACE && shootKey != KeyEvent.VK_SPACE)
+					key = -1;
+				else if(key == KeyEvent.VK_E && itemKey != KeyEvent.VK_E)
+					key = -1;
+				else if(key == KeyEvent.VK_ENTER && pauseKey != KeyEvent.VK_ENTER)
+					key = -1;
+				else if(key == KeyEvent.VK_ESCAPE && cancelKey != KeyEvent.VK_ESCAPE)
+					key = -1;
+				*/
+				if(key == upKey) {
+					key = KeyEvent.VK_W;
+				}else if(key == downKey) {
+					key = KeyEvent.VK_S;
+				}else if(key == leftKey) {
+					key = KeyEvent.VK_A;
+				}else if(key == rightKey) {
+					key = KeyEvent.VK_D;
+				}else if(key == shootKey) {
+					key = KeyEvent.VK_SPACE;
+				}else if(key == itemKey) {
+					key = KeyEvent.VK_E;
+				//}else if(key == pauseKey && State == STATE.GAME && !userHasPaused && !paused) {
+					//key = KeyEvent.VK_P;
+				}else if(key == pauseKey) {
+					key = KeyEvent.VK_ENTER;
+				}else if(key == cancelKey) {
+					key = KeyEvent.VK_ESCAPE;
+				}else if(key == KeyEvent.VK_W || key == KeyEvent.VK_S || key == KeyEvent.VK_A || key == KeyEvent.VK_D ||
+						key == KeyEvent.VK_SPACE || key == KeyEvent.VK_E || key == KeyEvent.VK_ENTER || 
+						key == KeyEvent.VK_ESCAPE)
+					key = -1;
 				switch(key) {
-				case KeyEvent.VK_ENTER:
+				case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
 					Game.enterButtonPushedDown = false;
 					if(!Game.escapePressedNegateAction) {
 						switch(Game.selectorButtonPosition) {
 							case -1:
-								Game.selectorButtonPosition = -2;
+								Game.selectorButtonPosition = -1;
 								Game.State = Game.STATE.GAMEOVER;
 								break;
 							case 1:
@@ -4909,10 +6264,20 @@ public class Game extends Canvas implements Runnable {
 								break;
 							default:
 								break;
-								
 						}
 					}
 					Game.escapePressedNegateAction = false;
+					break;
+				case KeyEvent.VK_ESCAPE:
+					if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+						Game.selectorBPMP = Game.selectorButtonPosition;
+						Game.escapePressedNegateAction = false;
+						if(Game.keysAreInUse)
+							Game.keysAreInUse = false;
+						else
+							Game.keysAreInUse = true;
+						break;
+					}
 					break;
 				}
 			}
@@ -4927,6 +6292,9 @@ public class Game extends Canvas implements Runnable {
 						Game.enterButtonPushedDown = false;
 						Game.escapePressedNegateAction = false;
 						break;
+					case KeyEvent.VK_ESCAPE:
+						Game.keysAreInUse = true;
+						Game.selectorButtonPosition = -1;
 				}
 			}
 		}
@@ -4934,6 +6302,10 @@ public class Game extends Canvas implements Runnable {
 			switch(key) {
 			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 						case -3:
@@ -4979,11 +6351,26 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.escapePressedNegateAction = false;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.keysAreInUse)
+						Game.keysAreInUse = false;
+					else
+						Game.keysAreInUse = true;
+					break;
+				}
+				break;
 			}
 		}else if(State == STATE.GAMEOVER) {
 			switch(key) {
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
 				if(!Game.escapePressedNegateAction && Game.keysAreInUse) {
 					switch(Game.selectorButtonPosition) {
 						case -2:
@@ -5018,11 +6405,28 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.escapePressedNegateAction = false;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.keysAreInUse)
+						Game.keysAreInUse = false;
+					else
+						Game.keysAreInUse = true;
+					break;
+				}
+				break;
 			}
-		}else if(State == STATE.GAME && Game.userHasPaused) {
+		}else if(State == STATE.GAME && (Game.userHasPaused || System.currentTimeMillis() < pauseSoundFXTimer) ) {
 			switch(key) {
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
+				if(pauseSoundFXSoundLoop.clipIsActive())
+					break;
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 						case 0:
@@ -5034,6 +6438,7 @@ public class Game extends Canvas implements Runnable {
 								}
 								Game.setUserHasPaused(false);
 							}
+							Game.keysAreInUse = false;
 							break;
 						case 1:
 							Game.setDontStartOver(true);
@@ -5041,6 +6446,7 @@ public class Game extends Canvas implements Runnable {
 							if(smb3OpenSoundLoop.clipIsActive())
 								smb3OpenSoundLoop.stop();
 							smb3OpenSoundLoop.play();
+							Game.selectorButtonPosition = 0;
 							break;
 						case 2:
 							System.exit(1);
@@ -5053,6 +6459,7 @@ public class Game extends Canvas implements Runnable {
 				if(!keepRunningAfterPauseR) {
 					dontRunAfterPause = true;
 					xLBoolean = false;
+					p.setRunningStartL(false);
 				}
 				if(keepRunningAfterPauseL){														//This activates sliding animation for left side
 					slowingDownActivatedl = true;
@@ -5063,11 +6470,14 @@ public class Game extends Canvas implements Runnable {
 					runningTimerActivatedResponse = false;
 					slowingDownFromPause = true;
 				}
+				if(!Game.keysAreInUse) 
+					Game.keysAreInUse = true;
 				break;
 			case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
 				if(!keepRunningAfterPauseL) {
 					dontRunAfterPause = true;
 					xRBoolean = false;
+					p.setRunningStartR(false);
 				}
 				if(keepRunningAfterPauseR){														//This activates sliding animation for left side
 					slowingDownActivatedr = true;
@@ -5078,12 +6488,29 @@ public class Game extends Canvas implements Runnable {
 					runningTimerActivatedResponse = false;
 					slowingDownFromPause = true;
 				}
+				if(!Game.keysAreInUse) 
+					Game.keysAreInUse = true;
+				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					//if(Game.keysAreInUse)
+						//Game.keysAreInUse = false;
+					//else
+						//Game.keysAreInUse = true;
+					break;
+				}
 				break;
 			}
 		}else if(State == STATE.LEADERBOARD) {
 			switch(key) {
-				case KeyEvent.VK_ENTER:
+				case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 					Game.enterButtonPushedDown = false;
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						break;
+					}
 					if(!Game.escapePressedNegateAction) {
 						if(Game.backToGameOver) {
 							Game.selectorButtonPosition = -2;
@@ -5099,11 +6526,34 @@ public class Game extends Canvas implements Runnable {
 					}
 					Game.escapePressedNegateAction = false;
 					break;
+				case KeyEvent.VK_ESCAPE:
+					if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+						Game.selectorBPMP = Game.selectorButtonPosition;
+						Game.escapePressedNegateAction = false;
+						if(Game.keysAreInUse)
+							Game.keysAreInUse = false;
+						else
+							Game.keysAreInUse = true;
+						break;
+					}
+					break;
 			}
 		}else if(State == STATE.SHOP) {
 			switch(key) {
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
+				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+						Game.selectorButtonPosition = 1;
+					else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+						Game.selectorButtonPosition = 2;
+					else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+						Game.selectorButtonPosition = 3;
+					Game.keysAreInUse = true;
+					break;
+				}
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 					case -12:
@@ -5438,11 +6888,34 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.escapePressedNegateAction = false;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+						Game.selectorButtonPosition = 1;
+					else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+						Game.selectorButtonPosition = 2;
+					else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+						Game.selectorButtonPosition = 3;
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.keysAreInUse)
+						Game.keysAreInUse = false;
+					else
+						Game.keysAreInUse = true;
+					break;
+				}
+				break;
 		}
 		}else if(State == STATE.HELP) {
 			switch(key) {
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 					case -1:
@@ -5456,11 +6929,28 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.escapePressedNegateAction = false;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.keysAreInUse)
+						Game.keysAreInUse = false;
+					else
+						Game.keysAreInUse = true;
+					if(Game.selectorButtonPosition != -1)
+						Game.selectorButtonPosition = -1;
+					break;
+				}
+				break;
 			}
 		}else if(State == STATE.SETTINGS) {
 			switch(key) {
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
 				if(!Game.escapePressedNegateAction) {
 					if(areYouSureBoolean) {
 						switch(Game.selectorButtonPosition) {
@@ -5491,6 +6981,22 @@ public class Game extends Canvas implements Runnable {
 							Game.fireballPosition = 0;
 							Game.itemPosition = 0;
 							skinNumber = null;
+							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+							XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+							XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+							XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+							XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+							XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+							XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+							XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
 							Game.totalPoints = 0;
 							Game.skipAnimations = false;
 							try {
@@ -5511,6 +7017,20 @@ public class Game extends Canvas implements Runnable {
 					}
 					else {
 						switch(Game.selectorButtonPosition) {
+						case -5:
+							Game.selectorButtonPosition = -1;
+							Game.State = Game.STATE.TRACKLIST;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case -4:
+							Game.selectorButtonPosition = -1;
+							Game.State = Game.STATE.CONTROLS;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
 						case -3:
 							if(sfxMusicSliderPosition < 5) {
 								Game.sfxMusicSliderPosition++;
@@ -5581,12 +7101,3408 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.escapePressedNegateAction = false;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.keysAreInUse)
+						Game.keysAreInUse = false;
+					else 
+						Game.keysAreInUse = true;
+					if(areYouSureBoolean && Game.selectorButtonPosition != 1)
+						Game.selectorButtonPosition = 0;
+					break;
+				}
+				//if(areYouSureBoolean && Game.selectorButtonPosition == 0) { 
+					//Game.selectorButtonPosition = 3;
+					//areYouSureBoolean = false;
+				//}
+				//else if(areYouSureBoolean)
+					//Game.selectorButtonPosition = 0;
+					
+				break;
 			}
 		}
-		if(key == KeyEvent.VK_ENTER) {
+		else if(State == STATE.CONTROLS) {
+			if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+				switch(key) {
+				case KeyEvent.VK_A: case KeyEvent.VK_B: case KeyEvent.VK_C: case KeyEvent.VK_D:
+				case KeyEvent.VK_E: case KeyEvent.VK_F: case KeyEvent.VK_G: case KeyEvent.VK_H:
+				case KeyEvent.VK_I: case KeyEvent.VK_J: case KeyEvent.VK_K: case KeyEvent.VK_L:
+				case KeyEvent.VK_M: case KeyEvent.VK_N: case KeyEvent.VK_O: case KeyEvent.VK_P:
+				case KeyEvent.VK_Q: case KeyEvent.VK_R: case KeyEvent.VK_S: case KeyEvent.VK_T:
+				case KeyEvent.VK_U: case KeyEvent.VK_V: case KeyEvent.VK_W: case KeyEvent.VK_X:
+				case KeyEvent.VK_Y: case KeyEvent.VK_Z: case KeyEvent.VK_SPACE: case KeyEvent.VK_BACK_SPACE:
+				case KeyEvent.VK_ESCAPE: case KeyEvent.VK_SHIFT: case KeyEvent.VK_ENTER:  case KeyEvent.VK_0:
+				case KeyEvent.VK_1: case KeyEvent.VK_2: case KeyEvent.VK_3: case KeyEvent.VK_4: 
+				case KeyEvent.VK_5: case KeyEvent.VK_6: case KeyEvent.VK_7: case KeyEvent.VK_8:
+				case KeyEvent.VK_9: case KeyEvent.VK_NUMPAD0: case KeyEvent.VK_NUMPAD1: case KeyEvent.VK_NUMPAD2:
+				case KeyEvent.VK_NUMPAD3: case KeyEvent.VK_NUMPAD4: case KeyEvent.VK_NUMPAD5: case KeyEvent.VK_NUMPAD6:
+				case KeyEvent.VK_NUMPAD7: case KeyEvent.VK_NUMPAD8: case KeyEvent.VK_NUMPAD9: case KeyEvent.VK_COMMA:
+				case KeyEvent.VK_PERIOD: case KeyEvent.VK_BACK_SLASH: case KeyEvent.VK_UP: case KeyEvent.VK_DOWN:
+				case KeyEvent.VK_LEFT: case KeyEvent.VK_RIGHT: case KeyEvent.VK_KP_UP: case KeyEvent.VK_KP_DOWN:
+				case KeyEvent.VK_KP_LEFT: case KeyEvent.VK_KP_RIGHT:
+					controlsController.changeButton(key);
+					break;
+				default:
+					break;
+				}
+			}
+			else {
+				switch(key) {
+				case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
+					Game.enterButtonPushedDown = false;
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						break;
+					}
+					if(!Game.escapePressedNegateAction) {
+						if(Game.selectorButtonPosition == -1) {
+							Game.selectorButtonPosition = -4;
+							Game.State = Game.STATE.SETTINGS;
+						}
+						else if(Game.selectorButtonPosition == -26) {
+							Game.upKey = KeyEvent.VK_W;
+							Game.downKey = KeyEvent.VK_S;
+							Game.leftKey = KeyEvent.VK_A;
+							Game.rightKey = KeyEvent.VK_D;
+							Game.shootKey = KeyEvent.VK_SPACE;
+							Game.itemKey = KeyEvent.VK_E;
+							Game.pauseKey = KeyEvent.VK_ENTER;
+							Game.cancelKey = KeyEvent.VK_ESCAPE;
+							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+							XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+							XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+							XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+							XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+							XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+							XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+							XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "upKey";
+							Game.writeOnceString = String.valueOf(KeyEvent.VK_W);
+							Game.writeMultipleProperty.add("downKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_S));
+							Game.writeMultipleProperty.add("leftKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_A));
+							Game.writeMultipleProperty.add("rightKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_D));
+							Game.writeMultipleProperty.add("shootKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_SPACE));
+							Game.writeMultipleProperty.add("itemKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_E));
+							Game.writeMultipleProperty.add("pauseKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ENTER));
+							Game.writeMultipleProperty.add("cancelKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ESCAPE));
+							Game.writeMultipleProperty.add("upButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP));
+							Game.writeMultipleProperty.add("downButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN));
+							Game.writeMultipleProperty.add("leftButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT));
+							Game.writeMultipleProperty.add("rightButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT));
+							Game.writeMultipleProperty.add("aButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_A));
+							Game.writeMultipleProperty.add("bButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_B));
+							Game.writeMultipleProperty.add("xButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_X));
+							Game.writeMultipleProperty.add("yButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_Y));
+							Game.writeMultipleProperty.add("lShoulderButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER));
+							Game.writeMultipleProperty.add("rShoulderButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER));
+							Game.writeMultipleProperty.add("lThumbButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB));
+							Game.writeMultipleProperty.add("rThumbButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB));
+							Game.writeMultipleProperty.add("startButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_START));
+							Game.writeMultipleProperty.add("backButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_BACK));
+							Game.writeMultipleProperty.add("guideButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON));
+							Game.writeMultipleProperty.add("unknownButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_UNKNOWN));
+							Game.settingsSetup = false;
+						}
+						else if(Game.selectorButtonPosition < -1 && Game.selectorButtonPosition > -26) {
+							ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+							ControlsController.buttonToChange = Game.selectorButtonPosition;
+						}
+						if(smb3KickSoundLoop.clipIsActive())
+							smb3KickSoundLoop.stop();
+						smb3KickSoundLoop.play();
+					}
+					Game.escapePressedNegateAction = false;
+					break;
+				case KeyEvent.VK_ESCAPE:
+					if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+						Game.selectorBPMP = Game.selectorButtonPosition;
+						Game.escapePressedNegateAction = false;
+						if(Game.keysAreInUse)
+							Game.keysAreInUse = false;
+						else
+							Game.keysAreInUse = true;
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		else if(State == STATE.TRACKLIST) {
+			switch(key) {
+			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
+				Game.enterButtonPushedDown = false;
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(!Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						Game.selectorButtonPosition = -5;
+						Game.State = Game.STATE.SETTINGS;
+						break;	
+					}
+					if(smb3KickSoundLoop.clipIsActive())
+						smb3KickSoundLoop.stop();
+					smb3KickSoundLoop.play();
+				}
+				Game.escapePressedNegateAction = false;
+				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.keysAreInUse)
+						Game.keysAreInUse = false;
+					else
+						Game.keysAreInUse = true;
+					if(Game.selectorButtonPosition != -1)
+						Game.selectorButtonPosition = -1;
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		if(key == KeyEvent.VK_ENTER || key == KeyEvent.VK_SPACE) {
 			Game.enterButtonPushedDown = false;
 			Game.escapePressedNegateAction = false;
 		}
+	}
+	public void deviceInput() {
+		XInputComponents components = device.getComponents();
+	    XInputButtons buttons = components.getButtons();
+	    XInputAxes axes = components.getAxes();
+	    XInputComponentsDelta delta = device.getDelta();
+	    XInputButtonsDelta buttonsDelta = delta.getButtons();
+	    XInputAxesDelta axesDelta = delta.getAxes();
+	    float lX = axes.lx;
+	    float lY = axes.ly;
+	    float rX = axes.rx;
+	    float rY = axes.ry;
+	    float lTrigger = axes.lt;
+	    float rTrigger = axes.rt;
+	    float lXDelta = axesDelta.getLXDelta();
+	    float lYDelta = axesDelta.getLYDelta();
+	    float rXDelta = axesDelta.getRXDelta();
+	    float rYDelta = axesDelta.getRYDelta();
+	    if(gameControllerInUse == false) {
+	    	joystickTimer = 0;
+	    	if(lX > 0.15 || lX < -0.15 || rX > 0.15 || rX < -0.15 || lY > 0.15 || lY < -0.15 || rY > 0.15 || rY < -0.15) {
+	 	    	if(Game.State == STATE.SET_SCORE && selectorButtonPosition == 0 ||
+	 	    		((State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN || State == STATE.TRANSITION_ITEM)))
+	 	    		Game.keysAreInUse = false;
+	 	    	else
+	 	    		Game.keysAreInUse = true;
+	    		gameControllerInUse = true;
+	    	}
+	    	if(lTrigger == 1 || rTrigger == 1) {
+	    		if(Game.State == STATE.SET_SCORE && selectorButtonPosition == 0 ||
+		 	    		((State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN || State == STATE.TRANSITION_ITEM)))
+		 	    		Game.keysAreInUse = false;
+	 	    	else
+	 	    		Game.keysAreInUse = true;
+	    		gameControllerInUse = true;
+	    	}
+	    	if(buttonsDelta.isReleased(XInputButton.A) || buttonsDelta.isReleased(XInputButton.B) ||
+	    		buttonsDelta.isReleased(XInputButton.X) || buttonsDelta.isReleased(XInputButton.Y) ||
+	    		buttonsDelta.isReleased(XInputButton.BACK) || buttonsDelta.isReleased(XInputButton.START) ||
+	    		buttonsDelta.isPressed(XInputButton.DPAD_DOWN) || buttonsDelta.isPressed(XInputButton.DPAD_UP) ||		
+	    		buttonsDelta.isPressed(XInputButton.DPAD_LEFT) || buttonsDelta.isPressed(XInputButton.DPAD_RIGHT) ||
+	    		buttonsDelta.isReleased(XInputButton.LEFT_THUMBSTICK) || buttonsDelta.isReleased(XInputButton.RIGHT_THUMBSTICK) ||
+	    		buttonsDelta.isReleased(XInputButton.LEFT_SHOULDER) || buttonsDelta.isReleased(XInputButton.RIGHT_SHOULDER)) {
+	    		if(Game.State == STATE.SET_SCORE && selectorButtonPosition == 0 ||
+		 	    		((State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN || State == STATE.TRANSITION_ITEM)))
+		 	    		Game.keysAreInUse = false;
+	 	    	else {
+	 	    		if(buttonsDelta.isPressed(XInputButton.DPAD_UP)) {
+	 	    			XInputDevice.upHeld = true;
+		 		    	XInputDevice.downHeld = false;
+		 		    	XInputDevice.leftHeld = false;
+		 		    	XInputDevice.rightHeld = false;
+	 					if(joystickTimer == 0)
+	 						joystickTimer = System.currentTimeMillis() + 500;
+	 					else
+	 						joystickTimer = System.currentTimeMillis() + 30;
+	 	    		}
+	 	    		else if(buttonsDelta.isPressed(XInputButton.DPAD_DOWN)) {
+	 	    			XInputDevice.downHeld = true;
+		 	   	    	XInputDevice.upHeld = false;
+		 		    	XInputDevice.leftHeld = false;
+		 		    	XInputDevice.rightHeld = false;
+	 					if(joystickTimer == 0)
+	 						joystickTimer = System.currentTimeMillis() + 500;
+	 					else
+	 						joystickTimer = System.currentTimeMillis() + 30;
+	 	    		}
+	 	    		else if(buttonsDelta.isPressed(XInputButton.DPAD_LEFT)) {
+	 	    			XInputDevice.leftHeld = true;
+		 	   	    	XInputDevice.upHeld = false;
+		 		    	XInputDevice.downHeld = false;
+		 		    	XInputDevice.rightHeld = false;
+	 					if(joystickTimer == 0)
+	 						joystickTimer = System.currentTimeMillis() + 500;
+	 					else
+	 						joystickTimer = System.currentTimeMillis() + 30;
+	 	    		}
+	 	    		else if(buttonsDelta.isPressed(XInputButton.DPAD_RIGHT)) {
+	 	    			XInputDevice.rightHeld = true;
+		 	   	    	XInputDevice.upHeld = false;
+		 		    	XInputDevice.downHeld = false;
+		 		    	XInputDevice.leftHeld = false;
+	 					if(joystickTimer == 0)
+	 						joystickTimer = System.currentTimeMillis() + 500;
+	 					else
+	 						joystickTimer = System.currentTimeMillis() + 30;
+	 	    		}
+	 	    		Game.keysAreInUse = true;
+	 	    	}
+	    		gameControllerInUse = true;
+	    		return;
+	    	}
+	    	XInputDevice.upHeld = false;
+	    	XInputDevice.downHeld = false;
+	    	XInputDevice.leftHeld = false;
+	    	XInputDevice.rightHeld = false;
+	    }
+	    if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+			XInputDevice.upHeld = true;
+		}
+		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+			XInputDevice.downHeld = true;
+		}
+		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+			XInputDevice.leftHeld = true;
+		}
+		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+			XInputDevice.rightHeld = true;
+		}
+	    if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+			XInputDevice.upHeld = false;
+		}
+		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+			XInputDevice.downHeld = false;
+		}
+		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+			XInputDevice.leftHeld = false;
+		}
+		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+			XInputDevice.rightHeld = false;
+		}
+	    if(State == STATE.MENU && gameControllerInUse) {
+	    	//if((lY > .65 || (device.getComponents().getButtons().up)) && joystickTimer < System.currentTimeMillis()) {
+	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition > 0) {
+					Game.selectorButtonPosition--;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				else if(Game.selectorButtonPosition == 0) {
+					Game.selectorButtonPosition = -2;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	//else if((lY < -.65 || (device.getComponents().getButtons().down)) && joystickTimer < System.currentTimeMillis()) {
+	    	else if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition < 0) {
+					Game.selectorButtonPosition = 0;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				else if(Game.selectorButtonPosition < 2) {
+					Game.selectorButtonPosition++;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	//if((lX < -.65 || (device.getComponents().getButtons().left)) && joystickTimer < System.currentTimeMillis()) {
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition == 0) {
+					Game.selectorButtonPosition = -1;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				else if(Game.selectorButtonPosition < -1 && Game.selectorButtonPosition >= -3) {
+					Game.selectorButtonPosition++;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	//else if((lX > .65 || (device.getComponents().getButtons().right)) && joystickTimer < System.currentTimeMillis()) {
+	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition == 0) {
+					Game.selectorButtonPosition = -3;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				else if(Game.selectorButtonPosition <= -1 && Game.selectorButtonPosition > -3) {
+					Game.selectorButtonPosition--;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+//	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+//	    		!(device.getComponents().getButtons().right) && !(device.getComponents().getButtons().left)&&
+//	    		!(device.getComponents().getButtons().up) && !(device.getComponents().getButtons().down)) {
+//	    		joystickTimer = 0;
+//	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.A)||
+		    	device.getDelta().getButtons().isPressed(XInputButton.START)) {
+				Game.enterButtonPushedDown = true;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.A)||
+	    		device.getDelta().getButtons().isReleased(XInputButton.START)) {
+				Game.enterButtonPushedDown = false;
+				if(!Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+						case -3:
+							Game.selectorButtonPosition = -1;
+							State = STATE.LEADERBOARD;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case -2:
+							Game.selectorButtonPosition = -1;
+							State = STATE.SETTINGS;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case -1:
+							Game.selectorButtonPosition = -1;
+							State = STATE.HELP;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case 0:
+							if(skipAnimations)
+								State = STATE.GAME;
+							else
+								State = STATE.TRANSITION_ENTRANCE;
+							Game.keysAreInUse = false;
+							smb3CoinSoundLoop.play();
+							break;
+						case 1:
+							Game.selectorButtonPosition = -1;
+							State = STATE.SHOP;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case 2:
+							System.exit(1);
+							break;
+					}
+				}
+				Game.escapePressedNegateAction = false;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)	||	
+	    		device.getDelta().getButtons().isPressed(XInputButton.BACK)) {
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.playHighlighted ||
+							Game.shopHighlighted || Game.exitHighlighted || Game.helpHighlighted ||
+							Game.settingsHighlighted || Game.leaderboardHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.playClicked = false;
+					Game.shopClicked = false;
+					Game.exitClicked = false;
+					Game.helpClicked = false;
+					Game.settingsClicked = false;
+					Game.leaderboardClicked = false;
+					Game.escapePressedNegateAction = true;
+	    		}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.B) ||
+		    	device.getDelta().getButtons().isReleased(XInputButton.X)	||	
+		    	device.getDelta().getButtons().isReleased(XInputButton.BACK)) {
+	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.gameControllerInUse) {
+						Game.gameControllerInUse = false;
+						Game.keysAreInUse = false;
+					}
+					else {
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+					}
+	    		}
+	    	}
+	    	/*
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    		System.out.println(device.x);
+	    		XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_X;
+	    		//device.changeButton("x", XInputConstants.XINPUT_GAMEPAD_A);
+	    		
+	    		try {
+					LeaderboardController.writeToSettings("aButton", String.valueOf(XInputConstants.XINPUT_GAMEPAD_X));
+				} catch (IOException e) {}
+				Game.settingsSetup = false;
+	    	}*/
+	    }
+	    else if(State == STATE.GAME && !(Game.userHasPaused) && !(System.currentTimeMillis() < pauseSoundFXTimer) && gameControllerInUse) {
+	    	if(lX > .65 && lXDelta > -1) {
+	    		if(pauseHoldOff) {
+	    			if(this.slowingDownTimerLong < System.currentTimeMillis())
+	    				pauseHoldOff = false;
+	    		}
+	    		else {
+		    		/*
+		    		p.setRunningStartR(true);
+					p.setRunningStartL(false);
+					if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
+						p.setRunningStartUp(0);
+					*/
+		    		if(p.getVelX() < 1.2 || xLBoolean) {
+		    			p.setVelX(1.2);
+		    			p.animr.setSpeed(10);
+		    		}
+		    		else if(p.getVelX() >= 3 && p.getVelX() <= 5) {
+		    			p.setVelX(p.getVelX() + lX/3);
+		    			p.animr.setSpeed(8);
+		    		}
+		    		else if(!xLBoolean)
+		    			p.setVelX(p.getVelX() + lX/6);
+		    		if(p.getVelX() >= 5) {
+		    			p.setVelX(5);
+		    			p.animr.setSpeed(6);
+		    		}
+		    		/*
+		    		if(lX*7 > 5) 
+		    			p.setVelX(5);
+		    		if(p.getVelX() < 5)
+		    			p.setVelX(lX*7);
+		    		*/
+					xRBoolean = true;
+					xLBoolean = false;
+					slowingDownTimerLong = 0;
+					slowingDownActivatedl = false;
+					slowingDownActivatedr = false;
+					if(runningTimerActivatedResponse == false)
+						runningTimerActivated = true;
+	    		}
+	    	}
+	    	else if(lX < -0.65 && lXDelta < 1) {
+	    		if(pauseHoldOff) {
+	    			if(this.slowingDownTimerLong < System.currentTimeMillis())
+	    				pauseHoldOff = false;
+	    		}
+	    		else {
+		    		/*
+		    		p.setRunningStartR(false);
+					p.setRunningStartL(true);
+					if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
+						p.setRunningStartUp(0);
+						*/
+		    		if(p.getVelX() > -1.2  || xRBoolean) {
+		    			p.setVelX(-1.2);
+		    			p.animl.setSpeed(10);
+		    		}
+		    		else if(p.getVelX() <= -3 && p.getVelX() >= -5) {
+		    			p.setVelX(p.getVelX()+ lX/3);
+		    			p.animl.setSpeed(8);
+		    		}
+		    		else if(!xRBoolean)
+		    			p.setVelX(p.getVelX() +lX/6);
+		    		if(p.getVelX() <= -5) {
+		    			p.setVelX(-5);
+		    			p.animl.setSpeed(6);
+		    		}
+		    		/*
+		    		if(lX*7 < -5)
+		    			p.setVelX(-5);
+		    		if(p.getVelX() > -5)
+		    			p.setVelX(lX*7);
+		    			*/
+					xLBoolean = true;
+					xRBoolean = false;
+					slowingDownTimerLong = 0;
+					slowingDownActivatedl = false;
+					slowingDownActivatedr = false;
+					if(runningTimerActivatedResponse == false)
+						runningTimerActivated = true;
+	    		}
+	    	}
+	    	else if(lX < .65 && lX > 0.145 && lXDelta > -.14) {
+	    		if(pauseHoldOff) {
+	    			if(this.slowingDownTimerLong < System.currentTimeMillis())
+	    				pauseHoldOff = false;
+	    		}
+	    		else {
+		    		p.setVelX(lX*5);
+		    		p.animr.setSpeed(10);
+		    		if(controllerSensitivityTimer == 0) 
+		    			controllerSensitivityTimer = System.currentTimeMillis() + 150;
+		    		if(controllerSensitivityTimer < System.currentTimeMillis()) {
+		    			runningTimerLong = System.currentTimeMillis();
+						runningTimerActivatedResponse = false;
+		    		}
+		    		xRBoolean = true;
+		    		xLBoolean = false;
+		    		//xRBoolean = false;
+		    		//xLBoolean = false;
+	    		}
+	    	}
+	    	else if(lX > -0.65 && lX < -0.145 && lXDelta < 0.14) {
+	    		if(pauseHoldOff) {
+	    			if(this.slowingDownTimerLong < System.currentTimeMillis())
+	    				pauseHoldOff = false;
+	    		}
+	    		else {
+		    		p.setVelX(lX*5);
+		    		p.animl.setSpeed(10);
+		    		if(controllerSensitivityTimer == 0) 
+		    			controllerSensitivityTimer = System.currentTimeMillis() + 150;
+		    		if(controllerSensitivityTimer < System.currentTimeMillis()) {
+		    			runningTimerLong = System.currentTimeMillis();
+						runningTimerActivatedResponse = false;
+		    		}
+		    		xRBoolean = false;
+		    		xLBoolean = true;
+		    		//xLBoolean = false;
+		    		//xRBoolean = false;
+	    		}
+	    	}
+	    	else if(XInputDevice.leftHeld && !pauseHoldOff) {
+	    		p.setRunningStartR(false);
+				p.setRunningStartL(true);
+				if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
+					p.setRunningStartUp(0);
+				xLBoolean = true;
+				slowingDownTimerLong = 0;
+				slowingDownActivatedl = false;
+				slowingDownActivatedr = false;
+				if(runningTimerActivatedResponse == false)
+					runningTimerActivated = true;
+				if(animationTimer1 != 0) {
+					p.setX(p.getX()-p.getVelX());
+				}
+				/*RESTARTS RUNNING SPEED
+				if(animationTimer1 != 0) {
+					p.setVelX(0);
+					p.setRunningStartR(false);
+					p.setRunningStartL(false);
+				}*/
+	    	}
+	    	else if(XInputDevice.rightHeld && !pauseHoldOff) {//device.getComponents().getButtons().right) {
+	    		p.setRunningStartR(true);
+				p.setRunningStartL(false);
+				if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
+					p.setRunningStartUp(0);
+				xRBoolean = true;
+				slowingDownTimerLong = 0;
+				slowingDownActivatedl = false;
+				slowingDownActivatedr = false;
+				if(runningTimerActivatedResponse == false)
+					runningTimerActivated = true;
+				if(animationTimer1 != 0) {
+					p.setX(p.getX()-p.getVelX());
+				}
+				/*
+				if(animationTimer1 != 0) {
+					p.setVelX(0);
+					p.setRunningStartR(false);
+					p.setRunningStartL(false);
+				}*/
+	    	}
+	    	else if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+				xLBoolean = false;
+				p.setRunningStartL(false);
+				if(xRBoolean == true){
+					p.setRunningStartUp(1.2);
+					p.setVelX(p.getRunningStartUp());
+					runningTimerActivated = true;
+					p.setRunningStartR(true);
+				}
+				else{
+					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5)) && p.getVelX() != 0){													//This activates sliding animation for left side
+						slowingDownActivatedl = true;
+						slowingDownTimerLong = System.currentTimeMillis() + 200;
+						slowingDown = -1.73;
+						p.setVelX(slowingDown);
+						runningTimerLong = 0;
+						runningTimerActivatedResponse = false;
+					}
+					else
+						p.setVelX(0);
+				}
+				runningTimerActivatedResponse = false;
+				if(pauseHoldOff)
+					pauseHoldOff = false;
+	    	}
+	    	else if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+				xRBoolean = false;
+				p.setRunningStartR(false);
+				if(xLBoolean == true){
+					p.setRunningStartUp(-1.2);
+					p.setVelX(p.getRunningStartUp());
+					runningTimerActivated = true;
+					p.setRunningStartL(true);
+				}
+				else{
+					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5)) && p.getVelX() != 0){														//This activates sliding animation for right side
+						slowingDownActivatedr = true;
+						slowingDownTimerLong = System.currentTimeMillis() + 200;
+						slowingDown = 1.73;
+						p.setVelX(slowingDown);
+						runningTimerLong = 0;
+						runningTimerActivatedResponse = false;
+					}
+					else
+						p.setVelX(0);
+				}
+				runningTimerActivatedResponse = false;
+				if(pauseHoldOff)
+					pauseHoldOff = false;
+	    	}
+	    	else {
+	    		if(xLBoolean) {
+	    			p.setVelX(0);
+					xLBoolean = false;
+					if(xRBoolean == true){
+						p.setVelX(1.2);
+					}
+					else{
+						if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5 && p.getVelX() <= -1.73)){														//This activates sliding animation for left side
+							slowingDownActivatedl = true;
+							slowingDownTimerLong = System.currentTimeMillis() + 200;
+							slowingDown = -1.73;
+							p.setVelX(slowingDown);
+							runningTimerLong = 0;
+							runningTimerActivatedResponse = false;
+							controllerSensitivityTimer = 0;
+						}
+					}
+					runningTimerActivatedResponse = false;
+	    		}
+	    		if(xRBoolean) {
+	    			p.setVelX(0);
+					xRBoolean = false;
+					if(xLBoolean == true){
+						p.setVelX(-1.2);
+					}
+					else{
+						if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5 && p.getVelX() >= 1.73)){														//This activates sliding animation for right side
+							slowingDownActivatedr = true;
+							slowingDownTimerLong = System.currentTimeMillis() + 200;
+							slowingDown = 1.73;
+							p.setVelX(slowingDown);
+							runningTimerLong = 0;
+							runningTimerActivatedResponse = false;
+							controllerSensitivityTimer = 0;
+						}
+					}
+		
+					runningTimerActivatedResponse = false;
+	    		}
+	    		if(p.getVelX() != 0 && p.getVelX() != slowingDown) {
+	    			p.setVelX(0);
+					controllerSensitivityTimer = 0;
+	    		}
+//				if(pauseHoldOff && lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+//			    		!(device.getComponents().getButtons().right) && !(device.getComponents().getButtons().left)&&
+//			    		!(device.getComponents().getButtons().up) && !(device.getComponents().getButtons().down))
+//					pauseHoldOff = false;
+	    		if(pauseHoldOff && lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+			    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+			    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld))
+					pauseHoldOff = false;
+	    	}
+	    	if(controllerSensitivityTimer != 0 && p.getVelX() == 0)
+	    		controllerSensitivityTimer = 0;
+	    	if (device.getDelta().getButtons().isPressed(XInputButton.A) && !isShooting){											//Fireballs
+				isShooting = true;
+				if(ea.isEmpty() && !paused){
+					switch(currentlySelectedFireball) {
+						case 0:
+							c.addEntity(new Fireball(p.getX(),p.getY() + 32,tex, this));
+							break;
+						case 1:
+							c.addEntity(new GreenShellFireball(p.getX(),p.getY()+32,tex,p.getVelX(),this));
+							break;
+						case 2:
+							c.addEntity(new RedShellFireball(p.getX(),p.getY()+32,tex,p.getVelX(),this));
+							break;
+						case 3:
+							c.addEntity(new BuzzyBeetleShellFireball(p.getX(),p.getY()+32,tex,p.getVelX(),this));
+							break;
+						case 4:
+							c.addEntity(new GloveFireball(p.getX(),p.getY() + 32,tex, this));
+							break;
+						case 5:
+							c.addEntity(new ContraFireball(p.getX(),p.getY() + 32,tex, this));
+							break;
+						default:
+							break;
+					}
+					animationTimer1 = 10;
+					numberOfFireBallsShot++;
+					if(fireballSFX.clipIsActive())
+						fireballSFX.stop();
+					fireballSFX.play();
+				}
+			}
+			if(device.getDelta().getButtons().isPressed(XInputButton.START)){
+				if(paused == false && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
+					if(p.getMarioInvincible() == true)
+						this.marioStarSoundLoop.stop();
+					else
+						this.gameSoundLoops.get(soundRandomizer).stop();
+					this.pauseSoundFXSoundLoop.setFramePosition(0);
+					this.pauseSoundFXSoundLoop.play();
+					pauseSoundFXTimer = System.currentTimeMillis() + 685;
+					paused = true;
+					userHasPaused = true;
+				}
+				else if(paused == true && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
+					if(pauseSoundFXTimer < System.currentTimeMillis()){
+					/*if(p.getMarioInvincible() == true)
+						this.marioStarSoundLoop.loop();
+					else
+						this.gameSoundLoops.get(soundRandomizer).loop();
+					paused = false;*/
+					this.pauseSoundFXSoundLoop.play();
+					pauseSoundFXTimer = System.currentTimeMillis() + 685;
+					this.pauseSoundFXSoundLoop.setSoundLoopBoolean(true);
+					}
+					userHasPaused = false;
+				}
+
+				if(slowingDownTimerLong != 0) {
+					slowingDownTimerLong = slowingDownTimerLong - System.currentTimeMillis();
+				}
+				else if(System.currentTimeMillis() - runningTimerLong > 666/2){
+					if(xLBoolean == true)
+						keepRunningAfterPauseL = true;
+					else if(xRBoolean == true)
+						keepRunningAfterPauseR = true;
+				}
+			}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.A)){
+				isShooting = false;
+			} 
+	    	else if(device.getDelta().getButtons().isReleased(XInputButton.X) && !paused){
+				if(hud.getItemObtained() == true){
+					/*
+					switch(hud.getItemName()){
+						case "chainChompItem":
+							useChainChompAnimation
+							break;
+						default:
+							break;
+					}DO LATER IN TRANSITION*/
+					if(skipAnimations) {
+						//Play a sound
+						spawnItem = true;
+						//enemyHitPauseTimer = System.currentTimeMillis() + 800;
+					}
+					else {
+						State = STATE.TRANSITION_ITEM;
+						Game.keysAreInUse = false;
+					}
+					this.itemName = hud.getItemName();
+					hud.setItemObtained(false);
+				}
+			}
+	    	else if(device.getDelta().getButtons().isReleased(XInputButton.START)) {
+				if(!Game.keysAreInUse)
+					Game.keysAreInUse = true;
+			}
+	    }
+	    else if(State == STATE.GAME && (Game.userHasPaused || System.currentTimeMillis() < pauseSoundFXTimer) && gameControllerInUse) {
+	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition > 0) {
+					Game.selectorButtonPosition--;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition < 2) {
+					Game.selectorButtonPosition++;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if(((lX > -0.65 && lX < -0.145 && lXDelta < 0.14) || (device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) ||
+	    			(lX > .145 && keepRunningAfterPauseL)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(!keepRunningAfterPauseR) {
+					dontRunAfterPause = true;
+					xLBoolean = false;
+					p.setRunningStartL(false);
+				}
+				if(keepRunningAfterPauseL){														//This activates sliding animation for left side
+					slowingDownActivatedl = true;
+					slowingDownTimerLong = System.currentTimeMillis() + 200;
+					slowingDown = -1.73;
+					p.setVelX(slowingDown);
+					runningTimerLong = 0;
+					runningTimerActivatedResponse = false;
+					slowingDownFromPause = true;
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if(((lX < .65 && lX > 0.145 && lXDelta > -.14) || (device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) ||
+	    			(lX < -.145 && keepRunningAfterPauseR)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(!keepRunningAfterPauseL) {
+					dontRunAfterPause = true;
+					xRBoolean = false;
+					p.setRunningStartR(false);
+				}
+				if(keepRunningAfterPauseR){														//This activates sliding animation for left side
+					slowingDownActivatedr = true;
+					slowingDownTimerLong = System.currentTimeMillis() + 200;
+					slowingDown = 1.73;
+					p.setVelX(slowingDown);
+					runningTimerLong = 0;
+					runningTimerActivatedResponse = false;
+					slowingDownFromPause = true;
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if(lX < -0.65) {
+		    		if(slowingDownActivatedl) {
+		    			slowingDownActivatedl = false;
+		    			slowingDownTimerLong = 0;
+						runningTimerLong = System.currentTimeMillis() + (666/2);
+						runningTimerActivatedResponse = true;
+						slowingDownFromPause = false;
+						p.setVelX(-5);
+						p.setRunningStartUp(-5);
+						p.setRunningStartL(true);
+						dontRunAfterPause = false;
+		    		}
+		    		if(slowingDownActivatedr) {
+		    			slowingDownTimerLong = System.currentTimeMillis() + 200;
+						slowingDown = 1.73;
+						p.setVelX(slowingDown);
+						runningTimerLong = 0;
+						runningTimerActivatedResponse = false;
+						slowingDownFromPause = true;
+		    		}
+		    		//keepRunningAfterPauseL = true;
+	    		
+	    	}else if(lX > 0.65) {
+		    		if(slowingDownActivatedr) {
+		    			slowingDownActivatedr = false;
+		    			slowingDownTimerLong = 0;
+						runningTimerLong = System.currentTimeMillis() + (666/2);
+						runningTimerActivatedResponse = true;
+						slowingDownFromPause = false;
+						p.setVelX(5);
+						p.setRunningStartUp(5);
+						p.setRunningStartR(true);
+						dontRunAfterPause = false;
+		    		}if(slowingDownActivatedl) {
+		    			slowingDownTimerLong = System.currentTimeMillis() + 200;
+						slowingDown = -1.73;
+						p.setVelX(slowingDown);
+						runningTimerLong = 0;
+						runningTimerActivatedResponse = false;
+						slowingDownFromPause = true;
+		    		}
+		    		//keepRunningAfterPauseR = true;
+	    		
+	    	}
+	    	if((XInputDevice.leftHeld || XInputDevice.rightHeld ||
+	    		lX > .145 || lX < -.145) && !xLBoolean && !xRBoolean && !pauseHoldOff)
+	    		pauseHoldOff = true;
+	    	/*
+	    	if((keepRunningAfterPauseL && lX > .145)) {
+	    		slowingDownTimerLong = System.currentTimeMillis() + 200;
+				slowingDown = -1.73;
+				p.setVelX(slowingDown);
+				runningTimerLong = 0;
+				runningTimerActivatedResponse = false;
+				slowingDownFromPause = true;
+				slowingDownActivatedl = true;
+				pauseHoldOff = true;
+	    	}
+	    	if((keepRunningAfterPauseR && lX < -.145)) {
+	    		slowingDownTimerLong = System.currentTimeMillis() + 200;
+				slowingDown = 1.73;
+				p.setVelX(slowingDown);
+				runningTimerLong = 0;
+				runningTimerActivatedResponse = false;
+				slowingDownFromPause = true;
+				slowingDownActivatedr = true;
+	    		pauseHoldOff = true;
+	    	}*/
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.A)) {
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+				}else {
+					Game.enterButtonPushedDown = true;
+				}
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B)) {
+	    		if(Game.mouseIsClickedDown && !device.getDelta().getButtons().isPressed(XInputButton.START)) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.resumeHighlighted ||
+							Game.homeHighlighted || Game.exitHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.resumeClicked = false;
+					Game.homeClicked = false;
+					Game.exitClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown && !device.getDelta().getButtons().isPressed(XInputButton.START))
+					Game.escapePressedNegateAction = true;
+				else if(paused == true && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
+						Game.escapePressedNegateAction = false;
+						if(pauseSoundFXTimer < System.currentTimeMillis()){
+						/*if(p.getMarioInvincible() == true)
+							this.marioStarSoundLoop.loop();
+						else
+							this.gameSoundLoops.get(soundRandomizer).loop();
+						paused = false;*/
+						this.pauseSoundFXSoundLoop.play();
+						pauseSoundFXTimer = System.currentTimeMillis() + 685;
+						this.pauseSoundFXSoundLoop.setSoundLoopBoolean(true);
+						}
+						userHasPaused = false;
+					}
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    		Game.enterButtonPushedDown = false;
+				if(!Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+						case 0:
+							if(Game.isPaused() == true && Game.getSoundFXisPlaying() == false){
+								if(Game.getPauseSoundFXTimer() < System.currentTimeMillis()){
+									Game.getPauseSoundFXSoundLoop().play();
+									Game.setPauseSoundFXTimer(System.currentTimeMillis() + 685);
+									Game.getPauseSoundFXSoundLoop().setSoundLoopBoolean(true);
+								}
+								Game.setUserHasPaused(false);
+							}
+							break;
+						case 1:
+							Game.setDontStartOver(true);
+							Game.State = Game.STATE.RESET;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							Game.selectorButtonPosition = 0;
+							break;
+						case 2:
+							System.exit(1);
+							break;
+					}
+				}
+				Game.escapePressedNegateAction = false;
+	    	}
+	    }
+	    else if((State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN) && gameControllerInUse) {
+	    	if((lY > .65 || (XInputDevice.upHeld) ||
+	    		lY < -.65 || (XInputDevice.downHeld) ||
+	    		lX > .65 || (XInputDevice.leftHeld) ||
+	    		lX < -.65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()){
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.X)
+		    		) {
+		    		if(Game.mouseIsClickedDown) {
+						if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.skipHighlighted)
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.skipClicked = false;
+						Game.escapePressedNegateAction = true;
+					}
+					if(!Game.keysAreInUse) {//|| sceneAcknowledgement == true){
+						Game.keysAreInUse = true;
+						sceneAcknowledgement = true;
+					}
+					else {
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					}
+		    	}
+		    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+		    		if(!Game.keysAreInUse) {//|| sceneAcknowledgement == true){
+						Game.keysAreInUse = true;
+						sceneAcknowledgement = true;
+					}
+					else if(Game.escapePressedNegateAction == false)
+						Game.enterButtonPushedDown = true;
+		    	}
+		    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+			    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+			    		device.getDelta().getButtons().isReleased(XInputButton.X)
+			    		) {
+		    		if(Game.mouseIsClickedDown || Game.enterButtonPushedDown) {
+					}
+		    		else if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+					else {
+						askToSkipSequence = false;
+						Game.keysAreInUse = false;
+						sceneAcknowledgement = false;
+					}
+		    	}
+		    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+			    		device.getDelta().getButtons().isReleased(XInputButton.A)) {
+		    		if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+		    		else {
+						if(askToSkipSequence && Game.escapePressedNegateAction == false)
+							skipSequence = true;
+						Game.keysAreInUse = true;
+						Game.enterButtonPushedDown = false;
+						Game.escapePressedNegateAction = false;
+						sceneAcknowledgement = false;
+		    		}
+		    	}
+	    }
+	    else if(State == STATE.TRANSITION_ITEM && gameControllerInUse) {
+	    	if((lY > .65 || (XInputDevice.upHeld) ||
+	    		lY < -.65 || (XInputDevice.downHeld) ||
+	    		lX > .65 || (XInputDevice.leftHeld) ||
+	    		lX < -.65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()){
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    		) {
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.skipHighlighted)
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.skipClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+				if(!Game.keysAreInUse) {//|| sceneAcknowledgement == true){
+					Game.keysAreInUse = true;
+					sceneAcknowledgement = true;
+				}
+				else {
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				}
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    		if(!Game.keysAreInUse) {//|| sceneAcknowledgement == true){
+					Game.keysAreInUse = true;
+					sceneAcknowledgement = true;
+				}
+				else if(Game.escapePressedNegateAction == false)
+					Game.enterButtonPushedDown = true;
+	    	}
+	    	if(p.getVelX() != 0)
+				p.setVelX(0);
+			if(xLBoolean == true)
+				this.xLBoolean = false;
+			if(xRBoolean == true)
+				this.xRBoolean = false;
+			if(slowingDownActivatedl == true)
+				this.slowingDownActivatedl = false;
+			if(slowingDownActivatedr == true)
+				this.slowingDownActivatedr = false;
+			if(slowingDown != 0)
+				this.slowingDown = 0;
+			if(slowingDownTimerLong != 0)
+				this.slowingDownTimerLong = 0;
+			if(runningTimerActivated == true)
+				this.runningTimerActivated = false;
+			if(runningTimerActivatedResponse == true)
+				this.runningTimerActivatedResponse = false;
+			if(runningTimerLong != 0)
+				this.runningTimerLong = 0;
+			if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+		    		) {
+				if(Game.mouseIsClickedDown) {
+				}
+				else if(sceneAcknowledgement) {
+					if(Game.enterButtonPushedDown) {}
+					else if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+					else {
+						askToSkipSequence = false;
+						Game.keysAreInUse = false;
+					}
+					if(!Game.enterButtonPushedDown)
+						sceneAcknowledgement = false;
+				}
+			}
+			if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.A)) {
+				if(!askToSkipSequence) {
+					askToSkipSequence = true;
+				}
+				else {
+					if(askToSkipSequence && Game.escapePressedNegateAction == false)
+						skipSequence = true;
+					Game.keysAreInUse = true;
+					Game.enterButtonPushedDown = false;
+					Game.escapePressedNegateAction = false;
+					sceneAcknowledgement = false;
+				}
+			}
+	    }
+	    else if(State == STATE.GAMEOVER && gameControllerInUse) {
+	    	if((lX > .65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == 0) {
+	    			Game.selectorButtonPosition = -1;
+	    			if(Game.hudSFXPosition == 3)
+	    				Game.hudSFXPosition = 0;
+	    			else
+	    				Game.hudSFXPosition++;
+	    			hudSFX.get(hudSFXPosition).play();
+	    		}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if((lX < -.65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(Game.selectorButtonPosition == -1 || Game.selectorButtonPosition == 0) {
+					Game.selectorButtonPosition = -2;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()){
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition == -1 || Game.selectorButtonPosition == -2) {
+					Game.selectorButtonPosition = 0;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				else if(Game.selectorButtonPosition < 2) {
+					Game.selectorButtonPosition++;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()){
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition > -1) {
+					Game.selectorButtonPosition--;
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+				Game.enterButtonPushedDown = true;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)){
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.setScoreHighlighted ||
+							Game.playHighlighted || Game.exitHighlighted || Game.homeHighlighted|| 
+							Game.leaderboardHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.playClicked = false;
+					Game.homeClicked = false;
+					Game.exitClicked = false;
+					Game.setScoreClicked = false;
+					Game.leaderboardClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    		Game.enterButtonPushedDown = false;
+				if(!Game.escapePressedNegateAction && Game.keysAreInUse) {
+					switch(Game.selectorButtonPosition) {
+						case -2:
+							State = STATE.LEADERBOARD;
+							Game.keysAreInUse = false;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case -1:
+							State = STATE.SET_SCORE;
+							Game.keysAreInUse = false;//CHANGE FOR VIRTUAL KEYBOARD
+							//Game.gameControllerInUse = false;//CHANGE FOR VIRTUAL KEYBOARD
+							if(smb3KickSoundLoop.clipIsActive())
+								smb3KickSoundLoop.stop();
+							smb3KickSoundLoop.play();
+							break;
+						case 0:
+							State = STATE.RESET;
+							smb3CoinSoundLoop.play();
+							break;
+						case 1:
+							Game.setDontStartOver(true);
+							Game.State = Game.STATE.RESET;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case 2:
+							System.exit(1);
+							break;
+					}
+				}
+				Game.escapePressedNegateAction = false;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.X)){
+	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.gameControllerInUse) {
+						Game.gameControllerInUse = false;
+						Game.keysAreInUse = false;
+					}
+					else {
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+					}
+				}
+	    	}
+	    }
+	    else if(State == STATE.SET_SCORE && gameControllerInUse) {
+	    	if(Game.keysAreInUse) {
+	    		if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    			if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						Game.selectorButtonPosition = -1;
+					}
+					else {
+						if(Game.selectorButtonPosition == 1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition--;
+						}
+						if(Game.selectorButtonPosition > -1) {
+							Game.selectorButtonPosition--;
+						}
+					}
+					if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+		    	}
+	    		if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()){
+	    			if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						Game.selectorButtonPosition = 1;
+					}
+					else {
+						if(Game.selectorButtonPosition == -1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition++;
+						}
+						if(Game.selectorButtonPosition < 1)
+							Game.selectorButtonPosition++;
+					}
+					if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+	    		}
+	    		if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+    	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+    	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+    	    		joystickTimer = 0;
+    		    }
+		    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+				    	device.getDelta().getButtons().isPressed(XInputButton.A)) {
+						Game.enterButtonPushedDown = true;
+		    	}
+		    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+				    device.getDelta().getButtons().isPressed(XInputButton.B) ||
+				    device.getDelta().getButtons().isPressed(XInputButton.X)) {
+		    		if(Game.mouseIsClickedDown) {
+						if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+								Game.submitHighlighted))
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.backClicked = false;
+						Game.submitClicked = false;
+						Game.settingsClicked = false;
+						Game.leaderboardClicked = false;
+						Game.escapePressedNegateAction = true;
+					}
+		    		else if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+		    	}
+		    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+			    	device.getDelta().getButtons().isReleased(XInputButton.A)) {
+		    		Game.enterButtonPushedDown = false;
+					if(!Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+							case -1:
+								Game.selectorButtonPosition = -1;
+								Game.State = Game.STATE.GAMEOVER;
+								break;
+							case 1:
+								postLetter = '~';
+								Game.selectorButtonPosition = 0;
+								break;
+							default:
+								break;
+						}
+					}
+					Game.escapePressedNegateAction = false;
+		    	}
+		    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.X)) {
+		    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+						Game.selectorBPMP = Game.selectorButtonPosition;
+						Game.escapePressedNegateAction = false;
+						if(Game.keysAreInUse) {
+							Game.keysAreInUse = false;
+						}else
+							Game.keysAreInUse = true;
+						/*
+						if(Game.gameControllerInUse) {
+							Game.gameControllerInUse = false;
+							Game.keysAreInUse = false;
+							//Game.selectorButtonPosition = 0;
+						}
+						else {
+							Game.gameControllerInUse = true;
+							Game.keysAreInUse = true;
+						}*/
+					}
+		    	}
+	    	}
+	    	else {
+	    		if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    			if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						Game.selectorButtonPosition = -1;
+					}
+					else {
+						if(Game.selectorButtonPosition == 1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition--;
+						}
+						if(Game.selectorButtonPosition > -1)
+							Game.selectorButtonPosition--;
+					}
+	    			if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+	    		}
+	    		if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()){
+	    			if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+						Game.selectorButtonPosition = 1;
+					}
+					else {
+						if(Game.selectorButtonPosition == -1) {
+							Game.keysAreInUse = false;
+							Game.selectorButtonPosition++;
+						}
+						if(Game.selectorButtonPosition < 1)
+							Game.selectorButtonPosition++;
+					}
+	    			if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+	    		}
+	    		if((lX > .65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+					//TRAVERSE LETTERS
+	    			if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+	    			if(gamepadKeyboardLetterPosition == 0)
+	    				gamepadKeyboardLetterPosition = 41;
+	    			else
+	    				gamepadKeyboardLetterPosition--;
+	    			gamepadLetterImage = null;
+	    			if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+	    		}
+	    		if((lX < -.65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    			//TRAVERSE LETTERS
+	    			if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+	    			if(gamepadKeyboardLetterPosition == 41)
+	    				gamepadKeyboardLetterPosition = 0;
+	    			else
+	    				gamepadKeyboardLetterPosition++;
+	    			gamepadLetterImage = null;
+	    			if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+	    		}
+	    		if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+    	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+    	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+    	    		joystickTimer = 0;
+    		    }
+	    		if(device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    			//about to enter letter
+	    			//gamepadKeyboardLetterPosition
+	    			//CREATE NEW LETTER WHEN PRESSED, DON'T CREATE ONE UNTIL THIS IS PRESSED
+	    			//
+	    			//OR MAKE TRANSPARENT LETTER(TWICE AS FAST AS TEXTINDICATOR) AND DON'T ENTER IT UNTIL THIS IS PRESSED
+	    		}
+	    		if(device.getDelta().getButtons().isPressed(XInputButton.B)) {
+	    			postLetter = '+';
+	    			//about to delete letter
+	    		}
+	    		if(device.getDelta().getButtons().isPressed(XInputButton.START)) {
+					Game.enterButtonPushedDown = true;
+	    		}
+	    		if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    			device.getDelta().getButtons().isPressed(XInputButton.X)) {
+	    			if(Game.mouseIsClickedDown) {
+						if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+								Game.submitHighlighted))
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.backClicked = false;
+						Game.submitClicked = false;
+						Game.settingsClicked = false;
+						Game.leaderboardClicked = false;
+						Game.escapePressedNegateAction = true;
+					}
+	    			else if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+	    			if(shiftOn)
+	    				shiftOn = false;
+	    			else
+	    				shiftOn = true;
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    			if(postLetter == '=') {
+		    			switch(gamepadKeyboardLetterPosition) {
+		    			case 0:
+		    				postLetter = 'A';
+		    				break;
+		    			case 1:
+		    				postLetter = 'B';
+		    				break;
+		    			case 2:
+		    				postLetter = 'C';
+		    				break;
+		    			case 3:
+		    				postLetter = 'D';
+		    				break;
+		    			case 4:
+		    				postLetter = 'E';
+		    				break;
+		    			case 5:
+		    				postLetter = 'F';
+		    				break;
+		    			case 6:
+		    				postLetter = 'G';
+		    				break;
+		    			case 7:
+		    				postLetter = 'H';
+		    				break;
+		    			case 8:
+		    				postLetter = 'I';
+		    				break;
+		    			case 9:
+		    				postLetter = 'J';
+		    				break;
+		    			case 10:
+		    				postLetter = 'K';
+		    				break;
+		    			case 11:
+		    				postLetter = 'L';
+		    				break;
+		    			case 12:
+		    				postLetter = 'M';
+		    				break;
+		    			case 13:
+		    				postLetter = 'N';
+		    				break;
+		    			case 14:
+		    				postLetter = 'O';
+		    				break;
+		    			case 15:
+		    				postLetter = 'P';
+		    				break;
+		    			case 16:
+		    				postLetter = 'Q';
+		    				break;
+		    			case 17:
+		    				postLetter = 'R';
+		    				break;
+		    			case 18:
+		    				postLetter = 'S';
+		    				break;
+		    			case 19:
+		    				postLetter = 'T';
+		    				break;
+		    			case 20:
+		    				postLetter = 'U';
+		    				break;
+		    			case 21:
+		    				postLetter = 'V';
+		    				break;
+		    			case 22:
+		    				postLetter = 'W';
+		    				break;
+		    			case 23:
+		    				postLetter = 'X';
+		    				break;
+		    			case 24:
+		    				postLetter = 'Y';
+		    				break;
+		    			case 25:
+		    				postLetter = 'Z';
+		    				break;
+		    			case 26:
+		    				postLetter = '1';
+		    				break;
+		    			case 27:
+		    				postLetter = '2';
+		    				break;
+		    			case 28:
+		    				postLetter = '3';
+		    				break;
+		    			case 29:
+		    				postLetter = '4';
+		    				break;
+		    			case 30:
+		    				postLetter = '5';
+		    				break;
+		    			case 31:
+		    				postLetter = '6';
+		    				break;
+		    			case 32:
+		    				postLetter = '7';
+		    				break;
+		    			case 33:
+		    				postLetter = '8';
+		    				break;
+		    			case 34:
+		    				postLetter = '9';
+		    				break;
+		    			case 35:
+		    				postLetter = '0';
+		    				break;
+		    			case 36:
+		    				postLetter = '.';
+		    				break;
+		    			case 37:
+		    				postLetter = '\'';
+		    				break;
+		    			case 38:
+		    				postLetter = '!';
+		    				break;
+		    			case 39:
+		    				postLetter = ':';
+		    				break;
+		    			case 40:
+		    				postLetter = ',';
+		    				break;
+		    			case 41:
+		    				postLetter = ' ';
+		    				break;
+		    			default:
+		    				break;
+		    			}
+	    			}
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.START)) {
+	    			if(!Game.escapePressedNegateAction) 
+						postLetter = '~';
+					Game.enterButtonPushedDown = false;
+					Game.escapePressedNegateAction = false;
+					//Game.keysAreInUse = true;
+					//Game.selectorButtonPosition = 0;
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+	    			device.getDelta().getButtons().isReleased(XInputButton.X)) {
+	    			Game.keysAreInUse = true;
+					Game.selectorButtonPosition = -1;
+	    		}
+	    	}
+	    }
+	    else if(State == STATE.LEADERBOARD && gameControllerInUse) {
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.A)
+		    		) {
+				Game.enterButtonPushedDown = true;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.X)
+		    		) {
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.backHighlighted)
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+		    		) {
+	    		Game.enterButtonPushedDown = false;
+				if(!Game.escapePressedNegateAction) {
+					if(Game.backToGameOver) {
+						Game.selectorButtonPosition = -2;
+						Game.State = Game.STATE.GAMEOVER;
+					}
+					else {
+						Game.selectorButtonPosition = -3;
+						Game.State = Game.STATE.MENU;
+					}
+					if(smb3KickSoundLoop.clipIsActive())
+						smb3KickSoundLoop.stop();
+					smb3KickSoundLoop.play();
+				}
+				Game.escapePressedNegateAction = false;
+			}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+		    		) {
+	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.gameControllerInUse) {
+						Game.gameControllerInUse = false;
+						Game.keysAreInUse = false;
+					}
+					else {
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+					}
+	    		}
+	    	}
+	    }
+	    else if(State == STATE.SHOP && gameControllerInUse) {
+	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+				int selector = Game.selectorButtonPosition;
+				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+					Game.selectorButtonPosition = 1;
+				else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+					Game.selectorButtonPosition = 2;
+				else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+					Game.selectorButtonPosition = 3;
+				
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				/*if(Game.selectorButtonPosition >-1 && Game.selectorButtonPosition < -5)
+					Game.selectorButtonPosition = 1;
+				else */
+				if(Game.selectorButtonPosition > -1)
+					Game.selectorButtonPosition--;
+				else if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == -3 || Game.selectorButtonPosition == -4)
+					Game.selectorButtonPosition = -1;
+				else if(Game.selectorButtonPosition == -5) {
+					if(Game.currentSkinLocked)
+						Game.selectorButtonPosition = -2;
+					else
+						Game.selectorButtonPosition = 0;
+				}
+				else if(Game.selectorButtonPosition == -6)
+					Game.selectorButtonPosition = -3;
+				else if(Game.selectorButtonPosition == -7)
+					Game.selectorButtonPosition = -4;
+				else if(Game.selectorButtonPosition == -8) {
+					if(Game.currentTrackLocked)
+						Game.selectorButtonPosition = -5;
+					else
+						Game.selectorButtonPosition = 1;
+				}
+				else if(Game.selectorButtonPosition == -9)
+					Game.selectorButtonPosition = -6;
+				else if(Game.selectorButtonPosition == -10)
+					Game.selectorButtonPosition = -7;
+				else if(Game.selectorButtonPosition == -11) {
+					if(Game.currentFireballLocked)
+						Game.selectorButtonPosition = -8;
+					else
+						Game.selectorButtonPosition = 2;
+				}
+				else if(Game.selectorButtonPosition == -12)
+					Game.selectorButtonPosition = -9;
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+					Game.selectorButtonPosition = 1;
+				else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+					Game.selectorButtonPosition = 2;
+				else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+					Game.selectorButtonPosition = 3;
+				
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				/*if(Game.selectorButtonPosition >-1 && Game.selectorButtonPosition < -4)
+					Game.selectorButtonPosition = 1;
+				else */
+				if(Game.selectorButtonPosition < 3 && Game.selectorButtonPosition > -1)
+					Game.selectorButtonPosition++;
+				else if(Game.selectorButtonPosition == -1)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == -2) {
+					if(Game.currentTrackLocked)
+						Game.selectorButtonPosition = -5;
+					else
+						Game.selectorButtonPosition = 1;
+				}
+				else if(Game.selectorButtonPosition == -3)
+					Game.selectorButtonPosition = -6;
+				else if(Game.selectorButtonPosition == -4)
+					Game.selectorButtonPosition = -7;
+				else if(Game.selectorButtonPosition == -5) {
+					if(Game.currentFireballLocked)
+						Game.selectorButtonPosition = -8;
+					else
+						Game.selectorButtonPosition = 2;
+				}
+				else if(Game.selectorButtonPosition == -6)
+					Game.selectorButtonPosition = -9;
+				else if(Game.selectorButtonPosition == -7)
+					Game.selectorButtonPosition = -10;
+				else if(Game.selectorButtonPosition == -8) {
+					if(Game.currentItemLocked)
+						Game.selectorButtonPosition = -11;
+					else
+						Game.selectorButtonPosition = 3;
+				}
+				else if(Game.selectorButtonPosition == -9)
+					Game.selectorButtonPosition = -12;
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+					Game.selectorButtonPosition = 1;
+				else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+					Game.selectorButtonPosition = 2;
+				else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+					Game.selectorButtonPosition = 3;
+				
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition == -3) {
+					if(Game.currentSkinLocked)
+						Game.selectorButtonPosition = -2;
+					else
+						Game.selectorButtonPosition = 0;
+				}
+				else if(Game.selectorButtonPosition == -2)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == -5)
+					Game.selectorButtonPosition = 1;
+				else if(Game.selectorButtonPosition == -8)
+					Game.selectorButtonPosition = 2;
+				else if(Game.selectorButtonPosition == -11)
+					Game.selectorButtonPosition = 3;
+				else if(Game.selectorButtonPosition == 0)
+					Game.selectorButtonPosition--;
+				else if(Game.selectorButtonPosition == -6) {
+					if(Game.currentTrackLocked)
+						Game.selectorButtonPosition = -5;
+					else
+						Game.selectorButtonPosition = 1;
+				}
+				else if(Game.selectorButtonPosition == -9) {
+					if(Game.currentFireballLocked)
+						Game.selectorButtonPosition = -8;
+					else
+						Game.selectorButtonPosition = 2;
+				}
+				else if(Game.selectorButtonPosition == -12) {
+					if(Game.currentItemLocked)
+						Game.selectorButtonPosition = -11;
+					else
+						Game.selectorButtonPosition = 3;
+				}
+				else if(Game.selectorButtonPosition < -2 && Game.selectorButtonPosition >= -4 ||
+						Game.selectorButtonPosition < -5 && Game.selectorButtonPosition >= -7 ||
+						Game.selectorButtonPosition < -8 && Game.selectorButtonPosition >= -10 ||
+						Game.selectorButtonPosition < -11 && Game.selectorButtonPosition >= -13 ) {
+					Game.selectorButtonPosition++;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+					Game.selectorButtonPosition = 1;
+				else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+					Game.selectorButtonPosition = 2;
+				else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+					Game.selectorButtonPosition = 3;
+				
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition == 0) {
+					if(Game.currentSkinLocked)
+						Game.selectorButtonPosition = -2;
+					else
+						Game.selectorButtonPosition = -3;
+				}
+				else if(Game.selectorButtonPosition == -1)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == 1) {
+					if(Game.currentTrackLocked)
+						Game.selectorButtonPosition = -5;
+					else
+						Game.selectorButtonPosition = -6;
+				}
+				else if(Game.selectorButtonPosition == 2) {
+					if(Game.currentFireballLocked)
+						Game.selectorButtonPosition = -8;
+					else
+						Game.selectorButtonPosition = -9;
+				}
+				else if(Game.selectorButtonPosition == 3) {
+					if(Game.currentItemLocked)
+						Game.selectorButtonPosition = -11;
+					else
+						Game.selectorButtonPosition = -12;
+				}
+				else if(Game.selectorButtonPosition <= -2 && Game.selectorButtonPosition > -4 ||
+						Game.selectorButtonPosition <=-5 && Game.selectorButtonPosition > -7 ||
+						Game.selectorButtonPosition <=-8 && Game.selectorButtonPosition > -10 ||
+						Game.selectorButtonPosition <=-11 && Game.selectorButtonPosition > -12) {
+					Game.selectorButtonPosition--;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+		    }
+
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.A)
+	    		) {
+	    		Game.enterButtonPushedDown = true;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    		) {
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+							Game.arrowL1Highlighted || Game.arrowR1Highlighted ||
+							Game.arrowL2Highlighted || Game.arrowR2Highlighted ||
+							Game.arrowL3Highlighted || Game.arrowR3Highlighted ||
+							Game.arrowL4Highlighted || Game.arrowR4Highlighted ||
+							Game.set1Highlighted || Game.buy1Highlighted ||
+							Game.set2Highlighted || Game.buy2Highlighted ||
+							Game.set3Highlighted || Game.buy3Highlighted ||
+							Game.set4Highlighted || Game.buy4Highlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.arrowL1Clicked = false;
+					Game.arrowR1Clicked = false;
+					Game.arrowL2Clicked = false;
+					Game.arrowR2Clicked = false;
+					Game.arrowL3Clicked = false;
+					Game.arrowR3Clicked = false;
+					Game.arrowL4Clicked = false;
+					Game.arrowR4Clicked = false;
+					Game.set1Clicked = false;
+					Game.buy1Clicked = false;
+					Game.set2Clicked = false;
+					Game.buy2Clicked = false;
+					Game.set3Clicked = false;
+					Game.buy3Clicked = false;
+					Game.set4Clicked = false;
+					Game.buy4Clicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+		    		) {
+	    		Game.enterButtonPushedDown = false;
+				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+					Game.selectorButtonPosition = 0;
+				else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+					Game.selectorButtonPosition = 1;
+				else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+					Game.selectorButtonPosition = 2;
+				else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+					Game.selectorButtonPosition = 3;
+
+				if(!Game.escapePressedNegateAction) {
+					switch(Game.selectorButtonPosition) {
+					case -12:
+						if(Game.itemPosition == 6)//Max Items
+							Game.itemPosition = 0;
+						else
+							Game.itemPosition++;
+						Game.itemNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.itemPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					case -11:
+						//Item Buy
+						if(smb31PupSoundLoop.clipIsActive())
+							smb31PupSoundLoop.stop();
+						smb31PupSoundLoop.play();
+						break;
+					case -10:
+						//Fireballs Set
+						if(!Game.currentFireballLocked) {
+							if(Game.currentlySelectedFireball != Game.fireballPosition) {
+								if(Game.smb3ItemSoundLoop.clipIsActive())
+									Game.smb3ItemSoundLoop.stop();
+								Game.smb3ItemSoundLoop.play();
+							}
+							Game.currentlySelectedFireball = Game.fireballPosition;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "currentlySelectedFireball";
+							Game.writeOnceString = Integer.toString(Game.fireballPosition);
+							//Game.settingsSetup = false;
+						}
+						break;
+					case -9:
+						if(Game.fireballPosition == 3)//Max Fireballs
+							Game.fireballPosition = 0;
+						else
+							Game.fireballPosition++;
+						Game.fireballNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.fireballPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					case -8:
+						//Fireballs Buy
+						if(currentFireballLocked) {
+							switch(fireballPosition){
+								case 1:
+									if(totalPoints >= 100){
+										Game.fireball1Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedFireball";
+										Game.writeOnceString = Integer.toString(Game.fireballPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "fireball1Unlocked";
+										Game.fireballPosition = 1;
+										Game.currentlySelectedFireball = 1;
+										currentFireballLocked = false;
+										skinNumber = null;
+										totalPoints -= 100;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 336;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -9;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 2:
+									if(totalPoints >= 1000){
+										Game.fireball2Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedFireball";
+										Game.writeOnceString = Integer.toString(Game.fireballPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "fireball2Unlocked";
+										Game.fireballPosition = 2;
+										Game.currentlySelectedFireball = 2;
+										currentFireballLocked = false;
+										skinNumber = null;
+										totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 336;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -9;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 3:
+									if(totalPoints >= 10000){
+										Game.fireball3Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedFireball";
+										Game.writeOnceString = Integer.toString(Game.fireballPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "fireball3Unlocked";
+										Game.fireballPosition = 3;
+										Game.currentlySelectedFireball = 3;
+										currentFireballLocked = false;
+										skinNumber = null;
+										totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 336;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -9;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+							
+						}
+						//else
+							//Play error noise
+						break;
+					case -7:
+						//Tracks Set
+						if(smb3ItemSoundLoop.clipIsActive())
+							smb3ItemSoundLoop.stop();
+						smb3ItemSoundLoop.play();
+						break;
+					case -6:
+						if(Game.trackPosition == 1)//Max Tracks
+							Game.trackPosition = 0;
+						else 
+							Game.trackPosition++;
+						Game.trackNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.trackPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					case -5:
+						//Tracks Buy
+						if(smb31PupSoundLoop.clipIsActive())
+							smb31PupSoundLoop.stop();
+						smb31PupSoundLoop.play();
+						break;
+					case -4:
+						//Skin Set
+						if(!Game.currentSkinLocked) {
+							if(Game.currentlySelectedCharacterSkin != Game.characterSkinPosition) {
+								if(Game.smb3ItemSoundLoop.clipIsActive())
+									Game.smb3ItemSoundLoop.stop();
+								Game.smb3ItemSoundLoop.play();
+							}
+							Game.currentlySelectedCharacterSkin = Game.characterSkinPosition;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+							Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+							//Game.settingsSetup = false;
+						}
+						break;
+					case -3:
+						if(Game.characterSkinPosition == 3)//Max Skins
+							Game.characterSkinPosition = 0;
+						else {
+							Game.characterSkinPosition++;
+						}
+						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					case -2:
+						//Skin Buy
+						if(currentSkinLocked) {
+							switch(characterSkinPosition){
+								case 1:
+									if(totalPoints >= 100){
+										Game.skin1Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+										Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "skin1Unlocked";
+										Game.characterSkinPosition = 1;
+										Game.currentlySelectedCharacterSkin = 1;
+										currentSkinLocked = false;
+										skinNumber = null;
+										totalPoints -= 100;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -3;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 2:
+									if(totalPoints >= 1000){
+										Game.skin2Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+										Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "skin2Unlocked";
+										Game.characterSkinPosition = 2;
+										Game.currentlySelectedCharacterSkin = 2;
+										currentSkinLocked = false;
+										skinNumber = null;
+										totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -3;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 3:
+									if(totalPoints >= 10000){
+										Game.skin3Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedCharacterSkin";
+										Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "skin3Unlocked";
+										Game.characterSkinPosition = 3;
+										Game.currentlySelectedCharacterSkin = 3;
+										currentSkinLocked = false;
+										skinNumber = null;
+										totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -3;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+							
+						}
+						//else
+							//Play error noise
+						break;
+					case -1:
+						Game.selectorButtonPosition = 1;
+						Game.State = Game.STATE.MENU;
+						if(smb3KickSoundLoop.clipIsActive())
+							smb3KickSoundLoop.stop();
+						smb3KickSoundLoop.play();
+						break;
+					case 0:
+						if(Game.characterSkinPosition > 0)
+							Game.characterSkinPosition--;
+						else
+							Game.characterSkinPosition = 3;//Set to Max Skins
+						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					case 1:
+						if(Game.trackPosition > 0)
+							Game.trackPosition--;
+						else
+							Game.trackPosition = 1;//Set to Max Tracks
+						Game.trackNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.trackPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					case 2:
+						if(Game.fireballPosition > 0)
+							Game.fireballPosition--;
+						else
+							Game.fireballPosition = 3;//Set to Max Fireballs
+						Game.fireballNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.fireballPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					case 3:
+						if(Game.itemPosition > 0)
+							Game.itemPosition--;
+						else
+							Game.itemPosition = 6;//Set to Max Items
+						Game.itemNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.itemPosition+1)), 10, 10);
+						if(smb3Bump2SoundLoop.clipIsActive())
+							smb3Bump2SoundLoop.stop();
+						smb3Bump2SoundLoop.play();
+						break;
+					}
+				}
+				Game.escapePressedNegateAction = false;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+		    		) {
+	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == -5 && currentTrackLocked == false)
+						Game.selectorButtonPosition = 1;
+					else if(Game.selectorButtonPosition == -8 && currentFireballLocked == false)
+						Game.selectorButtonPosition = 2;
+					else if(Game.selectorButtonPosition == -11 && currentItemLocked == false)
+						Game.selectorButtonPosition = 3;
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.gameControllerInUse) {
+						Game.gameControllerInUse = false;
+						Game.keysAreInUse = false;
+					}
+					else {
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+					}
+	    		}
+	    	}
+	    }
+	    else if(State == STATE.SETTINGS && gameControllerInUse) {
+	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+				int selector = Game.selectorButtonPosition;
+	    		if(areYouSureBoolean)
+					Game.selectorButtonPosition = 0;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(areYouSureBoolean) {}
+				else {
+					if(selectorButtonPosition <= 3 && selectorButtonPosition > -1)
+						selectorButtonPosition--;
+					else if(selectorButtonPosition == -3)
+						selectorButtonPosition = -2;
+					else if(selectorButtonPosition == -2)
+						selectorButtonPosition = -4;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+	    		if(areYouSureBoolean)
+					Game.selectorButtonPosition = 0;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(areYouSureBoolean) {}
+				else {
+					if(selectorButtonPosition >= -1 && selectorButtonPosition < 3)
+						selectorButtonPosition++;
+					else if(selectorButtonPosition == -2)
+						selectorButtonPosition = -3;
+					else if(selectorButtonPosition == -3)
+						selectorButtonPosition = 2;
+					else if(selectorButtonPosition == -4 || selectorButtonPosition == -5)
+						selectorButtonPosition = -2;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(areYouSureBoolean)
+					Game.selectorButtonPosition = 0;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(areYouSureBoolean) {
+					if(selectorButtonPosition == 1)
+						selectorButtonPosition = 0;
+				}
+				else {
+					if(selectorButtonPosition == -2)
+						selectorButtonPosition = 0;
+					else if(selectorButtonPosition == -3)
+						selectorButtonPosition = 1;
+					else if(selectorButtonPosition == -4)
+						selectorButtonPosition = -1;
+					else if(selectorButtonPosition == -5)
+						selectorButtonPosition = -4;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(areYouSureBoolean)
+					Game.selectorButtonPosition = 0;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(areYouSureBoolean) {
+					if(selectorButtonPosition == 0)
+						selectorButtonPosition = 1;
+				}
+				else {
+					if(selectorButtonPosition == 0)
+						selectorButtonPosition = -2;
+					else if(selectorButtonPosition == 1)
+						selectorButtonPosition = -3;
+					else if(selectorButtonPosition == -2 || selectorButtonPosition == -1)
+						selectorButtonPosition = -4;
+					else if(selectorButtonPosition == -4)
+						selectorButtonPosition = -5;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+			    	device.getDelta().getButtons().isPressed(XInputButton.A)){
+				if(Game.selectorButtonPosition == 2 && !Game.enterButtonPushedDown) {
+					if(smb3CheckmarkSoundLoop.clipIsActive())
+						smb3CheckmarkSoundLoop.stop();
+					if(smb3Checkmark2SoundLoop.clipIsActive())
+						smb3Checkmark2SoundLoop.stop();
+					smb3CheckmarkSoundLoop.play();
+				}
+				Game.enterButtonPushedDown = true;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    		) {
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.yesHighlighted || Game.noHighlighted ||
+							Game.arrowL1Highlighted || Game.arrowR1Highlighted ||
+							Game.arrowL2Highlighted || Game.arrowR2Highlighted ||
+							Game.resetStatsHighlighted || Game.checkMarkHighlighted ||
+							Game.gamepadImageHighlighted || Game.noteImageHighlighted ||
+							Game.backHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.yesClicked = false;
+					Game.noClicked = false;
+					Game.arrowL1Clicked = false;
+					Game.arrowR1Clicked = false;
+					Game.arrowL2Clicked = false;
+					Game.arrowR2Clicked = false;
+					Game.resetStatsClicked = false;
+					Game.checkMarkClicked = false;
+					Game.gamepadImageClicked = false;
+					Game.noteImageClicked = false;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+			    device.getDelta().getButtons().isReleased(XInputButton.A)){
+	    		Game.enterButtonPushedDown = false;
+				if(!Game.escapePressedNegateAction) {
+					if(areYouSureBoolean) {
+						switch(Game.selectorButtonPosition) {
+						case 0:
+							Game.selectorButtonPosition = 3;
+							areYouSureBoolean = false;
+							smb3KickSoundLoop.play();
+							break;	
+						case 1:
+							Game.skin1Unlocked = false;
+							Game.skin2Unlocked = false;
+							Game.skin3Unlocked = false;
+							Game.track1Unlocked = false;
+							Game.fireball1Unlocked = false;
+							Game.fireball2Unlocked = false;
+							Game.fireball3Unlocked = false;
+							Game.item4Unlocked = false;
+							Game.item5Unlocked = false;
+							Game.item6Unlocked = false;
+							Game.currentlySelectedCharacterSkin = 0;
+							Game.currentlySelectedTrack = 0;
+							Game.currentlySelectedFireball = 0;
+							Game.currentlySelectedItem = 0;
+							Game.volumeSliderPosition = 3;
+							Game.sfxMusicSliderPosition = 3;
+							Game.characterSkinPosition = 0;
+							Game.trackPosition = 0;
+							Game.fireballPosition = 0;
+							Game.itemPosition = 0;
+							skinNumber = null;
+							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+							XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+							XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+							XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+							XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+							XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+							XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+							XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+							Game.totalPoints = 0;
+							Game.skipAnimations = false;
+							try {
+								LeaderboardController.resetScore();
+							} catch (IOException e1) {
+								
+							}
+							VolumeSlider.volumeSliderChangingVolume = true;
+							VolumeSlider.sfxMusicSliderChangingVolume = true;
+							Game.settingsSetup = false;
+							Game.selectorButtonPosition = 3;
+							Game.areYouSureBoolean = false;
+							smb3TailSoundLoop.play();
+							break;	
+						default:
+							break;
+						}
+					}
+					else {
+						switch(Game.selectorButtonPosition) {
+						case -5:
+							Game.selectorButtonPosition = -1;
+							Game.State = Game.STATE.TRACKLIST;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case -4:
+							Game.selectorButtonPosition = -1;
+							Game.State = Game.STATE.CONTROLS;
+							if(smb3OpenSoundLoop.clipIsActive())
+								smb3OpenSoundLoop.stop();
+							smb3OpenSoundLoop.play();
+							break;
+						case -3:
+							if(sfxMusicSliderPosition < 5) {
+								Game.sfxMusicSliderPosition++;
+								VolumeSlider.sfxMusicSliderChangingVolume = true;
+							}
+							if(smb3BumpSoundLoop.clipIsActive())
+								smb3BumpSoundLoop.stop();
+							smb3BumpSoundLoop.play();
+							break;
+						case -2:
+							if(volumeSliderPosition < 5) {
+								Game.volumeSliderPosition++;
+								VolumeSlider.volumeSliderChangingVolume = true;
+							}
+							if(smb3BumpSoundLoop.clipIsActive())
+								smb3BumpSoundLoop.stop();
+							smb3BumpSoundLoop.play();
+							break;
+						case -1:
+							Game.selectorButtonPosition = -2;
+							Game.State = Game.STATE.MENU;
+							if(smb3KickSoundLoop.clipIsActive())
+								smb3KickSoundLoop.stop();
+							smb3KickSoundLoop.play();
+							break;	
+						case 0:
+							if(volumeSliderPosition > 1) {
+								Game.volumeSliderPosition--;
+								VolumeSlider.volumeSliderChangingVolume = true;
+							}
+							if(smb3BumpSoundLoop.clipIsActive())
+								smb3BumpSoundLoop.stop();
+							smb3BumpSoundLoop.play();
+							break;
+						case 1:
+							if(sfxMusicSliderPosition > 1) {
+								Game.sfxMusicSliderPosition--;
+								VolumeSlider.sfxMusicSliderChangingVolume = true;
+							}
+							if(smb3BumpSoundLoop.clipIsActive())
+								smb3BumpSoundLoop.stop();
+							smb3BumpSoundLoop.play();
+							break;
+						case 2:
+							if(skipAnimations) {
+								skipAnimations = false;
+								settingsSetup = false;
+							}
+							else {
+								skipAnimations = true;
+								settingsSetup = false;
+							}
+							if(smb3Checkmark2SoundLoop.clipIsActive())
+								smb3Checkmark2SoundLoop.stop();
+							if(smb3CheckmarkSoundLoop.clipIsActive())
+								smb3CheckmarkSoundLoop.stop();
+							smb3Checkmark2SoundLoop.play();
+							break;	
+						case 3:
+							Game.selectorButtonPosition = 0;
+							areYouSureBoolean = true;
+							hudSFX.get(4).play();
+							break;	
+						default:
+							break;
+						}
+					}
+				}
+				Game.escapePressedNegateAction = false;
+	    	}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+	    		device.getDelta().getButtons().isReleased(XInputButton.X)
+	    		) {
+	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.gameControllerInUse) {
+						Game.gameControllerInUse = false;
+						Game.keysAreInUse = false;
+					}
+					else {
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+					}
+					if(areYouSureBoolean && Game.selectorButtonPosition != 1)
+						Game.selectorButtonPosition = 0;
+				}
+	    	}
+	    }
+	    else if(State == STATE.CONTROLS) {
+	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+				}
+				else {
+		    		if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+		    		else {
+						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == -10 ||
+								Game.selectorButtonPosition == -18) {
+							Game.selectorButtonPosition = -1;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition != -1){
+							Game.selectorButtonPosition++;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+		    		}
+		    		if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+				}
+	    	}
+	    	else if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+				}
+				else {
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					else {
+						if(Game.selectorButtonPosition == -9 || Game.selectorButtonPosition == -17 ||
+								Game.selectorButtonPosition == -25)
+						{}
+						else if(Game.selectorButtonPosition != -26){
+							Game.selectorButtonPosition--;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+					}
+					if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+				}
+	    	}
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+				}
+				else {
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					else {
+						if(Game.selectorButtonPosition == -2) {
+							Game.selectorButtonPosition = -1;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition == -26){
+							Game.selectorButtonPosition = -25;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if (Game.selectorButtonPosition < -9){
+							Game.selectorButtonPosition += 8;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+					}
+					if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+				}
+	    	}
+	    	else if((lX > .65 || device.rightHeld) && joystickTimer < System.currentTimeMillis()) {
+	    		if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+				}
+				else {
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					else {
+						if(Game.selectorButtonPosition == -1) {
+							Game.selectorButtonPosition = -2;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition == -25){
+							Game.selectorButtonPosition = -26;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if (Game.selectorButtonPosition > -18){
+							Game.selectorButtonPosition -= 8;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+					}
+					if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+				}
+	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+	    	}
+//    		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+//    			XInputDevice.upHeld = true;
+//    		}
+//    		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+//    			XInputDevice.downHeld = true;
+//    		}
+//    		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+//    			XInputDevice.leftHeld = true;
+//    		}
+//    		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+//    			XInputDevice.rightHeld = true;
+//    		}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+		    	device.getDelta().getButtons().isPressed(XInputButton.A)){
+				Game.enterButtonPushedDown = true;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    		) {
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted || Game.resetHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					else if(!Game.mouseIsOffClickedObjectAndHeldDown) {
+						for(int i = 0; i <= ControlsController.gamepadButtonHolderHighlighted.length-1; i++) {
+							if(ControlsController.gamepadButtonHolderHighlighted[i] == true) {
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+								break;
+							}
+						}
+					}
+					for(int i = 0; i <= ControlsController.gamepadButtonHolderClicked.length-1; i++) {
+						ControlsController.gamepadButtonHolderClicked[i] = false;
+					}
+					Game.backClicked = false;
+					Game.resetClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+	    	if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+	    		short aFake = 0;
+	    		short bFake = 0;
+	    		short xFake = 0;
+	    		short yFake = 0;
+	    		short backFake = 0;
+	    		short startFake = 0;
+	    		short lShoulderFake = 0;
+	    		short rShoulderFake = 0;
+	    		short lThumbFake = 0;
+	    		short rThumbFake = 0;
+	    		short guideFake = 0;
+	    		short unknownFake = 0;
+	    		short upFake = 0;
+	    		short downFake = 0;
+	    		short leftFake = 0;
+	    		short rightFake = 0;
+	    		if(revertControllerSettings == false) {
+	    			device.aFake = XInputDevice.a;
+	    			device.bFake = XInputDevice.b;
+	    			device.xFake = XInputDevice.x;
+	    			device.yFake = XInputDevice.y;
+	    			device.backFake = XInputDevice.back;
+	    			device.startFake = XInputDevice.start;
+	    			device.lShoulderFake = XInputDevice.lShoulder;
+	    			device.rShoulderFake = XInputDevice.rShoulder;
+	    			device.lThumbFake = XInputDevice.lThumb;
+	    			device.rThumbFake = XInputDevice.rThumb;
+	    			device.guideFake = XInputDevice.guide;
+	    			device.unknownFake = XInputDevice.unknown;
+	    			device.upFake = XInputDevice.up;
+	    			device.downFake = XInputDevice.down;
+	    			device.leftFake = XInputDevice.left;
+	    			device.rightFake = XInputDevice.right;
+		    		XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+		    		XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+		    		XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+		    		XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+		    		XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+		    		XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+		    		XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+		    		XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+		    		XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+		    		XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+		    		XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+		    		XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+		    		XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+		    		XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+		    		XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+		    		XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+		    		revertControllerSettings = true;
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.a);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.B)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.b);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.X)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.x);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.Y)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.y);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.BACK)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.back);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.START)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.start);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.lShoulder);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.rShoulder);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.lThumb);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.rThumb);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.guide);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.unknown);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.up);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.down);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.left);
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+	    			controlsController.changeButtonXDevice(XInputDevice.right);
+	    		}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else {
+//	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+//	    			XInputDevice.upHeld = false;
+//	    		}
+//	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+//	    			XInputDevice.downHeld = false;
+//	    		}
+//	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+//	    			XInputDevice.leftHeld = false;
+//	    		}
+//	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+//	    			XInputDevice.rightHeld = false;
+//	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+	    		    device.getDelta().getButtons().isReleased(XInputButton.A)){
+					Game.enterButtonPushedDown = false;
+	    			if(!Game.escapePressedNegateAction) {
+						if(Game.selectorButtonPosition == -1) {
+							Game.selectorButtonPosition = -4;
+							Game.State = Game.STATE.SETTINGS;
+						}
+						else if(Game.selectorButtonPosition == -26) {
+							Game.upKey = KeyEvent.VK_W;
+							Game.downKey = KeyEvent.VK_S;
+							Game.leftKey = KeyEvent.VK_A;
+							Game.rightKey = KeyEvent.VK_D;
+							Game.shootKey = KeyEvent.VK_SPACE;
+							Game.itemKey = KeyEvent.VK_E;
+							Game.pauseKey = KeyEvent.VK_ENTER;
+							Game.cancelKey = KeyEvent.VK_ESCAPE;
+							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+							XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+							XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+							XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+							XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+							XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+							XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+							XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+							Game.writeOnceToSettings = true;
+							Game.writeOnceProperty = "upKey";
+							Game.writeOnceString = String.valueOf(KeyEvent.VK_W);
+							Game.writeMultipleProperty.add("downKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_S));
+							Game.writeMultipleProperty.add("leftKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_A));
+							Game.writeMultipleProperty.add("rightKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_D));
+							Game.writeMultipleProperty.add("shootKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_SPACE));
+							Game.writeMultipleProperty.add("itemKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_E));
+							Game.writeMultipleProperty.add("pauseKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ENTER));
+							Game.writeMultipleProperty.add("cancelKey");
+							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ESCAPE));
+							Game.writeMultipleProperty.add("upButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP));
+							Game.writeMultipleProperty.add("downButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN));
+							Game.writeMultipleProperty.add("leftButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT));
+							Game.writeMultipleProperty.add("rightButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT));
+							Game.writeMultipleProperty.add("aButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_A));
+							Game.writeMultipleProperty.add("bButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_B));
+							Game.writeMultipleProperty.add("xButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_X));
+							Game.writeMultipleProperty.add("yButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_Y));
+							Game.writeMultipleProperty.add("lShoulderButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER));
+							Game.writeMultipleProperty.add("rShoulderButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER));
+							Game.writeMultipleProperty.add("lThumbButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB));
+							Game.writeMultipleProperty.add("rThumbButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB));
+							Game.writeMultipleProperty.add("startButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_START));
+							Game.writeMultipleProperty.add("backButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_BACK));
+							Game.writeMultipleProperty.add("guideButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON));
+							Game.writeMultipleProperty.add("unknownButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_UNKNOWN));
+							Game.settingsSetup = false;
+						}
+						else if(Game.selectorButtonPosition < -1 && Game.selectorButtonPosition > -26) {
+							ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+							ControlsController.buttonToChange = Game.selectorButtonPosition;
+						}
+						if(smb3KickSoundLoop.clipIsActive())
+							smb3KickSoundLoop.stop();
+						smb3KickSoundLoop.play();
+					}
+					Game.escapePressedNegateAction = false;
+	    		}
+	    		if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+    	    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+    	    		device.getDelta().getButtons().isReleased(XInputButton.X)
+    	    		) {
+	    			if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+	    				Game.selectorBPMP = Game.selectorButtonPosition;
+						Game.escapePressedNegateAction = false;
+						if(Game.gameControllerInUse) {
+							Game.gameControllerInUse = false;
+							Game.keysAreInUse = false;
+						}
+						else {
+							Game.gameControllerInUse = true;
+							Game.keysAreInUse = true;
+						}
+					}
+	    		}
+	    	}
+	    }
+	    else if(State == STATE.TRACKLIST && gameControllerInUse) {
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+	    		joystickTimer = 0;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+				Game.enterButtonPushedDown = true;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)){
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+		    		) {
+	    		Game.enterButtonPushedDown = false;
+				if(!Game.escapePressedNegateAction) {
+					Game.selectorButtonPosition = -5;
+					Game.State = Game.STATE.SETTINGS;
+					if(smb3KickSoundLoop.clipIsActive())
+						smb3KickSoundLoop.stop();
+					smb3KickSoundLoop.play();
+				}
+				Game.escapePressedNegateAction = false;
+			}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+		    		) {
+	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.gameControllerInUse) {
+						Game.gameControllerInUse = false;
+						Game.keysAreInUse = false;
+					}
+					else {
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+					}
+	    		}
+	    	}
+	    }
+	    else if(State == STATE.HELP && gameControllerInUse) {
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+		    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+		    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+		    		joystickTimer = 0;
+		    }
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
+		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+				Game.enterButtonPushedDown = true;
+	    	}
+	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
+	    		device.getDelta().getButtons().isPressed(XInputButton.X)){
+	    		if(Game.mouseIsClickedDown) {
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
+						Game.mouseIsOffClickedObjectAndHeldDown = true;
+					Game.backClicked = false;
+					Game.escapePressedNegateAction = true;
+				}
+	    		else if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+	    	}
+
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
+		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+		    		) {
+	    		Game.enterButtonPushedDown = false;
+				if(!Game.escapePressedNegateAction) {
+					Game.selectorButtonPosition = -1;
+					Game.State = Game.STATE.MENU;
+					if(smb3KickSoundLoop.clipIsActive())
+						smb3KickSoundLoop.stop();
+					smb3KickSoundLoop.play();
+				}
+				Game.escapePressedNegateAction = false;
+			}
+	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
+	    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
+	    		device.getDelta().getButtons().isReleased(XInputButton.X)
+	    		) {
+	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+					Game.selectorBPMP = Game.selectorButtonPosition;
+					Game.escapePressedNegateAction = false;
+					if(Game.gameControllerInUse) {
+						Game.gameControllerInUse = false;
+						Game.keysAreInUse = false;
+					}
+					else {
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+					}
+	    		}
+	    	}
+	    }
+	    if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+			XInputDevice.upHeld = false;
+		}
+		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+			XInputDevice.downHeld = false;
+		}
+		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+			XInputDevice.leftHeld = false;
+		}
+		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+			XInputDevice.rightHeld = false;
+		}
+		//gameControllerInUse = true;//activate this when you actually do something
 	}
 	public static Boolean isPixelTransparentinBufferedImage(BufferedImage img, int x, int y) {
 		//System.out.println(img.getWidth()+"x is "+x);
@@ -5647,6 +10563,7 @@ public class Game extends Canvas implements Runnable {
 		throws Exception{
 		String gameAudioFile = "res/Sounds/Music/mario1remix.wav";													//Loading in Music
 		String gameAudioFile2 = "res/Sounds/Music/marioremixbitch1c.wav";
+		String gameAudioFile3 = "res/Sounds/Music/bowser1bbnolaugh.wav";//bowsertrack
 		String menuAudioFile = "res/Sounds/Music/supermarioworldremix1.wav";
 		String menuAudioFile2 = "res/Sounds/Music/menuloop2.wav";
 		String gameOverAudioFile = "res/Sounds/SFX/smw_game_over.wav";
@@ -5716,6 +10633,7 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops menuSoundLoop2 = new SoundLoops(menuAudioFile2);
 		SoundLoops gameSoundLoop = new SoundLoops(gameAudioFile);
 		SoundLoops gameSoundLoop2 = new SoundLoops(gameAudioFile2);
+		SoundLoops gameSoundLoop3 = new SoundLoops(gameAudioFile3);
 		SoundLoops gameOverSoundLoop = new SoundLoops(gameOverAudioFile);
 		SoundLoops gameOverWinningSoundLoop = new SoundLoops(gameOverWinningAudioFile);
 		SoundLoops gameOverIrisSoundLoop = new SoundLoops(gameOverIrisAudioFile);
@@ -5789,6 +10707,7 @@ public class Game extends Canvas implements Runnable {
 		game.menuSoundLoops.add(menuSoundLoop2);
 		game.gameSoundLoops.add(gameSoundLoop);
 		game.gameSoundLoops.add(gameSoundLoop2);
+		game.gameSoundLoops.add(gameSoundLoop3);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop1);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop2);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop3);
@@ -5852,7 +10771,12 @@ public class Game extends Canvas implements Runnable {
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		game.gameOverWinningSoundLoop = gameOverWinningSoundLoop;
 		game.gameOverIrisSoundLoop = gameOverIrisSoundLoop;
-		
+		XInputDevice[] devices = XInputDevice.getAllDevices();
+		XInputDevice device = XInputDevice.getDeviceFor(0);
+		XInputDevice14[] devices14 = XInputDevice14.getAllDevices();
+		XInputDevice14 device14 = XInputDevice14.getDeviceFor(0);
+		game.device = device;
+		game.device14 = device14;
 		JFrame frame = new JFrame(game.TITLE);
 		frame.add(game);
 		frame.pack();
@@ -5863,9 +10787,16 @@ public class Game extends Canvas implements Runnable {
 		game.start();
 		
 	}
+	public Textures getTextures() {
+		return tex;
+	}
 	
 	public Player getPlayer() {
 		return p;
+	}
+	
+	public ControlsController getControlsController() {
+		return controlsController;
 	}
 	
 	public int playerX(){
@@ -5959,7 +10890,35 @@ public class Game extends Canvas implements Runnable {
 	public void setEnemyHitPauseTimer(long enemyHitPauseTimer) {
 		this.enemyHitPauseTimer = enemyHitPauseTimer;
 	}
+	
+	public long getWaitToPause() {
+		return waitToPause;
+	}
 
+	public void setWaitToPause(long waitToPause) {
+		this.waitToPause = waitToPause;
+	}
+	
+	public long getJoystickTimer() {
+		return joystickTimer;
+	}
+
+	public void setJoystickTimer(long joystickTimer) {
+		this.joystickTimer = joystickTimer;
+	}
+
+	public boolean getSpawnDone(){
+		return spawnDone;
+	}
+	
+	public boolean getSpawnDone2(){
+		return spawnDone2;
+	}
+	
+	public boolean getSpawnDone3(){
+		return spawnDone3;
+	}
+	
 	public boolean getSpawnDone4(){
 		return spawnDone4;
 	}
@@ -6184,6 +11143,14 @@ public class Game extends Canvas implements Runnable {
 		return spriteSheetSNESFireLuigi;
 	}
 	
+	public BufferedImage getSpriteSheetNESMikeTyson(){
+		return spriteSheetNESMikeTyson;
+	}
+	
+	public BufferedImage getSpriteSheetNESContra(){
+		return spriteSheetNESContra;
+	}
+	
 	public BufferedImage getMarioEntranceSprites(){
 		return marioEntranceSprites;
 	}
@@ -6196,6 +11163,14 @@ public class Game extends Canvas implements Runnable {
 		return marioSNESFireLuigiEntranceSprites;
 	}
 	
+	public BufferedImage getMarioNESMikeTysonEntranceSprites(){
+		return marioNESMikeTysonEntranceSprites;
+	}
+	
+	public BufferedImage getMarioNESContraEntranceSprites(){
+		return marioNESContraEntranceSprites;
+	}
+	
 	public BufferedImage getAnimatedStar(){
 		return animatedStar;
 	}
@@ -6206,6 +11181,14 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getUFOSprites(){
 		return ufoSprites;
+	}
+	
+	public BufferedImage getXboxButtonsSpriteSheet(){
+		return xboxButtonsSpriteSheet;
+	}
+	
+	public BufferedImage getDirectInputButtonsSpriteSheet(){
+		return directInputButtonsSpriteSheet;
 	}
 	
 	public BufferedImage getMario1StarSpriteSheet(){
@@ -6232,6 +11215,14 @@ public class Game extends Canvas implements Runnable {
 		return bigMario4ItemAnimationSheet;
 	}
 	
+	public BufferedImage getBigMario5ItemAnimationSheet(){
+		return bigMario5ItemAnimationSheet;
+	}
+	
+	public BufferedImage getBigMario6ItemAnimationSheet(){
+		return bigMario6ItemAnimationSheet;
+	}
+	
 	public BufferedImage getItemSilhouetteSheet(){
 		return itemSilhouetteSheet;
 	}
@@ -6254,6 +11245,10 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getBulletBillSpriteSheet(){
 		return bulletBillSpriteSheet;
+	}
+
+	public BufferedImage getBombOmbSpriteSheet(){
+		return bombOmbSpriteSheet;
 	}
 	
 	public BufferedImage getMarioPlayerStarAnimations(){
@@ -6294,6 +11289,10 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getMario3FontSpriteSheet() {
 		return mario3FontSpriteSheet;
+	}
+	
+	public BufferedImage getWASDButtonImagesSpriteSheet() {
+		return wasdButtonImagesSpriteSheet;
 	}
 	
 	public BufferedImage getGoombaDeathSpriteSheet() {
@@ -6396,6 +11395,10 @@ public class Game extends Canvas implements Runnable {
 		this.emptyVolumeSlider = emptyVolumeSlider;
 	}
 
+	public BufferedImage getDotDotDot() {
+		return dotdotdot;
+	}
+
 	public void addEntity(EntityA block){
 		ea.add(block);
 	}
@@ -6427,4 +11430,29 @@ public class Game extends Canvas implements Runnable {
 	public void removeEntity(EntityD block){
 		ed.remove(block);
 	}
+	
+	public void addEntity(EntityE block){
+		ee.add(block);
+	}
+	
+	public void removeEntity(EntityE block){
+		ee.remove(block);
+	}
+	
+	public void addEntity(EntityF block){
+		ef.add(block);
+	}
+	
+	public void removeEntity(EntityF block){
+		ef.remove(block);
+	}
+
+	public Controller getController() {
+		return c;
+	}
+
+	public void setController(Controller c) {
+		this.c = c;
+	}
+
 }

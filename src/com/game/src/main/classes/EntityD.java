@@ -15,5 +15,5 @@ public interface EntityD {
 	public double getY();
 	public String getItemName();
 	public SoundLoops getItemSoundLoop();
-	
+	public void close();
 }

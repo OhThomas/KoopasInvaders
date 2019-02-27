@@ -33,7 +33,7 @@ public class Bowser extends GameObject implements EntityB{
 	private String enemyType = "Bowser";
 	protected double velX, velY;
 	Random r = new Random();
-	
+	ChompFX chomped;
 	Animation anim;
 	Animation animEntrance;
 	Animation animHit;
@@ -87,6 +87,7 @@ public class Bowser extends GameObject implements EntityB{
 	Animation bowserShipHit12L;
 	Animation bowserShip12R;
 	Animation bowserShipHit12R;
+	SoundLoops bowserLaugh;
 	
 	public Bowser(double x, double y, Textures tex, Controller c, Game game){
 		super(x,y);
@@ -256,16 +257,28 @@ public class Bowser extends GameObject implements EntityB{
 		bowserShipHit12L.setCount(0);
 		bowserShipHit12R.nextFrame();
 		bowserShipHit12R.setCount(0);
+		String bowserLaughFile = "res/Sounds/SFX/sm64_bowser_laugh.wav";
+		SoundLoops bowserLaughSoundLoop = new SoundLoops(bowserLaughFile);
+		VolumeSlider.adjustSFX(bowserLaughSoundLoop);
+		this.bowserLaugh = bowserLaughSoundLoop;
+		this.bowserLaugh.play();
 	}
 	
 	public void tick(){
 		if(bowserisDead) {
 			//if(System.currentTimeMillis() % 3 == 0 && game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume() >= -70f) 
-			if(game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume() >= -70f)	
+			
+			if(game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume() >= -70f)//changetolast	
 				game.gameSoundLoops.get(game.getSoundRandomizer()).shiftVolume(game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume(), game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume()-1f, 200);
+			
+			//if(game.gameSoundLoops.getLast().getVolume() >= -70f)//changetolast	
+			//	game.gameSoundLoops.getLast().shiftVolume(game.gameSoundLoops.getLast().getVolume(), game.gameSoundLoops.getLast().getVolume()-1f, 200);
 			animHit.runAnimation();
-			if(HUD.getTimer2() <= 0)
+			if(HUD.getTimer2() <= 0) {
 				c.removeEntity(this);
+				game.gameSoundLoops.getLast().stop();
+				game.gameSoundLoops.getLast().setSoundLoopBoolean(false);
+			}
 			
 		}
 		else {
@@ -349,8 +362,10 @@ public class Bowser extends GameObject implements EntityB{
 					if (game.eb.size() == 2)
 						game.enemySpeedIncrease+= 0.9;
 					game.enemySpeedIncrease+= 0.2; //0.7
-					HUD.HEALTH -= 9;//4
+					HUD.HEALTH -= 3;//4
 					hitTimer = 80;
+					chomped = new ChompFX(tempEnt.getX()+4,tempEnt.getY()+4,"Fireball");
+					game.getController().addEntity(chomped);
 					if(game.ea.size() >= 1)
 						game.ea.removeLast();
 					//c.removeEntity(tempEnt);
@@ -476,7 +491,7 @@ public class Bowser extends GameObject implements EntityB{
 				timer2 = 50;
 			}
 		}
-		if(timer1 > 0) {
+		if(timer1 > 0 && HUD.HEALTH > 0) {
 			animEntrance.drawAnimation(g, x, y, 0);
 			bowserShipL.drawAnimation(g, x, y+41, 0);
 		}
@@ -682,7 +697,11 @@ public class Bowser extends GameObject implements EntityB{
 	public boolean getEntityBDead() {
 		return bowserisDead;
 	}
-
+	
+	public void setEntityBDead(boolean dead) {
+		this.bowserisDead = dead;
+	}
+	
 	public int getWidth() {
 		return 64;
 	}
@@ -694,4 +713,14 @@ public class Bowser extends GameObject implements EntityB{
 	public String enemyType() {
 		return enemyType;
 	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void close() {
+		bowserLaugh.close();
+		return;
+	}
+	
 }

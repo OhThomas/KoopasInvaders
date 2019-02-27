@@ -58,6 +58,22 @@ public class Physics {
 		return false;
 	}
 	
+	public static boolean Collision(EntityA enta, EntityE ente){
+		
+		if(enta.getBounds().intersects(ente.getBounds())){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean Collision(EntityE ente, EntityA enta){
+		
+		if(ente.getBounds().intersects(enta.getBounds())){
+			return true;
+		}
+		return false;
+	}
+	
 public static boolean Collision(EntityC entc, EntityB entb){
 		
 		if(entc.getBounds().intersects(entb.getBounds())){
@@ -117,6 +133,15 @@ public static boolean Collision(EntityC entc, EntityB entb){
 	public static boolean Collision(EntityD entd, EntityE ente){
 		
 		if(entd.getBounds().intersects(ente.getBounds())){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean Collision(EntityE ente, EntityE entee){
+		//if(ente.equals(entee))
+			//return false;
+		if(ente.getBounds().intersects(entee.getBounds())){
 			return true;
 		}
 		return false;
@@ -228,6 +253,14 @@ public static boolean Collision(EntityC entc, EntityB entb){
 		for(int i = bb.wall.size(); i > 0; i--){
 			if(bb.wall.get(i-1).intersects(ente.getBounds()))
 				return i-1;
+		}
+		return -1;
+	}
+	
+	public static int BlockCollisionBackwards(BasicBlocks bb, EntityE ente){
+		for(int i = 0; i < bb.wall.size(); i++){
+			if(bb.wall.get(i).intersects(ente.getBounds()))
+				return i;
 		}
 		return -1;
 	}

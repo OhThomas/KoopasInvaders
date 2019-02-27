@@ -38,6 +38,7 @@ public class HUD {
 	private BufferedImage wigglerItemFrameDisplay = null;
 	private BufferedImage lakituItemFrameDisplay = null;
 	private BufferedImage pressE = null;
+	private BufferedImage pressX = null;
 	
 	private SoundLoops itemEnemySoundLoop = null;
 	
@@ -57,6 +58,7 @@ public class HUD {
 		this.wigglerItemFrameDisplay = tex.wigglerItemFrameDisplay;
 		this.lakituItemFrameDisplay = tex.lakituItemFrameDisplay;
 		this.pressE = tex.pressE;
+		this.pressX = tex.pressX;
 		String itemEnemyFile = "res/Sounds/SFX/smb3_sound_effects_inventory_open_close.wav";
 		SoundLoops itemEnemySoundLoops = new SoundLoops(itemEnemyFile);
 		VolumeSlider.adjustSFX(itemEnemySoundLoops);
@@ -161,14 +163,19 @@ public class HUD {
 				
 				Graphics2D g2d = (Graphics2D)g.create();
 				g2d.setComposite(makeComposite(imageTranslucent));
-				g2d.drawImage(pressE,Game.WIDTH-10,28,null);
+				//g2d.drawImage(pressE,Game.WIDTH-10,28,null);
+				if(Game.gameControllerInUse)
+					g2d.drawImage(pressX,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
+				else
+					g2d.drawImage(pressE,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
 			}
 			if(enemyHitPauseTimer != 0 && System.currentTimeMillis() < enemyHitPauseTimer){
 				if(!this.itemEnemySoundLoop.clipIsActive()) {
 					VolumeSlider.adjustSFX(itemEnemySoundLoop);
 					this.itemEnemySoundLoop.play();
 				}
-				if(currentScoreFromChainChomp.equals(""))
+				if(currentScoreFromChainChomp.equals("null0")) {}
+				else if(currentScoreFromChainChomp.equals(""))
 					stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, "200", false);
 				else 
 					stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, currentScoreFromChainChomp, false);
@@ -241,7 +248,11 @@ public class HUD {
 					//g.drawImage(chainChompItemFrameDisplay, Game.WIDTH+2,2, null);
 				Graphics2D g2d = (Graphics2D)g.create();
 				g2d.setComposite(makeComposite(imageTranslucent));
-				g2d.drawImage(pressE,Game.WIDTH-10,28,null);
+				//g2d.drawImage(pressE,Game.WIDTH-10,28,null);
+				if(Game.gameControllerInUse)
+					g2d.drawImage(pressX,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
+				else
+					g2d.drawImage(pressE,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
 			}
 		}
 			
@@ -481,6 +492,97 @@ public class HUD {
 		default: return mario3Font[36];
 		}
 	}
+	public static BufferedImage mario3FontCharBufferedImage(int i) {//possibly change name if player name distorts
+		switch(i) {
+		case 0:
+			return mario3Font[0];
+		case 1:
+			return mario3Font[1];
+		case 2:
+			return mario3Font[2];
+		case 3:
+			return mario3Font[3];
+		case 4:
+			return mario3Font[4];
+		case 5:
+			return mario3Font[5];
+		case 6:
+			return mario3Font[6];
+		case 7:
+			return mario3Font[7];
+		case 8:
+			return mario3Font[8];
+		case 9:
+			return mario3Font[9];
+		case 10:
+			return mario3Font[10];
+		case 11:
+			return mario3Font[11];
+		case 12:
+			return mario3Font[12];
+		case 13:
+			return mario3Font[13];
+		case 14:
+			return mario3Font[14];
+		case 15:
+			return mario3Font[15];
+		case 16:
+			return mario3Font[16];
+		case 17:
+			return mario3Font[17];
+		case 18:
+			return mario3Font[18];
+		case 19:
+			return mario3Font[19];
+		case 20:
+			return mario3Font[20];
+		case 21:
+			return mario3Font[21];
+		case 22:
+			return mario3Font[22];
+		case 23:
+			return mario3Font[23];
+		case 24:
+			return mario3Font[24];
+		case 25:
+			return mario3Font[25];
+		case 26:// 1
+			return mario3Font[26];
+		case 27:// 2
+			return mario3Font[27];
+		case 28:// 3
+			return mario3Font[28];
+		case 29:// 4
+			return mario3Font[29];
+		case 30:// 5
+			return mario3Font[30];
+		case 31:// 6
+			return mario3Font[31];
+		case 32:// 7
+			return mario3Font[32];
+		case 33:// 8
+			return mario3Font[33];
+		case 34:// 9
+			return mario3Font[34];
+		case 35:// 0
+			return mario3Font[35];
+		case 36:// .
+			return mario3Font[36];
+		case 37:// /
+			return mario3Font[37];
+		case 38:// !
+			return mario3Font[38];
+		case 39:// :
+			return mario3Font[39];
+		case 40:// ,
+			return mario3Font[40];
+		case 41:// ' '
+			return mario3Font[41];
+		case 42:// /n
+			return mario3Font[41];
+		default: return mario3Font[36];
+		}
+	}
 	public static BufferedImage stringToMario3FontImage(String string) {
 		BufferedImage previousImage = null;
 		BufferedImage nextImage = null;
@@ -559,6 +661,10 @@ public class HUD {
 			this.score = 0;
 	}
 	
+	public void resetScore() {
+		this.score = 0;
+	}
+	
 	public long getScore(){
 		return score;
 	}
@@ -609,5 +715,13 @@ public class HUD {
 	
 	public void setTimer2(double timer) {
 		HUD.timer2 = timer;
+	}
+	
+	public void setPressE(BufferedImage img) {
+		this.pressE = img;
+	}
+	
+	public void setPressX(BufferedImage img) {
+		this.pressX = img;
 	}
 }

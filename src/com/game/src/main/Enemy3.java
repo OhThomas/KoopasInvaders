@@ -51,39 +51,69 @@ public class Enemy3 extends GameObject implements EntityB{
 	public void tick(){
 		if(!goombaisDead){
 			if (game.enemyHitRightBarrier == false){
-				x+=game.enemySpeedIncrease; //x+=1;
-			}
-			
-			if (x >= (Game.WIDTH * Game.SCALE) || game.enemyHitRightBarrier == true){
-				/*
-				for(int i = 0; i <= game.eb.size(); i++)
-				{
-					//game.eb.get(i)
-					//if(game.ea.isEmpty())
-					//	System.out.println("EMPTY");
-					System.out.println("HIGH");
-					//INCREASE ALL UP y+=16
+				if(x+8+game.enemySpeedIncrease >= Game.WIDTH * Game.SCALE) {
+					boolean b = false;
+					for(int i = 0; i <= c.getEntityB().size()-1; i++) {
+						if(this == c.getEntityB().get(i))
+							b = true;
+						if(c.getEntityB().get(i).getX() + 8 + game.enemySpeedIncrease >= Game.WIDTH * Game.SCALE) {
+							if(c.getEntityB().get(i).getY() < this.y)
+								c.getEntityB().get(i).setX(c.getEntityB().get(i).getX()-game.enemySpeedIncrease);
+							else
+								c.getEntityB().get(i).setX(Game.WIDTH * Game.SCALE - 8);
+						}
+						else if(b == false)
+							c.getEntityB().get(i).setX(c.getEntityB().get(i).getX()-game.enemySpeedIncrease*2);
+					}
+					x = Game.WIDTH * Game.SCALE - 8;
 				}
-				*/
-				//game.enemySpeedIncrease += 0.1;
-				if (barrier == false)
-					y += 16;
-				barrier = true;
-				game.enemyHitRightBarrier = true;
-				//y +=16;
+				else
+					x+=game.enemySpeedIncrease; //x+=1;
 			}
-			
-			if (game.enemyHitRightBarrier == true){
-				x-=game.enemySpeedIncrease; //x-= 1;
+			else if (game.enemyHitRightBarrier == true){
+				if(x-game.enemySpeedIncrease <= 0) {
+					boolean b = false;
+					for(int i = 0; i <= c.getEntityB().size()-1; i++) {
+						if(this == c.getEntityB().get(i))
+							b = true;
+						if(c.getEntityB().get(i).getX() -game.enemySpeedIncrease <= 0) {
+							if(c.getEntityB().get(i).getY() < this.y)
+								c.getEntityB().get(i).setX(c.getEntityB().get(i).getX()+game.enemySpeedIncrease);
+							else
+								c.getEntityB().get(i).setX(0);
+						}
+						else if(b == false)
+							c.getEntityB().get(i).setX(c.getEntityB().get(i).getX()+game.enemySpeedIncrease*2);
+					}
+					x = 0;
+				}
+				else
+					x-=game.enemySpeedIncrease; //x-= 1;
+			}
+			if (x + 8 >= (Game.WIDTH * Game.SCALE) || game.enemyHitRightBarrier == true){
+				if (barrier == false) {
+					y += 8;
+					barrier = true;
+				}
+				if(x + 8 >= (Game.WIDTH * Game.SCALE) && game.enemyHitRightBarrier == false)
+					x-=game.enemySpeedIncrease;
+				else if(x + 8 >= (Game.WIDTH * Game.SCALE) && game.enemyHitRightBarrier == true)
+					x-=game.enemySpeedIncrease*2;
+				if(!game.enemyHitRightBarrier)
+					game.enemyHitRightBarrier = true;
 			}
 			
 			if (x <= 0 || game.enemyHitRightBarrier == false){
-				//game.enemySpeedIncrease += 0.1;
-				if (barrier == true)
+				if (barrier == true) {
 					y +=16;
-				barrier = false;
-				game.enemyHitRightBarrier = false;
-				//y +=16;
+					barrier = false;
+				}
+				if(x <= 0 && game.enemyHitRightBarrier == true) 
+					x+=game.enemySpeedIncrease;
+				else if(x<=0 && game.enemyHitRightBarrier == false)
+					x+=game.enemySpeedIncrease*2;
+				if(game.enemyHitRightBarrier)
+					game.enemyHitRightBarrier = false;
 			}
 			
 			if (y + this.getHeight() >= game.getHeight()){
@@ -104,6 +134,7 @@ public class Enemy3 extends GameObject implements EntityB{
 					if(this.goomba3DeathSoundLoop.getSoundLoopBoolean() == false){
 						for(int j = game.goomba3DeathSoundLoop.size(); j > 0; j--){
 							if(game.goomba3DeathSoundLoop.get(j-1) != null && !game.goomba3DeathSoundLoop.get(j-1).clipIsActive()){
+								//game.goomba3DeathSoundLoop.get(j-1).close();
 								game.goomba3DeathSoundLoop.remove(j-1);
 							}
 						}	
@@ -121,6 +152,24 @@ public class Enemy3 extends GameObject implements EntityB{
 					}
 					game.getHUD().setScore(200);
 					goombaisDead = true;
+					if(game.eb.size() > 2) {
+						for(int b = 0; b <= c.getEntityB().size()-1; b++) {
+							if(this == c.getEntityB().get(b))
+								break;
+							if(game.enemyHitRightBarrier) {
+								if(c.getEntityB().get(b).getX() - 0.08 <= 0)
+									c.getEntityB().get(b).setX(0);
+								else
+									c.getEntityB().get(b).setX(c.getEntityB().get(b).getX() - 0.08);
+							}
+							else {
+								if(c.getEntityB().get(b).getX() + 0.08 + 8 >= Game.WIDTH * Game.SCALE)
+									c.getEntityB().get(b).setX(Game.WIDTH * Game.SCALE - 8);
+								else
+									c.getEntityB().get(b).setX(c.getEntityB().get(b).getX() + 0.08);
+							}
+						}
+					}
 				}
 			}
 			
@@ -146,6 +195,7 @@ public class Enemy3 extends GameObject implements EntityB{
 			if(animDeath.getCount() == 3 && this.goomba3DeathSmokeSoundLoop.getSoundLoopBoolean() == false){
 				for(int j = game.goomba3DeathSmokeSoundLoop.size(); j > 0; j--){
 					if(game.goomba3DeathSmokeSoundLoop.get(j-1) != null && !game.goomba3DeathSmokeSoundLoop.get(j-1).clipIsActive()){
+						//game.goomba3DeathSmokeSoundLoop.get(j-1).close();;
 						game.goomba3DeathSmokeSoundLoop.remove(j-1);
 					}
 				}	
@@ -166,8 +216,10 @@ public class Enemy3 extends GameObject implements EntityB{
 				animDeath.runAnimation();
 			else if(animDeath.getCount() == 3 && animExplosion.getCount() != 13){
 				animExplosion.runAnimation();
-			}else if(animExplosion.getCount() == 13)
+			}else if(animExplosion.getCount() == 13) {
 				c.removeEntity(this);
+				Game.bEntityRemoved = true;
+			}
 		}
 	}
 	
@@ -221,6 +273,37 @@ public class Enemy3 extends GameObject implements EntityB{
 		return goombaisDead;
 	}
 
+	public void setEntityBDead(boolean dead) {
+		if(dead) {
+			if (game.eb.size() == 2)
+				game.enemySpeedIncrease+= 0.9;
+			game.enemySpeedIncrease+= 0.08; //0.7
+			animDeath.nextFrame();
+			animExplosion.nextFrame();
+			if(this.goomba3DeathSoundLoop.getSoundLoopBoolean() == false){
+				for(int j = game.goomba3DeathSoundLoop.size(); j > 0; j--){
+					if(game.goomba3DeathSoundLoop.get(j-1) != null && !game.goomba3DeathSoundLoop.get(j-1).clipIsActive()){
+						//game.goomba3DeathSoundLoop.get(j-1).close();
+						game.goomba3DeathSoundLoop.remove(j-1);
+					}
+				}	
+				for(int k = 0; k < game.goomba3DeathSoundLoop.size() || k == 0; k++){
+					if(game.goomba3DeathSoundLoop.isEmpty())
+						game.goomba3DeathSoundLoop.add(this.goomba3DeathSoundLoop);
+					else if (game.goomba3DeathSoundLoop.get(k) == game.goomba3DeathSoundLoop.getLast()){
+						game.goomba3DeathSoundLoop.add(this.goomba3DeathSoundLoop);
+						k++;
+					}else if(this.goomba3DeathSoundLoop.getVolume() -1.5f >= this.goomba3DeathSoundLoop.minimumVolume())
+						this.goomba3DeathSoundLoop.reduceSound(1.5f);
+				}
+				this.goomba3DeathSoundLoop.setSoundLoopBoolean(true);
+				game.goomba3DeathSoundLoop.getLast().play();
+			}
+			game.getHUD().setScore(200);
+		}
+		this.goombaisDead = dead;
+	}
+	
 	public int getWidth() {
 		return 16;
 	}
@@ -231,5 +314,14 @@ public class Enemy3 extends GameObject implements EntityB{
 	
 	public String enemyType() {
 		return enemyType;
+	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void close() {
+		goomba3DeathSoundLoop.close();
+		goomba3DeathSmokeSoundLoop.close();
 	}
 }

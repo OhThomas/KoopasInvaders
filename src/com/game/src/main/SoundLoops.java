@@ -154,4 +154,11 @@ public class SoundLoops {
     	else
     		return false;
     }
+    public void close() {
+    	//if(clip.isOpen() && !clip.isActive())
+    	if(clip.isRunning())
+    		clip.close();
+    	//else if(clip.isOpen())
+    		//Game.clipGarbageCollection.add(clip);
+    }
     }

@@ -141,8 +141,15 @@ public class GreenShell extends GameObject implements EntityC{
 	}
 	
 	public void setEntityCDead(boolean dead) {
+		if(dead) {
+			game.getHUD().setScore(200);
+			shellHit.play();
+		}
 		greenShellisDead = dead;
 	}
 
+	public void close() {
+		shellHit.close();
+	}
 	
 }

@@ -307,6 +307,16 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 	}
 
 	public void setEntityCDead(boolean dead) {
+		if(dead) {
+			game.getHUD().setScore(500);
+			shellHit.play();
+		}
 		buzzyBeetleShellisDead = dead;
+	}
+
+	public void close() {
+		shellHit.close();
+		shellHitShell.close();
+		shellHitBowser.close();
 	}
 }

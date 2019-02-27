@@ -1,11 +1,14 @@
 package com.game.src.main;
 
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import com.game.src.main.Game.STATE;
+import com.github.strikerx3.jxinput.XInputDevice;
+import com.github.strikerx3.jxinput.natives.XInputConstants;
 
 public class MouseInput implements MouseListener {
 
@@ -49,11 +52,19 @@ public class MouseInput implements MouseListener {
 	}
 
 	public void mousePressed(MouseEvent e) {
-		Game.mouseIsClickedDown = true;
-		Game.keysAreInUse = false;
+		if(ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+			if(Game.State == Game.STATE.CONTROLS && Game.keysAreInUse) {
+				for(int i =0; i<= ControlsController.gamepadButtonHolderHighlighted.length-1; i++) {
+					ControlsController.gamepadButtonHolderHighlighted[i] = false;
+				}
+			}
+			Game.mouseIsClickedDown = true;
+			Game.keysAreInUse = false;
+		}
 		int mx = e.getX();
 		int my = e.getY();
-		
+		if(Game.escapePressedNegateAction)
+			return;
 		// Play Button
 		if (mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.MENU ||
 			mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.GAMEOVER) {
@@ -123,7 +134,7 @@ public class MouseInput implements MouseListener {
 		
 		//Back Button
 		if(mx >= 40 && mx <= 88 && (Game.State == Game.STATE.SET_SCORE || Game.State == Game.STATE.LEADERBOARD || Game.State == Game.STATE.SHOP
-				|| Game.State == Game.STATE.HELP || Game.State == Game.STATE.SETTINGS)) {
+				|| Game.State == Game.STATE.HELP || Game.State == Game.STATE.SETTINGS || Game.State == Game.STATE.CONTROLS || Game.State == Game.STATE.TRACKLIST)) {
 			if(my >= 20 && my <= 36) {
 				Game.backClicked = true;
 			}
@@ -444,6 +455,26 @@ public class MouseInput implements MouseListener {
 				else if(Game.resetStatsClicked)
 					Game.resetStatsClicked = false;
 				
+				//Gamepad Image Button in Settings Menu
+				if(mx >=  Game.WIDTH + 178 && mx <= Game.WIDTH + 217 && Game.State == Game.STATE.SETTINGS) {
+					if(my >= 42 && my <= 62) 
+						Game.gamepadImageClicked = true;
+					else if(Game.gamepadImageClicked)
+						Game.gamepadImageClicked = false;
+				}
+				else if(Game.gamepadImageClicked)
+					Game.gamepadImageClicked = false;
+				
+				//Note Image Button in Settings Menu
+				if(mx >=  Game.WIDTH + 268 && mx <= Game.WIDTH + 286 && Game.State == Game.STATE.SETTINGS) {
+					if(my >= 41 && my <= 63) 
+						Game.noteImageClicked = true;
+					else if(Game.noteImageClicked)
+						Game.noteImageClicked = false;
+				}
+				else if(Game.noteImageClicked)
+					Game.noteImageClicked = false;
+				
 				//Volume Slider
 				if(my >=  121 && my <= 153 && Game.State == Game.STATE.SETTINGS) {
 					if(mx >= Game.WIDTH - 68  && mx <= Game.WIDTH - 60 ) {
@@ -493,6 +524,285 @@ public class MouseInput implements MouseListener {
 				}
 			}
 		}
+		else if(Game.State == Game.STATE.CONTROLS && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+			//Up WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 125 && my <= 147) {
+					ControlsController.gamepadButtonHolderClicked[0] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[0])
+					ControlsController.gamepadButtonHolderClicked[0] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[0])
+				ControlsController.gamepadButtonHolderClicked[0] = false;
+			
+			//Down WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 170 && my <= 192) {
+					ControlsController.gamepadButtonHolderClicked[1] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[1])
+					ControlsController.gamepadButtonHolderClicked[1] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[1])
+				ControlsController.gamepadButtonHolderClicked[1] = false;
+
+			//Left WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 215 && my <= 237) {
+					ControlsController.gamepadButtonHolderClicked[2] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[2])
+					ControlsController.gamepadButtonHolderClicked[2] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[2])
+				ControlsController.gamepadButtonHolderClicked[2] = false;
+			
+			//Right WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 260 && my <= 282) {
+					ControlsController.gamepadButtonHolderClicked[3] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[3])
+					ControlsController.gamepadButtonHolderClicked[3] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[3])
+				ControlsController.gamepadButtonHolderClicked[3] = false;
+
+			//Shoot WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 305 && my <= 327) {
+					ControlsController.gamepadButtonHolderClicked[4] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[4])
+					ControlsController.gamepadButtonHolderClicked[4] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[4])
+				ControlsController.gamepadButtonHolderClicked[4] = false;
+			
+			//Item WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 350 && my <= 372) {
+					ControlsController.gamepadButtonHolderClicked[5] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[5])
+					ControlsController.gamepadButtonHolderClicked[5] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[5])
+				ControlsController.gamepadButtonHolderClicked[5] = false;
+
+			//Pause WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 395 && my <= 417) {
+					ControlsController.gamepadButtonHolderClicked[6] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[6])
+					ControlsController.gamepadButtonHolderClicked[6] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[6])
+				ControlsController.gamepadButtonHolderClicked[6] = false;
+			
+			//Cancel WASD Button
+			if (mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
+				if (my >= 440 && my <= 462) {
+					ControlsController.gamepadButtonHolderClicked[7] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[7])
+					ControlsController.gamepadButtonHolderClicked[7] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[7])
+				ControlsController.gamepadButtonHolderClicked[7] = false;
+			
+			//Up XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 125 && my <= 147) {
+					ControlsController.gamepadButtonHolderClicked[8] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[8])
+					ControlsController.gamepadButtonHolderClicked[8] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[8])
+				ControlsController.gamepadButtonHolderClicked[8] = false;
+			
+			//Down XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 170 && my <= 192) {
+					ControlsController.gamepadButtonHolderClicked[9] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[9])
+					ControlsController.gamepadButtonHolderClicked[9] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[9])
+				ControlsController.gamepadButtonHolderClicked[9] = false;
+
+			//Left XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 215 && my <= 237) {
+					ControlsController.gamepadButtonHolderClicked[10] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[10])
+					ControlsController.gamepadButtonHolderClicked[10] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[10])
+				ControlsController.gamepadButtonHolderClicked[10] = false;
+			
+			//Right XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 260 && my <= 282) {
+					ControlsController.gamepadButtonHolderClicked[11] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[11])
+					ControlsController.gamepadButtonHolderClicked[11] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[11])
+				ControlsController.gamepadButtonHolderClicked[11] = false;
+
+			//Shoot XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 305 && my <= 327) {
+					ControlsController.gamepadButtonHolderClicked[12] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[12])
+					ControlsController.gamepadButtonHolderClicked[12] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[12])
+				ControlsController.gamepadButtonHolderClicked[12] = false;
+			
+			//Item XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 350 && my <= 372) {
+					ControlsController.gamepadButtonHolderClicked[13] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[13])
+					ControlsController.gamepadButtonHolderClicked[13] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[13])
+				ControlsController.gamepadButtonHolderClicked[13] = false;
+
+			//Pause XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 395 && my <= 417) {
+					ControlsController.gamepadButtonHolderClicked[14] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[14])
+					ControlsController.gamepadButtonHolderClicked[14] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[14])
+				ControlsController.gamepadButtonHolderClicked[14] = false;
+			
+			//Cancel XDevice Button
+			if (mx >= 385 && mx <= 408) {
+				if (my >= 440 && my <= 462) {
+					ControlsController.gamepadButtonHolderClicked[15] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[15])
+					ControlsController.gamepadButtonHolderClicked[15] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[15])
+				ControlsController.gamepadButtonHolderClicked[15] = false;
+			
+
+			//Up Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 125 && my <= 147) {
+					ControlsController.gamepadButtonHolderClicked[16] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[16])
+					ControlsController.gamepadButtonHolderClicked[16] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[16])
+				ControlsController.gamepadButtonHolderClicked[16] = false;
+			
+			//Down Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 170 && my <= 192) {
+					ControlsController.gamepadButtonHolderClicked[17] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[17])
+					ControlsController.gamepadButtonHolderClicked[17] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[17])
+				ControlsController.gamepadButtonHolderClicked[17] = false;
+
+			//Left Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 215 && my <= 237) {
+					ControlsController.gamepadButtonHolderClicked[18] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[18])
+					ControlsController.gamepadButtonHolderClicked[18] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[18])
+				ControlsController.gamepadButtonHolderClicked[18] = false;
+			
+			//Right Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 260 && my <= 282) {
+					ControlsController.gamepadButtonHolderClicked[19] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[19])
+					ControlsController.gamepadButtonHolderClicked[19] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[19])
+				ControlsController.gamepadButtonHolderClicked[19] = false;
+
+			//Shoot Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 305 && my <= 327) {
+					ControlsController.gamepadButtonHolderClicked[20] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[20])
+					ControlsController.gamepadButtonHolderClicked[20] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[20])
+				ControlsController.gamepadButtonHolderClicked[20] = false;
+			
+			//Item Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 350 && my <= 372) {
+					ControlsController.gamepadButtonHolderClicked[21] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[21])
+					ControlsController.gamepadButtonHolderClicked[21] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[21])
+				ControlsController.gamepadButtonHolderClicked[21] = false;
+
+			//Pause Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 395 && my <= 417) {
+					ControlsController.gamepadButtonHolderClicked[22] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[22])
+					ControlsController.gamepadButtonHolderClicked[22] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[22])
+				ControlsController.gamepadButtonHolderClicked[22] = false;
+			
+			//Cancel Direct Input Button
+			if (mx >= 501 && mx <= 524) {
+				if (my >= 440 && my <= 462) {
+					ControlsController.gamepadButtonHolderClicked[23] = true;
+				}
+				else if(ControlsController.gamepadButtonHolderClicked[23])
+					ControlsController.gamepadButtonHolderClicked[23] = false;
+			}
+			else if(ControlsController.gamepadButtonHolderClicked[23])
+				ControlsController.gamepadButtonHolderClicked[23] = false;
+			
+			//Reset Button
+			if (mx >= 564 && mx <= 605) {
+				if (my >= 443 && my <= 459) {
+					Game.resetClicked = true;
+				}
+				else if(Game.resetClicked)
+					Game.resetClicked = false;
+			}
+			else if(Game.resetClicked)
+				Game.resetClicked = false;
+		}
+		if(Game.gameControllerInUse && Game.State != Game.STATE.GAME)
+			Game.gameControllerInUse = false;
 		
 	}
 
@@ -655,6 +965,8 @@ public class MouseInput implements MouseListener {
 						!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) &&//Back Button
 						!(mx >= Game.WIDTH - 16 && mx <= Game.WIDTH + 16 && my >= 320 && my <= 352) &&//Checkmark Button	
 						!(mx >= Game.WIDTH - 89 && mx <= Game.WIDTH + 89 && my >= 420 && my <= 452) &&//Reset Stats Button
+						!(mx >=  Game.WIDTH + 178 && mx <= Game.WIDTH + 217 && my >= 42 && my <= 62) &&//Gamepad Image Button
+						!(mx >=  Game.WIDTH + 268 && mx <= Game.WIDTH + 286 && my >= 41 && my <= 63) &&//Note Image Button
 						!(mx >= Game.WIDTH-128 && mx <= Game.WIDTH+128 && my >= 20 && my <= 84 &&
 						!(Game.isPixelTransparentinBufferedImage(Game.settingsTitleBigger, mx-(Game.WIDTH-128), my-20))) &&//Settings Title
 						!(mx >= 20 && mx <= 122 && my >= 120 && my <= 152 && 
@@ -684,7 +996,6 @@ public class MouseInput implements MouseListener {
 							if(!(mx >= 44 && mx <= 44 + Game.leaderboardImage.get(i).getWidth() -16 && my >= (i*20) + 105 + (int) LeaderboardController.y && my <= (i*20) + 105 + (int) LeaderboardController.y + Game.leaderboardImage.get(i).getHeight()))
 								b = true;
 							else {
-								System.out.println("HERE");
 								if(!(Game.isPixelTransparentinBufferedImage( Game.leaderboardImage.get(i), mx-44, my-((i*20) + 105 + (int) LeaderboardController.y)))) { //THIS WILL CHECK FOR TRANSPARENCY IN LEADERBOARD
 									b = false;//																												I WANT TO DISABLE BECAUSE SCROLLING PAST THE TOPS IMG Y LOCATIONS ARE OFF
 								}else
@@ -792,6 +1103,72 @@ public class MouseInput implements MouseListener {
 				}
 				//System.out.println("Game.playerNameImage"+(Game.playerNameImage.getWidth()+200)+"mx="+mx);
 						
+			}else if(Game.State == Game.STATE.CONTROLS) {
+				if(ControlsController.buttonChangeTimer < System.currentTimeMillis() && 
+						!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) && //Back Button
+						!(mx >= 564 && mx <= 605 && my >= 443 && my <= 459) && //Reset Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 125 && my <= 147) && //WASD up Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 170 && my <= 192) && //WASD down Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 215 && my <= 237) && //WASD left Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 260 && my <= 282) && //WASD right Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 305 && my <= 327) && //WASD shoot Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 350 && my <= 372) && //WASD item Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 395 && my <= 417) && //WASD pause Button
+						!(mx >= Game.WIDTH-51 && mx <= Game.WIDTH-28 && my >= 440 && my <= 462) && //WASD cancel Button
+						!(mx >= 385 && mx <= 408 && my >= 125 && my <= 147) && //XDevice up Button
+						!(mx >= 385 && mx <= 408 && my >= 170 && my <= 192) && //XDevice down Button
+						!(mx >= 385 && mx <= 408 && my >= 215 && my <= 237) && //XDevice left Button
+						!(mx >= 385 && mx <= 408 && my >= 260 && my <= 282) && //XDevice right Button
+						!(mx >= 385 && mx <= 408 && my >= 305 && my <= 327) && //XDevice shoot Button
+						!(mx >= 385 && mx <= 408 && my >= 350 && my <= 372) && //XDevice item Button
+						!(mx >= 385 && mx <= 408 && my >= 395 && my <= 417) && //XDevice pause Button
+						!(mx >= 385 && mx <= 408 && my >= 440 && my <= 462) && //XDevice cancel Button
+						!(mx >= 501 && mx <= 524 && my >= 125 && my <= 147) && //DirectInput up Button
+						!(mx >= 501 && mx <= 524 && my >= 170 && my <= 192) && //DirectInput down Button
+						!(mx >= 501 && mx <= 524 && my >= 215 && my <= 237) && //DirectInput left Button
+						!(mx >= 501 && mx <= 524 && my >= 260 && my <= 282) && //DirectInput right Button
+						!(mx >= 501 && mx <= 524 && my >= 305 && my <= 327) && //DirectInput shoot Button
+						!(mx >= 501 && mx <= 524 && my >= 350 && my <= 372) && //DirectInput item Button
+						!(mx >= 501 && mx <= 524 && my >= 395 && my <= 417) && //DirectInput pause Button
+						!(mx >= 501 && mx <= 524 && my >= 440 && my <= 462) && //DirectInput cancel Button
+						!(mx >= 20 && mx <= 52 && my >= 120 && my <= 152 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.upImageTitle, mx-20, my-120))) &&//Up Image Title
+						!(mx >= 20 && mx <= 84 && my >= 165 && my <= 197 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.downImageTitle, mx-20, my-165))) &&//Down Image Title
+						!(mx >= 20 && mx <= 84 && my >= 210 && my <= 242 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.leftImageTitle, mx-20, my-210))) &&//Left Image Title
+						!(mx >= 20 && mx <= 102 && my >= 255 && my <= 287 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.rightImageTitle, mx-20, my-255))) &&//Right Image Title
+						!(mx >= 20 && mx <= 228 && my >= 300 && my <= 332 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.shootImageTitle, mx-20, my-300))) &&//Shoot Image Title
+						!(mx >= 20 && mx <= 154 && my >= 345 && my <= 377 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.itemImageTitle, mx-20, my-345))) &&//Item Image Title
+						!(mx >= 20 && mx <= 214 && my >= 390 && my <= 422 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.pauseImageTitle, mx-20, my-390))) &&//Pause Image Title
+						!(mx >= 20 && mx <= 116 && my >= 435 && my <= 467 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.cancelImageTitle, mx-20, my-435))) &&//Cancel Image Title
+						!(mx >= (Game.WIDTH-73) && mx <= (Game.WIDTH-5) && my >= 94 && my <= 110 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.keyboardTitle,mx-(Game.WIDTH-73),my-94))) &&//Keyboard Image Title
+						!(mx >= 373 && mx <= 421 && my >= 94 && my <= 110 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.xInputTitle,mx-373,my-94))) &&//XInput Image Title
+						!(mx >= 470 && mx <= 559 && my >= 94 && my <= 110 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.directInputTitle,mx-470,my-94))) &&//DirectInput Image Title
+						!(mx >= Game.WIDTH-130 && mx <= Game.WIDTH+130 && my >= 20 && my <= 84 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.controlsTitle, mx-(Game.WIDTH-130), my-20)))//Controls Title
+						) {
+					Game.starExplode = true;
+					Game.mx = mx;
+					Game.my = my;
+				}
+			}else if(Game.State == Game.STATE.TRACKLIST) {
+				if(!(mx >= 40 && mx <= 88 && my >= 20 && my <= 36) && //Back Button 
+						!(mx >= Game.WIDTH-102 && mx <= Game.WIDTH+102 && my >= 20 && my <= 84 && 
+						!(Game.isPixelTransparentinBufferedImage(Game.tracklistTitle, mx-(Game.WIDTH-102), my-20)))//Tracklist Title
+						) {
+					Game.starExplode = true;
+					Game.mx = mx;
+					Game.my = my;
+				}
 			}//STAR EXPLOSION
 			// Play Button
 			if (mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.MENU ||
@@ -806,7 +1183,9 @@ public class MouseInput implements MouseListener {
 						else
 							Game.State = Game.STATE.TRANSITION_ENTRANCE;
 					}
+					Game.keysAreInUse = false;
 					Game.smb3CoinSoundLoop.play();
+					Game.selectorButtonPosition = 0;
 				}
 			}
 	
@@ -840,6 +1219,9 @@ public class MouseInput implements MouseListener {
 			if (mx >= Game.WIDTH / 2 + 80 && mx <= Game.WIDTH / 2 + 288 && Game.State == Game.STATE.GAME && Game.getUserHasPaused()) {
 				if(my >= 100 && my <= 164 && Game.resumeClicked) {
 					if(Game.isPaused() == true && Game.getSoundFXisPlaying() == false){
+						Game.escapePressedNegateAction = false;
+						if(Game.gameControllerInUse)
+							Game.keysAreInUse = true;
 						if(Game.getPauseSoundFXTimer() < System.currentTimeMillis()){
 						/*if(p.getMarioInvincible() == true)
 							this.marioStarSoundLoop.loop();
@@ -866,20 +1248,68 @@ public class MouseInput implements MouseListener {
 					if(Game.smb3OpenSoundLoop.clipIsActive())
 						Game.smb3OpenSoundLoop.stop();
 					Game.smb3OpenSoundLoop.play();
+					Game.selectorButtonPosition = 0;
+					if(Game.gameControllerInUse)
+						Game.keysAreInUse = true;
 				}
 			}	
 			
 			//Back Button
 			if(mx >= 40 && mx <= 88 && (Game.State == Game.STATE.SET_SCORE || Game.State == Game.STATE.LEADERBOARD || Game.State == Game.STATE.SHOP
-					|| Game.State == Game.STATE.HELP || Game.State == Game.STATE.SETTINGS) && buttonTimer < System.currentTimeMillis()) {
+					|| Game.State == Game.STATE.HELP || Game.State == Game.STATE.SETTINGS || Game.State == Game.STATE.CONTROLS || Game.State == Game.STATE.TRACKLIST) 
+					&& buttonTimer < System.currentTimeMillis()) {
 				if(my >= 20 && my <= 36 && Game.backClicked) {
 					// Pressed Back Button
 					buttonTimer = System.currentTimeMillis() + 200;
+					/*
+					if(Game.selectorBPMP < -3)
+						Game.selectorBPMP = 0;
+					else if(Game.selectorBPMP > 2)
+						Game.selectorBPMP = 0;
 					Game.selectorButtonPosition = 0;
-					if(!Game.backToGameOver)
+					*/
+					if(Game.State == Game.STATE.CONTROLS) {
+						if(Game.selectorBPMP < -3)
+							Game.selectorBPMP = 0;
+						else if(Game.selectorBPMP > 2)
+							Game.selectorBPMP = 0;
+						Game.selectorButtonPosition = 0;
+						Game.State = Game.STATE.SETTINGS;
+					}
+					else if(Game.State == Game.STATE.TRACKLIST) {
+						if(Game.selectorBPMP < -3)
+							Game.selectorBPMP = 0;
+						else if(Game.selectorBPMP > 2)
+							Game.selectorBPMP = 0;
+						Game.selectorButtonPosition = 0;
+						Game.State = Game.STATE.SETTINGS;
+					}
+					else if(!Game.backToGameOver && Game.State != Game.STATE.SET_SCORE) {
+						if(Game.selectorBPMP < -3)
+							Game.selectorBPMP = 0;
+						else if(Game.selectorBPMP > 2)
+							Game.selectorBPMP = 0;
+						/*
+						if(Game.State == Game.STATE.LEADERBOARD)
+							Game.selectorButtonPosition = -3;
+						else if(Game.State == Game.STATE.SETTINGS)
+							Game.selectorButtonPosition = -2;
+						else if(Game.State == Game.STATE.SHOP)
+							Game.selectorButtonPosition = -1;
+						else*/
+							Game.selectorButtonPosition = 0;
 						Game.State = Game.STATE.MENU;
-					else
+					}
+					else {
+						if(Game.selectorBPMP < -2)
+							Game.selectorBPMP = 0;
+						else if(Game.selectorBPMP > 2)
+							Game.selectorBPMP = 0;
+						Game.selectorButtonPosition = 0;
 						Game.State = Game.STATE.GAMEOVER;
+						if(Game.gameControllerInUse) 
+							Game.keysAreInUse = true;
+					}
 					if(Game.smb3KickSoundLoop.clipIsActive())
 						Game.smb3KickSoundLoop.stop();
 					Game.smb3KickSoundLoop.play();
@@ -902,7 +1332,6 @@ public class MouseInput implements MouseListener {
 			if(mx >= 312 && mx <= 376 && (Game.State == Game.STATE.MENU) && buttonTimer < System.currentTimeMillis()) {
 				if(my >= 20 && my <= 36 && Game.settingsClicked) {
 					// Pressed Settings Button
-					Game.selectorButtonPosition = -1;
 					buttonTimer = System.currentTimeMillis() + 200;
 					Game.State = Game.STATE.SETTINGS;
 					if(Game.smb3OpenSoundLoop.clipIsActive())
@@ -1228,9 +1657,41 @@ public class MouseInput implements MouseListener {
 						}
 					}else if(my >= 427 && my <= 444 && Game.buy4Clicked && Game.currentItemLocked == true) {
 						buttonTimer = System.currentTimeMillis() + 200;
-						if(Game.smb31PupSoundLoop.clipIsActive())
-							Game.smb31PupSoundLoop.stop();
-						Game.smb31PupSoundLoop.play();
+						switch(Game.itemPosition){
+						case 4:
+							if(Game.totalPoints >= 100){
+								Game.item4Unlocked = true;
+								//Game.settingsSetup = false;
+								Game.writeOnceToSettings = true;
+								Game.writeOnceProperty = "currentlySelectedItem";
+								Game.writeOnceString = Integer.toString(Game.itemPosition);
+								Game.writeOnceToSettingswithPoints = true;
+								Game.writeOnceUnlock = "item4Unlocked";
+								Game.itemPosition = 4;
+								Game.currentlySelectedItem = 4;
+								Game.currentItemLocked = false;
+								Game.skinNumber = null;
+								Game.totalPoints -= 100;
+								Game.starExplode = true;
+								Game.mx = mx;
+								Game.my = my;
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+							else{
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
+							break;
+						case 5:
+							break;
+						case 6:
+							break;
+						default:
+							break;
+						}
 					}
 				}
 				
@@ -1316,6 +1777,22 @@ public class MouseInput implements MouseListener {
 							Game.fireballPosition = 0;
 							Game.itemPosition = 0;
 							Game.skinNumber = null;
+							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+							XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+							XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+							XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+							XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+							XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+							XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+							XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
 							Game.totalPoints = 0;
 							Game.skipAnimations = false;
 							try {
@@ -1330,6 +1807,7 @@ public class MouseInput implements MouseListener {
 							if(Game.smb3TailSoundLoop.clipIsActive())
 								Game.smb3TailSoundLoop.stop();
 							Game.smb3TailSoundLoop.play();
+							Game.selectorButtonPosition = Game.selectorBPMP;
 						}
 					}
 					//No Button in Settings Menu Game.WIDTH + 18,375,null
@@ -1342,6 +1820,7 @@ public class MouseInput implements MouseListener {
 							if(Game.smb3KickSoundLoop.clipIsActive())
 								Game.smb3KickSoundLoop.stop();
 							Game.smb3KickSoundLoop.play();
+							Game.selectorButtonPosition = Game.selectorBPMP;
 						}
 					}
 				}
@@ -1427,7 +1906,7 @@ public class MouseInput implements MouseListener {
 					//Reset Stats Button in Settings Menu
 					if(mx >=  Game.WIDTH - 89 && mx <= Game.WIDTH + 89 && Game.State == Game.STATE.SETTINGS && buttonTimer < System.currentTimeMillis()) {
 						if(my >= 420 && my <= 452 && Game.resetStatsClicked) {
-							//Checkmark Functionality
+							//Reset Stats Functionality
 							buttonTimer = System.currentTimeMillis() + 200;
 							if(Game.areYouSureBoolean) 
 								Game.areYouSureBoolean = false;
@@ -1436,6 +1915,33 @@ public class MouseInput implements MouseListener {
 							if(Game.hudSFX.get(4).clipIsActive())
 								Game.hudSFX.get(4).stop();
 							Game.hudSFX.get(4).play();
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						}
+					}
+					
+					//Gamepad Image Button in Settings Menu
+					if(mx >=  Game.WIDTH + 178 && mx <= Game.WIDTH + 217 && Game.State == Game.STATE.SETTINGS && buttonTimer < System.currentTimeMillis()) {
+						if(my >= 42 && my <= 62 && Game.gamepadImageClicked) {
+							//Gamepad Image Functionality
+							//if Game.selectorButtonPosition is < or > the available buttons set it to -1
+							buttonTimer = System.currentTimeMillis() + 200;
+							Game.State = Game.STATE.CONTROLS;
+							if(Game.smb3OpenSoundLoop.clipIsActive())
+								Game.smb3OpenSoundLoop.stop();
+							Game.smb3OpenSoundLoop.play();
+						}
+					}
+					
+					//Note Image Button in Settings Menu
+					if(mx >=  Game.WIDTH + 268 && mx <= Game.WIDTH + 286 && Game.State == Game.STATE.SETTINGS && buttonTimer < System.currentTimeMillis()) {
+						if(my >= 41 && my <= 63 && Game.noteImageClicked) {
+							//Note Image Functionality
+							//if Game.selectorButtonPosition is < or > the available buttons set it to -1
+							buttonTimer = System.currentTimeMillis() + 200;
+							Game.State = Game.STATE.TRACKLIST;
+							if(Game.smb3OpenSoundLoop.clipIsActive())
+								Game.smb3OpenSoundLoop.stop();
+							Game.smb3OpenSoundLoop.play();
 						}
 					}
 				}
@@ -1447,12 +1953,248 @@ public class MouseInput implements MouseListener {
 						//Submit Functionality
 						buttonTimer = System.currentTimeMillis() + 200;
 						Game.postLetter = '~';
+						if(Game.gameControllerInUse) {
+							Game.keysAreInUse = true;
+							Game.selectorButtonPosition = 0;
+						}
+					}
+				}
+			}
+			if(Game.State == STATE.CONTROLS && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+				//WASD
+				if(mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28 && buttonTimer < System.currentTimeMillis()) {
+					//Up WASD Button
+					if(my >= 125 && my <= 147 && ControlsController.gamepadButtonHolderClicked[0]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -2;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Down WASD Button
+					else if(my >= 170 && my <= 192 && ControlsController.gamepadButtonHolderClicked[1]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -3;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Left WASD Button
+					else if(my >= 215 && my <= 237 && ControlsController.gamepadButtonHolderClicked[2]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -4;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Right WASD Button
+					else if(my >= 260 && my <= 282 && ControlsController.gamepadButtonHolderClicked[3]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -5;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Shoot WASD Button
+					else if(my >= 305 && my <= 327 && ControlsController.gamepadButtonHolderClicked[4]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -6;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Item WASD Button
+					else if(my >= 350 && my <= 372 && ControlsController.gamepadButtonHolderClicked[5]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -7;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Pause WASD Button
+					else if(my >= 395 && my <= 417 && ControlsController.gamepadButtonHolderClicked[6]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -8;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Cancel WASD Button
+					else if(my >= 440 && my <= 462 && ControlsController.gamepadButtonHolderClicked[7]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -9;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}
+				}
+				//XDevice
+				else if(mx >= 385 && mx <= 408 && buttonTimer < System.currentTimeMillis()) {
+					//Up XDevice Button
+					if(my >= 125 && my <= 147 && ControlsController.gamepadButtonHolderClicked[8]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -10;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Down XDevice Button
+					else if(my >= 170 && my <= 192 && ControlsController.gamepadButtonHolderClicked[9]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -11;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Left XDevice Button
+					else if(my >= 215 && my <= 237 && ControlsController.gamepadButtonHolderClicked[10]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -12;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Right XDevice Button
+					else if(my >= 260 && my <= 282 && ControlsController.gamepadButtonHolderClicked[11]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -13;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Shoot XDevice Button
+					else if(my >= 305 && my <= 327 && ControlsController.gamepadButtonHolderClicked[12]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -14;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Item XDevice Button
+					else if(my >= 350 && my <= 372 && ControlsController.gamepadButtonHolderClicked[13]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -15;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Pause XDevice Button
+					else if(my >= 395 && my <= 417 && ControlsController.gamepadButtonHolderClicked[14]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -16;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Cancel XDevice Button
+					else if(my >= 440 && my <= 462 && ControlsController.gamepadButtonHolderClicked[15]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -17;
+						Game.gameControllerInUse = true;
+						Game.keysAreInUse = true;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}
+				}
+				//Direct Input
+				else if(mx >= 501 && mx <= 524 && buttonTimer < System.currentTimeMillis()) {
+					//Up Direct Input Button
+					if(my >= 125 && my <= 147 && ControlsController.gamepadButtonHolderClicked[16]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -18;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Down Direct Input Button
+					else if(my >= 170 && my <= 192 && ControlsController.gamepadButtonHolderClicked[17]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -19;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Left Direct Input Button
+					else if(my >= 215 && my <= 237 && ControlsController.gamepadButtonHolderClicked[18]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -20;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Right Direct Input Button
+					else if(my >= 260 && my <= 282 && ControlsController.gamepadButtonHolderClicked[19]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -21;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Shoot Direct Input Button
+					else if(my >= 305 && my <= 327 && ControlsController.gamepadButtonHolderClicked[20]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -22;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Item Direct Input Button
+					else if(my >= 350 && my <= 372 && ControlsController.gamepadButtonHolderClicked[21]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -23;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Pause Direct Input Button
+					else if(my >= 395 && my <= 417 && ControlsController.gamepadButtonHolderClicked[22]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -24;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}//Cancel Direct Input Button
+					else if(my >= 440 && my <= 462 && ControlsController.gamepadButtonHolderClicked[23]) {
+						ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
+						ControlsController.buttonToChange = -25;
+						buttonTimer = System.currentTimeMillis() + 200;
+					}
+				}
+				//Reset Button
+				else if(mx >= 564 && mx <= 605 && buttonTimer < System.currentTimeMillis()) {
+					if(my >= 443 && my <= 459 && Game.resetClicked) {
+						Game.upKey = KeyEvent.VK_W;
+						Game.downKey = KeyEvent.VK_S;
+						Game.leftKey = KeyEvent.VK_A;
+						Game.rightKey = KeyEvent.VK_D;
+						Game.shootKey = KeyEvent.VK_SPACE;
+						Game.itemKey = KeyEvent.VK_E;
+						Game.pauseKey = KeyEvent.VK_ENTER;
+						Game.cancelKey = KeyEvent.VK_ESCAPE;
+						XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+						XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+						XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+						XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+						XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+						XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+						XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+						XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+						XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+						XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+						XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+						XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+						XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+						XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+						XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+						XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+						Game.writeOnceToSettings = true;
+						Game.writeOnceProperty = "upKey";
+						Game.writeOnceString = String.valueOf(KeyEvent.VK_W);
+						Game.writeMultipleProperty.add("downKey");
+						Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_S));
+						Game.writeMultipleProperty.add("leftKey");
+						Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_A));
+						Game.writeMultipleProperty.add("rightKey");
+						Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_D));
+						Game.writeMultipleProperty.add("shootKey");
+						Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_SPACE));
+						Game.writeMultipleProperty.add("itemKey");
+						Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_E));
+						Game.writeMultipleProperty.add("pauseKey");
+						Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ENTER));
+						Game.writeMultipleProperty.add("cancelKey");
+						Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ESCAPE));
+						Game.writeMultipleProperty.add("upButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP));
+						Game.writeMultipleProperty.add("downButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN));
+						Game.writeMultipleProperty.add("leftButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT));
+						Game.writeMultipleProperty.add("rightButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT));
+						Game.writeMultipleProperty.add("aButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_A));
+						Game.writeMultipleProperty.add("bButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_B));
+						Game.writeMultipleProperty.add("xButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_X));
+						Game.writeMultipleProperty.add("yButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_Y));
+						Game.writeMultipleProperty.add("lShoulderButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER));
+						Game.writeMultipleProperty.add("rShoulderButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER));
+						Game.writeMultipleProperty.add("lThumbButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB));
+						Game.writeMultipleProperty.add("rThumbButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB));
+						Game.writeMultipleProperty.add("startButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_START));
+						Game.writeMultipleProperty.add("backButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_BACK));
+						Game.writeMultipleProperty.add("guideButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON));
+						Game.writeMultipleProperty.add("unknownButton");
+						Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_UNKNOWN));
+						Game.settingsSetup = false;
+						//ControlsController.
+						buttonTimer = System.currentTimeMillis() + 200;
 					}
 				}
 			}
 		}
 		Game.mouseIsClickedDown = false;
 		Game.mouseIsOffClickedObjectAndHeldDown = false;
+		Game.escapePressedNegateAction = false;
 		Game.backOnPlay = false;
 		Game.playClicked = false;
 		Game.backOnShop = false;
@@ -1509,6 +2251,8 @@ public class MouseInput implements MouseListener {
 		Game.checkMarkClicked = false;
 		Game.backOnResetStats = false;
 		Game.resetStatsClicked = false;
+		Game.backOnReset = false;
+		Game.resetClicked = false;
 		Game.backOnYes = false;
 		Game.yesClicked = false;
 		Game.backOnNo = false;
@@ -1517,5 +2261,13 @@ public class MouseInput implements MouseListener {
 		Game.skipClicked = false;
 		Game.backOnSubmit = false;
 		Game.submitClicked = false;
+		Game.backOnGamepadImage = false;
+		Game.gamepadImageClicked = false;
+		Game.backOnNoteImage = false;
+		Game.noteImageClicked = false;
+		for(int i = 0; i <= ControlsController.backOnGamepadButtonHolder.length-1; i++) {
+			ControlsController.backOnGamepadButtonHolder[i] = false;
+			ControlsController.gamepadButtonHolderClicked[i] = false;
+		}
 	}
 }

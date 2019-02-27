@@ -1876,5 +1876,10 @@ public class Animation {
 	public void setSpeed(int speed){
 		this.speed = speed;
 	}
-	
+	public void flush() {
+		for(int i = 0; i <= getCount()-1; i++) {
+			setCount(i);
+			getCurrentImage().flush();
+		}
+	}
 }

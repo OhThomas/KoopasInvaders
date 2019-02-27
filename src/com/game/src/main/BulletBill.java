@@ -17,7 +17,9 @@ public class BulletBill extends GameObject implements EntityC{
 	private float timer1 = 100;										//timer for chasing sequence
 	public double speedIncrease = 0.1;								//way to set speed
 	private boolean bulletBillisDead = false;						//way to play death animation without killing Mario
+	private boolean stayTracked = false;							//will always track/follow mario if true
 	private int bulletBillXDirectionAfterDeath = 0;					//determines where the smoke effect goes after bb dies
+	private int smokeCount = 0;										//produces smoke
 	private String entityName = "BulletBill";						//name of entity
 	
 	Animation animD;
@@ -27,6 +29,8 @@ public class BulletBill extends GameObject implements EntityC{
 
 	SoundLoops bulletBillDeathSoundLoop;
 	SoundLoops bulletBillSpawnSoundLoop;
+
+	BulletBillSmokeFXRed smoke;
 	
 	public BulletBill(double x, double y, Textures tex, Game game){
 		super(x,y);
@@ -50,7 +54,9 @@ public class BulletBill extends GameObject implements EntityC{
 				tex.bulletBillExplosion[2],tex.bulletBillExplosion[3],tex.bulletBillExplosion[4],
 				tex.bulletBillExplosion[5],tex.bulletBillExplosion[6]);
 
-
+		Random rand = new Random();
+		if(rand.nextInt(2)==0)
+			stayTracked = true;
 		String bulletBillDeathFile = "res/Sounds/SFX/smb2_bbdeathsfx.wav";
 		String bulletBillSpawnFile = "res/Sounds/SFX/nsmbwiiBulletBillCannon2.wav";
 		SoundLoops bulletBillSpawnSoundLoop = new SoundLoops(bulletBillSpawnFile);
@@ -73,6 +79,18 @@ public class BulletBill extends GameObject implements EntityC{
 					y++;
 				else
 					y++;
+				smokeCount++;
+				if(smokeCount > 1) {
+					Random rand = new Random();
+					if(this.getX() < game.playerX()-6.4)
+						smoke = new BulletBillSmokeFXRed(x-3,y,game);
+					else if(this.getX() > game.playerX()+6.4)
+						smoke = new BulletBillSmokeFXRed(x+11,y-1,game);
+					else
+						smoke = new BulletBillSmokeFXRed(x+4+rand.nextInt(3)-rand.nextInt(3),y-4,game);
+					game.getController().addEntity(smoke);
+					smokeCount = 0;
+				}
 			}
 			else{
 				if(bulletBillXDirectionAfterDeath == -1)
@@ -84,13 +102,20 @@ public class BulletBill extends GameObject implements EntityC{
 				else
 					y = y + 0.25;
 			}
+			if(!stayTracked)
 				timer1--;
 		}
 		else{
 			Random rand = new Random();
 			int i = rand.nextInt(130);
-			if(!bulletBillisDead)
+			if(!bulletBillisDead) {
 				y++;
+				smokeCount++;
+				if(smokeCount > 1) {
+					smoke = new BulletBillSmokeFXRed(x+4+rand.nextInt(3)-rand.nextInt(3),y-4,game);
+					game.getController().addEntity(smoke);
+				}
+			}
 			else
 				y = y + 0.25;
 			if (i == 18 && !bulletBillisDead){										//Resets timer1 so he chases Player
@@ -257,6 +282,26 @@ public class BulletBill extends GameObject implements EntityC{
 	}
 
 	public void setBulletBillisDead(boolean bulletBillisDead) {
+		if(this.bulletBillDeathSoundLoop.getSoundLoopBoolean() == false){
+			for(int j = game.bulletBillDeathSoundLoop.size(); j > 0; j--){
+				if(game.bulletBillDeathSoundLoop.get(j-1) != null && !game.bulletBillDeathSoundLoop.get(j-1).clipIsActive()){
+					game.bulletBillDeathSoundLoop.remove(j-1);
+					//j--;
+				}
+			}	
+			for(int k = 0; k < game.bulletBillDeathSoundLoop.size() || k == 0; k++){
+				if(game.bulletBillDeathSoundLoop.isEmpty())
+					game.bulletBillDeathSoundLoop.add(this.bulletBillDeathSoundLoop);
+				else if (game.bulletBillDeathSoundLoop.get(k) == game.bulletBillDeathSoundLoop.getLast()){
+					game.bulletBillDeathSoundLoop.add(this.bulletBillDeathSoundLoop);
+					k++;
+				}else if(this.bulletBillDeathSoundLoop.getVolume() -1.5f >= this.bulletBillDeathSoundLoop.minimumVolume())
+					this.bulletBillDeathSoundLoop.reduceSound(1.5f);
+			}
+			this.bulletBillDeathSoundLoop.setSoundLoopBoolean(true);
+			game.bulletBillDeathSoundLoop.getLast().play();
+		}
+		game.getHUD().setScore(200);
 		this.bulletBillisDead = bulletBillisDead;
 	}
 
@@ -273,7 +318,7 @@ public class BulletBill extends GameObject implements EntityC{
 	}
 
 	public void setEntityCDead(boolean dead) {
-		if(dead)
+		if(dead) {
 			if(this.bulletBillDeathSoundLoop.getSoundLoopBoolean() == false){
 				for(int j = game.bulletBillDeathSoundLoop.size(); j > 0; j--){
 					if(game.bulletBillDeathSoundLoop.get(j-1) != null && !game.bulletBillDeathSoundLoop.get(j-1).clipIsActive()){
@@ -293,7 +338,14 @@ public class BulletBill extends GameObject implements EntityC{
 				this.bulletBillDeathSoundLoop.setSoundLoopBoolean(true);
 				game.bulletBillDeathSoundLoop.getLast().play();
 			}
+			game.getHUD().setScore(200);
+		}
 		bulletBillisDead = dead;
+	}
+
+	public void close() {
+		bulletBillDeathSoundLoop.close();
+		bulletBillSpawnSoundLoop.close();
 	}
 
 }

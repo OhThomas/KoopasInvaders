@@ -8,19 +8,27 @@ import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.classes.EntityE;
+import com.game.src.main.classes.EntityF;
 
 public class Controller {
 	private LinkedList<EntityA> ea = new LinkedList<EntityA>();
 	private LinkedList<EntityB> eb = new LinkedList<EntityB>();
+	private LinkedList<EntityB> ebGarbageCollect = new LinkedList<EntityB>();
 	private LinkedList<EntityC> ec = new LinkedList<EntityC>();
+	private LinkedList<EntityC> ecGarbageCollect = new LinkedList<EntityC>();
 	private LinkedList<EntityD> ed = new LinkedList<EntityD>();
+	private LinkedList<EntityD> edGarbageCollect = new LinkedList<EntityD>();
 	private LinkedList<EntityE> ee = new LinkedList<EntityE>();
+	private LinkedList<EntityE> eeGarbageCollect = new LinkedList<EntityE>();
+	private LinkedList<EntityF> ef = new LinkedList<EntityF>();
+	private LinkedList<EntityF> efGarbageCollect = new LinkedList<EntityF>();
 	
 	EntityA enta;
 	EntityB entb;
 	EntityC entc;
 	EntityD entd;
 	EntityE ente;
+	EntityF entf;
 	private Textures tex;
 	private Game game;
 	private Enemy enemy;
@@ -52,8 +60,14 @@ public class Controller {
 		//B CLASS
 				for(int i = 0; i < eb.size(); i++){
 					entb = eb.get(i);
+					//if(!eb.get(i).getEntityBDead())
 					
 					entb.tick();
+					if(game.bEntityRemoved) {
+						i--;
+						game.bEntityRemoved = false;
+					}
+					//System.out.println(i + " "+eb.get(i).getX());
 				}
 				//C CLASS
 				for(int i = 0; i < ec.size(); i++){
@@ -73,9 +87,21 @@ public class Controller {
 					
 					ente.tick();
 				}
+				//F CLASS
+				for(int i = 0; i < ef.size(); i++){
+					entf = ef.get(i);
+					
+					entf.tick();
+				}
 	}
 	
 	public void render(Graphics g){
+		//F CLASS
+		for(int i = 0; i < ef.size(); i++){
+			entf = ef.get(i);
+			
+			entf.render(g);
+		}
 		//A CLASS
 		for(int i = 0; i < ea.size(); i++){
 			enta = ea.get(i);
@@ -108,6 +134,74 @@ public class Controller {
 			}
 	}
 	
+	public void reset() {
+		for(int i = 0; i <= ea.size()-1; i++){
+			ea.set(i, null);
+		}
+		ea.clear();
+		for(int i = 0; i <= eb.size()-1; i++){
+			eb.get(i).close();
+			eb.set(i, null);
+		}
+		eb.clear();
+		for(int i = 0; i <= ec.size()-1; i++){
+			ec.get(i).close();
+			ec.set(i, null);
+		}
+		ec.clear();
+		for(int i = 0; i <= ed.size()-1; i++){
+			ed.get(i).close();
+			ed.set(i, null);
+		}
+		ed.clear();
+		for(int i = 0; i <= ee.size()-1; i++){
+			ee.get(i).close();
+			ee.set(i, null);
+		}
+		ee.clear();
+		for(int i = 0; i <= ef.size()-1; i++){
+			ef.get(i).close();
+			ef.set(i, null);
+		}
+		ef.clear();
+		for(int i = 0; i <= ebGarbageCollect.size()-1; i++){
+			//System.out.println(i);
+			ebGarbageCollect.get(i).close();
+			ebGarbageCollect.set(i, null);
+		}
+		ebGarbageCollect.clear();
+		for(int i = 0; i <= ecGarbageCollect.size()-1; i++){
+			ecGarbageCollect.get(i).close();
+			ecGarbageCollect.set(i, null);
+		}
+		ecGarbageCollect.clear();
+		for(int i = 0; i <= edGarbageCollect.size()-1; i++){
+			edGarbageCollect.get(i).close();
+			edGarbageCollect.set(i, null);
+		}
+		edGarbageCollect.clear();
+		for(int i = 0; i <= eeGarbageCollect.size()-1; i++){
+			eeGarbageCollect.get(i).close();
+			eeGarbageCollect.set(i, null);
+		}
+		eeGarbageCollect.clear();
+		for(int i = 0; i <= efGarbageCollect.size()-1; i++){
+			efGarbageCollect.get(i).close();
+			efGarbageCollect.set(i, null);
+		}
+		efGarbageCollect.clear();
+		/*
+		for(int i = 0; i <= Game.clipGarbageCollection.size()-1; i++) {
+			if(Game.clipGarbageCollection.get(i).isActive()) {
+				Game.clipGarbageCollection.get(i).stop();
+				Game.clipGarbageCollection.get(i).setFramePosition(0);
+			}
+			Game.clipGarbageCollection.get(i).close();
+		}
+		Game.clipGarbageCollection.clear();
+		*/
+	}
+	
 	public void addEntity(EntityA block){
 		ea.add(block);
 	}
@@ -121,6 +215,8 @@ public class Controller {
 	}
 	
 	public void removeEntity(EntityB block){
+		//block.close();
+		ebGarbageCollect.add(block);
 		eb.remove(block);
 	}
 	
@@ -129,6 +225,8 @@ public class Controller {
 	}
 	
 	public void removeEntity(EntityC block){
+		//block.close();
+		ecGarbageCollect.add(block);
 		ec.remove(block);
 	}
 	
@@ -137,6 +235,8 @@ public class Controller {
 	}
 	
 	public void removeEntity(EntityD block){
+		//block.close();
+		edGarbageCollect.add(block);
 		ed.remove(block);
 	}
 	
@@ -145,7 +245,19 @@ public class Controller {
 	}
 	
 	public void removeEntity(EntityE block){
+		//block.close();
+		eeGarbageCollect.add(block);
 		ee.remove(block);
+	}
+
+	public void addEntity(EntityF block){
+		ef.add(block);
+	}
+	
+	public void removeEntity(EntityF block){
+		//block.close();
+		efGarbageCollect.add(block);
+		ef.remove(block);
 	}
 	
 	public LinkedList<EntityA> getEntityA(){
@@ -166,5 +278,9 @@ public class Controller {
 	
 	public LinkedList<EntityE> getEntityE(){
 		return ee;
+	}
+	
+	public LinkedList<EntityF> getEntityF(){
+		return ef;
 	}
 }

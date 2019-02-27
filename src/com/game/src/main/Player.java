@@ -10,6 +10,7 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
+import com.game.src.main.classes.EntityE;
 import com.game.src.main.libs.Animation;
 
 public class Player extends GameObject implements EntityA{
@@ -265,6 +266,18 @@ public class Player extends GameObject implements EntityA{
 				timer2 = 0;
 			}
 		}
+		for(int i = 0; i < game.ee.size(); i ++){
+			EntityE tempEnt = game.ee.get(i);
+			
+			if(Physics.Collision(this, tempEnt)){
+				if(marioInvincible == false && tempEnt.entityName().equals("bombOmbShrapnel2")) {
+					game.Health -= 100;
+					game.ee.get(i).setHitIndicator(true);
+				}
+				else
+					controller.removeEntity(tempEnt);
+			}
+		}
 		//if(velX != 0 || velY != 0)
 			anim.runAnimation();
 			animl.runAnimation();
@@ -304,6 +317,7 @@ public class Player extends GameObject implements EntityA{
 				}
 				if(marioEntranceSpinningAnim.getCount() > 15)//|| if sfx ends
 					spinningAnimationFinished = true;
+				return;//maybe delete
 			}
 			else if(dancingAnimationFinished == false){
 				if(playerEntranceDancingSetup == false)
@@ -323,6 +337,7 @@ public class Player extends GameObject implements EntityA{
 				}
 				if(game.marioDanceSoundLoops.getLast().clipIsActive() == false && (int)game.marioDanceSoundLoops.getLast().getLongFramePosition() > 0 && game.getMarioDancePosePause() == false)//|| if sfx ends
 					dancingAnimationFinished = true;
+				return;//maybe delete
 			}
 			else if(growingAnimationFinished == false){
 				if(playerEntranceGrowingSetup == false)
@@ -336,20 +351,23 @@ public class Player extends GameObject implements EntityA{
 				}
 				if(marioEntranceGrowingAnim.getCount() > 8)//|| if sfx ends
 					growingAnimationFinished = true;
+				return;//maybe delete
 			}
 			else if(turningAroundAnimationFinished == false){
 				marioEntranceTurningAroundAnim.drawAnimation(g, x, y, 0);
 				if(game.getMarioGrowthPosePause() == false && (System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis())){
-					if(firstTimeAnimationRun == false)
+					if(firstTimeAnimationRun == false) {
 						marioEntranceTurningAroundAnim.nextFrame();
+						firstTimeAnimationRun = true;
+					}
 					animationTimer1 = System.currentTimeMillis();
 					marioEntranceTurningAroundAnim.runAnimation();
-					firstTimeAnimationRun = true;
 				}
 				else if(firstTimeAnimationRun == false)
 					g.drawImage(playerGrowthPose,(int)x, (int)y, null);
 				if(marioEntranceTurningAroundAnim.getCount() > 13)
 					turningAroundAnimationFinished = true;
+				return;//maybe delete
 			}
 			else if(turningAroundAnimationFinished == true){
 				g.drawImage(player, (int)x, (int)y, null);
@@ -359,6 +377,7 @@ public class Player extends GameObject implements EntityA{
 					game.marioVoices.get(i).setFramePosition(0);
 				}
 				Game.State = Game.STATE.GAME;
+				return;//maybe delete
 			}
 		}
 		else if(game.State == STATE.TRANSITION_DEATH){
@@ -434,6 +453,11 @@ public class Player extends GameObject implements EntityA{
 			if(playerWinTimer < System.currentTimeMillis()) {
 				gameOver = true;
 				Game.State = Game.STATE.GAMEOVER;
+				if(Game.gameControllerInUse) {
+					game.setJoystickTimer(0);
+					Game.keysAreInUse = true;
+				}
+				Game.selectorButtonPosition = 0;
 			}
 		}
 		else if(velY < 0 && game.animationTimer1 == 0){													//CHANGE ANIMATIONS HERE!
@@ -553,6 +577,32 @@ public class Player extends GameObject implements EntityA{
 						pEntrance[12],pEntrance[12],pEntrance[15],pEntrance[16],
 						pEntrance[16],pEntrance[17],pEntrance[17],pEntrance[18],
 						pEntrance[18],pEntrance[19],pEntrance[19],pEntrance[20]);
+				break;
+			case 4:
+				p = tex.playerNESMikeTyson;
+				pEntrance = tex.marioEntranceNESMikeTyson;
+				pDeath = tex.marioDeathNESMikeTyson;
+				pStar1 = tex.marioStarNESMikeTyson1;
+				pStar2 = tex.marioStarNESMikeTyson2;
+				pStar3 = tex.marioStarNESMikeTyson3;
+				ss = new SpriteSheet(game.getSpriteSheetNESMikeTyson());
+				marioEntranceTurningAroundAnim = new Animation(1, pEntrance[11],pEntrance[11],
+						pEntrance[12],pEntrance[13],pEntrance[14],pEntrance[15],
+						pEntrance[16],pEntrance[17],pEntrance[18],pEntrance[19],
+						pEntrance[20],pEntrance[21],pEntrance[22],pEntrance[22]);
+				break;
+			case 5:
+				p = tex.playerNESContra;
+				pEntrance = tex.marioEntranceNESContra;
+				pDeath = tex.marioDeathNESContra;
+				pStar1 = tex.marioStarNESContra1;
+				pStar2 = tex.marioStarNESContra2;
+				pStar3 = tex.marioStarNESContra3;
+				ss = new SpriteSheet(game.getSpriteSheetNESContra());
+				marioEntranceTurningAroundAnim = new Animation(1, pEntrance[11],pEntrance[11],
+						pEntrance[12],pEntrance[13],pEntrance[14],pEntrance[15],
+						pEntrance[16],pEntrance[17],pEntrance[18],pEntrance[19],
+						pEntrance[20],pEntrance[21],pEntrance[22],pEntrance[22]);
 				break;
 			default:
 				p = tex.player;
@@ -788,7 +838,110 @@ public class Player extends GameObject implements EntityA{
 	public void setDanceProgressionCount(int danceProgressionCount) {
 		this.danceProgressionCount = danceProgressionCount;
 	}
+
+	public boolean isTurningAroundAnimationFinished() {
+		return turningAroundAnimationFinished;
+	}
+
+	public void setTurningAroundAnimationFinished(boolean turningAroundAnimationFinished) {
+		this.turningAroundAnimationFinished = turningAroundAnimationFinished;
+	}
 	
+	public boolean isPlayerDeathSetup() {
+		return playerDeathSetup;
+	}
+
+	public void setPlayerDeathSetup(boolean playerDeathSetup) {
+		this.playerDeathSetup = playerDeathSetup;
+	}
+
+	public boolean isFirstTimeAnimationRun() {
+		return firstTimeAnimationRun;
+	}
+
+	public void setFirstTimeAnimationRun(boolean firstTimeAnimationRun) {
+		this.firstTimeAnimationRun = firstTimeAnimationRun;
+	}
+
+	public boolean isPlayerWinSetup() {
+		return playerWinSetup;
+	}
+
+	public void setPlayerWinSetup(boolean playerWinSetup) {
+		this.playerWinSetup = playerWinSetup;
+	}
+
+	public long getAnimationTimer1() {
+		return animationTimer1;
+	}
+
+	public void setAnimationTimer1(long animationTimer1) {
+		this.animationTimer1 = animationTimer1;
+	}
+
+	public long getMarioDeathTimer1() {
+		return marioDeathTimer1;
+	}
+
+	public void setMarioDeathTimer1(long marioDeathTimer1) {
+		this.marioDeathTimer1 = marioDeathTimer1;
+	}
+
+	public long getMarioDeathTimer2() {
+		return marioDeathTimer2;
+	}
+
+	public void setMarioDeathTimer2(long marioDeathTimer2) {
+		this.marioDeathTimer2 = marioDeathTimer2;
+	}
+
+	public long getMarioDeathTimer3() {
+		return marioDeathTimer3;
+	}
+
+	public void setMarioDeathTimer3(long marioDeathTimer3) {
+		this.marioDeathTimer3 = marioDeathTimer3;
+	}
+
+	public long getMarioGravityTimer() {
+		return marioGravityTimer;
+	}
+
+	public void setMarioGravityTimer(long marioGravityTimer) {
+		this.marioGravityTimer = marioGravityTimer;
+	}
+
+	public long getPlayerWinTimer() {
+		return playerWinTimer;
+	}
+
+	public void setPlayerWinTimer(long playerWinTimer) {
+		this.playerWinTimer = playerWinTimer;
+	}
+
+	public int getTimer1() {
+		return timer1;
+	}
+
+	public void setTimer1(int timer1) {
+		this.timer1 = timer1;
+	}
+
+	public int getTimer2() {
+		return timer2;
+	}
+
+	public void setTimer2(int timer2) {
+		this.timer2 = timer2;
+	}
+
+	public long getTraverseTime() {
+		return traverseTime;
+	}
+
+	public void setTraverseTime(long traverseTime) {
+		this.traverseTime = traverseTime;
+	}
 	public boolean getGameOver() {
 		return gameOver;
 	}
@@ -796,4 +949,5 @@ public class Player extends GameObject implements EntityA{
 	public void setGameOver(boolean gameOver) {
 		this.gameOver = gameOver;
 	}
+	
 }
