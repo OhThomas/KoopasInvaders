@@ -18,5 +18,6 @@ public interface EntityB {
 	public boolean getEntityBDead();
 	public void setEntityBDead(boolean dead);
 	public String enemyType();
+	public void renderFlicker();
 	public void close();
 }

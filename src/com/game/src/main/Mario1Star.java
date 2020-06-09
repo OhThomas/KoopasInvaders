@@ -35,6 +35,7 @@ public class Mario1Star extends GameObject implements EntityD{
 		String itemFile = "res/Sounds/SFX/Items/powerstar.wav";
 		SoundLoops itemSoundLoop = new SoundLoops(itemFile);
 		itemSoundLoop.reduceSound(10f);
+		VolumeSlider.adjustSFX(itemSoundLoop);
 		this.itemSoundLoop = itemSoundLoop;
 	}
 
@@ -71,7 +72,7 @@ public class Mario1Star extends GameObject implements EntityD{
 			EntityA tempEnt = game.ea.get(i);
 			if(Physics.Collision(this, tempEnt)){
 				game.ed.remove(this);
-				if(!game.ea.isEmpty())
+				if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 					game.ea.remove(game.ea.getLast());
 			}
 		}

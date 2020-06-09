@@ -1,11 +1,15 @@
 package com.game.src.main;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.KeyboardFocusManager;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
@@ -14,13 +18,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.io.*;
+import java.net.*;
+import java.security.SecureRandom;
 
 import javax.sound.sampled.Clip;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import com.game.src.main.Game.STATE;
 import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
@@ -38,22 +52,32 @@ import com.github.strikerx3.jxinput.XInputDevice;
 import com.github.strikerx3.jxinput.XInputDevice14;
 import com.github.strikerx3.jxinput.enums.XInputButton;
 import com.github.strikerx3.jxinput.natives.XInputConstants;
+
+import net.java.games.input.Component;
+import net.java.games.input.ControllerEnvironment;
+import net.java.games.input.DirectAndRawInputEnvironmentPlugin;
+import net.java.games.input.Event;
+import net.java.games.input.EventQueue;
+import net.java.games.input.SwitchedValues;
+import net.java.games.input.example.ReadAllEvents;
 public class Game extends Canvas implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
+	public static final long TIME_OUT = 60000;
 	public static final int WIDTH = 320;
 	public static final int HEIGHT = WIDTH / 12 * 9;
 	public static final int SCALE = 2;
 	public static final int MARIO_WIDTH = 16;
 	public static final int MARIO_HEIGHT = 28;
 	public final String TITLE = "Koopa's Invaders!";
-	
+	public final String KIVersion = "KIv1";
 	private boolean running = false;
 	private static boolean paused = false;
 	private Thread thread;
 
 	XInputDevice device;
 	XInputDevice14 device14;
+	static ReadAllEvents directInputEvents;
 	private BufferedImage image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 	private BufferedImage spriteSheet = null;
 	private BufferedImage spriteSheetNES = null;
@@ -66,6 +90,7 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage marioSNESFireLuigiEntranceSprites = null;
 	private BufferedImage marioNESMikeTysonEntranceSprites = null;
 	private BufferedImage marioNESContraEntranceSprites = null;
+	private BufferedImage victoryPoseSpinningSprites = null;
 	private BufferedImage animatedStar = null;
 	private BufferedImage animatedShootingStar = null;
 	private BufferedImage ufoSprites = null;
@@ -87,8 +112,10 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage bigMario4ItemAnimationSheet = null;
 	private BufferedImage bigMario5ItemAnimationSheet = null;
 	private BufferedImage bigMario6ItemAnimationSheet = null;
+	private BufferedImage lakituDeathAnimationSheet = null;
 	private BufferedImage itemSilhouetteSheet = null;
 	private BufferedImage currentItemImg = null;
+	private BufferedImage dancingAnimationSheet = null;
 	private BufferedImage chainChompItemGettingBiggerSheet = null;
 	private BufferedImage chainChompSheet = null;
 	private BufferedImage chainChompDisintegrate = null;
@@ -102,19 +129,28 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage mario3FontSpriteSheet = null;
 	private BufferedImage wasdButtonImagesSpriteSheet = null;
 	private BufferedImage goombaDeathSpriteSheet = null;
+	private BufferedImage yoshiSpriteSheet = null;
 	private BufferedImage backButtonTitle = null;
 	private BufferedImage setScoreTitle = null;
+	public static BufferedImage scoreTitle = null;
+	public static BufferedImage zeroImage = null;
 	public static BufferedImage setScoreTitleBigger = null;
 	private BufferedImage textIndicator = null;
 	private BufferedImage leaderboardTitle = null;
 	public static BufferedImage leaderboardTitleBigger = null;
 	private BufferedImage helpTitle = null;
 	private BufferedImage settingsTitle = null;
+	public static BufferedImage helpLinesLast = null;
 	public static BufferedImage controlsTitle = null;
 	public static BufferedImage tracklistTitle = null;
 	public static BufferedImage settingsTitleBigger = null;
 	public static BufferedImage playerNameImage = null;
 	public static BufferedImage gamepadLetterImage = null;
+	public static BufferedImage trackSetBox = null;
+	public static BufferedImage serverErrorMessageImage = null;
+	public static BufferedImage updateToConnectImage = null;
+	public static BufferedImage lockedImage = null;
+	public static BufferedImage redBowserIcon = null;
 	private BufferedImage deletedLetter = null;
 	private BufferedImage transparentBlocks = null;
 	private BufferedImage volumeSlider = null;
@@ -125,12 +161,17 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage volumeSliderSelectedClicked = null;
 	private BufferedImage emptyVolumeSlider = null;
 	private BufferedImage areYouSure = null;
+	private BufferedImage congrats = null;
+	public static BufferedImage connectingTransparent = null;
 	private BufferedImage dotdotdot = null;
-	
 	public static ArrayList<BufferedImage> leaderboardImage = new ArrayList<BufferedImage>();
+	public static ArrayList<BufferedImage> helpLines = new ArrayList<BufferedImage>();
 	private ArrayList<BufferedImage> itemBackground = new ArrayList<BufferedImage>();
 	private int backgroundTraverse = 0;
-	
+    public static Socket clientSocket;
+    public static PrintWriter out;
+    public static BufferedReader in;
+    //public static BufferedInputStream inStream;
 	Animation starAnim;
 	Animation shootingStarAnim;
 	Animation transparentBlocksAnim;
@@ -159,8 +200,18 @@ public class Game extends Canvas implements Runnable {
 	private boolean dontRunAfterPause = false;
 	private boolean sceneAcknowledgement = false;
 	private boolean pauseHoldOff = false;
+	private boolean windowMinimized = false;
+	public volatile static boolean serverErrorMessage = false;
+	public volatile static boolean updateToConnect = false;
+	public volatile static boolean connectingToServer = false;
+	private boolean doneConnectingToServer = false;
+	public static boolean firstTimeRunning = true;
+	public static boolean firstTimeBeating = false;
+	public static boolean menuMusicStopped = false;
+	public static boolean trackCurrentlyPlaying = false;
 	public static boolean askToSkipSequence = false;
 	public static boolean skipSequence = false;
+	public static boolean sendToServer = true;
 	public static boolean writeOnceToSettings = false;
 	public static boolean writeOnceToSettingswithPoints = false;
 	public static boolean settingsSetup = false;
@@ -185,6 +236,12 @@ public class Game extends Canvas implements Runnable {
 	public static boolean submitHighlighted = false;
 	public static boolean gamepadImageHighlighted = false;
 	public static boolean noteImageHighlighted = false;
+	public static boolean localHighlighted = false;
+	public static boolean globalHighlighted = false;
+	public static boolean uploadHighlighted = false;
+	public static boolean creditsHighlighted = false;
+	public static boolean resetLeaderboardHighlighted = false;
+	public static boolean rescanHighlighted = false;
 	public static boolean playClicked = false;
 	public static boolean backOnPlay = false;
 	public static boolean shopClicked = false;
@@ -227,6 +284,18 @@ public class Game extends Canvas implements Runnable {
 	public static boolean backOnGamepadImage = false;
 	public static boolean noteImageClicked = false;
 	public static boolean backOnNoteImage = false;
+	public static boolean localClicked = false;
+	public static boolean backOnLocal = false;
+	public static boolean globalClicked = false;
+	public static boolean backOnGlobal = false;
+	public static boolean uploadClicked = false;
+	public static boolean backOnUpload = false;
+	public static boolean creditsClicked = false;
+	public static boolean backOnCredits = false;
+	public static boolean resetLeaderboardClicked = false;
+	public static boolean backOnResetLeaderboard = false;
+	public static boolean rescanClicked = false;
+	public static boolean backOnRescan = false;
 	public static boolean arrowL1Highlighted = false;
 	public static boolean arrowR1Highlighted = false;
 	public static boolean arrowL2Highlighted = false;
@@ -275,16 +344,44 @@ public class Game extends Canvas implements Runnable {
 	public static boolean backOnSet2 = false;
 	public static boolean backOnSet3 = false;
 	public static boolean backOnSet4 = false;
+	public static boolean trackPlayButton1Highlighted = false;
+	public static boolean trackPauseButton1Highlighted = false;
+	public static boolean trackPlayButton2Highlighted = false;
+	public static boolean trackPauseButton2Highlighted = false;
+	public static boolean trackPlayButton1Clicked = false;
+	public static boolean trackPauseButton1Clicked = false;
+	public static boolean trackPlayButton2Clicked = false;
+	public static boolean trackPauseButton2Clicked = false;
+	public static boolean backOnTrackPlayButton1 = false;
+	public static boolean backOnTrackPauseButton1 = false;
+	public static boolean backOnTrackPlayButton2 = false;
+	public static boolean backOnTrackPauseButton2 = false;
 	public static boolean skin1Unlocked = false;
 	public static boolean skin2Unlocked = false;
 	public static boolean skin3Unlocked = false;
-	public static boolean track1Unlocked = false;
+	public static boolean track4Unlocked = false;
+	public static boolean track5Unlocked = false;
+	public static boolean track6Unlocked = false;
 	public static boolean fireball1Unlocked = false;
 	public static boolean fireball2Unlocked = false;
 	public static boolean fireball3Unlocked = false;
 	public static boolean item4Unlocked = false;
 	public static boolean item5Unlocked = false;
 	public static boolean item6Unlocked = false;
+	public static boolean menuTrack4Unlocked = false;
+	public static boolean gameTrack1Set = true;
+	public static boolean gameTrack2Set = true;
+	public static boolean gameTrack3Set = true;
+	public static boolean gameTrack4Set = true;
+	public static boolean gameTrack5Set = false;
+	public static boolean gameTrack6Set = false;
+	public static boolean gameTrack7Set = false;
+	public static boolean gameTrack8Set = true;
+	public static boolean menuTrack1Set = true;
+	public static boolean menuTrack2Set = true;
+	public static boolean menuTrack3Set = true;
+	public static boolean menuTrack4Set = true;
+	public static boolean menuTrack5Set = false;
 	public static boolean currentSkinLocked = false;
 	public static boolean currentTrackLocked = false;
 	public static boolean currentFireballLocked = false;
@@ -293,11 +390,15 @@ public class Game extends Canvas implements Runnable {
 	public static boolean mouseIsOffClickedObjectAndHeldDown = false;
 	public static boolean keysAreInUse = false;
 	public static boolean gameControllerInUse = false;
+	public static boolean gameControllerInUseDI = false;
+	public static boolean gameControllerSwitchBack = false;
+	public static boolean gameControllerSwitchBackDI = false;
+	public static boolean keysAreInUseSwitchBack = false;
 	public static boolean escapePressedNegateAction = false;
 	public static boolean enterButtonPushedDown = false;
 	public static boolean skipAnimations = false;
 	public static boolean areYouSureBoolean = false;
-	public static boolean revertControllerSettings = false;
+//	public static boolean revertControllerSettings = false;
 	public static boolean scoreFollowingBoolean = false;
 	public static boolean starExplode = false;
 	public static boolean ufoSpawned = false;
@@ -313,7 +414,12 @@ public class Game extends Canvas implements Runnable {
 	public static int mx = 0;
 	public static int my = 0;
 	public static int totalPoints = 0;
+	public static int highScore = 0;
 	public static int selectorButtonPosition = 0;
+	public static int gameTrackPosition = 0;
+	public static int gameTrackCurrentlyPlaying = -1;
+	public static int menuTrackPosition = 0;
+	public static int menuTrackCurrentlyPlaying = -1;
 	public static int characterSkinPosition = 0;
 	public static int trackPosition = 0;
 	public static int fireballPosition = 0;
@@ -332,17 +438,26 @@ public class Game extends Canvas implements Runnable {
 	public static ArrayList<String> writeMultipleString = new ArrayList<String>();
 	public static String writeOnceUnlock = "";
 	public static int selectorBPMP = 0;
+	public static int helpLineRandomizer = 0;
+	public static int rescanButtonCounter = 0;
 	private double myTime = 0.0;
 	private String itemName;
 	private int numberOfFireBallsShot = 0;
 	private int numberOfFireBallsShotDecoy = 0;
+	private int fireworksShot = 0;
 	public static char postLetter = '=';
 	public static float imageTranslucent = 0;
 	private double imageTranslucentVelocity = 0;
 	private long imageTranslucentTimer = 0;
+	public volatile long serverErrorMessageTimer = 0;
+	public volatile long dotdotdotTimer = 0;
+	private long itemAnimationTimer = 0;
+	private long itemAnimationTimer2 = 0;
+	private long itemAnimationTimer3 = 0;
 	private long traverseTime = 0;
 	private long traverseTime2 = 0;
 	private long controllerSensitivityTimer = 0;
+	private long slowDownForAnalogTimer = 0;
 	private boolean imageIsGone = false;
 	long imageTranslucentTimer2=0;
 	boolean imageStayOn = false;
@@ -368,12 +483,17 @@ public class Game extends Canvas implements Runnable {
 	private long soundFXTimer = 0;
 	private long enemyHitPauseTimer = 0;
 	private boolean enemyHitPauseBoolean = false;
+	private boolean itemTransitionSetup = false;
 	private boolean spawnItem = false;
 	private boolean spawnBulletBill = false;
 	private boolean spawn1BulletBillAtATime = false;
+	private boolean powerUpFirework1 = false;
+	private boolean powerUpFirework2 = false;
+	private boolean powerUpFirework3 = false;
 	private long bowserBulletBillSpawningTimer = 0;
 	private long transitionTimer = 0;
 	private long gameStartSoundTimer = 0;
+	public volatile static long lastDisconnectedTimer = 0;
 	private static long pauseSoundFXTimer = 0;
 	private long visualPauseTimer = 0;
 	private long marioDancePosePauseTimer = 0;
@@ -383,9 +503,14 @@ public class Game extends Canvas implements Runnable {
 	private long itemFlyingTimer1 = 0;
 	private long joystickTimer = 0;
 	private long waitToPause = 0;
+	private long cheatTimer = 0;
+	private String cheatString = "";
+	public static String saveName = "";
 	private double itemFlyingAwayY = 0;
 	private double itemFlyingAwayX = 0;
 	private boolean fileScoreWritten = false;
+	public static boolean serverVerified = false;
+	public static boolean allUnlockedScreen = false;
 	public static boolean dontStartOver = false;
 	public static boolean backToGameOver = false;
 	private static boolean userHasPaused = false;
@@ -395,11 +520,12 @@ public class Game extends Canvas implements Runnable {
 	private boolean marioDancePosePause = false;
 	private boolean marioGrowthPosePause = false;
 	private boolean marioLetsGoPause = false;
-	private int soundRandomizer = 0;
-	private int menuSoundLoopRandomizer = 0;
-	private int marioVoiceRandomizer = 0;
+	public static int soundRandomizer = 0;
+	public static int menuSoundLoopRandomizer = 0;
 	private int spawningEnemiesinTransition = 0;
 	private int spawningEnemiesDanceSync = 0;
+	public static int marioVoiceRandomizer = 0;
+	public static int sceneSkipCount = 0;
 	public static double currentEECollisionX = 0;
 	public static double currentEECollisionY = 0;
 	public static double currentEECollisionWidth = 0;
@@ -414,8 +540,11 @@ public class Game extends Canvas implements Runnable {
 	private boolean brickBreakingSFXSoundPauseBoolean = false;
 	private boolean bowserSpawnSetupBoolean = false;
 	private long bowserSpawnSetup = 0;
-	LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
-	LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
+	long julian = 0;
+	long juliann = 0;
+	int julianii = 0;
+	public static LinkedList<SoundLoops> menuSoundLoops = new LinkedList<SoundLoops>();
+	public static LinkedList<SoundLoops> gameSoundLoops = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> marioDanceSoundLoops = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> marioVoices = new LinkedList<SoundLoops>();
 	public static LinkedList<SoundLoops> luigiVoices = new LinkedList<SoundLoops>();
@@ -428,10 +557,15 @@ public class Game extends Canvas implements Runnable {
 	LinkedList<SoundLoops> starDingSoundLoop = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> goomba3DeathSoundLoop = new LinkedList<SoundLoops>();
 	LinkedList<SoundLoops> goomba3DeathSmokeSoundLoop = new LinkedList<SoundLoops>();
+	LinkedList<SoundLoops> pointsSoundLoop = new LinkedList<SoundLoops>();
+	public static SoundLoops creditsSong;
 	public static SoundLoops fireballSFX;
+	public static SoundLoops fireballPopSFX;
 	public static SoundLoops pauseSoundFXSoundLoop;
 	public static SoundLoops gameOverSoundLoop;
 	public static SoundLoops gameOverWinningSoundLoop;
+	public static SoundLoops gameOverWinningMikeTysonSoundLoop;
+	public static SoundLoops gameOverWinningContraSoundLoop;
 	public static SoundLoops gameOverIrisSoundLoop;
 	public static SoundLoops marioStarSoundLoop;
 	public static SoundLoops soundFXClip1SoundLoop;
@@ -439,7 +573,12 @@ public class Game extends Canvas implements Runnable {
 	public static SoundLoops marioSpinningSoundLoop;
 	public static SoundLoops marioDeathSoundLoop;
 	public static SoundLoops itemSwooshSoundLoop;
+	public static SoundLoops itemPauseSoundLoop;
+	public static SoundLoops smbCoinPointsSoundLoop;
+	public static SoundLoops smbCoinPoints2SoundLoop;
+	public static SoundLoops smbFireworkSoundLoop;
 	public static SoundLoops smb3CoinSoundLoop;
+	public static SoundLoops smbPopSoundLoop;
 	public static SoundLoops smb3BumpSoundLoop;
 	public static SoundLoops smb3Bump2SoundLoop;
 	public static SoundLoops smb3KickSoundLoop;
@@ -450,7 +589,19 @@ public class Game extends Canvas implements Runnable {
 	public static SoundLoops smb3BeepSoundLoop;
 	public static SoundLoops smb3CheckmarkSoundLoop;
 	public static SoundLoops smb3Checkmark2SoundLoop;
+	public static SoundLoops smb3TextSoundLoop;
 	public static SoundLoops smwErrorSoundLoop;
+	public static SoundLoops smwCheatSoundLoop;
+	public static SoundLoops smwCheat2SoundLoop;
+	public static SoundLoops smwCheat3SoundLoop;
+	public static SoundLoops smwCheat4SoundLoop;
+	public static SoundLoops smwCheat5SoundLoop;
+	public static SoundLoops smwCheat6SoundLoop;
+	public static SoundLoops smwCheat7SoundLoop;
+	public static SoundLoops smwCheat8SoundLoop;
+	public static SoundLoops smwCheat9SoundLoop;
+	public static SoundLoops smwCheat10SoundLoop;
+	public static SoundLoops smwCheatFullSoundLoop;
 	//public static LinkedList<Clip> clipGarbageCollection = new LinkedList<Clip>();
 	private Player p;
 	private Controller c;
@@ -465,12 +616,16 @@ public class Game extends Canvas implements Runnable {
 	private MouseLocator mouseLocator;
 	private StarExplosion starExplosion;
 	private ControlsController controlsController;
+	private SineDraw sinewaves;
+	private TrackController trackController;
+	private CreditsController creditsController;
 	private UFO ufo;
 	
 	public static BufferedImage title = null;
 	public static BufferedImage gameOverTitle = null;
 	private BufferedImage playTitle = null;
 	public static BufferedImage shopTitle = null;
+	public static BufferedImage helpTitleBigger = null;
 	private BufferedImage exitTitle = null;
 	private BufferedImage resumeTitle = null;
 	private BufferedImage homeTitle = null;
@@ -557,6 +712,12 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage resetTitleSelected = null;
 	private BufferedImage resetTitleSelectedClicked = null;
 	private BufferedImage resetTitleSelectedNormal = null;
+	private BufferedImage rescanTitle = null;
+	private BufferedImage rescanTitleGlow = null;
+	private BufferedImage rescanTitleClicked = null;
+	private BufferedImage rescanTitleSelected = null;
+	private BufferedImage rescanTitleSelectedClicked = null;
+	private BufferedImage rescanTitleSelectedNormal = null;
 	private BufferedImage yesTitle = null;
 	private BufferedImage yesTitleGlow = null;
 	private BufferedImage yesTitleClicked = null;
@@ -593,6 +754,48 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage noteImageTitleSelected = null;
 	private BufferedImage noteImageTitleSelectedClicked = null;
 	private BufferedImage noteImageTitleSelectedNormal = null;
+	private BufferedImage localTitle = null;
+	private BufferedImage localTitleGlow = null;
+	private BufferedImage localTitleClicked = null;
+	private BufferedImage localTitleSelected = null;
+	private BufferedImage localTitleSelectedClicked = null;
+	private BufferedImage localTitleSelectedNormal = null;
+	private BufferedImage globalTitle = null;
+	private BufferedImage globalTitleGlow = null;
+	private BufferedImage globalTitleClicked = null;
+	private BufferedImage globalTitleSelected = null;
+	private BufferedImage globalTitleSelectedClicked = null;
+	private BufferedImage globalTitleSelectedNormal = null;
+	private BufferedImage uploadTitle = null;
+	private BufferedImage uploadTitleGlow = null;
+	private BufferedImage uploadTitleClicked = null;
+	private BufferedImage uploadTitleSelected = null;
+	private BufferedImage uploadTitleSelectedClicked = null;
+	private BufferedImage uploadTitleSelectedNormal = null;
+	private BufferedImage resetLeaderboardTitle = null;
+	private BufferedImage resetLeaderboardTitleGlow = null;
+	private BufferedImage resetLeaderboardTitleClicked = null;
+	private BufferedImage resetLeaderboardTitleSelected = null;
+	private BufferedImage resetLeaderboardTitleSelectedClicked = null;
+	private BufferedImage resetLeaderboardTitleSelectedNormal = null;
+	private BufferedImage creditsTitle = null;
+	private BufferedImage creditsTitleGlow = null;
+	private BufferedImage creditsTitleClicked = null;
+	private BufferedImage creditsTitleSelected = null;
+	private BufferedImage creditsTitleSelectedClicked = null;
+	private BufferedImage creditsTitleSelectedNormal = null;
+	private BufferedImage trackPlayButtonTitle = null;
+	private BufferedImage trackPlayButtonTitleGlow = null;
+	private BufferedImage trackPlayButtonTitleClicked = null;
+	private BufferedImage trackPauseButtonTitle = null;
+	private BufferedImage trackPauseButtonTitleGlow = null;
+	private BufferedImage trackPauseButtonTitleClicked = null;
+	private BufferedImage trackStopButtonTitle = null;
+	private BufferedImage trackStopButtonTitleGlow = null;
+	private BufferedImage trackStopButtonTitleClicked = null;
+	private BufferedImage trackButtonTitleSelected = null;
+	private BufferedImage trackButtonTitleSelectedClicked = null;
+	private BufferedImage trackButtonTitleSelectedNormal = null;
 	private BufferedImage aButtonImage = null;
 	private BufferedImage aButtonImageGlow = null;
 	private BufferedImage aButtonImageClicked = null;
@@ -602,6 +805,8 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage gamepadButtonHolder = null;
 	private BufferedImage gamepadButtonHolderGlow = null;
 	private BufferedImage gamepadButtonHolderClicked = null;
+	private BufferedImage dotSelectorPositionOrange = null;
+	private BufferedImage dotSelectorPositionWhite = null;
 	private BufferedImage currentlySelected10x10 = null;
 	public static BufferedImage skinTitle = null;
 	public static BufferedImage tracksTitle = null;
@@ -610,6 +815,9 @@ public class Game extends Canvas implements Runnable {
 	public static BufferedImage volumeTitle = null;
 	public static BufferedImage sfxMusicTitle = null;
 	public static BufferedImage skipAnimationsTitle = null;
+	public static BufferedImage sendToServerTitle = null;
+	public static BufferedImage gameTitle = null;
+	public static BufferedImage menuTitle = null;
 	public static BufferedImage keyboardTitle = null;
 	public static BufferedImage xInputTitle = null;
 	public static BufferedImage directInputTitle = null;
@@ -622,10 +830,13 @@ public class Game extends Canvas implements Runnable {
 	public static BufferedImage pauseImageTitle = null;
 	public static BufferedImage cancelImageTitle = null;
 	public static BufferedImage totalPointsImage = null;
+	public static BufferedImage gameTrackNumber = null;
+	public static BufferedImage menuTrackNumber = null;
 	public static BufferedImage skinNumber = null;
 	public static BufferedImage trackNumber = null;
 	public static BufferedImage fireballNumber = null;
 	public static BufferedImage itemNumber = null;
+	public static BufferedImage scoreImage = null;
 	
 	public LinkedList<EntityA> ea;
 	public LinkedList<EntityB> eb;
@@ -647,6 +858,7 @@ public class Game extends Canvas implements Runnable {
 		GAMEOVER,
 		SET_SCORE,
 		LEADERBOARD,
+		CREDITS,
 		SHOP,
 		SETTINGS,
 		CONTROLS,
@@ -671,6 +883,7 @@ public class Game extends Canvas implements Runnable {
 			marioSNESFireLuigiEntranceSprites = loader.loadImage("/mario3entrancesprites.png");
 			marioNESMikeTysonEntranceSprites = loader.loadImage("/mario4entrancesprites.png");
 			marioNESContraEntranceSprites = loader.loadImage("/mario5entrancesprites.png");
+			victoryPoseSpinningSprites = loader.loadImage("/winningposeflippinganimations.png");
 			animatedStar = loader.loadImage("/animatedstar.png");
 			animatedShootingStar = loader.loadImage("/shootingstarworadiant.png");
 			ufoSprites = loader.loadImage("/ufoalien.png");
@@ -692,6 +905,8 @@ public class Game extends Canvas implements Runnable {
 			bigMario4ItemAnimationSheet = loader.loadImage("/mario-big4.png");
 			bigMario5ItemAnimationSheet = loader.loadImage("/mario-big5.png");
 			bigMario6ItemAnimationSheet = loader.loadImage("/mario-big6.png");
+			lakituDeathAnimationSheet = loader.loadImage("/lakitudeathanimation.png");
+			dancingAnimationSheet = loader.loadImage("/dancinganimations.png");
 			itemSilhouetteSheet = loader.loadImage("/marioitemssilhouette.png");
 			chainChompItemGettingBiggerSheet = loader.loadImage("/Items/chainChompItemGettingBig.png");
 			chainChompSheet = loader.loadImage("/Items/Chain_Chomp_spritesss.png");
@@ -706,16 +921,20 @@ public class Game extends Canvas implements Runnable {
 			mario3FontSpriteSheet = loader.loadImage("/mario3fonteLAYEDOUT.png");
 			wasdButtonImagesSpriteSheet = loader.loadImage("/mario3fonteLAYEDOUTSMALLERSpriteSheet.png");
 			goombaDeathSpriteSheet = loader.loadImage("/goombadeath.png");
+			yoshiSpriteSheet = loader.loadImage("/yoshisprites.png");
 			title = loader.loadImage("/koopasinvaderstitlebigger.png");
 			gameOverTitle = loader.loadImage("/gameover1bigger.png");
 			playTitle = loader.loadImage("/newplaybutton.png");
 			shopTitle = loader.loadImage("/newshopbutton.png");
 			exitTitle = loader.loadImage("/newexitbutton.png");
+			helpTitleBigger = loader.loadImage("/help.png");
 			backButtonTitle = loader.loadImage("/backButtonSmaller.png");
 			resumeTitle = loader.loadImage("/newresumebutton.png");
 			homeTitle = loader.loadImage("/newhomebutton.png");
 			setScoreTitle = loader.loadImage("/setScoreSmaller.png");
 			setScoreTitleBigger= loader.loadImage("/setScore.png");
+			scoreTitle= loader.loadImage("/scoretitle.png");
+			zeroImage = loader.loadImage("/zeroimage.png");
 			leaderboardTitle = loader.loadImage("/leaderboardSmaller.png");
 			leaderboardTitleBigger = loader.loadImage("/leaderboard.png");
 			helpTitle = loader.loadImage("/newhelpbuttonSmaller.png");
@@ -842,9 +1061,64 @@ public class Game extends Canvas implements Runnable {
 			noteImageTitleSelected = loader.loadImage("/noteImageselected.png");
 			noteImageTitleSelectedClicked = loader.loadImage("/noteImageselectedclicked.png");
 			noteImageTitleSelectedNormal = loader.loadImage("/noteImageselectednormal.png");
+			localTitle = loader.loadImage("/newlocalbutton.png");
+			localTitleGlow = loader.loadImage("/newlocalbuttonglow.png");
+			localTitleClicked = loader.loadImage("/newlocalbuttonclicked.png");
+			localTitleSelected = loader.loadImage("/newlocalbuttonselected.png");
+			localTitleSelectedClicked = loader.loadImage("/newlocalbuttonselectedclicked.png");
+			localTitleSelectedNormal = loader.loadImage("/newlocalbuttonselectednormal.png");
+			globalTitle = loader.loadImage("/newglobalbutton.png");
+			globalTitleGlow = loader.loadImage("/newglobalbuttonglow.png");
+			globalTitleClicked = loader.loadImage("/newglobalbuttonclicked.png");
+			globalTitleSelected = loader.loadImage("/newglobalbuttonselected.png");
+			globalTitleSelectedClicked = loader.loadImage("/newglobalbuttonselectedclicked.png");
+			globalTitleSelectedNormal = loader.loadImage("/newglobalbuttonselectednormal.png");
+			uploadTitle = loader.loadImage("/newuploadbutton.png");
+			uploadTitleGlow = loader.loadImage("/newuploadbuttonglow.png");
+			uploadTitleClicked = loader.loadImage("/newuploadbuttonclicked.png");
+			uploadTitleSelected = loader.loadImage("/newuploadbuttonselected.png");
+			uploadTitleSelectedClicked = loader.loadImage("/newuploadbuttonselectedclicked.png");
+			uploadTitleSelectedNormal = loader.loadImage("/newuploadbuttonselectednormal.png");
+			resetLeaderboardTitle = loader.loadImage("/newresetleaderboardbutton.png");
+			resetLeaderboardTitleGlow = loader.loadImage("/newresetleaderboardbuttonglow.png");
+			resetLeaderboardTitleClicked = loader.loadImage("/newresetleaderboardbuttonclicked.png");
+			resetLeaderboardTitleSelected = loader.loadImage("/newresetleaderboardbuttonselected.png");
+			resetLeaderboardTitleSelectedClicked = loader.loadImage("/newresetleaderboardbuttonselectedclicked.png");
+			resetLeaderboardTitleSelectedNormal = loader.loadImage("/newresetleaderboardbuttonselectednormal.png");
+			rescanTitle = loader.loadImage("/newrescanbutton.png");
+			rescanTitleGlow = loader.loadImage("/newrescanbuttonglow.png");
+			rescanTitleClicked = loader.loadImage("/newrescanbuttonclicked.png");
+			rescanTitleSelected = loader.loadImage("/newrescanbuttonselected.png");
+			rescanTitleSelectedClicked = loader.loadImage("/newrescanbuttonselectedclicked.png");
+			rescanTitleSelectedNormal = loader.loadImage("/newrescanbuttonselectednormal.png");
+			creditsTitle = loader.loadImage("/newcreditsbutton.png");
+			creditsTitleGlow = loader.loadImage("/newcreditsbuttonglow.png");
+			creditsTitleClicked = loader.loadImage("/newcreditsbuttonclicked.png");
+			creditsTitleSelected = loader.loadImage("/newcreditsbuttonselected.png");
+			creditsTitleSelectedClicked = loader.loadImage("/newcreditsbuttonselectedclicked.png");
+			creditsTitleSelectedNormal = loader.loadImage("/newcreditsbuttonselectednormal.png");
+			trackPlayButtonTitle = loader.loadImage("/trackplaybutton.png");
+			trackPlayButtonTitleGlow = loader.loadImage("/trackplaybuttonglow.png");
+			trackPlayButtonTitleClicked = loader.loadImage("/trackplaybuttonclicked.png");
+			trackPauseButtonTitle = loader.loadImage("/trackpausebutton.png");
+			trackPauseButtonTitleGlow = loader.loadImage("/trackpausebuttonglow.png");
+			trackPauseButtonTitleClicked = loader.loadImage("/trackpausebuttonclicked.png");
+			trackStopButtonTitle = loader.loadImage("/trackstopbutton.png");
+			trackStopButtonTitleGlow = loader.loadImage("/trackstopbuttonglow.png");
+			trackStopButtonTitleClicked = loader.loadImage("/trackstopbuttonclicked.png");
+			trackButtonTitleSelected = loader.loadImage("/trackbuttonselected.png");
+			trackButtonTitleSelectedNormal = loader.loadImage("/trackbuttonselectednormal.png");
+			trackButtonTitleSelectedClicked = loader.loadImage("/trackbuttonselectedclicked.png");
+			dotSelectorPositionOrange = loader.loadImage("/escapedenterdot.png");
+			dotSelectorPositionWhite = loader.loadImage("/escapedenterdotwhite.png");
 			aButtonImage = loader.loadImage("/aButtonImage.png");
 			ltButtonImage = loader.loadImage("/ltButtonImage.png");
 			gamepadButtonHolder = loader.loadImage("/gamepadButtonHolder.png");
+			serverErrorMessageImage = loader.loadImage("/cantconnecttotheserverdots.png");
+			updateToConnectImage = loader.loadImage("/updatetoconnecttotheserver.png");
+			lockedImage = loader.loadImage("/lockedImage.png");
+			trackSetBox = loader.loadImage("/tracksetselectedbox.png");
+			redBowserIcon = loader.loadImage("/redbowserredoutlinesmallerr.png");
 			volumeSlider = loader.loadImage("/volumeslider.png");
 			volumeSliderGlow = loader.loadImage("/volumesliderglow.png");
 			volumeSliderClicked = loader.loadImage("/volumesliderclicked.png");
@@ -853,6 +1127,8 @@ public class Game extends Canvas implements Runnable {
 			volumeSliderSelectedClicked = loader.loadImage("/volumesliderselectedclicked.png");
 			emptyVolumeSlider = loader.loadImage("/emptyvolumeslider.png");
 			areYouSure = loader.loadImage("/areyousure.png");
+			congrats = loader.loadImage("/congratulationsyouhaveunlockedanewtrack.png");
+			connectingTransparent = loader.loadImage("/connectingtransparent.png");
 			dotdotdot = loader.loadImage("/dotdotdot.png");
 			currentlySelected10x10 = loader.loadImage("/currentlyselected10x10.png");
 			skinTitle = loader.loadImage("/newskinbutton.png"); 
@@ -861,7 +1137,10 @@ public class Game extends Canvas implements Runnable {
 			itemsTitle = loader.loadImage("/newitemsbutton.png");
 			volumeTitle = loader.loadImage("/newvolumebutton.png");
 			sfxMusicTitle = loader.loadImage("/newsfxmusicbutton.png");
+			gameTitle = loader.loadImage("/newgamebutton.png");
+			menuTitle = loader.loadImage("/newmenubutton.png");
 			skipAnimationsTitle = loader.loadImage("/newskipanimationsbutton.png");
+			sendToServerTitle = loader.loadImage("/sendtoserverimage.png");
 			keyboardTitle = loader.loadImage("/newkeyboardbutton.png");
 			xInputTitle = loader.loadImage("/newxinputbutton.png");
 			directInputTitle = loader.loadImage("/newdirectinputbutton.png");
@@ -874,7 +1153,21 @@ public class Game extends Canvas implements Runnable {
 			pauseImageTitle = loader.loadImage("/newpausestartbutton.png");
 			cancelImageTitle = loader.loadImage("/newcancelbutton.png");
 			transparentBlocks = loader.loadImage("/randomtransparentblocks.png");
-			itemBackground = loader.loadImagesfromFolder("/res/BackgroundBlur");
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur1.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur2.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur3.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur4.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur5.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur6.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur7.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur8.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur9.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur10.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur11.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur12.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur13.png"));
+			itemBackground.add(loader.loadImage("/BackgroundBlur/starsbackgroundbiggerblur14.png"));
+			//itemBackground = loader.loadImagesfromFolder("/res/BackgroundBlur");
 			
 		}catch(IOException e){
 			e.printStackTrace();
@@ -891,12 +1184,16 @@ public class Game extends Canvas implements Runnable {
 		mouseLocator = new MouseLocator(this);
 		starExplosion = new StarExplosion();
 		controlsController = new ControlsController(tex,this);
+		sinewaves = new SineDraw(this);
+		trackController = new TrackController(this, sinewaves);
+		creditsController = new CreditsController(tex, this);
 		
 		ea = c.getEntityA();
 		eb = c.getEntityB();
 		ec = c.getEntityC();
 		ed = c.getEntityD();
 		ee = c.getEntityE();
+		ef = c.getEntityF();
 		
 		this.addKeyListener(new KeyInput(this));
 		this.addMouseListener(new MouseInput());
@@ -955,13 +1252,14 @@ public class Game extends Canvas implements Runnable {
 		}catch(InterruptedException e) {
 			e.printStackTrace();
 		}
+		this.closeGame();
 		System.exit(1);
 	}
 	
 	public void run(){
 		init();
 		long lastTime = System.nanoTime();
-		final double amountOfTicks = 60.0;
+		final double amountOfTicks = 60.0;//game pace(lower = slower/ higher = faster)
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
 		int updates = 0;
@@ -969,7 +1267,6 @@ public class Game extends Canvas implements Runnable {
 		long timer = System.currentTimeMillis();
 		
 		while(running){
-			
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
@@ -998,11 +1295,215 @@ public class Game extends Canvas implements Runnable {
 	
 	private void tick(){
 		if(State == STATE.GAME){
+			if(!this.hasFocus() && !userHasPaused && !paused) {
+				if(!windowMinimized) {
+					if(paused == false && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
+						if(p.getMarioInvincible() == true)
+							this.marioStarSoundLoop.stop();
+						else
+							this.gameSoundLoops.get(soundRandomizer).stop();
+						this.pauseSoundFXSoundLoop.setFramePosition(0);
+						this.pauseSoundFXSoundLoop.play();
+						pauseSoundFXTimer = System.currentTimeMillis() + 685;
+						paused = true;
+						userHasPaused = true;
+						if(System.currentTimeMillis() < bowserSpawnSetup && bowserSpawnSetupBoolean == true) {
+							bowserSpawnSetup = 0;
+							bowserSpawnSetupBoolean = false;
+						}
+					}
+					else if(paused == true && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
+						if(pauseSoundFXTimer < System.currentTimeMillis()){
+						/*if(p.getMarioInvincible() == true)
+							this.marioStarSoundLoop.loop();
+						else
+							this.gameSoundLoops.get(soundRandomizer).loop();
+						paused = false;*/
+						this.pauseSoundFXSoundLoop.play();
+						pauseSoundFXTimer = System.currentTimeMillis() + 685;
+						this.pauseSoundFXSoundLoop.setSoundLoopBoolean(true);
+						}
+						userHasPaused = false;
+					}
+
+
+					if(xRBoolean == true){
+						p.setRunningStartUp(1.2);
+						p.setVelX(p.getRunningStartUp());
+						runningTimerActivated = true;
+						p.setRunningStartR(true);
+					}
+					else{
+						if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5)) && p.getVelX() != 0){														//This activates sliding animation for left side
+							slowingDownActivatedl = true;
+							slowingDownTimerLong = System.currentTimeMillis() + 200;
+							slowingDown = -1.73;
+							p.setVelX(slowingDown);
+							runningTimerLong = 0;
+							runningTimerActivatedResponse = false;
+						}
+						else
+							p.setVelX(0);
+					}
+					
+					if(xLBoolean == true){
+						p.setRunningStartUp(-1.2);
+						p.setVelX(p.getRunningStartUp());
+						runningTimerActivated = true;
+						p.setRunningStartL(true);
+					}
+					else{
+						if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5)) && p.getVelX() != 0){														//This activates sliding animation for right side
+							slowingDownActivatedr = true;
+							slowingDownTimerLong = System.currentTimeMillis() + 200;
+							slowingDown = 1.73;
+							p.setVelX(slowingDown);
+							runningTimerLong = 0;
+							runningTimerActivatedResponse = false;
+						}
+						else
+							p.setVelX(0);
+					}
+					if(slowingDownTimerLong != 0) {
+						slowingDownTimerLong = slowingDownTimerLong - System.currentTimeMillis();
+					}
+					else if(System.currentTimeMillis() - runningTimerLong > 666/2){
+						if(xLBoolean == true)
+							keepRunningAfterPauseL = true;
+						else if(xRBoolean == true)
+							keepRunningAfterPauseR = true;
+					}
+					
+					xLBoolean = false;
+					xRBoolean = false;
+					runningTimerLong = 0;
+					runningTimerActivated = false;
+					runningTimerActivatedResponse = false;
+					keepRunningAfterPauseL = false;
+					keepRunningAfterPauseR = false;
+					p.setRunningStartL(false);
+					p.setRunningStartR(false);
+					
+					windowMinimized = true;
+				}
+			}
+			else if(windowMinimized)
+				windowMinimized = false;
 			if(!paused){
 				p.tick();
 				hud.tick();
 				c.tick();
 				bb.tick();
+				//SPAWN SHELLS
+				if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false && traverseTime2 != System.currentTimeMillis()){	
+					boolean spawnShell = true;
+					Random rand = new Random();
+					int i = rand.nextInt(eb.size());
+					if(eb.get(i).getEntityBDead() == false && rand.nextInt(78) == 1) {
+						for(int j =0; j < eb.size(); j++) {
+							if((eb.get(i).getX() <= eb.get(j).getX() + eb.get(j).getWidth() && eb.get(i).getX() >= eb.get(j).getX() && eb.get(j).getEntityBDead() == false) ||
+							(eb.get(i).getX() + eb.get(i).getWidth() >= eb.get(j).getX() && eb.get(j).getX() >= eb.get(i).getX() && eb.get(j).getEntityBDead() == false) ||
+							(eb.get(i).getX() == eb.get(j).getX() && eb.get(j).getEntityBDead() == false)) {
+								if(eb.get(i).getY() >= eb.get(j).getY())
+									spawnShell = true;
+								else {
+									spawnShell = false;
+									break;
+								}
+							}
+						}
+						if (spawnShell) {
+							for(int k = eb.size() - 1; k >= 0; k--) {
+								if((eb.get(i).getX() <= eb.get(k).getX() + eb.get(k).getWidth() && eb.get(i).getX() > eb.get(k).getX() && eb.get(k).getEntityBDead() == false) ||
+								(eb.get(i).getX() + eb.get(i).getWidth() >= eb.get(k).getX() && eb.get(k).getX() >= eb.get(i).getX() && eb.get(k).getEntityBDead() == false) ||
+								(eb.get(i).getX() == eb.get(k).getX() && eb.get(k).getEntityBDead() == false)) {
+									if(eb.get(i).getY() >= eb.get(k).getY())
+										spawnShell = true;
+									else {
+										spawnShell = false;
+										break;
+									}
+								}
+							}
+						}
+						if (spawnShell)
+							c.addEntity(new GreenShell(eb.get(i).getX(),eb.get(i).getY() - 32,tex, this));
+					}
+					traverseTime2 = System.currentTimeMillis();
+				}
+				if(spawnDone4 == true){												//Spawning Bowser Mechanics
+					//hud.render(g);
+					if((int)HUD.getTimer1() <= 0){
+						//SPAWN BULLET BILLS
+						if(bowserBulletBillSpawningTimer < System.currentTimeMillis() && c.getEntityB().get(0).getEntityBDead() == false) {
+							Random rand = new Random();
+							int i = rand.nextInt(2);//20000
+							if(i == 1 && ec.size() < 6 && !spawnBulletBill){
+								bulletBillSpawnSmokeL.nextFrame();
+								bulletBillSpawnSmokeL.setCount(0);
+								bulletBillSpawnSmokeR.nextFrame();
+								bulletBillSpawnSmokeR.setCount(0);
+								spawnBulletBill = true;
+								//if(enemyHitRightBarrier)
+									//this.bulletBillSpawnSmokeR.runAnimation();
+									//c.addEntity(new BulletBill(eb.getLast().getX()+64,eb.getLast().getY() + 55 -8,tex, this));
+								//else
+									//c.addEntity(new BulletBill(eb.getLast().getX()-4,eb.getLast().getY() + 55 -8,tex, this));
+							}
+							bowserBulletBillSpawningTimer = System.currentTimeMillis() + 2000;
+						}
+						if((bulletBillSpawnSmokeL.getCount() == 2 || bulletBillSpawnSmokeR.getCount() == 2) && !spawn1BulletBillAtATime) {
+							if(bulletBillSpawnSmokeR.getCount() == 2)
+								c.addEntity(new BulletBill(eb.getLast().getX()+64,eb.getLast().getY() + 55 -8,tex, this));
+							else { 
+								if(eb.getLast().getX()-4 < p.getX())
+									c.addEntity(new BulletBill(eb.getLast().getX()-14,eb.getLast().getY() + 55 -8,tex, this));
+								else
+									c.addEntity(new BulletBill(eb.getLast().getX()-4,eb.getLast().getY() + 55 -8,tex, this));
+							}
+							spawn1BulletBillAtATime = true;
+						}
+						else if(bulletBillSpawnSmokeL.getCount() == 10 || bulletBillSpawnSmokeR.getCount() == 10) {
+							bulletBillSpawnSmokeL.nextFrame();
+							bulletBillSpawnSmokeL.setCount(0);
+							bulletBillSpawnSmokeR.nextFrame();
+							bulletBillSpawnSmokeR.setCount(0);
+							spawnBulletBill = false;
+							spawn1BulletBillAtATime = false;
+						}
+						//SPAWN GREEN SHELLS
+						if(numberOfFireBallsShot % 6==0){
+							numberOfFireBallsShot += 1;
+							numberOfFireBallsShotDecoy += 1;
+							c.addEntity(new GreenShell(eb.getLast().getX()+32,eb.getLast().getY() - 32,tex, this));
+						}
+					}
+				}
+				//SPAWN STARS & ITEMS
+				if(hud.getItemObtained() == false && ed.size() < 1) {
+					Random rand = new Random();
+					int j = rand.nextInt(1000);//400000
+//					int j = 0;
+					if(j < 2) { //&& ed.size() < 1) { //&& p.getMarioInvincible() == false && hud.getItemObtained() == false){
+						int pp = rand.nextInt(16);
+						if(pp == 0) {
+							if(p.getMarioInvincible() == false) { //&& hud.getItemObtained() == false) {
+								int p = rand.nextInt(2);
+								if(p == 0)
+									c.addEntity(new Mario1Star(-16,this.playerY() - 32,tex, this));//new Mario1Star
+								else
+									c.addEntity(new Mario1Star((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));//new Mario1Star
+							}
+						}
+						else {//if(hud.getItemObtained() == false){
+							int p = rand.nextInt(2);
+							if(p == 0)
+								c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));
+							else
+								c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
+						}
+					}
+				}
 			}
 		}
 		else if(State == State.MENU) {
@@ -1057,6 +1558,123 @@ public class Game extends Canvas implements Runnable {
 			starAnim.runAnimation();
 		if(State == STATE.TRANSITION_ENTRANCE)
 			c.tick();
+		if(State == STATE.HELP) {
+			if(imageTranslucent >= 0.99 && imageTranslucentTimer < System.currentTimeMillis()){
+				if(imageIsGone) {
+					imageIsGone = false;
+					imageTranslucentTimer2 = System.currentTimeMillis() + 5000;
+				}
+				if(imageTranslucentTimer2 < System.currentTimeMillis())
+					imageTranslucentVelocity += -0.01;
+			}
+			else if(imageTranslucent <= 0.01 && imageTranslucentTimer < System.currentTimeMillis()){
+				imageTranslucentVelocity += 0.01;
+			}
+			
+			if(imageTranslucent <= 0.01 && imageIsGone == false){
+				imageTranslucentTimer = System.currentTimeMillis() + 3500;
+				imageIsGone = true;
+				helpLinesLastSetup();
+			}
+			if(imageTranslucent + imageTranslucentVelocity <= 1 &&
+					imageTranslucent + imageTranslucentVelocity >= 0)
+				imageTranslucent += imageTranslucentVelocity;
+			
+		}
+		if(State == STATE.CREDITS) {
+			creditsController.tick();
+			//c.tick();
+		}
+		if(State == STATE.CONTROLS) {
+			if(ControlsController.buttonChangeTimer < System.currentTimeMillis() && gameControllerSwitchBackDI) {
+				if(gameControllerInUseDI)
+					gameControllerInUseDI = false;
+				else
+					gameControllerInUseDI = true;
+				gameControllerSwitchBackDI = false;
+			}
+			if(ControlsController.buttonChangeTimer < System.currentTimeMillis() && gameControllerSwitchBack) {
+				if(gameControllerInUse)
+					gameControllerInUse = false;
+				else
+					gameControllerInUse = true;
+				gameControllerSwitchBack = false;
+			}
+			if(ControlsController.buttonChangeTimer < System.currentTimeMillis() && keysAreInUseSwitchBack) {
+				if(keysAreInUse)
+					keysAreInUse = false;
+				else
+					keysAreInUse = true;
+				keysAreInUseSwitchBack = false;
+			}
+			//c.tick();
+		}
+		if(State == STATE.SHOP) {
+			shop.tick();
+		}
+		if(State == STATE.TRACKLIST) {
+			sinewaves.tick();
+			trackController.tick();
+		}else if(State != STATE.GAME && State != STATE.TRANSITION_ENTRANCE && menuMusicStopped) {
+			if(Game.gameTrackCurrentlyPlaying != -1) {
+				if(!Game.gameSoundLoops.get(Game.gameTrackCurrentlyPlaying).clipIsActive()) {
+					Game.gameSoundLoops.get(Game.gameTrackCurrentlyPlaying).stop();
+					Game.gameSoundLoops.get(Game.gameTrackCurrentlyPlaying).setFramePosition(0);
+					Game.gameTrackCurrentlyPlaying = -1;
+					Game.trackCurrentlyPlaying = false;
+					Game.menuMusicStopped = false;
+					Random rand = new Random();
+					menuSoundLoopRandomizer = rand.nextInt(5);
+					VolumeSlider.adjustVolume(menuSoundLoops, gameSoundLoops);
+					menuSoundLoopRandomizer = VolumeSlider.menuTrackSetup(menuSoundLoopRandomizer);
+					if(menuSoundLoopRandomizer == -2)
+						menuSoundLoopRandomizer = 5;
+					menuSoundLoops.get(menuSoundLoopRandomizer).setFramePosition(0);
+					if(menuSoundLoopRandomizer == 2) 
+//						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(864007, 1728014);//Seconds.millisec * 44100
+						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(432004, 864007);//Seconds.millisec * 22050
+					else if(menuSoundLoopRandomizer == 3) 
+//						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(464196, 1949705);//Seconds.millisec * 44100
+						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(232098, 974853);//Seconds.millisec * 22050
+					else if(menuSoundLoopRandomizer == 4)
+//						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(545561, 2291391);//Seconds.millisec * 44100
+						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(272781, 1145696);//Seconds.millisec * 22050
+					else
+						this.menuSoundLoops.get(menuSoundLoopRandomizer).loop();
+					this.menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+					menuSoundSet = true;
+				}
+			}
+			else if(Game.menuTrackCurrentlyPlaying != -1) {
+				if(!Game.menuSoundLoops.get(Game.menuTrackCurrentlyPlaying).clipIsActive()) {
+					Game.menuSoundLoops.get(Game.menuTrackCurrentlyPlaying).stop();
+					Game.menuSoundLoops.get(Game.menuTrackCurrentlyPlaying).setFramePosition(0);
+					Game.menuTrackCurrentlyPlaying = -1;
+					Game.trackCurrentlyPlaying = false;
+					Game.menuMusicStopped = false;
+					Random rand = new Random();
+					menuSoundLoopRandomizer = rand.nextInt(5);
+					VolumeSlider.adjustVolume(menuSoundLoops, gameSoundLoops);
+					menuSoundLoopRandomizer = VolumeSlider.menuTrackSetup(menuSoundLoopRandomizer);
+					if(menuSoundLoopRandomizer == -2)
+						menuSoundLoopRandomizer = 5;
+					menuSoundLoops.get(menuSoundLoopRandomizer).setFramePosition(0);
+					if(menuSoundLoopRandomizer == 2) 
+//						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(864007, 1728014);//Seconds.millisec * 44100
+						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(432004, 864007);//Seconds.millisec * 22050
+					else if(menuSoundLoopRandomizer == 3) 
+//						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(464196, 1949705);//Seconds.millisec * 44100
+						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(232098, 974853);//Seconds.millisec * 22050
+					else if(menuSoundLoopRandomizer == 4)
+//						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(545561, 2291391);//Seconds.millisec * 44100
+						menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(272781, 1145696);//Seconds.millisec * 22050
+					else
+						this.menuSoundLoops.get(menuSoundLoopRandomizer).loop();
+					this.menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+					menuSoundSet = true;
+				}
+			}
+		}
 		transparentBlocksAnim.runAnimation();
 		if((myTime / 10) == (int)(myTime/10) && shootingStarFrameStop == false)//(myTime > 10 && myTime < 22 || myTime > 30 && myTime < 42)
 			shootingStarAnim.runAnimation();
@@ -1068,14 +1686,83 @@ public class Game extends Canvas implements Runnable {
 			else if(bulletBillSpawnSmokeR.getCount() == 0)
 				bulletBillSpawnSmokeL.runAnimation();
 		}
+		if(serverErrorMessage && State != STATE.HELP && State != STATE.GAME) {
+			//System.out.println("STILL HERE");
+			if(serverErrorMessageTimer < System.currentTimeMillis()) {
+				if(imageTranslucent >= 0.99 && imageTranslucentTimer < System.currentTimeMillis()){
+					imageTranslucentVelocity += -0.01;
+				}
+				if(imageTranslucent <= 0.01){
+					imageTranslucentTimer = System.currentTimeMillis() + 500;
+					//serverErrorMessage = false;
+				}
+				if(imageTranslucent + imageTranslucentVelocity <= 1 &&
+						imageTranslucent + imageTranslucentVelocity >= 0)
+					imageTranslucent += imageTranslucentVelocity;
+			}
+			else {
+				imageTranslucent = 1;
+			}
+		}
 		if(device.poll()) 
 			deviceInput();
 		device.poll();
+		//CHANGE THIS
+		if(gameControllerInUseDI) {
+			ReadAllEvents.tick();
+		}
+		//CHANGE THIS
+//		if(ReadAllEvents.event != null)
+//			directInput();
+//		/* Create an event object for the underlying plugin to populate */
+//		Event event = new Event();
+//
+//		/* Get the available controllers */
+//		net.java.games.input.Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+//		for (int i = 0; i < controllers.length; i++) {
+//		    /* Remember to poll each one */
+//		    controllers[i].poll();
+//
+//		    /* Get the controllers event queue */
+//		    EventQueue queue = controllers[i].getEventQueue();
+//
+//		    /* For each object in the queue */
+//		    while (queue.getNextEvent(event)) {
+//		        /* Get event component */
+//		        Component comp = event.getComponent();
+//
+//		        /* Process event (your awesome code) */
+//		        System.out.println(controllers[i].getName() + comp.getIdentifier());
+//		    }
+//		}
 	}
-	
+	private void renderConnectingMessage() throws IOException{
+		BufferStrategy bs = this.getBufferStrategy();
+
+		if(bs == null){
+			createBufferStrategy(3);//or 2 
+			return;
+		}
+		
+		Graphics g = bs.getDrawGraphics();
+		g.drawImage(connectingTransparent, 0, 0, null);
+		if(System.currentTimeMillis()+2000 < dotdotdotTimer) {
+			g.drawImage(Game.resize(tex.dotdotdot[0], tex.dotdotdot[0].getWidth()*2, tex.dotdotdot[0].getHeight()*2),Game.WIDTH-(tex.dotdotdot[0].getWidth()),313,null);
+		}else if(System.currentTimeMillis()+1000 < dotdotdotTimer) {
+			g.drawImage(Game.resize(tex.dotdotdot[1], tex.dotdotdot[1].getWidth()*2, tex.dotdotdot[1].getHeight()*2),Game.WIDTH-(tex.dotdotdot[1].getWidth()),313,null);
+		}else if(System.currentTimeMillis() < dotdotdotTimer) {
+			g.drawImage(Game.resize(tex.dotdotdot[2], tex.dotdotdot[2].getWidth()*2, tex.dotdotdot[2].getHeight()*2),Game.WIDTH-(tex.dotdotdot[2].getWidth()),313,null);
+		}else {
+			dotdotdotTimer = System.currentTimeMillis() + 3000;
+		}
+//		g.dispose();
+//		if(connectingToServer)
+//			System.out.println(connectingToServer);
+	}
 	private void render() throws IOException{
 		BufferStrategy bs = this.getBufferStrategy();
 		
+		//System.out.println(connectingToServer);
 		if(bs == null){
 			createBufferStrategy(3);//or 2 
 			return;
@@ -1084,7 +1771,6 @@ public class Game extends Canvas implements Runnable {
 		Graphics g = bs.getDrawGraphics();
 		Graphics2D g2d = (Graphics2D) bs.getDrawGraphics(); 			//BLOCKS
 		//**************DRAW**************//
-		
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
 		if(!(State == STATE.TRANSITION_ITEM))
 			g.drawImage(background, 0, 0, null);
@@ -1092,7 +1778,6 @@ public class Game extends Canvas implements Runnable {
 			g.drawImage(marioItemAnimationBackgroundSheet, 0, 0, null);
 		//if((myTime / 10) == (int)(myTime/10) && myTime != 0)
 			//shootingStarFrameStop = false;
-		
 		//draw shooting stars
 		if ((myTime / 10) == (int)(myTime/10) && shootingStarFrameStop == false && myTime != 0){ //|| myTime > 30 && myTime < 42){
 			shootingStarAnim.drawAnimation(g, 200, 43, 0);
@@ -1101,14 +1786,42 @@ public class Game extends Canvas implements Runnable {
 		}
 		//draw animated star getting brighter and less bright
 		starAnim.drawAnimation(g, 80, 20, 0);
-		
+		if(serverErrorMessage) {
+			Graphics2D g2dd = (Graphics2D) bs.getDrawGraphics(); 			//BLOCKS
+
+			g2dd.setComposite(makeComposite(imageTranslucent));
+			if(!updateToConnect)
+				g2dd.drawImage(serverErrorMessageImage, 0, 0, null);
+			else
+				g2dd.drawImage(updateToConnectImage, 0, 0, null);
+
+			if(((double)imageTranslucent <= 0.015 && imageTranslucent != 0) || serverErrorMessageTimer+6000 < System.currentTimeMillis()){
+				imageStayOn = false;
+				imageIsGone = false;
+				imageTranslucent = 0;
+				imageTranslucentVelocity = 0;
+				imageTranslucentTimer = 0;
+				imageTranslucentTimer2 = 0;
+				serverErrorMessageTimer = 0;
+				g2dd.setComposite(makeComposite(1));
+				g2dd.dispose();
+				serverErrorMessage = false;
+				updateToConnect = false;
+			}
+		}
 		if (gameOverBoolean == true && State != STATE.TRANSITION_DEATH) {
 			State = STATE.TRANSITION_DEATH;
 			if(LeaderboardController.getFromSettings("Total Points: ").equals("")) {
-				if(hud.getScore() < 999999)
+				if(hud.getScore() < 999999) {
 					LeaderboardController.writeToSettings("Total Points: ", String.valueOf(hud.getScore()));
-				else
+					if(highScore < 999999)
+						LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
+				}
+				else {
 					LeaderboardController.writeToSettings("Total Points: ", "999999");
+					if(highScore < hud.getScore())
+						LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
+				}
 			}
 			else {
 				int i = Integer.valueOf(LeaderboardController.getFromSettings("Total Points: "));
@@ -1117,6 +1830,8 @@ public class Game extends Canvas implements Runnable {
 				else
 					i = 999999;
 				LeaderboardController.writeToSettings("Total Points: ", String.valueOf(i));
+				if(highScore < hud.getScore())
+					LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
 			}
 			if(!LeaderboardController.getFromSettings("Total Points: ").equals("")) {
 				totalPointsImage = HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: "));
@@ -1133,15 +1848,59 @@ public class Game extends Canvas implements Runnable {
 					this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
 					menuSoundSet = false;
 				}
-				
+				if(trackCurrentlyPlaying) {
+					menuSoundLoops.get(this.menuSoundLoopRandomizer).setFramePosition(0);
+					menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
+					menuSoundSet = false;
+					if(gameTrackCurrentlyPlaying != -1) {
+						gameSoundLoops.get(gameTrackCurrentlyPlaying).stop();
+						gameSoundLoops.get(gameTrackCurrentlyPlaying).setFramePosition(0);
+						gameTrackCurrentlyPlaying = -1;
+					}
+					else if(menuTrackCurrentlyPlaying != -1) {
+						menuSoundLoops.get(menuTrackCurrentlyPlaying).stop();
+						menuSoundLoops.get(menuTrackCurrentlyPlaying).setFramePosition(0);
+						menuTrackCurrentlyPlaying = -1;
+					}
+					menuMusicStopped = false;
+					trackCurrentlyPlaying = false;
+				}
 				if(soundSet == false){	
+					for(int i = 0; i <= marioVoices.size()-1; i++) {
+						marioVoices.get(i).stop();
+						marioVoices.get(i).setFramePosition(0);
+						marioVoices.get(i).setSoundLoopBoolean(false);
+					}for(int i = 0; i <= luigiVoices.size()-1; i++) {
+						luigiVoices.get(i).stop();
+						luigiVoices.get(i).setFramePosition(0);
+						luigiVoices.get(i).setSoundLoopBoolean(false);
+					}
+					int randomIPlus = 0;
+					if(Game.track4Unlocked)
+						randomIPlus++;
+					if(Game.track5Unlocked)
+						randomIPlus++;
+					if(Game.track6Unlocked)
+						randomIPlus++;
 					Random rand = new Random();
-					soundRandomizer = rand.nextInt(2);
-					this.gameSoundLoops.get(soundRandomizer).stop();
-					this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
-					this.gameSoundLoops.get(soundRandomizer).setFramePosition(0);
-					this.gameSoundLoops.get(soundRandomizer).play();
-					soundSet = true;
+					soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+					soundRandomizer = VolumeSlider.gameTrackSetup(soundRandomizer);
+					//setsetup[VolumeSlider.TrackSetup]
+					if(soundRandomizer != -4) {
+						this.gameSoundLoops.get(soundRandomizer).stop();
+						this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+						this.gameSoundLoops.get(soundRandomizer).setFramePosition(0);
+						this.gameSoundLoops.get(soundRandomizer).play();
+						soundSet = true;
+					}
+					else {
+						soundRandomizer = 8;
+						this.gameSoundLoops.get(soundRandomizer).stop();
+						this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+						this.gameSoundLoops.get(soundRandomizer).setFramePosition(0);
+						this.gameSoundLoops.get(soundRandomizer).play();
+						soundSet = true;
+					}
 				}
 				if(System.currentTimeMillis() > pauseSoundFXTimer && pauseSoundFXSoundLoop.getSoundLoopBoolean() == true){
 					paused = false;
@@ -1170,7 +1929,7 @@ public class Game extends Canvas implements Runnable {
 				
 				if(soundFXBoolean == true){
 					paused = true;
-					soundFXTimer = System.currentTimeMillis() + 500;
+					soundFXTimer = System.currentTimeMillis() + 784;
 					soundFXBoolean = false;
 					soundFXisPlaying = true;
 				}
@@ -1196,19 +1955,64 @@ public class Game extends Canvas implements Runnable {
 					soundTimerSet = false;
 				}
 				else if(paused == true && soundTimerSet == true){
+					if(System.currentTimeMillis() % 60 == 0) {
+//						chompedStarFX(p.getX(), p.getY(),p.getBounds().width,p.getBounds().height);
+//						Game.starExplode = true;
+//						Game.mx = (int)p.getX();
+//						Game.my =(int) p.getY();
+					}
+//					System.out.println(soundFXClip1SoundLoop.getLongFramePosition());
+//					System.out.println(powerUpFirework2);
+					if(gameTrack1Set == false && gameTrack2Set == false && gameTrack3Set == false &&
+							gameTrack4Set == false && gameTrack5Set == false && gameTrack6Set == false &&
+							gameTrack7Set == false && gameTrack8Set == true && bowserSpawnSetupBoolean == true)
+								Game.gameSoundLoops.get(soundRandomizer).stop();
+					if(System.currentTimeMillis() < bowserSpawnSetup && bowserSpawnSetupBoolean == true) {
+						bowserSpawnSetup = 0;
+						bowserSpawnSetupBoolean = false;
+					}
+					
+					if(soundFXClip1SoundLoop.getLongFramePosition() > (926) && powerUpFirework1 == false) {
+						Game.starExplode = true;
+						Game.mx = (int)(p.getX()+(p.getBounds().width/2));
+						Game.my = (int)(p.getY()+(p.getBounds().height/3));
+						powerUpFirework1 = true;
+					}else if(soundFXClip1SoundLoop.getLongFramePosition() > (6791) && powerUpFirework3 == false) {
+						Game.starExplode = true;
+						Game.mx = (int)(p.getX()+(p.getBounds().width/2));
+						Game.my = (int)(p.getY()+(p.getBounds().height/3));
+						powerUpFirework3 = true;
+					}
+					else if(soundFXClip1SoundLoop.getLongFramePosition() > (12657) && powerUpFirework2 == false) {
+						Game.starExplode = true;
+						Game.mx = (int)(p.getX()+(p.getBounds().width/2));
+						Game.my = (int)(p.getY()+(p.getBounds().height/3));
+						powerUpFirework2 = true;
+					}/*else if(soundFXClip1SoundLoop.getLongFramePosition() > 24431 && powerUpFirework3 == false) {
+						System.out.println("WE HERE");
+						Game.starExplode = true;
+						Game.mx = (int)p.getX();
+						Game.my =(int) p.getY();
+						powerUpFirework3 = true;
+					}*/
 					transparentBlocksAnim.drawAnimation(g,p.getX(), p.getY(), 0);
 					//add visual effect
 					if(!soundFXClip1Reset){
 						Game.soundFXClip1SoundLoop.setSoundLoopBoolean(true);
 						Game.soundFXClip1SoundLoop.play();
 						soundFXClip1Reset = true;
+						powerUpFirework1 = false;
+						powerUpFirework2 = false;
+						powerUpFirework3 = false;
 					}
-					Game.soundFXClip1SoundLoop.loop();
+					//Game.soundFXClip1SoundLoop.loop();
 				}
 			}
 			if(p.getMarioInvincible() == true){											//Setting up Star Sound
 				
-				if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive())
+				if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive() && !(gameTrack1Set == false && gameTrack2Set == false && gameTrack3Set == false &&
+						gameTrack4Set == false && gameTrack5Set == false && gameTrack6Set == false &&
+						gameTrack7Set == false && gameTrack8Set == true))
 					this.gameSoundLoops.get(this.soundRandomizer).stop();
 				
 				if(soundFXBoolean == false){
@@ -1221,7 +2025,15 @@ public class Game extends Canvas implements Runnable {
 				if(System.currentTimeMillis() > pauseSoundFXTimer && pauseSoundFXSoundLoop.getSoundLoopBoolean() == true){
 					paused = false;
 					pauseSoundFXSoundLoop.setSoundLoopBoolean(false);
-					Game.marioStarSoundLoop.continuePlaying();
+
+					if(gameTrack1Set == true || gameTrack2Set == true || gameTrack3Set == true ||
+						gameTrack4Set == true || gameTrack5Set == true || gameTrack6Set == true ||
+						gameTrack7Set == true)//soundRandomizer != 8)
+						Game.marioStarSoundLoop.continuePlaying();
+					else if(gameTrack1Set == false && gameTrack2Set == false && gameTrack3Set == false &&
+							gameTrack4Set == false && gameTrack5Set == false && gameTrack6Set == false &&
+							gameTrack7Set == false && gameTrack8Set == true && bowserSpawnSetupBoolean == true)
+								this.gameSoundLoops.get(soundRandomizer).continuePlaying();
 					Game.marioStarSoundLoop.setSoundLoopBoolean(true);
 				}
 				
@@ -1231,22 +2043,64 @@ public class Game extends Canvas implements Runnable {
 				}
 				if(!paused && soundTimerSet == false){
 					this.soundFXClip2SoundLoop.stop();
+					if(gameTrack1Set == false && gameTrack2Set == false && gameTrack3Set == false &&
+							gameTrack4Set == false && gameTrack5Set == false && gameTrack6Set == false &&
+							gameTrack7Set == false && gameTrack8Set == true && bowserSpawnSetupBoolean == true)
+								Game.gameSoundLoops.get(soundRandomizer).stop();
 					soundFXClip1Reset = false;
 					this.marioStarSoundLoop.setFramePosition(0);
-					this.marioStarSoundLoop.play();
+					if(gameTrack1Set == true || gameTrack2Set == true || gameTrack3Set == true ||
+						gameTrack4Set == true || gameTrack5Set == true || gameTrack6Set == true ||
+						gameTrack7Set == true)//soundRandomizer != 8)
+						this.marioStarSoundLoop.play();
+					else if(gameTrack1Set == false && gameTrack2Set == false && gameTrack3Set == false &&
+							gameTrack4Set == false && gameTrack5Set == false && gameTrack6Set == false &&
+							gameTrack7Set == false && gameTrack8Set == true && bowserSpawnSetupBoolean == true)
+								this.gameSoundLoops.get(soundRandomizer).continuePlaying();
 					this.marioStarSoundLoop.setSoundLoopBoolean(true);
 					soundTimerSet = true;
 					marioHasBeenInvincible = true;
 				}
 
 				else if(paused == true && soundTimerSet == false){
+					if(gameTrack1Set == false && gameTrack2Set == false && gameTrack3Set == false &&
+							gameTrack4Set == false && gameTrack5Set == false && gameTrack6Set == false &&
+							gameTrack7Set == false && gameTrack8Set == true && bowserSpawnSetupBoolean == true)
+								Game.gameSoundLoops.get(soundRandomizer).stop();
+					if(System.currentTimeMillis() % 60 == 0) {
+//						chompedStarFX(p.getX(), p.getY(),p.getBounds().width,p.getBounds().height);
+					}//Seconds.millisec * 44100
+					if(System.currentTimeMillis() < bowserSpawnSetup && bowserSpawnSetupBoolean == true) {
+						bowserSpawnSetup = 0;
+						bowserSpawnSetupBoolean = false;
+					}
+					if(soundFXClip2SoundLoop.getLongFramePosition() > (706/2) && powerUpFirework1 == false) {
+						Game.starExplode = true;
+						Game.mx = (int)(p.getX()+(p.getBounds().width/2));
+						Game.my = (int)(p.getY()+(p.getBounds().height/3));
+						powerUpFirework1 = true;
+					}
+					else if(soundFXClip2SoundLoop.getLongFramePosition() > (11025/2) && powerUpFirework2 == false) {
+						Game.starExplode = true;
+						Game.mx = (int)(p.getX()+(p.getBounds().width/2));
+						Game.my = (int)(p.getY()+(p.getBounds().height/3));
+						powerUpFirework2 = true;
+					}else if(soundFXClip2SoundLoop.getLongFramePosition() > (25710/2) && powerUpFirework3 == false) {
+						Game.starExplode = true;
+						Game.mx = (int)(p.getX()+(p.getBounds().width/2));
+						Game.my = (int)(p.getY()+(p.getBounds().height/3));
+						powerUpFirework3 = true;
+					}
 					transparentBlocksAnim.drawAnimation(g, p.getX(), p.getY(), 0);
 					//add visual effect
 					if(!soundFXClip1Reset){
 						this.soundFXClip2SoundLoop.play();
 						soundFXClip1Reset = true;
+						powerUpFirework1 = false;
+						powerUpFirework2 = false;
+						powerUpFirework3 = false;
 					}
-					this.soundFXClip2SoundLoop.loop();
+//					this.soundFXClip2SoundLoop.loop();
 				}/*
 				if(System.currentTimeMillis() < this.getEnemyHitPauseTimer() && this.marioStarSoundLoop.clipIsActive())
 					this.marioStarSoundLoop.stop();
@@ -1263,12 +2117,32 @@ public class Game extends Canvas implements Runnable {
 				}
 				soundSet = false;
 				if(soundSet == false){	
+					int soundRandomizerNoRepeat = soundRandomizer;
+					int randomIPlus = 0;
+					if(Game.track4Unlocked)
+						randomIPlus++;
+					if(Game.track5Unlocked)
+						randomIPlus++;
+					if(Game.track6Unlocked)
+						randomIPlus++;
 					Random rand = new Random();
-					soundRandomizer = rand.nextInt(2);
-					this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
-					this.gameSoundLoops.get(soundRandomizer).setFramePosition(0);
-					this.gameSoundLoops.get(soundRandomizer).play();
-					soundSet = true;
+					soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+					System.out.println("before"+soundRandomizer);
+					if(soundRandomizer == soundRandomizerNoRepeat && soundRandomizer == 6)
+						soundRandomizer = 0;
+					else if(soundRandomizer == soundRandomizerNoRepeat && soundRandomizer != 7)
+						soundRandomizer++;
+					soundRandomizer = VolumeSlider.gameTrackSetup(soundRandomizer,soundRandomizerNoRepeat);
+					//setsetup[VolumeSlider.TrackSetup]
+//					System.out.println("after"+soundRandomizer);
+					if(soundRandomizer == -4)
+						soundRandomizer = 8;
+					if(soundRandomizer != -1) {
+						this.gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+						this.gameSoundLoops.get(soundRandomizer).setFramePosition(0);
+						this.gameSoundLoops.get(soundRandomizer).play();
+						soundSet = true;
+					}
 				}
 					
 			}
@@ -1327,6 +2201,14 @@ public class Game extends Canvas implements Runnable {
 					break;
 				case "ampItem":
 					c.addEntity(new AmpItem(p.getX(),p.getY()-50, tex, this));
+					//spawnCheepCheeps
+					break;
+				case "wigglerItem":
+					c.addEntity(new WigglerItem(p.getX(),p.getY()-50, tex, this));
+					//spawnCheepCheeps
+					break;
+				case "lakituItem":
+					c.addEntity(new LakituItem(p.getX(),p.getY()-50, tex, this));
 					//spawnCheepCheeps
 					break;
 				default:
@@ -1396,21 +2278,25 @@ public class Game extends Canvas implements Runnable {
 				}
 				spawnDone3 = true;
 			}
-			if(eb.isEmpty() && spawnDone4 == false){								//Spawning Bowser
+			if(eb.isEmpty() && spawnDone4 == false && !userHasPaused){								//Spawning Bowser
 				if(bowserSpawnSetupBoolean == false) {
 					bowserSpawnSetup = System.currentTimeMillis() + 2000;
 					bowserSpawnSetupBoolean = true;
 				}
-				if((gameSoundLoops.get(soundRandomizer).clipIsActive() && gameSoundLoops.get(soundRandomizer).getVolume() >= -70f) && System.currentTimeMillis() % 60 == 0){
+				if(gameTrack8Set && (gameSoundLoops.get(soundRandomizer).clipIsActive() && gameSoundLoops.get(soundRandomizer).getVolume() >= -70f) && System.currentTimeMillis() % 60 == 0){
 					gameSoundLoops.get(soundRandomizer).shiftVolume(gameSoundLoops.get(soundRandomizer).getVolume(), gameSoundLoops.get(soundRandomizer).getVolume()-1f, 200);
 				}
 				if(!(System.currentTimeMillis() < bowserSpawnSetup)) {
-					gameSoundLoops.get(soundRandomizer).stop();
-					gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(false);
-					Random rand = new Random();
-					soundRandomizer = rand.nextInt(1)+2;
-					gameSoundLoops.get(soundRandomizer).loop();
-					gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+					//soundRandomizer = rand.nextInt(1)+2;
+					if(gameTrack8Set) {
+						gameSoundLoops.get(soundRandomizer).stop();
+						gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(false);
+						//Random rand = new Random();
+						soundRandomizer = 7;
+//						gameSoundLoops.get(soundRandomizer).loopSegmentFromStart(3860558, 5248605);
+						gameSoundLoops.get(soundRandomizer).loopSegmentFromStart(1930279, 2624303);
+						gameSoundLoops.get(soundRandomizer).setSoundLoopBoolean(true);
+					}
 					this.enemyHitRightBarrier = false;
 					this.enemySpeedIncrease = 1.0;
 					c.addEntity(new Bowser(0,50, tex, c , this));
@@ -1523,119 +2409,162 @@ public class Game extends Canvas implements Runnable {
 					}
 				}
 			}
-			
+			//MOVED ALL CODE COMMENTED OUT BELOW UP TO TICK
 		//if (i == rand.nextInt())
-			if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false && traverseTime2 != System.currentTimeMillis()){	
-				boolean spawnShell = true;
-				Random rand = new Random();
-				int i = rand.nextInt(eb.size());
-				if(eb.get(i).getEntityBDead() == false && rand.nextInt(780) == 1) {
-					for(int j =0; j < eb.size(); j++) {
-						if((eb.get(i).getX() <= eb.get(j).getX() + eb.get(j).getWidth() && eb.get(i).getX() >= eb.get(j).getX() && eb.get(j).getEntityBDead() == false) ||
-						(eb.get(i).getX() + eb.get(i).getWidth() >= eb.get(j).getX() && eb.get(j).getX() >= eb.get(i).getX() && eb.get(j).getEntityBDead() == false) ||
-						(eb.get(i).getX() == eb.get(j).getX() && eb.get(j).getEntityBDead() == false)) {
-							if(eb.get(i).getY() >= eb.get(j).getY())
-								spawnShell = true;
-							else {
-								spawnShell = false;
-								break;
-							}
-						}
-					}
-					if (spawnShell) {
-						for(int k = eb.size() - 1; k >= 0; k--) {
-							if((eb.get(i).getX() <= eb.get(k).getX() + eb.get(k).getWidth() && eb.get(i).getX() > eb.get(k).getX() && eb.get(k).getEntityBDead() == false) ||
-							(eb.get(i).getX() + eb.get(i).getWidth() >= eb.get(k).getX() && eb.get(k).getX() >= eb.get(i).getX() && eb.get(k).getEntityBDead() == false) ||
-							(eb.get(i).getX() == eb.get(k).getX() && eb.get(k).getEntityBDead() == false)) {
-								if(eb.get(i).getY() >= eb.get(k).getY())
-									spawnShell = true;
-								else {
-									spawnShell = false;
-									break;
-								}
-							}
-						}
-					}
-					if (spawnShell)
-						c.addEntity(new GreenShell(eb.get(i).getX(),eb.get(i).getY() - 32,tex, this));
-				}
-				traverseTime2 = System.currentTimeMillis();
-			}
-			if(spawnDone4 == true){												//Spawning Bowser Mechanics
-				hud.render(g);
-				if((int)HUD.getTimer1() <= 0){
-					//SPAWN BULLET BILLS
-					if(bowserBulletBillSpawningTimer < System.currentTimeMillis() && c.getEntityB().get(0).getEntityBDead() == false) {
-						Random rand = new Random();
-						int i = rand.nextInt(2);//20000
-						if(i == 1 && ec.size() < 6 && !spawnBulletBill){
-							bulletBillSpawnSmokeL.nextFrame();
-							bulletBillSpawnSmokeL.setCount(0);
-							bulletBillSpawnSmokeR.nextFrame();
-							bulletBillSpawnSmokeR.setCount(0);
-							spawnBulletBill = true;
-							//if(enemyHitRightBarrier)
-								//this.bulletBillSpawnSmokeR.runAnimation();
-								//c.addEntity(new BulletBill(eb.getLast().getX()+64,eb.getLast().getY() + 55 -8,tex, this));
-							//else
-								//c.addEntity(new BulletBill(eb.getLast().getX()-4,eb.getLast().getY() + 55 -8,tex, this));
-						}
-						bowserBulletBillSpawningTimer = System.currentTimeMillis() + 2000;
-					}
-					if((bulletBillSpawnSmokeL.getCount() == 2 || bulletBillSpawnSmokeR.getCount() == 2) && !spawn1BulletBillAtATime) {
-						if(bulletBillSpawnSmokeR.getCount() == 2)
-							c.addEntity(new BulletBill(eb.getLast().getX()+64,eb.getLast().getY() + 55 -8,tex, this));
-						else { 
-							if(eb.getLast().getX()-4 < p.getX())
-								c.addEntity(new BulletBill(eb.getLast().getX()-14,eb.getLast().getY() + 55 -8,tex, this));
-							else
-								c.addEntity(new BulletBill(eb.getLast().getX()-4,eb.getLast().getY() + 55 -8,tex, this));
-						}
-						spawn1BulletBillAtATime = true;
-					}
-					else if(bulletBillSpawnSmokeL.getCount() == 10 || bulletBillSpawnSmokeR.getCount() == 10) {
-						bulletBillSpawnSmokeL.nextFrame();
-						bulletBillSpawnSmokeL.setCount(0);
-						bulletBillSpawnSmokeR.nextFrame();
-						bulletBillSpawnSmokeR.setCount(0);
-						spawnBulletBill = false;
-						spawn1BulletBillAtATime = false;
-					}
-					//SPAWN GREEN SHELLS
-					if(numberOfFireBallsShot % 6==0){
-						numberOfFireBallsShot += 1;
-						numberOfFireBallsShotDecoy += 1;
-						c.addEntity(new GreenShell(eb.getLast().getX()+32,eb.getLast().getY() - 32,tex, this));
-					}
-				}
-			}
-			//SPAWN STARS & ITEMS
-			Random rand = new Random();
-			int j = rand.nextInt(4);//400000
-			if(j < 2 && ed.size() < 1 && p.getMarioInvincible() == false && hud.getItemObtained() == false){
-				int k = rand.nextInt(2);
-				if(k == 0){
-					if(j == 0)
-						c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));
-					else if(j == 1)
-						c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));
-				}
-				else{
-					if(j == 0)
-						c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
-					else if(j == 1)
-						c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
-				}
-			}
+//			if(ec.isEmpty() && !eb.isEmpty() && spawnDone4 == false && traverseTime2 != System.currentTimeMillis()){	
+//				boolean spawnShell = true;
+//				Random rand = new Random();
+//				int i = rand.nextInt(eb.size());
+//				if(eb.get(i).getEntityBDead() == false && rand.nextInt(780) == 1) {
+//					for(int j =0; j < eb.size(); j++) {
+//						if((eb.get(i).getX() <= eb.get(j).getX() + eb.get(j).getWidth() && eb.get(i).getX() >= eb.get(j).getX() && eb.get(j).getEntityBDead() == false) ||
+//						(eb.get(i).getX() + eb.get(i).getWidth() >= eb.get(j).getX() && eb.get(j).getX() >= eb.get(i).getX() && eb.get(j).getEntityBDead() == false) ||
+//						(eb.get(i).getX() == eb.get(j).getX() && eb.get(j).getEntityBDead() == false)) {
+//							if(eb.get(i).getY() >= eb.get(j).getY())
+//								spawnShell = true;
+//							else {
+//								spawnShell = false;
+//								break;
+//							}
+//						}
+//					}
+//					if (spawnShell) {
+//						for(int k = eb.size() - 1; k >= 0; k--) {
+//							if((eb.get(i).getX() <= eb.get(k).getX() + eb.get(k).getWidth() && eb.get(i).getX() > eb.get(k).getX() && eb.get(k).getEntityBDead() == false) ||
+//							(eb.get(i).getX() + eb.get(i).getWidth() >= eb.get(k).getX() && eb.get(k).getX() >= eb.get(i).getX() && eb.get(k).getEntityBDead() == false) ||
+//							(eb.get(i).getX() == eb.get(k).getX() && eb.get(k).getEntityBDead() == false)) {
+//								if(eb.get(i).getY() >= eb.get(k).getY())
+//									spawnShell = true;
+//								else {
+//									spawnShell = false;
+//									break;
+//								}
+//							}
+//						}
+//					}
+//					if (spawnShell)
+//						c.addEntity(new GreenShell(eb.get(i).getX(),eb.get(i).getY() - 32,tex, this));
+//				}
+//				traverseTime2 = System.currentTimeMillis();
+//			}
+//			if(spawnDone4 == true){												//Spawning Bowser Mechanics
+//				//hud.render(g);
+//				if((int)HUD.getTimer1() <= 0){
+//					//SPAWN BULLET BILLS
+//					if(bowserBulletBillSpawningTimer < System.currentTimeMillis() && c.getEntityB().get(0).getEntityBDead() == false) {
+//						Random rand = new Random();
+//						int i = rand.nextInt(2);//20000
+//						if(i == 1 && ec.size() < 6 && !spawnBulletBill){
+//							bulletBillSpawnSmokeL.nextFrame();
+//							bulletBillSpawnSmokeL.setCount(0);
+//							bulletBillSpawnSmokeR.nextFrame();
+//							bulletBillSpawnSmokeR.setCount(0);
+//							spawnBulletBill = true;
+//							//if(enemyHitRightBarrier)
+//								//this.bulletBillSpawnSmokeR.runAnimation();
+//								//c.addEntity(new BulletBill(eb.getLast().getX()+64,eb.getLast().getY() + 55 -8,tex, this));
+//							//else
+//								//c.addEntity(new BulletBill(eb.getLast().getX()-4,eb.getLast().getY() + 55 -8,tex, this));
+//						}
+//						bowserBulletBillSpawningTimer = System.currentTimeMillis() + 2000;
+//					}
+//					if((bulletBillSpawnSmokeL.getCount() == 2 || bulletBillSpawnSmokeR.getCount() == 2) && !spawn1BulletBillAtATime) {
+//						if(bulletBillSpawnSmokeR.getCount() == 2)
+//							c.addEntity(new BulletBill(eb.getLast().getX()+64,eb.getLast().getY() + 55 -8,tex, this));
+//						else { 
+//							if(eb.getLast().getX()-4 < p.getX())
+//								c.addEntity(new BulletBill(eb.getLast().getX()-14,eb.getLast().getY() + 55 -8,tex, this));
+//							else
+//								c.addEntity(new BulletBill(eb.getLast().getX()-4,eb.getLast().getY() + 55 -8,tex, this));
+//						}
+//						spawn1BulletBillAtATime = true;
+//					}
+//					else if(bulletBillSpawnSmokeL.getCount() == 10 || bulletBillSpawnSmokeR.getCount() == 10) {
+//						bulletBillSpawnSmokeL.nextFrame();
+//						bulletBillSpawnSmokeL.setCount(0);
+//						bulletBillSpawnSmokeR.nextFrame();
+//						bulletBillSpawnSmokeR.setCount(0);
+//						spawnBulletBill = false;
+//						spawn1BulletBillAtATime = false;
+//					}
+//					//SPAWN GREEN SHELLS
+//					if(numberOfFireBallsShot % 6==0){
+//						numberOfFireBallsShot += 1;
+//						numberOfFireBallsShotDecoy += 1;
+//						c.addEntity(new GreenShell(eb.getLast().getX()+32,eb.getLast().getY() - 32,tex, this));
+//					}
+//				}
+//			}
+//			//SPAWN STARS & ITEMS
+//			if(hud.getItemObtained() == false && ed.size() < 1) {
+//				Random rand = new Random();
+//				int j = rand.nextInt(400000);//400000
+//				if(j < 2) { //&& ed.size() < 1) { //&& p.getMarioInvincible() == false && hud.getItemObtained() == false){
+//					int pp = rand.nextInt(16);
+//					if(pp == 0) {
+//						if(p.getMarioInvincible() == false) { //&& hud.getItemObtained() == false) {
+//							int p = rand.nextInt(2);
+//							if(p == 0)
+//								c.addEntity(new Mario1Star(-16,this.playerY() - 32,tex, this));//new Mario1Star
+//							else
+//								c.addEntity(new Mario1Star((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));//new Mario1Star
+//						}
+//					}
+//					else {//if(hud.getItemObtained() == false){
+//						int p = rand.nextInt(2);
+//						if(p == 0)
+//							c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));
+//						else
+//							c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
+//					}
+//					
+//	//				int k = rand.nextInt(2);
+//	//				if(k == 0){
+//	//					if(j == 0)
+//	//						c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));//new Mario1Star
+//	//					else if(j == 1)
+//	//						c.addEntity(new ItemBall(-16,this.playerY() - 32,tex, this));
+//	//				}
+//	//				else{
+//	//					if(j == 0)
+//	//						c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));//new Mario1Star
+//	//					else if(j == 1)
+//	//						c.addEntity(new ItemBall((Game.WIDTH * 2) + 16,this.playerY() - 32,tex, this));
+//	//				}
+//				}
+//			}
 			if (animationTimer1 != 0){													//if they shoot a fireball this stops them
 				p.setVelX(0);
 				p.setVelY(0);
+				runningTimerLong = 0;													//RESTART RUNNING
+				runningTimerActivatedResponse = false;									//RESTART RUNNING
 				if (animationTimer1 == 1){
-					if (xLBoolean == true)												//if they're still holding down the button
-						p.setVelX(-5);
-					if (xRBoolean == true)
-						p.setVelX(5);
+					if (xLBoolean == true) {												//if they're still holding down the button
+						p.setRunningStartUp(-1.2);										//RESTART RUNNING
+						p.setVelX(p.getRunningStartUp());								//RESTART RUNNING
+						runningTimerActivated = true;									//RESTART RUNNING
+						p.setRunningStartL(true);										//RESTART RUNNING
+//						p.setVelX(-5);													//KEEP RUNNING
+//		    			slowDownForAnalogTimer = System.currentTimeMillis() + 200;		//KEEP RUNNING
+					}
+					if (xRBoolean == true) {
+						p.setRunningStartUp(1.2);										//RESTART RUNNING
+						p.setVelX(p.getRunningStartUp());								//RESTART RUNNING
+						runningTimerActivated = true;									//RESTART RUNNING
+						p.setRunningStartR(true);										//RESTART RUNNING
+//						p.setVelX(5);													//KEEP RUNNING
+//		    			slowDownForAnalogTimer = System.currentTimeMillis() + 200;		//KEEP RUNNING
+					}
 				}
+			}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
 			}
 			if (Health > 0){
 				//draw x 1
@@ -1646,10 +2575,16 @@ public class Game extends Canvas implements Runnable {
 				//draw x 0
 				State = STATE.TRANSITION_DEATH;
 				if(LeaderboardController.getFromSettings("Total Points: ").equals("")) {
-					if(hud.getScore() < 999999)
+					if(hud.getScore() < 999999) {
 						LeaderboardController.writeToSettings("Total Points: ", String.valueOf(hud.getScore()));
-					else
+						if(highScore < 999999)
+							LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
+					}
+					else {
 						LeaderboardController.writeToSettings("Total Points: ", "999999");
+						if(highScore < hud.getScore())
+								LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
+					}
 				}
 				else {
 					int i = Integer.valueOf(LeaderboardController.getFromSettings("Total Points: "));
@@ -1658,6 +2593,8 @@ public class Game extends Canvas implements Runnable {
 					else
 						i = 999999;
 					LeaderboardController.writeToSettings("Total Points: ", String.valueOf(i));
+					if(highScore < hud.getScore())
+						LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
 				}
 				if(!LeaderboardController.getFromSettings("Total Points: ").equals("")) {
 					totalPointsImage = HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: "));
@@ -1668,17 +2605,56 @@ public class Game extends Canvas implements Runnable {
 		}else if(State == STATE.MENU){													//Menu
 			//menu.render(g);
 			if(!settingsSetup) {
+				//if([function checking if settings has any null values, returns true if so] == true){
+				//load backup settings to settings}
+				//else{
+				//store settings to backup}
+				if(leaderboard.checkForDataCorruption("settings.properties") == true && leaderboard.checkForDataCorruption("./src/settingsBackup.properties") == true) {
+//					System.out.println("DATA CORRUPTION IN SETTINGS & BACKUP");
+				}
+				else if(leaderboard.checkForDataCorruption("settings.properties") == true) {
+//					System.out.println("DATA CORRUPTION IN SETTINGS");
+					leaderboard.loadSettingsIntoSettings("./src/settingsBackup.properties","settings.properties");
+					leaderboard.loadSettingsIntoSettings("settings.properties","./src/settingsBackup.properties");
+				}
+				else {
+//					System.out.println("NO DATA CORRUPTION");
+					leaderboard.loadSettingsIntoSettings("settings.properties","./src/settingsBackup.properties");
+				}
 				leaderboard.settingsSetup();
 				settingsSetup = true;
 			}
 			if(menuSoundSet == false){
 				Random rand = new Random();
-				menuSoundLoopRandomizer = rand.nextInt(2);
+				if(firstTimeRunning) {
+					menuSoundLoopRandomizer = 2;//rand.nextInt(5);
+					firstTimeRunning = false;
+					LeaderboardController.writeToSettings("firstTimeRunning", "false");
+				}
+				else
+					menuSoundLoopRandomizer = rand.nextInt(5);
 				VolumeSlider.adjustVolume(menuSoundLoops, gameSoundLoops);
-				this.menuSoundLoops.get(menuSoundLoopRandomizer).loop();
+				menuSoundLoopRandomizer = VolumeSlider.menuTrackSetup(menuSoundLoopRandomizer);
+				if(menuSoundLoopRandomizer == -2)
+					menuSoundLoopRandomizer = 5;
+				if(menuSoundLoopRandomizer == 2) 
+//					menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(864007, 1728014);//Seconds.millisec * 44100
+					menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(432004, 864007);//Seconds.millisec * 22050
+				else if(menuSoundLoopRandomizer == 3) 
+//					menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(464196, 1949705);//Seconds.millisec * 44100
+					menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(232098, 974853);//Seconds.millisec * 22050
+				else if(menuSoundLoopRandomizer == 4)
+//					menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(545561, 2291391);//Seconds.millisec * 44100
+					menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(272781, 1145696);//Seconds.millisec * 22050
+				else
+					this.menuSoundLoops.get(menuSoundLoopRandomizer).loop();
 				this.menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(true);
 				menuSoundSet = true;
 			}
+//			System.out.println("FrameRate: " + menuSoundLoops.get(menuSoundLoopRandomizer).getFrameRate());
+//			System.out.println(menuSoundLoops.get(menuSoundLoopRandomizer).getLongFramePosition());
+			if(cheatTimer < System.currentTimeMillis() && !cheatString.equals(""))
+				cheatString = "";
 			if(starExplode) {
 				starExplosion.StarExplosionSetup(Game.mx,Game.my);
 				starExplosionTimer = System.currentTimeMillis() + 2000;
@@ -1713,6 +2689,7 @@ public class Game extends Canvas implements Runnable {
 				g.drawImage(playTitle, Game.WIDTH / 2 + 120, 200, null);
 				*/
 			//MAKE THIS INTO FUNCTION
+//			j.main();
 			HUD.clickyButton(g, playTitle, playTitleGlow, playTitleClicked, Game.playHighlighted, Game.playClicked, Game.backOnPlay, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH / 2 + 120, 200);
 			HUD.clickyButton(g, shopTitle, shopTitleGlow, shopTitleClicked, Game.shopHighlighted, Game.shopClicked, Game.backOnShop, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH / 2 + 120, 300);
 			HUD.clickyButton(g, exitTitle, exitTitleGlow, exitTitleClicked, Game.exitHighlighted, Game.exitClicked, Game.backOnExit, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH / 2 + 120, 400);
@@ -1837,6 +2814,23 @@ public class Game extends Canvas implements Runnable {
 				this.menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
 				menuSoundSet = false;
 			}
+			if(trackCurrentlyPlaying) {
+				menuSoundLoops.get(this.menuSoundLoopRandomizer).setFramePosition(0);
+				menuSoundLoops.get(this.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
+				menuSoundSet = false;
+				if(gameTrackCurrentlyPlaying != -1) {
+					gameSoundLoops.get(gameTrackCurrentlyPlaying).stop();
+					gameSoundLoops.get(gameTrackCurrentlyPlaying).setFramePosition(0);
+					gameTrackCurrentlyPlaying = -1;
+				}
+				else if(menuTrackCurrentlyPlaying != -1) {
+					menuSoundLoops.get(menuTrackCurrentlyPlaying).stop();
+					menuSoundLoops.get(menuTrackCurrentlyPlaying).setFramePosition(0);
+					menuTrackCurrentlyPlaying = -1;
+				}
+				menuMusicStopped = false;
+				trackCurrentlyPlaying = false;
+			}
 			if(starExplode) {
 				starExplosion.StarExplosionSetup(Game.mx,Game.my);
 				starExplosionTimer = System.currentTimeMillis() + 2000;
@@ -1858,6 +2852,15 @@ public class Game extends Canvas implements Runnable {
 				Game.State = STATE.GAME;
 				skipSequence = false;
 				askToSkipSequence = false;
+				for(int i = 0; i <= marioVoices.size()-1; i++) {
+					marioVoices.get(i).stop();
+					marioVoices.get(i).setFramePosition(0);
+					marioVoices.get(i).setSoundLoopBoolean(false);
+				}for(int i = 0; i <= luigiVoices.size()-1; i++) {
+					luigiVoices.get(i).stop();
+					luigiVoices.get(i).setFramePosition(0);
+					luigiVoices.get(i).setSoundLoopBoolean(false);
+				}
 			}
 			if(askToSkipSequence) 
 				HUD.clickyButton(g, skipTitle, skipTitleGlow, skipTitleClicked, skipHighlighted, skipClicked, backOnSkip, mouseIsOffClickedObjectAndHeldDown, mouseIsClickedDown, Game.WIDTH -73, Game.HEIGHT-32);
@@ -1947,7 +2950,7 @@ public class Game extends Canvas implements Runnable {
 						this.marioDanceSoundLoops.get(p.getDanceProgressionCount()).play();
 				}
 				else if (p.getDanceProgressionCount() < 26){
-					if(p.getDanceProgressionCount() < 26 && this.marioDanceSoundLoops.get(p.getDanceProgressionCount()-1).endsSoon() == true)//progression without cuts in sound
+					if(p.getDanceProgressionCount() < 26 && this.marioDanceSoundLoops.get(p.getDanceProgressionCount()-1).endsSoon(2) == true)//progression without cuts in sound
 						this.marioDanceSoundLoops.get(p.getDanceProgressionCount()).play();
 				}
 				else if(p.marioEntranceDancingAnim.getCount() == 26 && marioDancePosePause == false){
@@ -1980,16 +2983,29 @@ public class Game extends Canvas implements Runnable {
 						Game.luigiVoices.get(marioVoiceRandomizer).play();
 					}
 					else {
-						Game.marioVoices.get(marioVoiceRandomizer).play();
+						if(currentlySelectedCharacterSkin == 4)
+							Game.marioVoices.get(4).play();
+						else if(currentlySelectedCharacterSkin == 5)
+							Game.marioVoices.get(6).play();
+						else
+							Game.marioVoices.get(marioVoiceRandomizer).play();
 					}
 					marioLetsGoPause = false;
 				}
 			}
 		}else if(State == STATE.TRANSITION_ITEM){
-			if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive()){
+			if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive()) { //|| marioTurningWithItem.getCount() == 0){
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				this.itemSwooshSoundLoop.play();
+			}
+			else if(this.marioStarSoundLoop.clipIsActive()) {
+				this.marioStarSoundLoop.stop();
+				this.marioStarSoundLoop.setSoundLoopBoolean(false);
+				this.itemSwooshSoundLoop.play();
+			}
+			if(!itemTransitionSetup) {
+				askToSkipSequence = false;
 				switch(currentlySelectedCharacterSkin){
 					case 0:
 						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning[0],tex.marioItemAnimationBeginning[0],
@@ -2020,6 +3036,7 @@ public class Game extends Canvas implements Runnable {
 							tex.marioItemAnimationBeginning5[1],tex.marioItemAnimationBeginning5[11],tex.marioItemAnimationBeginning5[12],
 							tex.marioItemAnimationBeginning5[13],tex.marioItemAnimationBeginning5[14],tex.marioItemAnimationBeginning5[15],
 							tex.marioItemAnimationBeginning5[16],tex.marioItemAnimationBeginning5[17]);
+						break;
 					case 5:
 						marioTurningWithItem = new Animation(6, tex.marioItemAnimationBeginning6[0],tex.marioItemAnimationBeginning6[0],
 							tex.marioItemAnimationBeginning6[1],tex.marioItemAnimationBeginning6[11],tex.marioItemAnimationBeginning6[12],
@@ -2073,20 +3090,39 @@ public class Game extends Canvas implements Runnable {
 							currentItemImg = tex.bigAmpItemBall;
 							break;
 						case "wigglerItem":
+							currentItem = new Animation(6,tex.bigWigglerItemBall,
+									tex.bigWigglerItemBall,tex.bigWigglerItemBall,tex.bigWigglerItemBall,
+									tex.bigWigglerItemBall,tex.bigWigglerItemBall,tex.bigWigglerItemBall,
+									tex.bigWigglerItemBall,tex.bigWigglerItemBall);
+							currentItem.nextFrame();
 							currentItemImg = tex.bigWigglerItemBall;
 							break;
 						case "lakituItem":
+							currentItem = new Animation(6,tex.bigLakituItemBall,
+									tex.bigLakituItemBall,tex.bigLakituItemBall,tex.bigLakituItemBall,
+									tex.bigLakituItemBall,tex.bigLakituItemBall,tex.bigLakituItemBall,
+									tex.bigLakituItemBall,tex.bigLakituItemBall);
+							currentItem.nextFrame();
 							currentItemImg = tex.bigLakituItemBall;
 							break;
 						default:
+							currentItem = new Animation(6,tex.bigChainChompItemBall[0],
+									tex.bigChainChompItemBall[1],tex.bigChainChompItemBall[2],tex.bigChainChompItemBall[3],
+									tex.bigChainChompItemBall[4],tex.bigChainChompItemBall[5],tex.bigChainChompItemBall[6],
+									tex.bigChainChompItemBall[7],tex.bigChainChompItemBall[8]);
+							currentItem.nextFrame();
+							currentItemImg = tex.bigChainChompItemBall[0];
+							hud.setItemName("chainChompItem");
 							break;
 					}
 					//traverseTime = System.currentTimeMillis();
+					itemTransitionSetup = true;
 			}
-			if(backgroundTraverse < itemBackground.size()-1 && System.currentTimeMillis() % 80 == 0 && traverseTime != System.currentTimeMillis()){
+				
+			if(backgroundTraverse < itemBackground.size()-1 && traverseTime < System.currentTimeMillis()){
 				//System.out.println(backgroundTraverse);
 				backgroundTraverse++;
-				traverseTime = System.currentTimeMillis();
+				traverseTime = System.currentTimeMillis()+80;
 			}
 			else if(itemWaitTimer == 0 && backgroundTraverse >= itemBackground.size()-1)
 				itemWaitTimer = System.currentTimeMillis() + 400;
@@ -2096,22 +3132,29 @@ public class Game extends Canvas implements Runnable {
 				spawnItem = true;
 				enemyHitPauseTimer = System.currentTimeMillis() + 800;
 				backgroundTraverse = 0;
+				itemAnimationTimer = 0;
+				itemAnimationTimer2 = 0;
+				itemAnimationTimer3 = 0;
 				itemWaitTimer = 0;
 				itemFlyingTimer1 = 0;
 				itemFlyingAwayX = 0;
 				itemFlyingAwayY = 0;
 				traverseTime = 0;
+				currentItem.setCount(0);
 				marioVoices.get(0).setSoundLoopBoolean(false);
 				luigiVoices.get(0).setSoundLoopBoolean(false);
+				marioVoices.get(5).setSoundLoopBoolean(false);
+				marioVoices.get(7).setSoundLoopBoolean(false);
 				marioTurningWithItem.setCount(0);
 				State = STATE.GAME;
+				itemTransitionSetup = false;
 				skipSequence = false;
 				askToSkipSequence = false;
 			}
 			if(askToSkipSequence) 
 				HUD.clickyButton(g, skipTitle, skipTitleGlow, skipTitleClicked, skipHighlighted, skipClicked, backOnSkip, mouseIsOffClickedObjectAndHeldDown, mouseIsClickedDown, Game.WIDTH -73, Game.HEIGHT-32);
 			mouseLocator.locateMouse();
-			if(Game.keysAreInUse) {
+			if(Game.keysAreInUse && askToSkipSequence) {
 				if(Game.skipHighlighted) 
 					Game.skipHighlighted = false;
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
@@ -2140,11 +3183,12 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			
-			if(itemWaitTimer != 0 && marioTurningWithItem.getCount() < 10 && System.currentTimeMillis() % 16 == 0 && traverseTime != System.currentTimeMillis()){
+			if(itemWaitTimer != 0 && marioTurningWithItem.getCount() < 10 && itemAnimationTimer < System.currentTimeMillis()){
 				marioTurningWithItem.runAnimation();
-				traverseTime = System.currentTimeMillis();
+				itemAnimationTimer = System.currentTimeMillis()+16;
 			}
-			if(itemWaitTimer != 0 && marioVoices.get(0).getSoundLoopBoolean() == false && currentlySelectedCharacterSkin != 3){
+			if(itemWaitTimer != 0 && marioVoices.get(0).getSoundLoopBoolean() == false && (currentlySelectedCharacterSkin != 3 &&
+					currentlySelectedCharacterSkin != 4 && currentlySelectedCharacterSkin != 5)){
 				marioVoices.get(0).play();
 				marioVoices.get(0).setSoundLoopBoolean(true);
 			}
@@ -2152,9 +3196,19 @@ public class Game extends Canvas implements Runnable {
 				luigiVoices.get(0).play();
 				luigiVoices.get(0).setSoundLoopBoolean(true);
 			}
+			else if(itemWaitTimer != 0 && marioVoices.get(5).getSoundLoopBoolean() == false && currentlySelectedCharacterSkin == 4) {
+				marioVoices.get(5).play();
+				marioVoices.get(5).setSoundLoopBoolean(true);
+			}
+			else if(itemWaitTimer != 0 && marioVoices.get(7).getSoundLoopBoolean() == false && currentlySelectedCharacterSkin == 5) {
+				marioVoices.get(7).play();
+				marioVoices.get(7).setSoundLoopBoolean(true);
+			}
 			if(itemWaitTimer != 0 && System.currentTimeMillis() < itemWaitTimer - 100 && traverseTime != System.currentTimeMillis()){
-				if(marioTurningWithItem.getCount()<4 && System.currentTimeMillis() % 4 == 0)
+				if(marioTurningWithItem.getCount()<4 && itemAnimationTimer2 < System.currentTimeMillis()) {
 					itemFlyingAwayY -= .016;
+					itemAnimationTimer2 = System.currentTimeMillis()+4;
+				}
 				itemFlyingTimer1 = System.currentTimeMillis() + 300;
 				traverseTime = System.currentTimeMillis();
 			}
@@ -2168,10 +3222,13 @@ public class Game extends Canvas implements Runnable {
 				}
 				traverseTime = System.currentTimeMillis();
 			}
-			else if(itemFlyingTimer1 != 0 && currentItemImg.getWidth() < 200){
+			else if(itemWaitTimer != 0 && itemWaitTimer < System.currentTimeMillis() && itemFlyingTimer1 != 0 && 
+					currentItemImg != null && currentItemImg.getWidth() < 200){
 				if(traverseTime != System.currentTimeMillis()){
-					if(currentItem.getCount() < 9 && System.currentTimeMillis() % 35 == 0)//MIGHT NEED TO ADD TRAVERSETIME HERE
+					if(currentItem.getCount() < 9 && itemAnimationTimer3 < System.currentTimeMillis()) {//MIGHT NEED TO ADD TRAVERSETIME HERE
 						currentItemImg = resize(currentItemImg,currentItemImg.getWidth()+20,currentItemImg.getHeight()+20);
+						itemAnimationTimer3 = System.currentTimeMillis() + 35;
+					}
 						//currentItem.runAnimation();
 					itemFlyingAwayX -= 0.8;
 					itemFlyingAwayY -= 1;
@@ -2181,18 +3238,25 @@ public class Game extends Canvas implements Runnable {
 				g.drawImage(currentItemImg ,(int)(Game.WIDTH+42 + itemFlyingAwayX), (int)((Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22)-19 + itemFlyingAwayY),null);
 				//currentItem.drawAnimation(g, Game.WIDTH+42 + itemFlyingAwayX, (Game.HEIGHT * Game.SCALE+120) - (backgroundTraverse * 22)-19 + itemFlyingAwayY,0);
 			}
-			else if(currentItemImg.getWidth() >= 200){
+			else if(currentItemImg != null && currentItemImg.getWidth() >= 200){
 				spawnItem = true;
 				enemyHitPauseTimer = System.currentTimeMillis() + 800;
 				backgroundTraverse = 0;
+				itemAnimationTimer = 0;
+				itemAnimationTimer2 = 0;
+				itemAnimationTimer3 = 0;
 				itemWaitTimer = 0;
 				itemFlyingTimer1 = 0;
 				itemFlyingAwayX = 0;
 				itemFlyingAwayY = 0;
 				traverseTime = 0;
+				currentItem.setCount(0);
 				marioVoices.get(0).setSoundLoopBoolean(false);
 				luigiVoices.get(0).setSoundLoopBoolean(false);
+				marioVoices.get(5).setSoundLoopBoolean(false);
+				marioVoices.get(7).setSoundLoopBoolean(false);
 				marioTurningWithItem.setCount(0);
+				itemTransitionSetup = false;
 				State = STATE.GAME;
 			}
 			
@@ -2208,6 +3272,8 @@ public class Game extends Canvas implements Runnable {
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				soundSet = false;
 			}
+			if(this.marioStarSoundLoop.clipIsActive()) 
+				marioStarSoundLoop.stop();
 			if (paused == false)
 				paused = true;
 			if(marioDeathSoundLoop.getSoundLoopBoolean() == false){
@@ -2216,7 +3282,10 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(marioDeathSoundLoop.soundPlaying() == false){
 				marioDeathSoundLoop.setSoundLoopBoolean(false);
-				State = STATE.GAMEOVER;
+				if(highScore <= hud.getScore())
+					State = State.SET_SCORE;
+				else
+					State = STATE.GAMEOVER;
 				if(Game.gameControllerInUse) {
 					joystickTimer = 0;
 					Game.keysAreInUse = true;
@@ -2228,31 +3297,278 @@ public class Game extends Canvas implements Runnable {
 			p.render(g);
 			c.render(g);
 		}else if(State == STATE.TRANSITION_WIN) {
-
 			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				soundSet = false;
-			}
-			if(this.gameOverIrisSoundLoop.getSoundLoopBoolean() == false) {
-				this.gameOverIrisSoundLoop.play();
-				this.gameOverIrisSoundLoop.setSoundLoopBoolean(true);
-			}
-			if(skipSequence) {
-				Game.State = STATE.GAMEOVER;
-				if(Game.gameControllerInUse) {
-					joystickTimer = 0;
-					Game.keysAreInUse = true;
-				}
-				Game.selectorButtonPosition = 0;
-				skipSequence = false;
 				askToSkipSequence = false;
 			}
-			if(askToSkipSequence) 
+			if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive()) {
+				gameSoundLoops.get(this.soundRandomizer).stop();
+				gameSoundLoops.get(this.soundRandomizer).setFramePosition(0);
+				gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+			}
+			if(this.marioStarSoundLoop.clipIsActive()) {
+				this.marioStarSoundLoop.stop();
+				this.marioStarSoundLoop.setFramePosition(0);
+				this.marioStarSoundLoop.setSoundLoopBoolean(false);
+			}
+			if(currentlySelectedCharacterSkin != 4 && currentlySelectedCharacterSkin != 5 && 
+					this.gameOverIrisSoundLoop.getSoundLoopBoolean() == false) {
+				this.gameOverIrisSoundLoop.play();
+				this.gameOverIrisSoundLoop.setSoundLoopBoolean(true);
+				askToSkipSequence = false;
+			}
+			else if(currentlySelectedCharacterSkin == 4 && marioVoices.get(4).getSoundLoopBoolean() == false) {
+				marioVoices.get(4).play();
+				marioVoices.get(4).setSoundLoopBoolean(true);
+				askToSkipSequence = false;
+			}
+			else if(currentlySelectedCharacterSkin == 5 && marioVoices.get(8).getSoundLoopBoolean() == false) {
+				marioVoices.get(8).play();
+				marioVoices.get(8).setSoundLoopBoolean(true);
+				askToSkipSequence = false;
+			}
+			if(starExplode) {
+				starExplosion.StarExplosionSetup(Game.mx,Game.my);
+				starExplosionTimer = System.currentTimeMillis() + 2000;
+				starExplode = false;
+				//starExplode = false;
+			}
+			if(System.currentTimeMillis() < starExplosionTimer) {
+				starExplosion.Explosion(g);
+			}
+			if(youWon == false)
+				youWon = true;
+			if(julian == 0) {
+				if(!bb.wall.isEmpty())
+					julian = System.currentTimeMillis() + 5000;
+				else
+					julian = 0;
+				julianii = bb.wall.size()-1;
+			}
+			if(System.currentTimeMillis() < julian && (!bb.wall.isEmpty() || hud.getScore() > 100000)) {
+				if(bb.wall.isEmpty() && hud.getScore() > 100000) {
+					if(bb.wall.isEmpty() && juliann == 0)
+						juliann = System.currentTimeMillis() + 500;
+					if(bb.wall.isEmpty() && !smbCoinPointsSoundLoop.clipIsActive() && !smbCoinPoints2SoundLoop.clipIsActive()
+							&& julian < System.currentTimeMillis() + 2500 && juliann < System.currentTimeMillis()) {
+						if(State != STATE.GAMEOVER)
+							pointUpdate();
+						if(highScore <= hud.getScore())
+							State = State.SET_SCORE;
+						else
+							State = STATE.GAMEOVER;
+					}else if(bb.wall.isEmpty() && !smbCoinPointsSoundLoop.clipIsActive() && !smbCoinPoints2SoundLoop.clipIsActive()
+							&& julian < System.currentTimeMillis() + 4500 && fireworksShot == 0) {
+						Random rand = new Random();
+						if(smbFireworkSoundLoop.clipIsActive())
+							smbFireworkSoundLoop.stop();
+						smbFireworkSoundLoop.play();
+						Game.starExplode = true;
+						Game.mx = rand.nextInt(Game.WIDTH * Game.SCALE);
+						Game.my = rand.nextInt((Game.HEIGHT * Game.SCALE)/2);
+						fireworksShot = 1;
+						//firework
+					}else if(bb.wall.isEmpty() && !smbCoinPointsSoundLoop.clipIsActive() && !smbCoinPoints2SoundLoop.clipIsActive()
+							&& julian < System.currentTimeMillis() + 3800 && fireworksShot == 1) {
+						Random rand = new Random();
+						if(smbFireworkSoundLoop.clipIsActive())
+							smbFireworkSoundLoop.stop();
+						smbFireworkSoundLoop.play();
+						Game.starExplode = true;
+						Game.mx = rand.nextInt(Game.WIDTH * Game.SCALE);
+						Game.my = rand.nextInt((Game.HEIGHT * Game.SCALE)/2);
+						fireworksShot = 2;
+						//firework
+					}else if(bb.wall.isEmpty() && !smbCoinPointsSoundLoop.clipIsActive() && !smbCoinPoints2SoundLoop.clipIsActive()
+							&& julian < System.currentTimeMillis() + 3100 && fireworksShot == 2) {
+						Random rand = new Random();
+						if(smbFireworkSoundLoop.clipIsActive())
+							smbFireworkSoundLoop.stop();
+						smbFireworkSoundLoop.play();
+						Game.starExplode = true;
+						Game.mx = rand.nextInt(Game.WIDTH * Game.SCALE);
+						Game.my = rand.nextInt((Game.HEIGHT * Game.SCALE)/2);
+						fireworksShot = 3;
+						//firework
+					}
+				}
+				else if(bb.wall.isEmpty()){
+					if(bb.wall.isEmpty() && !smbCoinPointsSoundLoop.clipIsActive() && !smbCoinPoints2SoundLoop.clipIsActive()
+							&& julian < System.currentTimeMillis() + 4000 ) {
+						if(bb.wall.isEmpty() && juliann == 0)
+							juliann = System.currentTimeMillis() + 500;
+						if(juliann < System.currentTimeMillis()) {
+							if(State != STATE.GAMEOVER)
+								pointUpdate();
+							if(highScore <= hud.getScore())
+								State = State.SET_SCORE;
+							else
+								State = STATE.GAMEOVER;
+						}
+					}
+				}
+//				for(int i = bb.wall.size()-1; i >= 0; i--) {
+//					bb.wall.remove(i);
+//				}
+				if(julian < System.currentTimeMillis() + 4999) {
+					if(!bb.wall.isEmpty()) {
+						bb.wall.remove(julianii);
+						julianii--;
+						hud.setScore(20);
+//						smbCoinPointsSoundLoop.play();
+//						if(gameOverIrisSoundLoop.clipIsActive() || marioVoices.get(4).clipIsActive() || 
+//								marioVoices.get(8).clipIsActive())
+							
+						if(smbCoinPoints2SoundLoop.clipIsActive())
+							smbCoinPointsSoundLoop.play();
+						else if(!smbCoinPointsSoundLoop.clipIsActive())
+							smbCoinPoints2SoundLoop.play();
+//							for(int j = pointsSoundLoop.size(); j > 0; j--){
+//								if(pointsSoundLoop.get(j-1) != null && !pointsSoundLoop.get(j-1).clipIsActive()){
+//									pointsSoundLoop.remove(j-1);
+//									//j--;
+//								}
+//							}	
+//							for(int k = 0; k < pointsSoundLoop.size() || k == 0; k++){
+//								if(pointsSoundLoop.isEmpty()) {
+//									VolumeSlider.adjustSFX(smbCoinPointsSoundLoop);
+//									pointsSoundLoop.add(smbCoinPointsSoundLoop);
+//								}
+//								else if (pointsSoundLoop.get(k) == pointsSoundLoop.getLast()){
+//									VolumeSlider.adjustSFX(smbCoinPointsSoundLoop);
+//									if(smbCoinPointsSoundLoop.getVolume() - (1.5f*k) >= smbCoinPointsSoundLoop.minimumVolume())
+//										smbCoinPointsSoundLoop.reduceSound(1.5f*k);
+//									pointsSoundLoop.add(smbCoinPointsSoundLoop);
+//									k++;
+//								}
+//							}
+//							if(pointsSoundLoop.getLast().clipIsActive())
+//								smbCoinPointsSoundLoop.play();
+//							else
+//								pointsSoundLoop.getLast().play();
+					}
+					if(julian < System.currentTimeMillis() + 5000 && !bb.wall.isEmpty())
+						julian = System.currentTimeMillis() + 5000;
+				}
+				bb.draw((Graphics2D) g);
+				p.render(g);
+				hud.render(g);
+			}
+			else {
+				if(skipSequence) {
+					gameOverIrisSoundLoop.setSoundLoopBoolean(false);
+					marioVoices.get(4).setSoundLoopBoolean(false);
+					marioVoices.get(8).setSoundLoopBoolean(false);
+					if(State != STATE.GAMEOVER)
+						pointUpdate();
+					if(highScore <= hud.getScore())
+						State = State.SET_SCORE;
+					else
+						State = STATE.GAMEOVER;
+					if(Game.gameControllerInUse) {
+						joystickTimer = 0;
+						Game.keysAreInUse = true;
+					}
+					Game.selectorButtonPosition = 0;
+					skipSequence = false;
+					askToSkipSequence = false;
+				}
+				if(askToSkipSequence) 
+					HUD.clickyButton(g, skipTitle, skipTitleGlow, skipTitleClicked, skipHighlighted, skipClicked, backOnSkip, mouseIsOffClickedObjectAndHeldDown, mouseIsClickedDown, Game.WIDTH -73, Game.HEIGHT-32);
+				mouseLocator.locateMouse();
+				p.render(g);
+				hud.render(g);
+				if(Game.keysAreInUse) {
+					if(Game.skipHighlighted) 
+						Game.skipHighlighted = false;
+					if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(skipTitleSelectedClicked,Game.WIDTH -96, Game.HEIGHT-55,null);
+							g.drawImage(skipTitleClicked,Game.WIDTH -73, Game.HEIGHT-32,null);
+							break;
+						}
+					}
+					else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(skipTitleSelectedNormal,Game.WIDTH -96, Game.HEIGHT-55,null);
+							g.drawImage(skipTitle,Game.WIDTH -73, Game.HEIGHT-32,null);
+							break;
+						}
+					}
+					else {
+						switch(Game.selectorButtonPosition) {
+							case 0:
+								g.drawImage(skipTitleSelected,Game.WIDTH -90, Game.HEIGHT-49,null);
+								g.drawImage(skipTitleGlow,Game.WIDTH -73, Game.HEIGHT-32,null);
+								break;
+						}
+					}
+				}
+				if(p.gameOver == true) {
+					if(Game.gameControllerInUse) {
+						joystickTimer = 0;
+						Game.keysAreInUse = true;
+					}
+					Game.selectorButtonPosition = 0;
+					if(bb.wall.isEmpty() && juliann == 0)
+						juliann = System.currentTimeMillis() + 500;
+					if(juliann < System.currentTimeMillis()) {
+						if(State != STATE.GAMEOVER)
+							pointUpdate();
+						if(highScore <= hud.getScore())
+							State = State.SET_SCORE;
+						else
+							State = STATE.GAMEOVER;
+						gameOverIrisSoundLoop.setSoundLoopBoolean(false);
+						marioVoices.get(4).setSoundLoopBoolean(false);
+						marioVoices.get(8).setSoundLoopBoolean(false);
+					}
+					//p.setGameOver(false);
+				}
+			}
+			hud.stringToScore(g, String.valueOf(hud.getScore()));
+			if(State == STATE.GAMEOVER && firstTimeBeating == false) {
+				firstTimeBeating = true;
+				if(!backToGameOver)
+					backToGameOver = true;
+				State = STATE.CREDITS;
+				Game.skipSequence = false;
+				Game.askToSkipSequence = false;
+				Game.keysAreInUse = false;
+				LeaderboardController.writeToSettings("firstTimeBeating", "true");
+			}
+			//hud.render(g);
+		}else if(State == STATE.CREDITS) {
+			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
+				gameOverIrisSoundLoop.setSoundLoopBoolean(false);
+				marioVoices.get(4).setSoundLoopBoolean(false);
+				marioVoices.get(8).setSoundLoopBoolean(false);
+				this.gameSoundLoops.get(this.soundRandomizer).stop();
+				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+				soundSet = false;
+			}
+			if(this.gameSoundLoops.get(this.soundRandomizer).clipIsActive()) {
+				gameSoundLoops.get(this.soundRandomizer).stop();
+				gameSoundLoops.get(this.soundRandomizer).setFramePosition(0);
+				gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
+			}
+			if(this.marioStarSoundLoop.clipIsActive()) {
+				this.marioStarSoundLoop.stop();
+				this.marioStarSoundLoop.setFramePosition(0);
+				this.marioStarSoundLoop.setSoundLoopBoolean(false);
+			}
+			creditsController.render(g);
+			if(askToSkipSequence) {
+				mouseLocator.locateMouse();
 				HUD.clickyButton(g, skipTitle, skipTitleGlow, skipTitleClicked, skipHighlighted, skipClicked, backOnSkip, mouseIsOffClickedObjectAndHeldDown, mouseIsClickedDown, Game.WIDTH -73, Game.HEIGHT-32);
-			mouseLocator.locateMouse();
-			p.render(g);
+			}
 			if(Game.keysAreInUse) {
+				if(gameControllerInUse && !askToSkipSequence)
+					askToSkipSequence = true;
 				if(Game.skipHighlighted) 
 					Game.skipHighlighted = false;
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
@@ -2280,42 +3596,40 @@ public class Game extends Canvas implements Runnable {
 					}
 				}
 			}
-			if(youWon == false)
-				youWon = true;
-			if(p.gameOver == true) {
-				if(Game.gameControllerInUse) {
-					joystickTimer = 0;
-					Game.keysAreInUse = true;
-				}
-				Game.selectorButtonPosition = 0;
-				State = STATE.GAMEOVER;
-				if(LeaderboardController.getFromSettings("Total Points: ").equals("")) {
-					if(hud.getScore() < 999999)
-						LeaderboardController.writeToSettings("Total Points: ", String.valueOf(hud.getScore()));
-					else
-						LeaderboardController.writeToSettings("Total Points: ", "999999");
+			if(skipSequence) {
+				sceneSkipCount = 0;
+				askToSkipSequence = false;
+				sceneAcknowledgement = false;
+				skipSequence = false;
+				creditsController.reset();
+				if(!backToGameOver) {
+					Game.selectorButtonPosition = 0;
+					Game.resetMenuSound();
+					State = STATE.MENU;
 				}
 				else {
-					int i = Integer.valueOf(LeaderboardController.getFromSettings("Total Points: "));
-					i += hud.getScore();
-					if(i < 999999){}
+					if(highScore <= hud.getScore())
+						State = State.SET_SCORE;
 					else
-						i = 999999;
-					LeaderboardController.writeToSettings("Total Points: ", String.valueOf(i));
+						State = STATE.GAMEOVER;
 				}
-				if(!LeaderboardController.getFromSettings("Total Points: ").equals("")) {
-					totalPointsImage = HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: "));
-					totalPointsImage = Game.resize(HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: ")), totalPointsImage.getWidth()/2, totalPointsImage.getHeight()/2);
-				}
-				//p.setGameOver(false);
 			}
+			//c.render(g);
 		}else if (State == STATE.GAMEOVER){												//GameOver
 			//wait a lil bit
 			//bs.show();
 			if(this.gameSoundLoops.get(this.soundRandomizer).getSoundLoopBoolean() == true){
+				gameOverIrisSoundLoop.setSoundLoopBoolean(false);
+				marioVoices.get(4).setSoundLoopBoolean(false);
+				marioVoices.get(8).setSoundLoopBoolean(false);
 				this.gameSoundLoops.get(this.soundRandomizer).stop();
 				this.gameSoundLoops.get(this.soundRandomizer).setSoundLoopBoolean(false);
 				soundSet = false;
+			}
+			if(this.marioStarSoundLoop.clipIsActive()) {
+				this.marioStarSoundLoop.stop();
+				this.marioStarSoundLoop.setFramePosition(0);
+				this.marioStarSoundLoop.setSoundLoopBoolean(false);
 			}
 			if(!backToGameOver)
 				backToGameOver = true;
@@ -2327,7 +3641,12 @@ public class Game extends Canvas implements Runnable {
 			}
 			else {
 				if(gameOverSoundBoolean == false) {
-					this.gameOverWinningSoundLoop.play();
+					if(currentlySelectedCharacterSkin == 4)
+						this.gameOverWinningMikeTysonSoundLoop.play();
+					else if(currentlySelectedCharacterSkin == 5)
+						this.gameOverWinningContraSoundLoop.play();
+					else
+						this.gameOverWinningSoundLoop.play();
 					gameOverSoundBoolean = true;
 				}
 			}
@@ -2349,10 +3668,28 @@ public class Game extends Canvas implements Runnable {
 			}
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
+//				hud.setScore(1000);
+//				totalPointsImage = HUD.stringToMario3FontImage(String.valueOf(hud.getScore()));
+//				totalPointsImage = Game.resize(HUD.stringToMario3FontImage(String.valueOf(hud.getScore())), totalPointsImage.getWidth()/2, totalPointsImage.getHeight()/2);
 			}
 			numberOfFireBallsShot = numberOfFireBallsShot - numberOfFireBallsShotDecoy;
 			mouseLocator.locateMouse();
 			g.drawImage(gameOverTitle, 170, 100, null);									//Buttons
+			//System.out.println(hud.getScore());
+			if(scoreImage == null) {
+				String s = "";
+				s = String.format("%d", hud.getScore());
+				scoreImage = HUD.stringToMario3FontImage(s);
+				scoreImage = Game.resize(scoreImage, scoreImage.getWidth()/2, scoreImage.getHeight()/2);
+			}
+			if(hud.getScore() != 0) {
+				g.drawImage(scoreTitle, (Game.WIDTH-scoreImage.getWidth()/2)-42,30,null);
+				g.drawImage(scoreImage, ((Game.WIDTH-scoreImage.getWidth()/2)+scoreTitle.getWidth())-42,30,null);//scoreImage
+			}
+			else {
+				g.drawImage(scoreTitle, Game.WIDTH-scoreTitle.getWidth()/2,30,null);
+				g.drawImage(zeroImage, Game.WIDTH+scoreTitle.getWidth()/2,30,null);
+			}
 			HUD.clickyButton(g, playTitle, playTitleGlow, playTitleClicked, Game.playHighlighted, Game.playClicked, Game.backOnPlay, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH / 2 + 120, 200);
 			HUD.clickyButton(g, homeTitle, homeTitleGlow, homeTitleClicked, Game.homeHighlighted, Game.homeClicked, Game.backOnHome, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH / 2 + 114, 300);
 			HUD.clickyButton(g, exitTitle, exitTitleGlow, exitTitleClicked, Game.exitHighlighted, Game.exitClicked, Game.backOnExit, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH / 2 + 120, 400);
@@ -2484,10 +3821,31 @@ public class Game extends Canvas implements Runnable {
 			if(System.currentTimeMillis() < starExplosionTimer) {
 				starExplosion.Explosion(g);
 			}
+//			if(Game.keysAreInUse && connectingToServer)
+//				Game.keysAreInUse = false;
 			mouseLocator.locateMouse();
 			g.drawImage(setScoreTitleBigger, Game.WIDTH / 2 + 35 , 20, null);
+			g.drawImage(sendToServerTitle,  Game.WIDTH - (sendToServerTitle.getWidth()/2) , 370, null);
+			if(scoreImage == null) {
+				String s = "";
+				s = String.format("%d", hud.getScore());
+				scoreImage = HUD.stringToMario3FontImage(s);
+				scoreImage = Game.resize(scoreImage, scoreImage.getWidth()/2, scoreImage.getHeight()/2);
+			}
+			if(hud.getScore() != 0) {
+				g.drawImage(scoreTitle, (Game.WIDTH-((scoreTitle.getWidth()+scoreImage.getWidth())/2)),130,null);
+				g.drawImage(scoreImage, ((Game.WIDTH-((scoreTitle.getWidth()+scoreImage.getWidth())/2))+scoreTitle.getWidth()),130,null);//scoreImage
+			}
+			else {
+				g.drawImage(scoreTitle, Game.WIDTH-scoreTitle.getWidth()/2,130,null);
+				g.drawImage(zeroImage, Game.WIDTH+scoreTitle.getWidth()/2,130,null);
+			}
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
 			HUD.clickyButton(g, submitTitle, submitTitleGlow, submitTitleClicked, Game.submitHighlighted, Game.submitClicked, Game.backOnSubmit, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH-51, 300);
+			if(!Game.sendToServer) 
+				HUD.clickyButton(g, noCheckMarkTitle, noCheckMarkTitleGlow, noCheckMarkTitleClicked, Game.checkMarkHighlighted, Game.checkMarkClicked, Game.backOnCheckMark, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - (checkMarkTitle.getWidth()/2), 410);
+			else 
+				HUD.clickyButton(g, checkMarkTitle, checkMarkTitleGlow, checkMarkTitleClicked, Game.checkMarkHighlighted, Game.checkMarkClicked, Game.backOnCheckMark, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - (checkMarkTitle.getWidth()/2), 410);
 			
 			/*
 			if(!this.backHighlighted)
@@ -2496,11 +3854,14 @@ public class Game extends Canvas implements Runnable {
 				g.drawImage(backButtonTitleGlow, 40, 20, null);
 			*/
 			if(Game.keysAreInUse) {
-				if(Game.backHighlighted || Game.backClicked || Game.submitHighlighted || Game.submitClicked) {
+				if(Game.backHighlighted || Game.backClicked || Game.submitHighlighted || Game.submitClicked || /*Game.checkMarkHighlighted ||*/ 
+						Game.checkMarkClicked) {
 					Game.backHighlighted = false;
 					Game.backClicked = false;
 					Game.submitHighlighted = false;
 					Game.submitClicked = false;
+					Game.checkMarkHighlighted = false;
+					Game.checkMarkClicked = false;
 				}
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
@@ -2511,6 +3872,12 @@ public class Game extends Canvas implements Runnable {
 					case 1:
 						g.drawImage(submitTitleSelectedClicked,Game.WIDTH-51-7, 300 -7,null);
 						g.drawImage(submitTitleClicked, Game.WIDTH-51, 300,null);
+						break;
+					case 2:
+						if(!Game.sendToServer) 
+							g.drawImage(noCheckMarkTitleClicked,Game.WIDTH - (checkMarkTitle.getWidth()/2), 410,null);
+						else 
+							g.drawImage(checkMarkTitleClicked,Game.WIDTH - (checkMarkTitle.getWidth()/2), 410,null);
 						break;
 					}
 				}
@@ -2524,6 +3891,13 @@ public class Game extends Canvas implements Runnable {
 						g.drawImage(submitTitleSelectedNormal,Game.WIDTH-51-7, 300 -7,null);
 						g.drawImage(submitTitle, Game.WIDTH-51, 300,null);
 						break;
+					case 2:
+						g.drawImage(dotSelectorPositionWhite,Game.WIDTH - (checkMarkTitle.getWidth()/2)+14,404,null);
+						if(!Game.sendToServer) 
+							g.drawImage(noCheckMarkTitle,Game.WIDTH - (checkMarkTitle.getWidth()/2), 410,null);
+						else 
+							g.drawImage(checkMarkTitle,Game.WIDTH - (checkMarkTitle.getWidth()/2), 410,null);
+						break;
 					}
 				}
 				else {
@@ -2535,6 +3909,12 @@ public class Game extends Canvas implements Runnable {
 					case 1:
 						g.drawImage(submitTitleSelected,Game.WIDTH-51-7, 300 -7,null);
 						g.drawImage(submitTitleGlow, Game.WIDTH-51, 300,null);
+						break;
+					case 2:
+						if(!Game.sendToServer) 
+							g.drawImage(noCheckMarkTitleGlow,Game.WIDTH - (checkMarkTitle.getWidth()/2), 410,null);
+						else 
+							g.drawImage(checkMarkTitleGlow,Game.WIDTH - (checkMarkTitle.getWidth()/2), 410,null);
 						break;
 					}
 				}
@@ -2589,41 +3969,89 @@ public class Game extends Canvas implements Runnable {
 						leaderboard.fileScoreNotWritten();
 						fileScoreWritten = true;
 					}
-					if(!playerName.isEmpty() && this.scoreEntered == false) {
-						leaderboard.getNames().clear();
-						leaderboard.getScores().clear();
+					if(!playerName.isEmpty() && !playerName.isEmpty() && !playerName.get(0).equals("")&& !playerName.get(0).equals(" ") && this.scoreEntered == false) {
+						if(!leaderboard.globalList) {
+							leaderboard.getNames().clear();
+							leaderboard.getScores().clear();
+						}
 						leaderboard.setNameDecoy("");
 						leaderboard.setScoreDecoy("");
 						leaderboard.setStringDecoy("");
 						leaderboard.writeScore();
 						scoreEntered = true;
+						if(sendToServer && 0 < HUD.score) {
+//							System.out.println("WANKER");
+							String s = "";
+//							if(!saveName.equals("")) {
+//								s="DELETE:DELETE:\nDELETE:DELETE:"+saveName+"\n";
+//								//saveName = "";
+//							}
+//							
+//							s=s+HUD.nameEntered+": "+Long.toString((hud.getScore()));
+							if(!saveName.equals("")) {
+								s=this.KIVersion+"\nDELETE:DELETE:"+saveName+"\n";
+								//saveName = "";
+							}
+							s=s+"UPLOAD:UPLOAD:\n";
+							s=s+HUD.nameEntered+": "+Long.toString((hud.getScore()));
+							//saveName = s;
+							clientToServer(s);
+						}
+						postLetter = '=';
 						if(leaderboard.getInitalized() == true)
 							leaderboard.setInitalized(false);
-						Game.selectorButtonPosition = 0;
-						State = STATE.GAMEOVER;
-						postLetter = '=';
-						if(gameControllerInUse)
-							Game.keysAreInUse = true;
-						if(Game.smb31PupSoundLoop.clipIsActive())
-							Game.smb31PupSoundLoop.stop();
-						Game.smb31PupSoundLoop.play();
+						if(!connectingToServer) {
+							Game.selectorButtonPosition = 0;
+							State = STATE.GAMEOVER;
+							if(gameControllerInUse)
+								Game.keysAreInUse = true;
+							if(!serverErrorMessage) {
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+						}
 						break;
 					}
-					else if(this.scoreEntered == true) {
+					else if(this.scoreEntered == true && !playerName.isEmpty() && !playerName.get(0).equals("")&& !playerName.get(0).equals(" ")) {
 						leaderboard.setNameDecoy("");
 						leaderboard.setScoreDecoy("");
 						leaderboard.setStringDecoy("");
 						Game.selectorButtonPosition = 0;
-						State = STATE.GAMEOVER;
 						leaderboard.writeScore();
 						postLetter = '=';
-						if(Game.smb31PupSoundLoop.clipIsActive())
-							Game.smb31PupSoundLoop.stop();
-						Game.smb31PupSoundLoop.play();
+						if(sendToServer && 0 < HUD.score) {
+							String s = "";
+							if(!saveName.equals("")) {
+								s=this.KIVersion+"\nDELETE:DELETE:"+saveName+"\n";
+								//saveName = "";
+							}
+							s=s+"UPLOAD:UPLOAD:\n";
+							s=s+HUD.nameEntered+": "+Long.toString((hud.getScore()));
+							clientToServer(s);
+						}
+						if(!saveName.equals("") && !saveName.equals(HUD.nameEntered+": "+Long.toString(HUD.score)))
+							LeaderboardController.writeToSettings("saveName", saveName);
+						if(!connectingToServer) {
+							State = STATE.GAMEOVER;
+							if(gameControllerInUse)
+								Game.keysAreInUse = true;
+							if(!serverErrorMessage) {
+								if(Game.smb31PupSoundLoop.clipIsActive())
+									Game.smb31PupSoundLoop.stop();
+								Game.smb31PupSoundLoop.play();
+							}
+						}
 						break;
 					}
 					else {
 						postLetter = '=';
+						Game.connectingToServer = false;
+						doneConnectingToServer = false;
+						Game.keysAreInUse = false;
+						Game.selectorButtonPosition = 0;
+						if(Game.State != STATE.SET_SCORE)
+							Game.State = STATE.SET_SCORE;
 						if(Game.smwErrorSoundLoop.clipIsActive())
 							Game.smwErrorSoundLoop.stop();
 						Game.smwErrorSoundLoop.play();
@@ -2658,9 +4086,24 @@ public class Game extends Canvas implements Runnable {
 				postLetter = '=';
 			}
 			g.drawImage(playerNameImage, postLetterXPositionBeginning, 200, null);
+			if(connectingToServer) {
+				if(!doneConnectingToServer)
+					doneConnectingToServer = true;
+				this.renderConnectingMessage();
+			}
+			if(!connectingToServer && doneConnectingToServer) {
+				Game.selectorButtonPosition = 0;
+				State = STATE.GAMEOVER;
+				if(gameControllerInUse)
+					Game.keysAreInUse = true;
+				if(!serverErrorMessage && serverErrorMessageTimer+2000 < System.currentTimeMillis() ) {
+					if(Game.smb31PupSoundLoop.clipIsActive())
+						Game.smb31PupSoundLoop.stop();
+					Game.smb31PupSoundLoop.play();
+				}
+				doneConnectingToServer = false;
+			}
 		}else if(State == STATE.LEADERBOARD) {
-			if(Game.selectorButtonPosition != -1)
-				Game.selectorButtonPosition = -1;
 			if(starExplode) {
 				starExplosion.StarExplosionSetup(Game.mx,Game.my);
 				starExplosionTimer = System.currentTimeMillis() + 2000;
@@ -2676,54 +4119,212 @@ public class Game extends Canvas implements Runnable {
 			mouseLocator.locateMouse();
 			g.drawImage(leaderboardTitleBigger, Game.WIDTH / 2, 20, null);
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
+			if(leaderboard.globalList) {
+				HUD.clickyButton(g, localTitle, localTitleGlow, localTitleClicked, Game.localHighlighted, Game.localClicked, Game.backOnLocal, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 50);
+				HUD.clickyButton(g, uploadTitle, uploadTitleGlow, uploadTitleClicked, Game.uploadHighlighted, Game.uploadClicked, Game.backOnUpload, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown,537, 50);
+			}
+			else {
+				HUD.clickyButton(g, resetLeaderboardTitle, resetLeaderboardTitleGlow, resetLeaderboardTitleClicked, Game.resetLeaderboardHighlighted, Game.resetLeaderboardClicked, Game.backOnResetLeaderboard, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 50);
+				HUD.clickyButton(g, globalTitle, globalTitleGlow, globalTitleClicked, Game.globalHighlighted, Game.globalClicked, Game.backOnGlobal, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown,537, 50);
+			}
 			/*
 			if(!this.backHighlighted)
 				g.drawImage(backButtonTitle, 40, 20, null);
 			else
 				g.drawImage(backButtonTitleGlow, 40, 20, null);
 				*/
+			
+			if(leaderboard.getInitalized() == false && leaderboard.globalList == false) {
+				leaderboard.resetLeaderboard();
+				leaderboard.resetLeaderboardImage();
+				leaderboard.initialize();
+			}
+			if(LeaderboardController.resetTrigger) {
+				leaderboard.resetLeaderboard();
+				leaderboard.resetLeaderboardImage();
+				leaderboard.initialize();
+				leaderboard.setupText();
+				LeaderboardController.resetTrigger = false;
+			}
+			if(LeaderboardController.deleteTrigger) {
+				LeaderboardController.deleteLeaderboardFile();
+				leaderboard.resetLeaderboard();
+				LeaderboardController.deleteTrigger = false;
+        		leaderboard.displayText();
+        		highScore = 0;
+			}
+			leaderboard.drawLeaderboard(g,this.getLeaderboardImage());
+			if(areYouSureBoolean) {
+				g.drawImage(areYouSure,0,0,null);
+				HUD.clickyButton(g, noTitle, noTitleGlow, noTitleClicked, Game.noHighlighted, Game.noClicked, Game.backOnNo, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - 64 - 18,375);
+				HUD.clickyButton(g, yesTitle, yesTitleGlow, yesTitleClicked, Game.yesHighlighted, Game.yesClicked, Game.backOnYes, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH + 18,375);
+			}
 			if(Game.keysAreInUse) {
-				if(Game.backHighlighted || Game.backClicked) {
+				if(Game.backHighlighted || Game.backClicked || 
+						Game.globalHighlighted || Game.globalClicked ||
+						Game.uploadHighlighted || Game.uploadClicked ||
+						Game.localHighlighted || Game.localClicked   ||
+						Game.resetLeaderboardHighlighted) {
 					Game.backHighlighted = false;
 					Game.backClicked = false;
+					Game.globalHighlighted = false;
+					Game.globalClicked = false;
+					Game.uploadHighlighted = false;
+					Game.uploadClicked = false;
+					Game.localHighlighted = false;
+					Game.localClicked = false;
+					Game.resetLeaderboardClicked = false;
 				}
-				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
-					switch(Game.selectorButtonPosition) {
-					case -1:
-						g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
-						g.drawImage(backButtonTitleClicked,40, 20,null);
-						break;
+				if(areYouSureBoolean) {
+					if(Game.selectorButtonPosition < 0 || 1 < Game.selectorButtonPosition)
+						Game.selectorButtonPosition = 0;
+					if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(noTitleSelectedClicked,Game.WIDTH - 64 - 36,375-18,null);
+							g.drawImage(noTitleClicked,Game.WIDTH - 64 - 18,375,null);
+							break;
+						case 1:
+							g.drawImage(yesTitleSelectedClicked,Game.WIDTH,375 - 18,null);
+							g.drawImage(yesTitleClicked,Game.WIDTH + 18,375,null);
+							break;
+						default:
+							break;
+						}
 					}
-				}
-				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
-					switch(Game.selectorButtonPosition) {
-					case -1:
-						g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
-						g.drawImage(backButtonTitle,40, 20,null);
-						break;
+					else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(noTitleSelectedNormal,Game.WIDTH - 64 - 36,375-18,null);
+							g.drawImage(noTitle,Game.WIDTH - 64 - 18,375,null);
+							break;
+						case 1:
+							g.drawImage(yesTitleSelectedNormal,Game.WIDTH,375 - 18,null);
+							g.drawImage(yesTitle,Game.WIDTH + 18,375,null);
+							break;
+						default:
+							break;
+						}
+					}
+					else {
+						switch(Game.selectorButtonPosition) {
+						case 0:
+							g.drawImage(noTitleSelected,Game.WIDTH - 64 - 36,375-18,null);
+							g.drawImage(noTitleGlow,Game.WIDTH - 64 - 18,375,null);
+							break;
+						case 1:
+							g.drawImage(yesTitleSelected,Game.WIDTH,375 - 18,null);
+							g.drawImage(yesTitleGlow,Game.WIDTH + 18,375,null);
+							break;
+						default:
+							break;
+						}
 					}
 				}
 				else {
-					switch(Game.selectorButtonPosition) {
-					case -1:
-						g.drawImage(backTitleSelected,40 -7, 20 -7,null);
-						g.drawImage(backButtonTitleGlow,40, 20,null);
-						break;
+					if(Game.selectorButtonPosition < -1 || 1 < Game.selectorButtonPosition)
+						Game.selectorButtonPosition = -1;
+					if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+						case -1:
+							g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
+							g.drawImage(backButtonTitleClicked,40, 20,null);
+							break;
+						case 0:
+							if(LeaderboardController.globalList) {
+								g.drawImage(localTitleSelectedClicked,40 -7, 50 -7,null);
+								g.drawImage(localTitleClicked,40, 50,null);
+							}
+							else {
+								g.drawImage(resetLeaderboardTitleSelectedClicked,40 -7, 50 -7,null);
+								g.drawImage(resetLeaderboardTitleClicked,40, 50,null);
+							}
+							break;
+						case 1:
+							if(LeaderboardController.globalList) {
+								g.drawImage(uploadTitleSelectedClicked,537 -7, 50 -7,null);
+								g.drawImage(uploadTitleClicked,537, 50,null);
+							}
+							else {
+								g.drawImage(globalTitleSelectedClicked,537 -7, 50 -7,null);
+								g.drawImage(globalTitleClicked,537, 50,null);
+							}
+							break;
+						}
+					}
+					else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+						case -1:
+							g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
+							g.drawImage(backButtonTitle,40, 20,null);
+							break;
+						case 0:
+							if(LeaderboardController.globalList) {
+								g.drawImage(localTitleSelectedNormal,40 -7, 50 -7,null);
+								g.drawImage(localTitle,40, 50,null);
+							}
+							else {
+								g.drawImage(resetLeaderboardTitleSelectedNormal,40 -7, 50 -7,null);
+								g.drawImage(resetLeaderboardTitle,40, 50,null);
+							}
+							break;
+						case 1:
+							if(LeaderboardController.globalList) {
+								g.drawImage(uploadTitleSelectedNormal,537 -7, 50 -7,null);
+								g.drawImage(uploadTitle,537, 50,null);
+							}
+							else {
+								g.drawImage(globalTitleSelectedNormal,537 -7, 50 -7,null);
+								g.drawImage(globalTitle,537, 50,null);
+							}
+							break;
+						}
+					}
+					else {
+						switch(Game.selectorButtonPosition) {
+						case -1:
+							g.drawImage(backTitleSelected,40 -7, 20 -7,null);
+							g.drawImage(backButtonTitleGlow,40, 20,null);
+							break;
+						case 0:
+							if(LeaderboardController.globalList) {
+								g.drawImage(localTitleSelected,40 -7, 50 -7,null);
+								g.drawImage(localTitleGlow,40, 50,null);
+							}
+							else {
+								g.drawImage(resetLeaderboardTitleSelected,40 -7, 50 -7,null);
+								g.drawImage(resetLeaderboardTitleGlow,40, 50,null);
+							}
+							break;
+						case 1:
+							if(LeaderboardController.globalList) {
+								g.drawImage(uploadTitleSelected,537 -7, 50 -7,null);
+								g.drawImage(uploadTitleGlow,537, 50,null);
+							}
+							else {
+								g.drawImage(globalTitleSelected,537 -7, 50 -7,null);
+								g.drawImage(globalTitleGlow,537, 50,null);
+							}
+							break;
+						}
 					}
 				}
 			}
-				
-			if(leaderboard.getInitalized() == false) {
-				leaderboard.initialize();
-			}
-			leaderboard.drawLeaderboard(g,this.getLeaderboardImage());
-
+			if(connectingToServer)
+				this.renderConnectingMessage();
+//			if(globalClicked)
 			
 		}else if(State == STATE.SHOP) {
 			if(skinNumber == null) {
-				skinNumber = resize(HUD.stringToMario3FontImage(Integer.toString(characterSkinPosition+1)), 10, 10);
+				if(currentlySelectedCharacterSkin == 5)
+					skinNumber = resize(HUD.stringToMario3FontImage(Integer.toString(characterSkinPosition)), 10, 10);
+				else
+					skinNumber = resize(HUD.stringToMario3FontImage(Integer.toString(characterSkinPosition+1)), 10, 10);
 				trackNumber = resize(HUD.stringToMario3FontImage(Integer.toString(trackPosition+1)), 10, 10);
-				fireballNumber = resize(HUD.stringToMario3FontImage(Integer.toString(fireballPosition+1)), 10, 10);
+				if(currentlySelectedFireball == 5)
+					fireballNumber = resize(HUD.stringToMario3FontImage(Integer.toString(fireballPosition)), 10, 10);
+				else
+					fireballNumber = resize(HUD.stringToMario3FontImage(Integer.toString(fireballPosition+1)), 10, 10);
 				itemNumber = resize(HUD.stringToMario3FontImage(Integer.toString(itemPosition+1)), 10, 10);
 				//LeaderboardController.writeToSettings("Total Score: ", "100");
 				//System.out.println(LeaderboardController.getFromSettings("Total Score: "));
@@ -2808,8 +4409,44 @@ public class Game extends Canvas implements Runnable {
 			if(currentlySelectedCharacterSkin == characterSkinPosition)
 				g.drawImage(currentlySelected10x10,Game.WIDTH -2, 120-19,null);
 			g.drawImage(skinNumber,Game.WIDTH + 2, 120-15,null);
-			if(currentlySelectedTrack == trackPosition)
-				g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+			switch(trackPosition) {
+			case 0:
+				if(this.gameTrack1Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			case 1:
+				if(this.gameTrack2Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			case 2:
+				if(this.gameTrack3Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			case 3:
+				if(this.gameTrack4Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			case 4:
+				if(this.gameTrack5Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			case 5:
+				if(this.gameTrack6Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			case 6:
+				if(this.gameTrack7Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			case 7:
+				if(this.gameTrack8Set == true)
+					g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
+				break;
+			default:
+				break;
+			}
+			//if(currentlySelectedTrack == trackPosition)
+				//g.drawImage(currentlySelected10x10,Game.WIDTH -2, 220-19,null);
 			g.drawImage(trackNumber,Game.WIDTH + 2, 220-15,null);
 			if(currentlySelectedFireball == fireballPosition)
 				g.drawImage(currentlySelected10x10,Game.WIDTH -2, 320-19,null);
@@ -2832,6 +4469,7 @@ public class Game extends Canvas implements Runnable {
 			HUD.clickyButton(g, arrowL, arrowLGlow, arrowLClicked, Game.arrowL4Highlighted, Game.arrowL4Clicked, Game.backOnArrowL4, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH - 48, 420);
 			HUD.clickyButton(g, arrowR, arrowRGlow, arrowRClicked, Game.arrowR4Highlighted, Game.arrowR4Clicked, Game.backOnArrowR4, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH + 48, 420);
 			//HUD.clickyButton(g, setTitle, setTitleGlow, setTitleClicked, Game.set4Highlighted, Game.set4Clicked, Game.backOnSet4, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  + 108, 428);
+			//shop.tick();
 			shop.drawShop(g);
 			
 			if(Game.keysAreInUse) {
@@ -3098,6 +4736,8 @@ public class Game extends Canvas implements Runnable {
 					}
 				}
 			}
+			if(allUnlockedScreen)
+				g.drawImage(congrats,0,0,null);
 		}else if(State == STATE.HELP) {
 			if(starExplode) {
 				starExplosion.StarExplosionSetup(Game.mx,Game.my);
@@ -3111,19 +4751,65 @@ public class Game extends Canvas implements Runnable {
 			if(ufoSpawned) {
 				c.render(g);
 			}
+			if(helpLines.isEmpty()) {
+				BufferedImage firstline = HUD.stringToMario3FontImage("Help Mario fight off Koopa's Invaders!");
+				firstline = Game.resize(firstline, (firstline.getWidth()/2), (firstline.getHeight()/2));
+				BufferedImage secondline = HUD.stringToMario3FontImage("Don't let the enemy land or strike you");
+				secondline = Game.resize(secondline, (secondline.getWidth()/2), (secondline.getHeight()/2));
+				BufferedImage thirdline = HUD.stringToMario3FontImage("Use " + KeyEvent.getKeyText(leftKey) + " and " + 
+				KeyEvent.getKeyText(rightKey)+ " to move");
+				thirdline = Game.resize(thirdline, thirdline.getWidth()/2, thirdline.getHeight()/2);
+				BufferedImage fourthline = HUD.stringToMario3FontImage("Use " + KeyEvent.getKeyText(shootKey) + " to shoot and " +
+				KeyEvent.getKeyText(itemKey) + " to use items");
+				fourthline = Game.resize(fourthline, (fourthline.getWidth()/2), (fourthline.getHeight()/2));
+				BufferedImage fifthline = HUD.stringToMario3FontImage("Points can be used in the shop");
+				fifthline = Game.resize(fifthline, (fifthline.getWidth()/2), (fifthline.getHeight()/2));
+				BufferedImage sixthline = HUD.stringToMario3FontImage("Stars make you invulnerable and faster");
+				sixthline = Game.resize(sixthline, (sixthline.getWidth()/2), (sixthline.getHeight()/2));
+				helpLines.add(firstline);
+				helpLines.add(secondline);
+				helpLines.add(thirdline);
+				helpLines.add(fourthline);
+				helpLines.add(fifthline);
+				helpLines.add(sixthline);
+				this.helpLinesLastSetup();
+			}
+			g.drawImage(helpTitleBigger, Game.WIDTH - (helpTitleBigger.getWidth()/2)/*+14*/, 20, null);
+			if(firstTimeBeating) 
+				HUD.clickyButton(g, creditsTitle, creditsTitleGlow, creditsTitleClicked, Game.creditsHighlighted, Game.creditsClicked, Game.backOnCredits, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown,477, 38);
+			
+			if(!helpLines.isEmpty()) {
+				for(int i = 0; i < helpLines.size(); i++) {
+					g.drawImage(helpLines.get(i),Game.WIDTH - (helpLines.get(i).getWidth()/2),((i+1)*50)+70,null);
+				}
+			}
+			Graphics2D g2dd = (Graphics2D)g.create();
+			g2dd.setComposite(makeComposite(imageTranslucent));
+			g2dd.drawImage(helpLinesLast,Game.WIDTH - (helpLinesLast.getWidth()/2)+4,420,null);
+//			g.drawImage(firstline,Game.WIDTH - (firstline.getWidth()/2),120,null);
 			mouseLocator.locateMouse();
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
 			if(Game.keysAreInUse) {
 				if(Game.backHighlighted ||
-				   Game.backClicked) {
+				   Game.backClicked		||
+				   Game.creditsHighlighted	||
+				   Game.creditsClicked) {
 					backHighlighted = false;
 					backClicked = false;
+					creditsHighlighted = false;
+					creditsClicked = false;
 				}
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 					case -1:
 						g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleClicked,40, 20,null);
+						break;
+					case 0:
+						if(firstTimeBeating) {
+							g.drawImage(creditsTitleSelectedClicked,477 -7, 38 -7,null);
+							g.drawImage(creditsTitleClicked,477, 38,null);
+						}
 						break;
 					}
 				}
@@ -3133,6 +4819,12 @@ public class Game extends Canvas implements Runnable {
 						g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitle,40, 20,null);
 						break;
+					case 0:
+						if(firstTimeBeating) {
+							g.drawImage(creditsTitleSelectedNormal,477 -7, 38 -7,null);
+							g.drawImage(creditsTitle,477, 38,null);
+						}
+						break;
 					}
 				}
 				else {
@@ -3140,6 +4832,12 @@ public class Game extends Canvas implements Runnable {
 					case -1:
 						g.drawImage(backTitleSelected,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleGlow,40, 20,null);
+						break;
+					case 0:
+						if(firstTimeBeating) {
+							g.drawImage(creditsTitleSelected,477 -7, 38 -7,null);
+							g.drawImage(creditsTitleGlow,477, 38,null);
+						}
 						break;
 					}
 				}
@@ -3366,6 +5064,7 @@ public class Game extends Canvas implements Runnable {
 							g.drawImage(arrowL,Game.WIDTH  - 69 - 40 - 16, 221,null);
 							break;
 						case 2:
+							g.drawImage(dotSelectorPositionWhite,Game.WIDTH - (checkMarkTitle.getWidth()/2)+14,310,null);
 							if(!Game.skipAnimations) 
 								g.drawImage(noCheckMarkTitle,Game.WIDTH - (checkMarkTitle.getWidth()/2), 320,null);
 							else 
@@ -3449,10 +5148,10 @@ public class Game extends Canvas implements Runnable {
 					}
 				}
 			}
-    		if(revertControllerSettings == true && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
-    			revertControllerSettings = false;
-    			leaderboard.settingsSetup();
-    		}
+//    		if(revertControllerSettings == true && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+//    			revertControllerSettings = false;
+//    			leaderboard.settingsSetup();
+//    		}
 			if(starExplode) {
 				starExplosion.StarExplosionSetup(Game.mx,Game.my);
 				starExplosionTimer = System.currentTimeMillis() + 2000;
@@ -3489,10 +5188,11 @@ public class Game extends Canvas implements Runnable {
 			//g.drawImage(aButtonImage,Game.WIDTH-84,160,null);
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
 			HUD.clickyButton(g, resetTitle, resetTitleGlow, resetTitleClicked, Game.resetHighlighted, Game.resetClicked, Game.backOnReset, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 564, 443);
+			HUD.clickyButton(g, rescanTitle, rescanTitleGlow, rescanTitleClicked, Game.rescanHighlighted, Game.rescanClicked, Game.backOnRescan, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 489, 65);
 			//g.drawImage(resetTitle,524+40,443,null);
 			//g.drawImage(resetTitleSelectedNormal,524+33,436,null);
 			if(Game.keysAreInUse) {
-				if(Game.backHighlighted || Game.resetHighlighted || ControlsController.gamepadButtonHolderHighlighted[0] ||
+				if(Game.backHighlighted || Game.resetHighlighted || Game.rescanHighlighted || ControlsController.gamepadButtonHolderHighlighted[0] ||
 						ControlsController.gamepadButtonHolderHighlighted[1] || ControlsController.gamepadButtonHolderHighlighted[2] ||
 						ControlsController.gamepadButtonHolderHighlighted[3] ||ControlsController.gamepadButtonHolderHighlighted[4] ||
 						ControlsController.gamepadButtonHolderHighlighted[5] ||ControlsController.gamepadButtonHolderHighlighted[6] ||
@@ -3505,7 +5205,7 @@ public class Game extends Canvas implements Runnable {
 						ControlsController.gamepadButtonHolderHighlighted[19] ||ControlsController.gamepadButtonHolderHighlighted[20] ||
 						ControlsController.gamepadButtonHolderHighlighted[21] ||ControlsController.gamepadButtonHolderHighlighted[22] ||
 						ControlsController.gamepadButtonHolderHighlighted[23] ||
-						Game.backClicked || Game.resetClicked || ControlsController.gamepadButtonHolderClicked[0] ||
+						Game.backClicked || Game.resetClicked || Game.rescanClicked || ControlsController.gamepadButtonHolderClicked[0] ||
 						ControlsController.gamepadButtonHolderClicked[1] || ControlsController.gamepadButtonHolderClicked[2] ||
 						ControlsController.gamepadButtonHolderClicked[3] ||ControlsController.gamepadButtonHolderClicked[4] ||
 						ControlsController.gamepadButtonHolderClicked[5] ||ControlsController.gamepadButtonHolderClicked[6] ||
@@ -3526,9 +5226,15 @@ public class Game extends Canvas implements Runnable {
 					backClicked = false;
 					resetHighlighted = false;
 					resetClicked = false;
+					rescanHighlighted = false;
+					rescanClicked = false;
 				}
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(rescanTitleSelectedClicked,489 -6, 65 -6,null);
+						g.drawImage(rescanTitleClicked, 489, 65,null);
+						break;
 					case -1:
 						g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleClicked,40, 20,null);
@@ -3662,6 +5368,10 @@ public class Game extends Canvas implements Runnable {
 				}
 				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(rescanTitleSelectedNormal,489 -6, 65 -6,null);
+						g.drawImage(rescanTitle, 489, 65,null);
+						break;
 					case -1:
 						g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitle,40, 20,null);
@@ -3795,6 +5505,10 @@ public class Game extends Canvas implements Runnable {
 				}
 				else {
 					switch(Game.selectorButtonPosition) {
+					case 0:
+						g.drawImage(rescanTitleSelected,489 -6, 65 -6,null);
+						g.drawImage(rescanTitleGlow, 489, 65,null);
+						break;
 					case -1:
 						g.drawImage(backTitleSelected,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleGlow,40, 20,null);
@@ -3930,6 +5644,10 @@ public class Game extends Canvas implements Runnable {
 			
 		}
 		else if(State == STATE.TRACKLIST) {
+			if(gameTrackNumber == null) {
+				gameTrackNumber = makeTransparent(resize(HUD.stringToMario3FontImage(Integer.toString(this.gameTrackPosition+1)), 20, 20));
+				menuTrackNumber = makeTransparent(resize(HUD.stringToMario3FontImage(Integer.toString(this.menuTrackPosition+1)), 20, 20));
+			}
 			if(starExplode) {
 				starExplosion.StarExplosionSetup(Game.mx,Game.my);
 				starExplosionTimer = System.currentTimeMillis() + 2000;
@@ -3942,18 +5660,180 @@ public class Game extends Canvas implements Runnable {
 			if(ufoSpawned) {
 				c.render(g);
 			}
+			if(this.gameTrackPosition == 7) {
+				if(this.gameTrack8Set == true)
+					g.drawImage(redBowserIcon,Game.WIDTH - 161, 116, null);
+				else
+					g.drawImage(redBowserIcon,Game.WIDTH - 161, 124, null);
+			}
+			trackController.drawTrack(g);
 			mouseLocator.locateMouse();
 			g.drawImage(tracklistTitle,Game.WIDTH-102,20,null);
+			g.drawImage(gameTitle,20,150,null);
+			g.drawImage(menuTitle,20,350,null);
+			g.drawImage(gameTrackNumber,Game.WIDTH  - 159,155,null);
+			g.drawImage(menuTrackNumber,Game.WIDTH  - 159,355,null);
 			HUD.clickyButton(g, backButtonTitle, backButtonTitleGlow, backButtonTitleClicked, Game.backHighlighted, Game.backClicked, Game.backOnBack, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 40, 20);
-			
+			if(Game.trackCurrentlyPlaying && Game.gameTrackCurrentlyPlaying == Game.gameTrackPosition && !trackController.gameTrackPaused)
+				HUD.clickyButton(g, trackPauseButtonTitle, trackPauseButtonTitleGlow, trackPauseButtonTitleClicked, Game.trackPlayButton1Highlighted, Game.trackPlayButton1Clicked, Game.backOnTrackPlayButton1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 250, 158);
+			else
+				HUD.clickyButton(g, trackPlayButtonTitle, trackPlayButtonTitleGlow, trackPlayButtonTitleClicked, Game.trackPlayButton1Highlighted, Game.trackPlayButton1Clicked, Game.backOnTrackPlayButton1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 250, 158);
+			HUD.clickyButton(g, trackStopButtonTitle, trackStopButtonTitleGlow, trackStopButtonTitleClicked, Game.trackPauseButton1Highlighted, Game.trackPauseButton1Clicked, Game.backOnTrackPauseButton1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 280, 158);
+			if(Game.trackCurrentlyPlaying && Game.menuTrackCurrentlyPlaying == Game.menuTrackPosition && !trackController.gameTrackPaused)
+				HUD.clickyButton(g, trackPauseButtonTitle, trackPauseButtonTitleGlow, trackPauseButtonTitleClicked, Game.trackPlayButton2Highlighted, Game.trackPlayButton2Clicked, Game.backOnTrackPlayButton2, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 250, 358);
+			else
+				HUD.clickyButton(g, trackPlayButtonTitle, trackPlayButtonTitleGlow, trackPlayButtonTitleClicked, Game.trackPlayButton2Highlighted, Game.trackPlayButton2Clicked, Game.backOnTrackPlayButton2, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 250, 358);
+			HUD.clickyButton(g, trackStopButtonTitle, trackStopButtonTitleGlow, trackStopButtonTitleClicked, Game.trackPauseButton2Highlighted, Game.trackPauseButton2Clicked, Game.backOnTrackPauseButton2, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, 280, 358);
+			HUD.clickyButton(g, arrowL, arrowLGlow, arrowLClicked, Game.arrowL1Highlighted, Game.arrowL1Clicked, Game.backOnArrowL1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  - 129 - 40 - 16, 150);
+			HUD.clickyButton(g, arrowR, arrowRGlow, arrowRClicked, Game.arrowR1Highlighted, Game.arrowR1Clicked, Game.backOnArrowR1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  - 129, 150);
+			HUD.clickyButton(g, arrowL, arrowLGlow, arrowLClicked, Game.arrowL2Highlighted, Game.arrowL2Clicked, Game.backOnArrowL2, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  - 129 - 40 - 16, 350);
+			HUD.clickyButton(g, arrowR, arrowRGlow, arrowRClicked, Game.arrowR2Highlighted, Game.arrowR2Clicked, Game.backOnArrowR2, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  - 129, 350);
+			HUD.clickyButton(g, setTitle, setTitleGlow, setTitleClicked, Game.set1Highlighted, Game.set1Clicked, Game.backOnSet1, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  + 18, 158);
+			HUD.clickyButton(g, setTitle, setTitleGlow, setTitleClicked, Game.set2Highlighted, Game.set2Clicked, Game.backOnSet2, Game.mouseIsOffClickedObjectAndHeldDown, Game.mouseIsClickedDown, Game.WIDTH  + 18, 358);
+			switch(Game.gameTrackPosition) {
+			case 0:
+				if(Game.gameTrack1Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				break;
+			case 1:
+				if(Game.gameTrack2Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				break;
+			case 2:
+				if(Game.gameTrack3Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				break;
+			case 3:
+				if(Game.gameTrack4Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				break;
+			case 4:
+				if(Game.gameTrack5Set && Game.track4Unlocked)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				else if(!Game.track4Unlocked)
+					g.drawImage(lockedImage,Game.WIDTH - 159 +2,155-20,null);
+				break;
+			case 5:
+				if(Game.gameTrack6Set && Game.track5Unlocked)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				else if(!Game.track5Unlocked)
+					g.drawImage(lockedImage,Game.WIDTH - 159 +2,155-20,null);
+				break;
+			case 6:
+				if(Game.gameTrack7Set && Game.track6Unlocked)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				else if(!Game.track6Unlocked)
+					g.drawImage(lockedImage,Game.WIDTH - 159 +2,155-20,null);
+				break;
+			case 7:
+				if(Game.gameTrack8Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,155 -8,null);
+				break;
+			default:
+				break;
+			}
+			switch(Game.menuTrackPosition) {
+			case 0:
+				if(Game.menuTrack1Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,355 -8,null);
+				break;
+			case 1:
+				if(Game.menuTrack2Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,355 -8,null);
+				break;
+			case 2:
+				if(Game.menuTrack3Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,355 -8,null);
+				break;
+			case 3:
+				if(Game.menuTrack4Set)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,355 -8,null);
+				break;
+			case 4:
+				if(Game.menuTrack5Set && Game.menuTrack4Unlocked)
+					g.drawImage(trackSetBox,Game.WIDTH  - 159-6,355 -8,null);
+				else if(!Game.menuTrack4Unlocked)
+					g.drawImage(lockedImage,Game.WIDTH - 159 +2,355-20,null);
+				break;
+			default:
+				break;
+			}
 			if(Game.keysAreInUse) {
-				if(Game.backHighlighted ||
-				   Game.backClicked) {
+				if(Game.selectorButtonPosition < -11 || -1 < Game.selectorButtonPosition)
+					Game.selectorButtonPosition = -1;
+				if(Game.backHighlighted || Game.arrowL1Highlighted || Game.arrowL2Highlighted || Game.arrowR1Highlighted ||
+				   Game.backClicked		|| Game.arrowL1Clicked     || Game.arrowL2Clicked     || Game.arrowR1Clicked	 ||
+				   Game.arrowR2Highlighted || Game.set1Highlighted || Game.set2Highlighted 	  || Game.trackPlayButton1Highlighted ||
+				   Game.arrowR2Clicked	   || Game.set1Clicked     || Game.set2Clicked        || Game.trackPlayButton1Clicked     ||
+				   Game.trackPlayButton2Highlighted ||
+				   Game.trackPlayButton2Clicked) {
 					backHighlighted = false;
 					backClicked = false;
+					arrowL1Highlighted = false;
+					arrowL1Clicked = false;
+					arrowL2Highlighted = false;
+					arrowL2Clicked = false;
+					arrowR1Highlighted = false;
+					arrowR1Clicked = false;
+					arrowR2Highlighted = false;
+					arrowR2Clicked = false;
+					set1Highlighted = false;
+					set1Clicked = false;
+					set2Highlighted = false;
+					set2Clicked = false;
+					trackPlayButton1Highlighted = false;
+					trackPlayButton1Clicked = false;
+					trackPlayButton2Highlighted = false;
+					trackPlayButton2Clicked = false;
 				}
 				if(Game.enterButtonPushedDown && !Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
+					case -11:
+						g.drawImage(setTitleSelectedClicked,Game.WIDTH  + 18 -7, 358 -7,null);
+						g.drawImage(setTitleClicked,Game.WIDTH  + 18, 358,null);
+						break;
+					case -10:
+						g.drawImage(setTitleSelectedClicked,Game.WIDTH  + 18 -7, 158 -7,null);
+						g.drawImage(setTitleClicked,Game.WIDTH  + 18, 158,null);
+						break;
+					case -9:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH - 129 -7, 350 -7,null);
+						g.drawImage(trackStopButtonTitleClicked,280, 358,null);
+						break;
+					case -8:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH - 129 -7, 350 -7,null);
+						g.drawImage(trackStopButtonTitleClicked,280, 158,null);
+						break;
+					case -7:
+//						g.drawImage(this.playbuttonplayButtonSelectedClicked,Game.WIDTH - 129 -7, 350 -7,null);
+						if(Game.trackCurrentlyPlaying && Game.menuTrackCurrentlyPlaying == Game.menuTrackPosition && !trackController.gameTrackPaused)
+							g.drawImage(trackPauseButtonTitleClicked,250, 358,null);
+						else
+							g.drawImage(trackPlayButtonTitleClicked,250, 358,null);
+						break;
+					case -6:
+//						g.drawImage(this.playbuttonplayButtonSelectedClicked,Game.WIDTH - 129 -7, 350 -7,null);
+						if(Game.trackCurrentlyPlaying && Game.gameTrackCurrentlyPlaying == Game.gameTrackPosition && !trackController.gameTrackPaused)
+							g.drawImage(trackPauseButtonTitleClicked,250, 158,null);
+						else
+							g.drawImage(trackPlayButtonTitleClicked,250, 158,null);
+						break;
+					case -5:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH - 129 -7, 350 -7,null);
+						g.drawImage(arrowRClicked,Game.WIDTH - 129, 350,null);
+						break;
+					case -4:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH - 129 -7, 150 -7,null);
+						g.drawImage(arrowRClicked,Game.WIDTH - 129, 150,null);
+						break;
+					case -3:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH  - 129 - 40 - 16 -7, 350 -7,null);
+						g.drawImage(arrowLClicked,Game.WIDTH  - 129 - 40 - 16, 350,null);
+						break;
+					case -2:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH  - 129 - 40 - 16 -7, 150 -7,null);
+						g.drawImage(arrowLClicked,Game.WIDTH  - 129 - 40 - 16, 150,null);
+						break;
 					case -1:
 						g.drawImage(backTitleSelectedClicked,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleClicked,40, 20,null);
@@ -3962,6 +5842,44 @@ public class Game extends Canvas implements Runnable {
 				}
 				else if(Game.enterButtonPushedDown && Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
+					case -11:
+						g.drawImage(setTitleSelectedNormal,Game.WIDTH  + 18 -7, 358 -7,null);
+						g.drawImage(setTitle,Game.WIDTH  + 18, 358,null);
+						break;
+					case -10:
+						g.drawImage(setTitleSelectedNormal,Game.WIDTH  + 18 -7, 158 -7,null);
+						g.drawImage(setTitle,Game.WIDTH  + 18, 158,null);
+						break;
+					case -9:
+						g.drawImage(dotSelectorPositionWhite,280+6,350,null);
+						break;
+					case -8:
+						g.drawImage(dotSelectorPositionWhite,280+6,150,null);
+						break;
+					case -7:
+						if(Game.trackCurrentlyPlaying && Game.menuTrackCurrentlyPlaying == Game.menuTrackPosition && !trackController.gameTrackPaused)
+							g.drawImage(dotSelectorPositionWhite,250+6,350,null);
+						else
+							g.drawImage(dotSelectorPositionWhite,250+2,350,null);
+						break;
+					case -6:
+						if(Game.trackCurrentlyPlaying && Game.gameTrackCurrentlyPlaying == Game.gameTrackPosition && !trackController.gameTrackPaused)
+							g.drawImage(dotSelectorPositionWhite,250+6,150,null);
+						else
+							g.drawImage(dotSelectorPositionWhite,250+2,150,null);
+						break;
+					case -5:
+						g.drawImage(dotSelectorPositionOrange,Game.WIDTH - 129+2,340,null);
+						break;
+					case -4:
+						g.drawImage(dotSelectorPositionOrange,Game.WIDTH - 129+2,140,null);
+						break;
+					case -3:
+						g.drawImage(dotSelectorPositionOrange,Game.WIDTH  - 129 - 40 - 16+10,340,null);
+						break;
+					case -2:
+						g.drawImage(dotSelectorPositionOrange,Game.WIDTH  - 129 - 40 - 16+10,140,null);
+						break;
 					case -1:
 						g.drawImage(backTitleSelectedNormal,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitle,40, 20,null);
@@ -3970,6 +5888,46 @@ public class Game extends Canvas implements Runnable {
 				}
 				else {
 					switch(Game.selectorButtonPosition) {
+					case -11:
+						g.drawImage(setTitleSelected,Game.WIDTH  + 18 -7, 358 -7,null);
+						g.drawImage(setTitleGlow,Game.WIDTH  + 18, 358,null);
+						break;
+					case -10:
+						g.drawImage(setTitleSelected,Game.WIDTH  + 18 -7, 158 -7,null);
+						g.drawImage(setTitleGlow,Game.WIDTH  + 18, 158,null);
+						break;
+					case -9:
+						g.drawImage(trackStopButtonTitleGlow,280, 358,null);
+						break;
+					case -8:
+						g.drawImage(trackStopButtonTitleGlow,280, 158,null);
+						break;
+					case -7:
+						if(Game.trackCurrentlyPlaying && Game.menuTrackCurrentlyPlaying == Game.menuTrackPosition && !trackController.gameTrackPaused)
+							g.drawImage(trackPauseButtonTitleGlow,250, 358,null);
+						else
+							g.drawImage(trackPlayButtonTitleGlow,250, 358,null);
+						break;
+					case -6:
+						if(Game.trackCurrentlyPlaying && Game.gameTrackCurrentlyPlaying == Game.gameTrackPosition && !trackController.gameTrackPaused)
+							g.drawImage(trackPauseButtonTitleGlow,250, 158,null);
+						else
+							g.drawImage(trackPlayButtonTitleGlow,250, 158,null);
+						break;
+					case -5:
+						g.drawImage(arrowRGlow,Game.WIDTH - 129, 350,null);
+						break;
+					case -4:
+						g.drawImage(arrowRGlow,Game.WIDTH - 129, 150,null);
+						break;
+					case -3:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH  - 129 - 40 - 16 -7, 350 -7,null);
+						g.drawImage(arrowLGlow,Game.WIDTH  - 129 - 40 - 16, 350,null);
+						break;
+					case -2:
+//						g.drawImage(arrowSelectedClicked,Game.WIDTH  - 129 - 40 - 16 -7, 150 -7,null);
+						g.drawImage(arrowLGlow,Game.WIDTH  - 129 - 40 - 16, 150,null);
+						break;
 					case -1:
 						g.drawImage(backTitleSelected,40 -7, 20 -7,null);
 						g.drawImage(backButtonTitleGlow,40, 20,null);
@@ -3983,6 +5941,8 @@ public class Game extends Canvas implements Runnable {
 				gameOverSoundLoop.stop();
 			if(gameOverWinningSoundLoop.clipIsActive())
 				gameOverWinningSoundLoop.stop();
+			if(marioStarSoundLoop.clipIsActive())
+				marioStarSoundLoop.stop();
 			for(int i = 0; i < this.marioDanceSoundLoops.size(); i++) {
 				marioDanceSoundLoops.get(i).setSoundLoopBoolean(false);
 				marioDanceSoundLoops.get(i).setFramePosition(0);
@@ -4009,6 +5969,9 @@ public class Game extends Canvas implements Runnable {
 			this.gameOverSoundLoop.setFramePosition(0);
 			this.gameOverWinningSoundLoop.setSoundLoopBoolean(false);
 			this.gameOverWinningSoundLoop.setFramePosition(0);
+			this.marioStarSoundLoop.setSoundLoopBoolean(false);
+			this.marioStarSoundLoop.setFramePosition(0);
+			this.gameOverSoundBoolean = false;
 			this.marioHasBeenInvincible = false;
 			this.pauseSoundFXTimer = 0;
 			this.menuSoundLoopRandomizer = 0;
@@ -4022,6 +5985,8 @@ public class Game extends Canvas implements Runnable {
 			this.soundFXClip2SoundLoop.setFramePosition(0);
 			this.soundFXClip2SoundLoop.setSoundLoopBoolean(false);
 			this.soundSet = false;
+			this.trackCurrentlyPlaying = false;
+			this.menuMusicStopped = false;
 			this.menuSoundSet = false;
 			this.soundTimerSet = false;
 			this.soundFXisPlaying = false;
@@ -4031,6 +5996,7 @@ public class Game extends Canvas implements Runnable {
 			this.marioLetsGoPause = false;
 			this.pauseSoundFXTimer = 0;
 			this.visualPauseTimer = 0;
+			this.slowDownForAnalogTimer = 0;
 			this.enemyHitPauseBoolean = false;
 			this.paused = false;
 			this.fileScoreWritten = false;
@@ -4056,7 +6022,30 @@ public class Game extends Canvas implements Runnable {
 			this.keepRunningAfterPauseR = false;
 			this.dontRunAfterPause = false;
 			this.pauseHoldOff = false;
+			this.windowMinimized = false;
+			this.julian = 0;
+			this.juliann = 0;
+			this.julianii = 0;
+			this.fireworksShot = 0;
+			this.spawnItem = false;
+			this.enemyHitPauseTimer = 0;
+			this.backgroundTraverse = 0;
+			this.itemWaitTimer = 0;
+			this.itemFlyingTimer1 = 0;
+			this.itemFlyingAwayX = 0;
+			this.itemFlyingAwayY = 0;
+			this.traverseTime = 0;
+			this.marioTurningWithItem.setCount(0);
+			this.currentItem = null;
+			this.currentItemImg = null;
+			this.itemName = null;
+			this.itemTransitionSetup = false;
+			
+			hud.reset();
 			playerName.clear();
+			if(scoreImage != null)
+				scoreImage.flush();
+			scoreImage = null;
 			gamepadLetterImage = null;
 			gamepadKeyboardLetterPosition = 0;
 			settingsSetup = false;
@@ -4077,14 +6066,17 @@ public class Game extends Canvas implements Runnable {
 			waitToPause = 0;
 			bowserBulletBillSpawningTimer = 0;
 			spawnBulletBill = false;
+			this.youWon = false;
+			this.gameOverIrisSoundLoop.setFramePosition(0);
 			this.gameOverIrisSoundLoop.setSoundLoopBoolean(false);
+			this.marioSpinningSoundLoop.setFramePosition(0);
 			this.marioSpinningSoundLoop.setSoundLoopBoolean(false);
 			this.marioGrowthPosePause = false;
 			this.marioGrowthPosePauseTimer = 0;
 			this.marioDancePosePause = false;
 			this.marioDancePosePauseTimer = 0;
 			this.getHUD().resetScore();
-			this.getHUD().HEALTH = 100;
+			this.getHUD().HEALTH = 0;
 			this.getHUD().setTimer1(100);
 			this.getHUD().setTimer2(100);
 			p.setX(Game.WIDTH);
@@ -4102,15 +6094,24 @@ public class Game extends Canvas implements Runnable {
 			p.setSpinningAnimationFinished(false);
 			p.setDancingAnimationFinished(false);
 			p.setTurningAroundAnimationFinished(false);
+			p.marioEntranceDancingAnim.nextFrame();
 			p.marioEntranceDancingAnim.setCount(0);
+			p.marioEntranceGrowingAnim.nextFrame();
 			p.marioEntranceGrowingAnim.setCount(0);
+			p.marioEntranceSpinningAnim.nextFrame();
 			p.marioEntranceSpinningAnim.setCount(0);
+			p.marioEntranceTurningAroundAnim.nextFrame();
 			p.marioEntranceTurningAroundAnim.setCount(0);
+			p.marioDeathAnim.nextFrame();
 			p.marioDeathAnim.setCount(0);
 			p.setRunningStartL(false);
 			p.setRunningStartR(false);
 			p.setRunningStartUp(0);
 			p.setAnimationTimer1(0);
+			p.setTurnAroundTimer(0);
+			p.setTurnAroundTimerAnimation(0);
+			p.setSpinningTimer(0);
+			p.setFirstTimeAnimationRun(false);
 			p.setMarioGravityTimer(0);
 			p.setMarioDeathTimer1(0);
 			p.setMarioDeathTimer2(0);
@@ -4119,9 +6120,31 @@ public class Game extends Canvas implements Runnable {
 			p.setTimer1(100);
 			p.setTimer2(0);
 			bb.reset();
+//			if(clientSocket != null) {
+//				clientSocket.close();
+//				clientSocket = null;
+//			}if(out != null) {
+//				out.close();
+//				out = null;
+//			}if(in != null) {
+//				in.close();
+//				in = null;
+//			}
 			leaderboard.setInitalized(false);
-			leaderboard.getNames().clear();
-			leaderboard.getScores().clear();
+			if(!leaderboard.globalList) {
+				leaderboard.getNames().clear();
+				leaderboard.getScores().clear();
+//				if(clientSocket != null) {
+//					clientSocket.close();
+//					clientSocket = null;
+//				}if(out != null) {
+//					out.close();
+//					out = null;
+//				}if(in != null) {
+//					in.close();
+//					in = null;
+//				}
+			}
 			leaderboard.setNameDecoy("");
 			leaderboard.setScoreDecoy("");
 			leaderboard.setStringDecoy("");
@@ -4129,6 +6152,8 @@ public class Game extends Canvas implements Runnable {
 			paused = false;
 			bowserSpawnSetupBoolean = false;
 			bowserSpawnSetup = 0;
+			sceneSkipCount = 0;
+			askToSkipSequence = false;
 			c.reset();
 			//tex.flush();
 			/*
@@ -4144,6 +6169,7 @@ public class Game extends Canvas implements Runnable {
 			ec = c.getEntityC();
 			ed = c.getEntityD();
 			ee = c.getEntityE();
+			ef = c.getEntityF();
 	        System.gc(); 
 			if(!Game.dontStartOver) {
 				LeaderboardController.gameUnlocksToSettings();
@@ -4164,6 +6190,10 @@ public class Game extends Canvas implements Runnable {
 		bs.show();
 	}
 	public void keyPressed(KeyEvent e){
+		if(connectingToServer || gameControllerInUse)
+			return;
+		if(!this.hasFocus())
+			return;
 		int key = e.getKeyCode();
 		if(State != STATE.SET_SCORE && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
 			/*
@@ -4256,6 +6286,8 @@ public class Game extends Canvas implements Runnable {
 				slowingDownActivatedr = false;
 				if(runningTimerActivatedResponse == false)
 					runningTimerActivated = true;
+				if(p.getVelX() <= -5)/*Slide after change*/
+					slowDownForAnalogTimer = System.currentTimeMillis() + 200;/*Slide after change*/
 			} else if(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN){
 				//p.setVelY(5);
 				//yDBoolean = true;
@@ -4289,6 +6321,8 @@ public class Game extends Canvas implements Runnable {
 				slowingDownActivatedr = false;
 				if(runningTimerActivatedResponse == false)
 					runningTimerActivated = true;
+				if(5 <= p.getVelX())/*Slide after change*/
+					slowDownForAnalogTimer = System.currentTimeMillis() + 200;/*Slide after change*/
 			}
 			if (key == KeyEvent.VK_SPACE && !isShooting){											//Fireballs
 				isShooting = true;
@@ -4317,8 +6351,10 @@ public class Game extends Canvas implements Runnable {
 					}
 					animationTimer1 = 10;
 					numberOfFireBallsShot++;
-					if(fireballSFX.clipIsActive())
+					if(fireballSFX.clipIsActive()) {
 						fireballSFX.stop();
+						fireballSFX.setFramePosition(0);
+					}
 					fireballSFX.play();
 				}
 			}
@@ -4333,6 +6369,10 @@ public class Game extends Canvas implements Runnable {
 					pauseSoundFXTimer = System.currentTimeMillis() + 685;
 					paused = true;
 					userHasPaused = true;
+					if(System.currentTimeMillis() < bowserSpawnSetup && bowserSpawnSetupBoolean == true) {
+						bowserSpawnSetup = 0;
+						bowserSpawnSetupBoolean = false;
+					}
 				}
 				else if(paused == true && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
 					if(pauseSoundFXTimer < System.currentTimeMillis()){
@@ -4408,6 +6448,13 @@ public class Game extends Canvas implements Runnable {
 							Game.keysAreInUse = true;
 							break;
 						}else {
+							if(Game.selectorButtonPosition == 2 && !Game.enterButtonPushedDown) {
+								if(Game.smb3CheckmarkSoundLoop.clipIsActive())
+									Game.smb3CheckmarkSoundLoop.stop();
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3CheckmarkSoundLoop.play();
+							}
 							Game.enterButtonPushedDown = true;
 							break;
 						}
@@ -4453,7 +6500,7 @@ public class Game extends Canvas implements Runnable {
 							Game.keysAreInUse = false;
 							Game.selectorButtonPosition++;
 						}
-						if(Game.selectorButtonPosition < 1)
+						if(Game.selectorButtonPosition < 2)
 							Game.selectorButtonPosition++;
 						break;
 					default:
@@ -4678,7 +6725,7 @@ public class Game extends Canvas implements Runnable {
 							Game.keysAreInUse = false;
 							Game.selectorButtonPosition++;
 						}
-						if(Game.selectorButtonPosition < 1)
+						if(Game.selectorButtonPosition < 2)
 							Game.selectorButtonPosition++;
 						break;
 					default:
@@ -4923,7 +6970,8 @@ public class Game extends Canvas implements Runnable {
 				default:
 					break;
 			}
-		}else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_ITEM || State == STATE.TRANSITION_WIN) {
+		}else if(State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_ITEM || State == STATE.TRANSITION_WIN ||
+				State == STATE.CREDITS) {
 			switch(key) {
 			case KeyEvent.VK_W: case KeyEvent.VK_UP:
 			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
@@ -4932,6 +6980,7 @@ public class Game extends Canvas implements Runnable {
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				break;
+				/*
 			case KeyEvent.VK_ESCAPE:
 				if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.skipHighlighted)
@@ -4953,17 +7002,20 @@ public class Game extends Canvas implements Runnable {
 				//else
 					//Game.keysAreInUse = true;
 				}
-				break;
+				break;*/
 			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
-				if(!Game.keysAreInUse) {
-					Game.keysAreInUse = true;
-					sceneAcknowledgement = true;
-				}
-				else if(Game.escapePressedNegateAction == false)
+				if(Game.escapePressedNegateAction == false)
 					Game.enterButtonPushedDown = true;
+				if(Game.askToSkipSequence) {
+					if(!Game.keysAreInUse) {
+						Game.keysAreInUse = true;
+					}
+					sceneAcknowledgement = true;
+					Game.enterButtonPushedDown = true;
+				}
 				break;
 			default:
-				Game.keysAreInUse = true;
+				//Game.keysAreInUse = true;
 				break;
 			}
 		}else if(State == STATE.GAMEOVER) {
@@ -5148,7 +7200,7 @@ public class Game extends Canvas implements Runnable {
 				break;
 			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
-					Game.keysAreInUse = true;
+//					Game.keysAreInUse = true;
 					break;
 				}else {
 					Game.enterButtonPushedDown = true;
@@ -5216,6 +7268,7 @@ public class Game extends Canvas implements Runnable {
 				break;
 			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
+					Game.enterButtonPushedDown = true;
 					Game.keysAreInUse = true;
 					break;
 				}else {
@@ -5255,30 +7308,89 @@ public class Game extends Canvas implements Runnable {
 				break;
 			}
 		}else if(State == STATE.LEADERBOARD) {
+    		int selector = Game.selectorButtonPosition;
 			switch(key) {
 			case KeyEvent.VK_W: case KeyEvent.VK_UP:
-			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
-			case KeyEvent.VK_S: case KeyEvent.VK_RIGHT:
-			case KeyEvent.VK_D: case KeyEvent.VK_DOWN:
 				if(!Game.keysAreInUse) {
+					if(areYouSureBoolean)
+						Game.selectorButtonPosition = 0;
 					Game.keysAreInUse = true;
 					break;
 				}
-				if(Game.mouseIsClickedDown) {
-					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.backHighlighted)
-						Game.mouseIsOffClickedObjectAndHeldDown = true;
-					Game.backClicked = false;
+				if(areYouSureBoolean) {}
+				else {
+					if(Game.selectorButtonPosition == 0)
+						Game.selectorButtonPosition = -1;
+				}
+				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
+				break;
+			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
+				if(!Game.keysAreInUse) {
+					if(areYouSureBoolean)
+						Game.selectorButtonPosition = 0;
+					Game.keysAreInUse = true;
 					break;
+				}
+				
+				if(areYouSureBoolean) {
+					if(Game.selectorButtonPosition != 0)
+						Game.selectorButtonPosition = 0;
+				}
+				else {
+					if(Game.selectorButtonPosition == 1)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == 0)
+						Game.selectorButtonPosition = -1;
+				}
+				
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				break;
+			case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
+				if(!Game.keysAreInUse) {
+					if(areYouSureBoolean)
+						Game.selectorButtonPosition = 0;
+					Game.keysAreInUse = true;
+					break;
+				}
+
+				if(areYouSureBoolean) {
+					if(Game.selectorButtonPosition != 1)
+						Game.selectorButtonPosition = 1;
+				}
+				else {
+					if(Game.selectorButtonPosition == -1 || Game.selectorButtonPosition == 0)
+						Game.selectorButtonPosition = 1;
+				}
+				
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				break;
+			case KeyEvent.VK_S: case KeyEvent.VK_DOWN:
+				if(!Game.keysAreInUse) {
+					if(areYouSureBoolean)
+						Game.selectorButtonPosition = 0;
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(areYouSureBoolean) {}
+				else {
+					if(Game.selectorButtonPosition == -1)
+						Game.selectorButtonPosition = 0;
 				}
 				if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				break;
 			case KeyEvent.VK_ESCAPE:
 				if(Game.mouseIsClickedDown) {
-					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.backHighlighted)
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+							Game.localHighlighted || Game.globalHighlighted || Game.uploadHighlighted))
 						Game.mouseIsOffClickedObjectAndHeldDown = true;
 					Game.backClicked = false;
+					Game.globalClicked = false;
+					Game.uploadClicked = false;
+					Game.localClicked = false;
 					Game.escapePressedNegateAction = true;
 					break;
 				}
@@ -5287,6 +7399,8 @@ public class Game extends Canvas implements Runnable {
 				break;
 			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				if(!Game.keysAreInUse) {
+					if(areYouSureBoolean)
+						Game.selectorButtonPosition = 0;
 					Game.keysAreInUse = true;
 					break;
 				}else {
@@ -5295,6 +7409,8 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 		}else if(State == STATE.SHOP) {
+			if(Game.allUnlockedScreen)
+				return;
 			int selector = Game.selectorButtonPosition;
 			switch(key) {
 			case KeyEvent.VK_W: case KeyEvent.VK_UP:
@@ -5575,16 +7691,67 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 		}else if(State == STATE.HELP) {
+			int selector = Game.selectorButtonPosition;
 			switch(key) {
-			case KeyEvent.VK_W: case KeyEvent.VK_UP:
 			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
-			case KeyEvent.VK_S: case KeyEvent.VK_RIGHT:
-			case KeyEvent.VK_D: case KeyEvent.VK_DOWN:
-			case KeyEvent.VK_ESCAPE:
+				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == 0 && firstTimeBeating == false)
+						Game.selectorButtonPosition = -1;
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				//shit here
+				if(Game.firstTimeBeating) {
+					if(Game.selectorButtonPosition != -1)
+						Game.selectorButtonPosition = -1;
+				}
+				//shit here
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				break;
+			case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
+				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == 0 && firstTimeBeating == false)
+						Game.selectorButtonPosition = -1;
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				//shit here
+				if(Game.firstTimeBeating) {
+					if(Game.selectorButtonPosition != 0)
+						Game.selectorButtonPosition = 0;
+				}
+				//shit here
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				break;
+			case KeyEvent.VK_W: case KeyEvent.VK_UP:
+			case KeyEvent.VK_S: case KeyEvent.VK_DOWN:
+				if(!Game.keysAreInUse) {
+					if(Game.selectorButtonPosition == 0 && firstTimeBeating == false)
+						Game.selectorButtonPosition = -1;
+					Game.keysAreInUse = true;
+					break;
+				}
 				if(Game.mouseIsClickedDown) {
-					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted || Game.creditsHighlighted))
 						Game.mouseIsOffClickedObjectAndHeldDown = true;
 					Game.backClicked = false;
+					Game.creditsClicked = false;
 					Game.escapePressedNegateAction = true;
 					break;
 				}
@@ -5646,7 +7813,7 @@ public class Game extends Canvas implements Runnable {
 				else {
 					if(selectorButtonPosition == -2)
 						selectorButtonPosition = 0;
-					else if(selectorButtonPosition == -3)
+					else if(selectorButtonPosition == -3 || selectorButtonPosition == 2)
 						selectorButtonPosition = 1;
 					else if(selectorButtonPosition == -4)
 						selectorButtonPosition = -1;
@@ -5708,7 +7875,7 @@ public class Game extends Canvas implements Runnable {
 				else {
 					if(selectorButtonPosition == 0)
 						selectorButtonPosition = -2;
-					else if(selectorButtonPosition == 1)
+					else if(selectorButtonPosition == 1 || selectorButtonPosition == 2)
 						selectorButtonPosition = -3;
 					else if(selectorButtonPosition == -2 || selectorButtonPosition == -1)
 						selectorButtonPosition = -4;
@@ -5780,8 +7947,7 @@ public class Game extends Canvas implements Runnable {
 					if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
 					else {
-						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == -10 ||
-								Game.selectorButtonPosition == -18) {
+						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == -10) {
 							Game.selectorButtonPosition = -1;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -5789,7 +7955,15 @@ public class Game extends Canvas implements Runnable {
 								Game.hudSFXPosition++;
 							hudSFX.get(hudSFXPosition).play();
 						}
-						else if(Game.selectorButtonPosition != -1){
+						else if(Game.selectorButtonPosition == -18) {
+							Game.selectorButtonPosition = 0;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition != -1 && Game.selectorButtonPosition != 0){
 							Game.selectorButtonPosition++;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -5810,6 +7984,14 @@ public class Game extends Canvas implements Runnable {
 						if(Game.selectorButtonPosition == -9 || Game.selectorButtonPosition == -17 ||
 								Game.selectorButtonPosition == -25)
 							break;
+						else if(Game.selectorButtonPosition == 0){
+							Game.selectorButtonPosition = -18;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							hudSFX.get(hudSFXPosition).play();
+						}
 						else if(Game.selectorButtonPosition != -26){
 							Game.selectorButtonPosition--;
 							if(Game.hudSFXPosition == 3)
@@ -5828,7 +8010,7 @@ public class Game extends Canvas implements Runnable {
 					if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
 					else {
-						if(Game.selectorButtonPosition == -2) {
+						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == 0) {
 							Game.selectorButtonPosition = -1;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -5878,7 +8060,7 @@ public class Game extends Canvas implements Runnable {
 								Game.hudSFXPosition++;
 							hudSFX.get(hudSFXPosition).play();
 						}
-						else if (Game.selectorButtonPosition > -18){
+						else if (Game.selectorButtonPosition > -18 && Game.selectorButtonPosition != 0){
 							Game.selectorButtonPosition -= 8;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -5924,12 +8106,147 @@ public class Game extends Canvas implements Runnable {
 			}
 		}
 		else if(State == STATE.TRACKLIST) {
+			int selector = Game.selectorButtonPosition;
 			switch(key) {
+			case KeyEvent.VK_W: case KeyEvent.VK_UP:
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				//shit here
+				switch(Game.selectorButtonPosition) {
+				case -11:
+					Game.selectorButtonPosition = -10;
+					break;
+				case -9:
+					Game.selectorButtonPosition = -8;
+					break;
+				case -7:
+					Game.selectorButtonPosition = -6;
+					break;
+				case -5:
+					Game.selectorButtonPosition = -4;
+					break;
+				case -3:
+					Game.selectorButtonPosition = -2;
+					break;
+				case -2: case -4: case -6: case -8: case -10:
+					Game.selectorButtonPosition = -1;
+					break;
+				default:
+					break;
+				}
+				//shit here
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				break;
+			case KeyEvent.VK_S: case KeyEvent.VK_DOWN:
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				//shit here
+				switch(Game.selectorButtonPosition) {
+				case -10:
+					Game.selectorButtonPosition = -11;
+					break;
+				case -8:
+					Game.selectorButtonPosition = -9;
+					break;
+				case -6:
+					Game.selectorButtonPosition = -7;
+					break;
+				case -4:
+					Game.selectorButtonPosition = -5;
+					break;
+				case -2:
+					Game.selectorButtonPosition = -3;
+					break;
+				case -1:
+					Game.selectorButtonPosition = -2;
+					break;
+				default:
+					break;
+				}
+				//shit here
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				break;
+			case KeyEvent.VK_A: case KeyEvent.VK_LEFT:
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				//shit here
+				if(Game.selectorButtonPosition < -3)
+					Game.selectorButtonPosition+=2;
+				else if(Game.selectorButtonPosition != -2 && Game.selectorButtonPosition != -3)
+					Game.selectorButtonPosition = -1;
+				//shit here
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				break;
+			case KeyEvent.VK_D: case KeyEvent.VK_RIGHT:
+				if(!Game.keysAreInUse) {
+					Game.keysAreInUse = true;
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				//shit here
+				if(-9 <= Game.selectorButtonPosition && Game.selectorButtonPosition != -1)
+					Game.selectorButtonPosition-=2;
+				else if(Game.selectorButtonPosition != -10 && Game.selectorButtonPosition != -1)
+					Game.selectorButtonPosition = -11;
+				//shit here
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					hudSFX.get(hudSFXPosition).play();
+				}
+				break;
 			case KeyEvent.VK_ESCAPE:
 				if(Game.mouseIsClickedDown) {
-					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
+					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
+							Game.arrowL1Highlighted || Game.arrowL2Highlighted || Game.arrowR1Highlighted ||
+							Game.arrowR2Highlighted || Game.trackPauseButton1Highlighted || Game.trackPauseButton2Highlighted || 
+							Game.trackPlayButton1Highlighted || Game.trackPlayButton2Highlighted || Game.set1Highlighted ||
+							Game.set2Highlighted))
 						Game.mouseIsOffClickedObjectAndHeldDown = true;
 					Game.backClicked = false;
+					Game.arrowL1Clicked = false;
+					Game.arrowL2Clicked = false;
+					Game.arrowR1Clicked = false;
+					Game.arrowR2Clicked = false;
+					Game.trackPauseButton1Clicked = false;
+					Game.trackPauseButton2Clicked = false;
+					Game.trackPlayButton1Clicked = false;
+					Game.trackPlayButton2Clicked = false;
+					Game.set1Clicked = false;
+					Game.set2Clicked = false;
 					Game.escapePressedNegateAction = true;
 					break;
 				}
@@ -5949,9 +8266,18 @@ public class Game extends Canvas implements Runnable {
 		}
 		if(gameControllerInUse)
 			gameControllerInUse = false;
+		if(gameControllerInUseDI)
+			gameControllerInUseDI = false;
 	}
 	
 	public void keyReleased(KeyEvent e){
+		if(connectingToServer)
+			return;
+		if(gameControllerInUse && !gameControllerSwitchBack) {
+			gameControllerInUse = false;
+			gameControllerInUseDI = false;
+			return;
+		}
 		int key = e.getKeyCode();
 		if(State != STATE.SET_SCORE && ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
 			/*
@@ -5982,6 +8308,8 @@ public class Game extends Canvas implements Runnable {
 				key = KeyEvent.VK_D;
 			}else if(key == shootKey) {
 				key = KeyEvent.VK_SPACE;
+				if(State == STATE.GAME && isShooting)
+					setIsShooting(false);
 			}else if(key == itemKey) {
 				key = KeyEvent.VK_E;
 			//}else if(key == pauseKey && State == STATE.GAME && !userHasPaused && !paused) {
@@ -6013,7 +8341,9 @@ public class Game extends Canvas implements Runnable {
 					p.setRunningStartR(true);
 				}
 				else{
-					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5)) && p.getVelX() != 0){														//This activates sliding animation for left side
+					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5) ||
+							/*Slide after change*/System.currentTimeMillis() < slowDownForAnalogTimer/*Slide after change*/
+							) && p.getVelX() != 0){														//This activates sliding animation for left side
 						slowingDownActivatedl = true;
 						slowingDownTimerLong = System.currentTimeMillis() + 200;
 						slowingDown = -1.73;
@@ -6043,7 +8373,9 @@ public class Game extends Canvas implements Runnable {
 					p.setRunningStartL(true);
 				}
 				else{
-					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5)) && p.getVelX() != 0){														//This activates sliding animation for right side
+					if((System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5) || 
+							/*Slide after change*/System.currentTimeMillis() < slowDownForAnalogTimer/*Slide after change*/
+							) && p.getVelX() != 0){														//This activates sliding animation for right side
 						slowingDownActivatedr = true;
 						slowingDownTimerLong = System.currentTimeMillis() + 200;
 						slowingDown = 1.73;
@@ -6076,6 +8408,8 @@ public class Game extends Canvas implements Runnable {
 					else {
 						State = STATE.TRANSITION_ITEM;
 						Game.keysAreInUse = false;
+						askToSkipSequence = false;
+						sceneAcknowledgement = false;
 					}
 					this.itemName = hud.getItemName();
 					hud.setItemObtained(false);
@@ -6094,6 +8428,7 @@ public class Game extends Canvas implements Runnable {
 					if(Game.enterButtonPushedDown)
 						break;
 					if(!askToSkipSequence) {
+						Game.keysAreInUse = true;
 						askToSkipSequence = true;
 					}
 					else {
@@ -6105,10 +8440,21 @@ public class Game extends Canvas implements Runnable {
 				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
 						if(!askToSkipSequence) {
 							askToSkipSequence = true;
+							Game.keysAreInUse = true;
 							break;
 						}
-						if(askToSkipSequence && Game.escapePressedNegateAction == false)
+						if(askToSkipSequence && Game.escapePressedNegateAction == false) {
 							skipSequence = true;
+							if(sceneSkipCount < 1)
+								sceneSkipCount++;
+							else {
+								try {
+									LeaderboardController.writeToSettings("skipAnimations", "true");
+								} catch (IOException e1) {
+								}
+								skipAnimations = true;
+							}
+						}
 						Game.keysAreInUse = true;
 						Game.enterButtonPushedDown = false;
 						Game.escapePressedNegateAction = false;
@@ -6129,6 +8475,55 @@ public class Game extends Canvas implements Runnable {
 			//	askToSkipSequence = true;
 			//}
 			
+		}else if(State == STATE.CREDITS) {
+			switch(key) {
+			case KeyEvent.VK_ESCAPE:
+				if(Game.mouseIsClickedDown) {
+					break;
+				}
+				if(Game.enterButtonPushedDown)
+					break;
+				if(!askToSkipSequence) {
+					askToSkipSequence = true;
+					Game.keysAreInUse = true;
+				}
+				else {
+					askToSkipSequence = false;
+					Game.keysAreInUse = false;
+					sceneAcknowledgement = false;
+				}
+				break;
+			case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
+					if(!askToSkipSequence) {
+						if(!Game.keysAreInUse) {
+							Game.keysAreInUse = true;
+						}
+						askToSkipSequence = true;
+						break;
+					}
+					if(askToSkipSequence && Game.escapePressedNegateAction == false) {
+						skipSequence = true;
+					}
+					Game.keysAreInUse = true;
+					Game.enterButtonPushedDown = false;
+					Game.escapePressedNegateAction = false;
+					sceneAcknowledgement = false;
+				
+				break;
+			default:
+				if(sceneAcknowledgement) {
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+					}
+					Game.keysAreInUse = true;
+					sceneAcknowledgement = false;
+				}
+				break;
+			}
+		//if(!askToSkipSequence) {
+		//	askToSkipSequence = true;
+		//}
+		
 		}
 		else if(State == STATE.TRANSITION_ITEM) {
 			if(p.getVelX() != 0)
@@ -6156,26 +8551,51 @@ public class Game extends Canvas implements Runnable {
 					if(Game.mouseIsClickedDown) {
 						break;
 					}
-					if(sceneAcknowledgement) {
-						if(Game.enterButtonPushedDown)
-							break;
-						if(!askToSkipSequence) {
-							askToSkipSequence = true;
-						}
-						else {
-							askToSkipSequence = false;
-							Game.keysAreInUse = false;
-						}
+					if(Game.enterButtonPushedDown)
+						break;
+					if(!askToSkipSequence) {
+						askToSkipSequence = true;
+						Game.keysAreInUse = true;
+					}
+					else {
+						askToSkipSequence = false;
+						Game.keysAreInUse = false;
 						sceneAcknowledgement = false;
 					}
 					break;
+//					if(Game.mouseIsClickedDown) {
+//						break;
+//					}
+//					if(sceneAcknowledgement) {
+//						if(Game.enterButtonPushedDown)
+//							break;
+//						if(!askToSkipSequence) {
+//							askToSkipSequence = true;
+//						}
+//						else {
+//							askToSkipSequence = false;
+//							Game.keysAreInUse = false;
+//						}
+//						sceneAcknowledgement = false;
+//					}
+//					break;
 				case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
 						if(!askToSkipSequence) {
 							askToSkipSequence = true;
 							break;
 						}
-						if(askToSkipSequence && Game.escapePressedNegateAction == false)
+						if(askToSkipSequence && Game.escapePressedNegateAction == false) {
 							skipSequence = true;
+							if(sceneSkipCount < 1)
+								sceneSkipCount++;
+							else {
+								try {
+									LeaderboardController.writeToSettings("skipAnimations", "true");
+								} catch (IOException e1) {
+								}
+								skipAnimations = true;
+							}
+						}
 						Game.keysAreInUse = true;
 						Game.enterButtonPushedDown = false;
 						Game.escapePressedNegateAction = false;
@@ -6261,6 +8681,33 @@ public class Game extends Canvas implements Runnable {
 								break;
 							case 1:
 								postLetter = '~';
+								Game.selectorButtonPosition = 0;
+								if(Game.sendToServer && HUD.score != 0)
+									Game.connectingToServer = true;
+								if(Game.gameControllerInUse) {
+									Game.keysAreInUse = true;
+									Game.selectorButtonPosition = 0;
+								}
+								if(!LeaderboardController.globalList)
+									LeaderboardController.resetTrigger = true;
+								break;
+							case 2:
+								if(Game.sendToServer)
+									Game.sendToServer = false;
+								else
+									Game.sendToServer = true;
+								try {
+									if(Game.sendToServer)
+										LeaderboardController.writeToSettings("sendToServer", "true");
+									else
+										LeaderboardController.writeToSettings("sendToServer", "false");
+								} catch (IOException e1) {
+								}
+								if(Game.smb3CheckmarkSoundLoop.clipIsActive())
+									Game.smb3CheckmarkSoundLoop.stop();
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
 								break;
 							default:
 								break;
@@ -6287,8 +8734,14 @@ public class Game extends Canvas implements Runnable {
 						shiftOn = false;
 						break;
 					case KeyEvent.VK_ENTER:
-						if(!Game.escapePressedNegateAction) 
+						if(!Game.escapePressedNegateAction) {
 							postLetter = '~';
+							if(Game.sendToServer && HUD.score != 0)
+								Game.connectingToServer = true;
+							if(!LeaderboardController.globalList)
+								LeaderboardController.resetTrigger = true;
+							Game.selectorButtonPosition = 0;
+						}
 						Game.enterButtonPushedDown = false;
 						Game.escapePressedNegateAction = false;
 						break;
@@ -6301,6 +8754,10 @@ public class Game extends Canvas implements Runnable {
 		else if(State == STATE.MENU) {
 			switch(key) {
 			case KeyEvent.VK_ENTER: case KeyEvent.VK_SPACE:
+				if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
 				Game.enterButtonPushedDown = false;
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
@@ -6345,6 +8802,7 @@ public class Game extends Canvas implements Runnable {
 							smb3OpenSoundLoop.play();
 							break;
 						case 2:
+							this.closeGame();
 							System.exit(1);
 							break;
 					}
@@ -6352,6 +8810,10 @@ public class Game extends Canvas implements Runnable {
 				Game.escapePressedNegateAction = false;
 				break;
 			case KeyEvent.VK_ESCAPE:
+				if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
 				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					Game.selectorBPMP = Game.selectorButtonPosition;
 					Game.escapePressedNegateAction = false;
@@ -6360,6 +8822,155 @@ public class Game extends Canvas implements Runnable {
 					else
 						Game.keysAreInUse = true;
 					break;
+				}
+				break;
+			case KeyEvent.VK_NUMPAD0:
+				if(cheatTimer < System.currentTimeMillis()) {//first
+					if(smwCheatSoundLoop.clipIsActive())
+						smwCheatSoundLoop.stop();
+					smwCheatSoundLoop.play();
+					cheatString = "0";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(cheatString.equals("0")){//second
+					if(smwCheatSoundLoop.clipIsActive())
+						smwCheatSoundLoop.stop();
+					if(smwCheat2SoundLoop.clipIsActive())
+						smwCheat2SoundLoop.stop();
+					smwCheat2SoundLoop.play();
+					cheatString = "00";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(System.currentTimeMillis() < cheatTimer && !cheatString.equals("0")) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				break;
+			case KeyEvent.VK_NUMPAD7:
+				if(cheatString.equals("00") && System.currentTimeMillis() < cheatTimer) {//third
+					if(smwCheat2SoundLoop.clipIsActive())
+						smwCheat2SoundLoop.stop();
+					if(smwCheat3SoundLoop.clipIsActive())
+						smwCheat3SoundLoop.stop();
+					smwCheat3SoundLoop.play();
+					cheatString = "007";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(cheatString.equals("0073") && System.currentTimeMillis() < cheatTimer) {//fifth
+					if(smwCheat4SoundLoop.clipIsActive())
+						smwCheat4SoundLoop.stop();
+					if(smwCheat5SoundLoop.clipIsActive())
+						smwCheat5SoundLoop.stop();
+					smwCheat5SoundLoop.play();
+					cheatString = "00737";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				break;
+			case KeyEvent.VK_NUMPAD3:
+				if(cheatString.equals("007") && System.currentTimeMillis() < cheatTimer) {//fourth
+					if(smwCheat3SoundLoop.clipIsActive())
+						smwCheat3SoundLoop.stop();
+					if(smwCheat4SoundLoop.clipIsActive())
+						smwCheat4SoundLoop.stop();
+					smwCheat4SoundLoop.play();
+					cheatString = "0073";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(cheatString.equals("00737") && System.currentTimeMillis() < cheatTimer) {//six
+					if(smwCheat5SoundLoop.clipIsActive())
+						smwCheat5SoundLoop.stop();
+					if(smwCheat6SoundLoop.clipIsActive())
+						smwCheat6SoundLoop.stop();
+					smwCheat6SoundLoop.play();
+					cheatString = "007373";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(cheatString.equals("007373596") && System.currentTimeMillis() < cheatTimer) {//ninth
+					if(smwCheat9SoundLoop.clipIsActive())
+						smwCheat9SoundLoop.stop();
+					if(smwCheatFullSoundLoop.clipIsActive())
+						smwCheatFullSoundLoop.stop();
+					smwCheatFullSoundLoop.play();
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+					currentlySelectedFireball = 4;
+					currentlySelectedCharacterSkin = 4;
+					fireballPosition = 4;
+					characterSkinPosition = 4;
+					p.changeAnimations(4);
+					if(fireballSFX != null)
+						fireballSFX.close();
+					if(fireballPopSFX != null)
+						fireballPopSFX.close();
+					fireballSFX = new SoundLoops("res/Sounds/SFX/miketysonpunchoutglovesfx.wav");
+					fireballPopSFX = new SoundLoops("res/Sounds/SFX/miketysonpunchoutglovepopsfx.wav");
+					VolumeSlider.adjustSFX(fireballSFX);
+					VolumeSlider.adjustSFX(fireballPopSFX);
+					skinNumber = null;
+//					Game.writeOnceToSettings = true;
+//					writeMultipleProperty.add("currentlySelectedCharacterSkin");
+//					writeMultipleString.add("4");
+//					writeMultipleProperty.add("currentlySelectedFireball");
+//					writeMultipleString.add("4");
+				}
+				else if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				break;
+			case KeyEvent.VK_NUMPAD5:
+				if(cheatString.equals("007373") && System.currentTimeMillis() < cheatTimer) {//seventh
+					if(smwCheat6SoundLoop.clipIsActive())
+						smwCheat6SoundLoop.stop();
+					if(smwCheat7SoundLoop.clipIsActive())
+						smwCheat7SoundLoop.stop();
+					smwCheat7SoundLoop.play();
+					cheatString = "0073735";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				break;
+			case KeyEvent.VK_NUMPAD9:
+				if(cheatString.equals("0073735") && System.currentTimeMillis() < cheatTimer) {//eighth
+					if(smwCheat7SoundLoop.clipIsActive())
+						smwCheat7SoundLoop.stop();
+					if(smwCheat8SoundLoop.clipIsActive())
+						smwCheat8SoundLoop.stop();
+					smwCheat8SoundLoop.play();
+					cheatString = "00737359";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				break;
+			case KeyEvent.VK_NUMPAD6:
+				if(cheatString.equals("00737359") && System.currentTimeMillis() < cheatTimer) {//ninth
+					if(smwCheat8SoundLoop.clipIsActive())
+						smwCheat8SoundLoop.stop();
+					if(smwCheat9SoundLoop.clipIsActive())
+						smwCheat9SoundLoop.stop();
+					smwCheat9SoundLoop.play();
+					cheatString = "007373596";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				else if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+				}
+				break;
+			default:
+				if(System.currentTimeMillis() < cheatTimer) {
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
 				}
 				break;
 			}
@@ -6375,7 +8986,7 @@ public class Game extends Canvas implements Runnable {
 					switch(Game.selectorButtonPosition) {
 						case -2:
 							State = STATE.LEADERBOARD;
-							Game.keysAreInUse = false;
+							Game.selectorButtonPosition = -1;
 							if(smb3OpenSoundLoop.clipIsActive())
 								smb3OpenSoundLoop.stop();
 							smb3OpenSoundLoop.play();
@@ -6383,6 +8994,7 @@ public class Game extends Canvas implements Runnable {
 						case -1:
 							State = STATE.SET_SCORE;
 							Game.keysAreInUse = false;
+							Game.selectorButtonPosition = 0;
 							if(smb3KickSoundLoop.clipIsActive())
 								smb3KickSoundLoop.stop();
 							smb3KickSoundLoop.play();
@@ -6399,6 +9011,7 @@ public class Game extends Canvas implements Runnable {
 							smb3OpenSoundLoop.play();
 							break;
 						case 2:
+							this.closeGame();
 							System.exit(1);
 							break;
 					}
@@ -6421,6 +9034,8 @@ public class Game extends Canvas implements Runnable {
 			switch(key) {
 			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
 				Game.enterButtonPushedDown = false;
+				if(key == KeyEvent.VK_SPACE)
+					setIsShooting(false);
 				if(pauseSoundFXSoundLoop.clipIsActive())
 					break;
 				if(!Game.keysAreInUse) {
@@ -6449,6 +9064,7 @@ public class Game extends Canvas implements Runnable {
 							Game.selectorButtonPosition = 0;
 							break;
 						case 2:
+							this.closeGame();
 							System.exit(1);
 							break;
 					}
@@ -6512,17 +9128,90 @@ public class Game extends Canvas implements Runnable {
 						break;
 					}
 					if(!Game.escapePressedNegateAction) {
-						if(Game.backToGameOver) {
-							Game.selectorButtonPosition = -2;
-							Game.State = Game.STATE.GAMEOVER;
+						if(Game.areYouSureBoolean) {
+							switch(Game.selectorButtonPosition) {
+							case 0:
+								Game.selectorButtonPosition = 0;
+								Game.areYouSureBoolean = false;
+								Game.smb3KickSoundLoop.play();
+								break;	
+							case 1:
+								LeaderboardController.deleteTrigger = true;
+								Game.selectorButtonPosition = 0;
+								Game.areYouSureBoolean = false;
+								if(Game.smb3TailSoundLoop.clipIsActive())
+									Game.smb3TailSoundLoop.stop();
+								Game.smb3TailSoundLoop.play();
+								break;
+							}
 						}
 						else {
-							Game.selectorButtonPosition = -3;
-							Game.State = Game.STATE.MENU;
+							switch(Game.selectorButtonPosition) {
+							case -1:
+								//Back button
+								if(Game.backToGameOver) {
+									Game.selectorButtonPosition = -2;
+									Game.State = Game.STATE.GAMEOVER;
+								}
+								else {
+									Game.selectorButtonPosition = -3;
+									Game.State = Game.STATE.MENU;
+								}
+								if(Game.smb3KickSoundLoop.clipIsActive())
+									Game.smb3KickSoundLoop.stop();
+								Game.smb3KickSoundLoop.play();
+								break;
+							case 0:
+								if(LeaderboardController.globalList) {
+									//Local button
+									Game.selectorButtonPosition = 1;
+									LeaderboardController.globalList = false;
+									LeaderboardController.listTrigger = true;
+									if(Game.smb3ItemSoundLoop.clipIsActive())
+										Game.smb3ItemSoundLoop.stop();
+									Game.smb3ItemSoundLoop.play();
+								}
+								else {
+									//Reset Leaderboard Button
+									if(LeaderboardController.checkLeaderboard()) {
+										Game.selectorButtonPosition = 0;
+										Game.areYouSureBoolean = true;
+										Game.hudSFX.get(4).play();
+									}
+									else {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									break;	
+								}
+								break;
+							case 1:
+								if(LeaderboardController.globalList) {
+									//Upload button
+									if(!LeaderboardController.checkLeaderboard()) {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									else {
+										String s = "";
+										if(Game.scoreEntered && 0 < HUD.score) {
+											s=HUD.nameEntered;
+											s=s+": "+Long.toString((HUD.score));
+											//Game.saveName = s;
+										}
+										LeaderboardController.uploadTrigger = true;
+									}
+								}
+								else {
+									//Global button
+									LeaderboardController.globalList = true;
+									LeaderboardController.listTrigger = true;
+								}
+								break;
+							}
 						}
-						if(smb3KickSoundLoop.clipIsActive())
-							smb3KickSoundLoop.stop();
-						smb3KickSoundLoop.play();
 					}
 					Game.escapePressedNegateAction = false;
 					break;
@@ -6534,6 +9223,8 @@ public class Game extends Canvas implements Runnable {
 							Game.keysAreInUse = false;
 						else
 							Game.keysAreInUse = true;
+						if(Game.areYouSureBoolean && Game.selectorButtonPosition != 0)
+							Game.selectorButtonPosition = 0;
 						break;
 					}
 					break;
@@ -6541,6 +9232,10 @@ public class Game extends Canvas implements Runnable {
 		}else if(State == STATE.SHOP) {
 			switch(key) {
 			case KeyEvent.VK_ENTER:  case KeyEvent.VK_SPACE:
+				if(allUnlockedScreen) {
+					allUnlockedScreen = false;
+					return;
+				}
 				Game.enterButtonPushedDown = false;
 				if(!Game.keysAreInUse) {
 					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
@@ -6568,9 +9263,99 @@ public class Game extends Canvas implements Runnable {
 						break;
 					case -11:
 						//Item Buy
-						if(smb31PupSoundLoop.clipIsActive())
-							smb31PupSoundLoop.stop();
-						smb31PupSoundLoop.play();
+						if(currentItemLocked) {
+							switch(itemPosition){
+								case 4:
+									if(totalPoints >= 1000){
+										Game.item4Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedItem";
+										Game.writeOnceString = Integer.toString(Game.itemPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "item4Unlocked";
+										Game.itemPosition = 4;
+										Game.currentlySelectedItem = 4;
+										currentItemLocked = false;
+										skinNumber = null;
+										totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -12;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 5:
+									if(totalPoints >= 10000){
+										Game.item5Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedItem";
+										Game.writeOnceString = Integer.toString(Game.itemPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "item5Unlocked";
+										Game.itemPosition = 5;
+										Game.currentlySelectedItem = 5;
+										currentItemLocked = false;
+										skinNumber = null;
+										totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -12;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 6:
+									if(totalPoints >= 100000){
+										Game.item6Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedItem";
+										Game.writeOnceString = Integer.toString(Game.itemPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "item6Unlocked";
+										Game.itemPosition = 6;
+										Game.currentlySelectedItem = 6;
+										currentItemLocked = false;
+										skinNumber = null;
+										totalPoints -= 100000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -12;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+						}
 						break;
 					case -10:
 						//Fireballs Set
@@ -6580,15 +9365,32 @@ public class Game extends Canvas implements Runnable {
 									Game.smb3ItemSoundLoop.stop();
 								Game.smb3ItemSoundLoop.play();
 							}
+							else {
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
+							}
 							Game.currentlySelectedFireball = Game.fireballPosition;
+							Game.fireballSoundSet();
 							Game.writeOnceToSettings = true;
 							Game.writeOnceProperty = "currentlySelectedFireball";
 							Game.writeOnceString = Integer.toString(Game.fireballPosition);
 							//Game.settingsSetup = false;
 						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 						break;
 					case -9:
-						if(Game.fireballPosition == 3)//Max Fireballs
+						if(Game.fireballPosition == 3 && Game.currentlySelectedFireball == 4)//Max Fireballs
+							Game.fireballPosition = 4;
+						else if(Game.fireballPosition == 3 && Game.currentlySelectedFireball == 5) {
+							Game.fireballPosition = 5;
+							Game.skinNumber = null;
+						}
+						else if(Game.fireballPosition == 3 || Game.fireballPosition == 4 || Game.fireballPosition == 5)
 							Game.fireballPosition = 0;
 						else
 							Game.fireballPosition++;
@@ -6602,7 +9404,7 @@ public class Game extends Canvas implements Runnable {
 						if(currentFireballLocked) {
 							switch(fireballPosition){
 								case 1:
-									if(totalPoints >= 100){
+									if(totalPoints >= 1000){
 										Game.fireball1Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -6614,10 +9416,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedFireball = 1;
 										currentFireballLocked = false;
 										skinNumber = null;
-										totalPoints -= 100;
+										totalPoints -= 1000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 336;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -6630,7 +9433,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 2:
-									if(totalPoints >= 1000){
+									if(totalPoints >= 10000){
 										Game.fireball2Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -6642,10 +9445,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedFireball = 2;
 										currentFireballLocked = false;
 										skinNumber = null;
-										totalPoints -= 1000;
+										totalPoints -= 10000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 336;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -6658,7 +9462,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 3:
-									if(totalPoints >= 10000){
+									if(totalPoints >= 100000){
 										Game.fireball3Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -6670,10 +9474,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedFireball = 3;
 										currentFireballLocked = false;
 										skinNumber = null;
-										totalPoints -= 10000;
+										totalPoints -= 100000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 336;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -6688,19 +9493,183 @@ public class Game extends Canvas implements Runnable {
 								default:
 									break;
 							}
-							
+							Game.fireballSoundSet();
 						}
 						//else
 							//Play error noise
 						break;
 					case -7:
 						//Tracks Set
-						if(smb3ItemSoundLoop.clipIsActive())
-							smb3ItemSoundLoop.stop();
-						smb3ItemSoundLoop.play();
+						if(!Game.currentTrackLocked) {
+							boolean b = false;
+							String s = "";
+							String ss = "";
+							switch(Game.trackPosition) {
+							case 0:
+								s = "gameTrack1Set";
+								if(Game.gameTrack1Set) {
+									Game.gameTrack1Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack1Set = true;
+									ss = "true";
+								}
+								break;
+							case 1:
+								s = "gameTrack2Set";
+								if(Game.gameTrack2Set) {
+									Game.gameTrack2Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack2Set = true;
+									ss = "true";
+								}
+								break;
+							case 2:
+								s = "gameTrack3Set";
+								if(Game.gameTrack3Set) {
+									Game.gameTrack3Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack3Set = true;
+									ss = "true";
+								}
+								break;
+							case 3:
+								s = "gameTrack4Set";
+								if(Game.gameTrack4Set) {
+									Game.gameTrack4Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack4Set = true;
+									ss = "true";
+								}
+								break;
+							case 4:
+								s = "gameTrack5Set";
+								if(Game.gameTrack5Set || !Game.track4Unlocked) {
+									if(!Game.track4Unlocked) {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									Game.gameTrack5Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack5Set = true;
+									ss = "true";
+								}
+								break;
+							case 5:
+								s = "gameTrack6Set";
+								if(Game.gameTrack6Set || !Game.track5Unlocked) {
+									if(!Game.track5Unlocked) {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									Game.gameTrack6Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack6Set = true;
+									ss = "true";
+								}
+								break;
+							case 6:
+								s = "gameTrack7Set";
+								if(Game.gameTrack7Set || !Game.track6Unlocked) {
+									if(!Game.track6Unlocked) {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									Game.gameTrack7Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack7Set = true;
+									ss = "true";
+								}
+								break;
+							case 7:
+								s = "gameTrack8Set";
+								if(Game.gameTrack8Set) {
+									Game.gameTrack8Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack8Set = true;
+									ss = "true";
+								}
+								break;
+							default:
+								break;
+							}
+							if(b) {
+								if(Game.smb3ItemSoundLoop.clipIsActive())
+									Game.smb3ItemSoundLoop.stop();
+								Game.smb3ItemSoundLoop.play();
+							}
+							if(!s.equals("") && !ss.equals("")) {
+								try {
+									LeaderboardController.writeToSettings(s, ss);
+								} catch (IOException e1) {
+								}
+								if(ss.equals("true") && Game.soundRandomizer == 8 && Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1) {
+									int randomIPlus = 0;
+									if(Game.track4Unlocked)
+										randomIPlus++;
+									if(Game.track5Unlocked)
+										randomIPlus++;
+									if(Game.track6Unlocked)
+										randomIPlus++;
+									Random rand = new Random();
+									Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+									Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+									//setsetup[VolumeSlider.TrackSetup]
+									if(Game.soundRandomizer != -4) {
+										Game.gameSoundLoops.get(Game.soundRandomizer).stop();
+										Game.gameSoundLoops.get(Game.soundRandomizer).setSoundLoopBoolean(true);
+										Game.gameSoundLoops.get(Game.soundRandomizer).setFramePosition(0);
+//										Game.gameSoundLoops.get(Game.soundRandomizer).play();
+									}
+									else
+										Game.soundRandomizer = 8;
+								}
+								else if(ss.equals("false")) {  
+									if(Game.gameTrack1Set == false && Game.gameTrack2Set == false && Game.gameTrack3Set == false && 
+										Game.gameTrack4Set == false && Game.gameTrack5Set == false && Game.gameTrack6Set == false && 
+										Game.gameTrack7Set == false && Game.gameTrack8Set == false && Game.soundRandomizer != 8 &&
+										Game.soundRandomizer != -4) 
+									Game.soundRandomizer = 8;
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+							}
+						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 						break;
 					case -6:
-						if(Game.trackPosition == 1)//Max Tracks
+						if(Game.trackPosition == 7)//Max Tracks
 							Game.trackPosition = 0;
 						else 
 							Game.trackPosition++;
@@ -6711,9 +9680,135 @@ public class Game extends Canvas implements Runnable {
 						break;
 					case -5:
 						//Tracks Buy
-						if(smb31PupSoundLoop.clipIsActive())
-							smb31PupSoundLoop.stop();
-						smb31PupSoundLoop.play();
+						if(Game.currentTrackLocked) {
+							switch(Game.trackPosition){
+								case 4:
+									if(Game.totalPoints >= 1000){
+										Game.track4Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "gameTrack5Set";
+										Game.writeOnceString = "true";
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "track4Unlocked";
+										Game.trackPosition = 4;
+										Game.currentlySelectedTrack = 4;
+										Game.currentTrackLocked = false;
+										Game.skinNumber = null;
+										Game.totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.track4Unlocked = true;
+										Game.gameTrack5Set = true;
+										int randomIPlus = 0;
+										if(Game.track4Unlocked)
+											randomIPlus++;
+										if(Game.track5Unlocked)
+											randomIPlus++;
+										if(Game.track6Unlocked)
+											randomIPlus++;
+										Random rand = new Random();
+										Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+										Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(Game.smb31PupSoundLoop.clipIsActive())
+											Game.smb31PupSoundLoop.stop();
+										Game.smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -6;
+									}
+									else{
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									break;
+								case 5:
+									if(Game.totalPoints >= 10000){
+										Game.track5Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "gameTrack6Set";
+										Game.writeOnceString = "true";
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "track5Unlocked";
+										Game.trackPosition = 5;
+										Game.currentlySelectedTrack = 5;
+										Game.currentTrackLocked = false;
+										Game.skinNumber = null;
+										Game.totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.track5Unlocked = true;
+										Game.gameTrack6Set = true;
+										int randomIPlus = 0;
+										if(Game.track4Unlocked)
+											randomIPlus++;
+										if(Game.track5Unlocked)
+											randomIPlus++;
+										if(Game.track6Unlocked)
+											randomIPlus++;
+										Random rand = new Random();
+										Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+										Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(Game.smb31PupSoundLoop.clipIsActive())
+											Game.smb31PupSoundLoop.stop();
+										Game.smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -6;
+									}
+									else{
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									break;
+								case 6:
+									if(Game.totalPoints >= 100000){
+										Game.track6Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "gameTrack7Set";
+										Game.writeOnceString = "true";
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "track6Unlocked";
+										Game.trackPosition = 6;
+										Game.currentlySelectedTrack = 6;
+										Game.currentTrackLocked = false;
+										Game.skinNumber = null;
+										Game.totalPoints -= 100000;
+										Game.starExplode = true;
+										Game.track6Unlocked = true;
+										Game.gameTrack7Set = true;
+										int randomIPlus = 0;
+										if(Game.track4Unlocked)
+											randomIPlus++;
+										if(Game.track5Unlocked)
+											randomIPlus++;
+										if(Game.track6Unlocked)
+											randomIPlus++;
+										Random rand = new Random();
+										Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+										Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(Game.smb31PupSoundLoop.clipIsActive())
+											Game.smb31PupSoundLoop.stop();
+										Game.smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -6;
+									}
+									else{
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+						}
 						break;
 					case -4:
 						//Skin Set
@@ -6723,20 +9818,37 @@ public class Game extends Canvas implements Runnable {
 									Game.smb3ItemSoundLoop.stop();
 								Game.smb3ItemSoundLoop.play();
 							}
+							else {
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
+							}
 							Game.currentlySelectedCharacterSkin = Game.characterSkinPosition;
 							Game.writeOnceToSettings = true;
 							Game.writeOnceProperty = "currentlySelectedCharacterSkin";
 							Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
 							//Game.settingsSetup = false;
 						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 						break;
 					case -3:
-						if(Game.characterSkinPosition == 3)//Max Skins
+						if(Game.characterSkinPosition == 3 && Game.currentlySelectedCharacterSkin == 4)//Max Skins
+							Game.characterSkinPosition = 4;
+						else if(Game.characterSkinPosition == 3 && Game.currentlySelectedCharacterSkin == 5) 
+							Game.characterSkinPosition = 5;
+						else if (Game.characterSkinPosition == 3 || Game.characterSkinPosition == 4 || Game.characterSkinPosition == 5)
 							Game.characterSkinPosition = 0;
 						else {
 							Game.characterSkinPosition++;
 						}
-						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
+						if(Game.currentlySelectedCharacterSkin == 5 && Game.characterSkinPosition == 5)
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition)), 10, 10);
+						else
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
 						smb3Bump2SoundLoop.play();
@@ -6746,7 +9858,7 @@ public class Game extends Canvas implements Runnable {
 						if(currentSkinLocked) {
 							switch(characterSkinPosition){
 								case 1:
-									if(totalPoints >= 100){
+									if(totalPoints >= 1000){
 										Game.skin1Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -6758,10 +9870,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedCharacterSkin = 1;
 										currentSkinLocked = false;
 										skinNumber = null;
-										totalPoints -= 100;
+										totalPoints -= 1000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 136;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -6774,7 +9887,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 2:
-									if(totalPoints >= 1000){
+									if(totalPoints >= 10000){
 										Game.skin2Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -6786,10 +9899,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedCharacterSkin = 2;
 										currentSkinLocked = false;
 										skinNumber = null;
-										totalPoints -= 1000;
+										totalPoints -= 10000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 136;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -6802,7 +9916,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 3:
-									if(totalPoints >= 10000){
+									if(totalPoints >= 100000){
 										Game.skin3Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -6814,10 +9928,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedCharacterSkin = 3;
 										currentSkinLocked = false;
 										skinNumber = null;
-										totalPoints -= 10000;
+										totalPoints -= 100000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 136;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -6845,11 +9960,20 @@ public class Game extends Canvas implements Runnable {
 						smb3KickSoundLoop.play();
 						break;
 					case 0:
-						if(Game.characterSkinPosition > 0)
+						if(Game.characterSkinPosition == 5)
+							Game.characterSkinPosition-=2;
+						else if(Game.characterSkinPosition > 0)
 							Game.characterSkinPosition--;
+						else if(Game.currentlySelectedCharacterSkin == 4)
+							Game.characterSkinPosition = 4;
+						else if(Game.currentlySelectedCharacterSkin == 5) 
+							Game.characterSkinPosition = 5;
 						else
 							Game.characterSkinPosition = 3;//Set to Max Skins
-						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
+						if(Game.currentlySelectedCharacterSkin == 5 && Game.characterSkinPosition == 5)
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition)), 10, 10);
+						else
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
 						smb3Bump2SoundLoop.play();
@@ -6858,15 +9982,23 @@ public class Game extends Canvas implements Runnable {
 						if(Game.trackPosition > 0)
 							Game.trackPosition--;
 						else
-							Game.trackPosition = 1;//Set to Max Tracks
+							Game.trackPosition = 7;//Set to Max Tracks
 						Game.trackNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.trackPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
 						smb3Bump2SoundLoop.play();
 						break;
 					case 2:
-						if(Game.fireballPosition > 0)
+						if(Game.fireballPosition == 5)
+							Game.fireballPosition-=2;
+						else if(Game.fireballPosition > 0)
 							Game.fireballPosition--;
+						else if(Game.currentlySelectedFireball == 4)
+							Game.fireballPosition = 4;
+						else if(Game.currentlySelectedFireball == 5) {
+							Game.fireballPosition = 5;
+							Game.skinNumber = null;
+						}
 						else
 							Game.fireballPosition = 3;//Set to Max Fireballs
 						Game.fireballNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.fireballPosition+1)), 10, 10);
@@ -6889,6 +10021,10 @@ public class Game extends Canvas implements Runnable {
 				Game.escapePressedNegateAction = false;
 				break;
 			case KeyEvent.VK_ESCAPE:
+				if(allUnlockedScreen) {
+					allUnlockedScreen = false;
+					return;
+				}
 				if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
 						Game.selectorButtonPosition = 0;
@@ -6919,13 +10055,32 @@ public class Game extends Canvas implements Runnable {
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 					case -1:
+						if(!helpLines.isEmpty())
+							helpLines.clear();
 						Game.selectorButtonPosition = -1;
 						Game.State = Game.STATE.MENU;
+						if(smb3KickSoundLoop.clipIsActive())
+							smb3KickSoundLoop.stop();
+						smb3KickSoundLoop.play();
 						break;	
+					case 0:
+						if(firstTimeBeating) {
+							Game.State = STATE.CREDITS;
+							if(Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).clipIsActive()) {
+								Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).stop();
+	//							Game.menuMusicStopped = true;
+	//							Game.trackCurrentlyPlaying = false;
+								
+							}
+							Game.keysAreInUse = false;
+							Game.skipSequence = false;
+							Game.askToSkipSequence = false;
+							Game.selectorButtonPosition = 0;
+						}
+						break;
+					default:
+						break;
 					}
-					if(smb3KickSoundLoop.clipIsActive())
-						smb3KickSoundLoop.stop();
-					smb3KickSoundLoop.play();
 				}
 				Game.escapePressedNegateAction = false;
 				break;
@@ -6963,7 +10118,9 @@ public class Game extends Canvas implements Runnable {
 							Game.skin1Unlocked = false;
 							Game.skin2Unlocked = false;
 							Game.skin3Unlocked = false;
-							Game.track1Unlocked = false;
+							Game.track4Unlocked = false;
+							Game.track5Unlocked = false;
+							Game.track6Unlocked = false;
 							Game.fireball1Unlocked = false;
 							Game.fireball2Unlocked = false;
 							Game.fireball3Unlocked = false;
@@ -6980,6 +10137,7 @@ public class Game extends Canvas implements Runnable {
 							Game.trackPosition = 0;
 							Game.fireballPosition = 0;
 							Game.itemPosition = 0;
+							Game.fireballSoundSet();
 							skinNumber = null;
 							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
 							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
@@ -6997,7 +10155,10 @@ public class Game extends Canvas implements Runnable {
 							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
 							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
 							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+							XInputDevice.lTrigger = XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER;
+							XInputDevice.rTrigger = XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER;
 							Game.totalPoints = 0;
+							Game.highScore = 0;
 							Game.skipAnimations = false;
 							try {
 								LeaderboardController.resetScore();
@@ -7019,6 +10180,8 @@ public class Game extends Canvas implements Runnable {
 						switch(Game.selectorButtonPosition) {
 						case -5:
 							Game.selectorButtonPosition = -1;
+							if(Game.trackCurrentlyPlaying == false)
+								TrackController.reset();
 							Game.State = Game.STATE.TRACKLIST;
 							if(smb3OpenSoundLoop.clipIsActive())
 								smb3OpenSoundLoop.stop();
@@ -7109,7 +10272,7 @@ public class Game extends Canvas implements Runnable {
 						Game.keysAreInUse = false;
 					else 
 						Game.keysAreInUse = true;
-					if(areYouSureBoolean && Game.selectorButtonPosition != 1)
+					if(areYouSureBoolean && Game.selectorButtonPosition != 0)
 						Game.selectorButtonPosition = 0;
 					break;
 				}
@@ -7125,28 +10288,31 @@ public class Game extends Canvas implements Runnable {
 		}
 		else if(State == STATE.CONTROLS) {
 			if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
-				switch(key) {
-				case KeyEvent.VK_A: case KeyEvent.VK_B: case KeyEvent.VK_C: case KeyEvent.VK_D:
-				case KeyEvent.VK_E: case KeyEvent.VK_F: case KeyEvent.VK_G: case KeyEvent.VK_H:
-				case KeyEvent.VK_I: case KeyEvent.VK_J: case KeyEvent.VK_K: case KeyEvent.VK_L:
-				case KeyEvent.VK_M: case KeyEvent.VK_N: case KeyEvent.VK_O: case KeyEvent.VK_P:
-				case KeyEvent.VK_Q: case KeyEvent.VK_R: case KeyEvent.VK_S: case KeyEvent.VK_T:
-				case KeyEvent.VK_U: case KeyEvent.VK_V: case KeyEvent.VK_W: case KeyEvent.VK_X:
-				case KeyEvent.VK_Y: case KeyEvent.VK_Z: case KeyEvent.VK_SPACE: case KeyEvent.VK_BACK_SPACE:
-				case KeyEvent.VK_ESCAPE: case KeyEvent.VK_SHIFT: case KeyEvent.VK_ENTER:  case KeyEvent.VK_0:
-				case KeyEvent.VK_1: case KeyEvent.VK_2: case KeyEvent.VK_3: case KeyEvent.VK_4: 
-				case KeyEvent.VK_5: case KeyEvent.VK_6: case KeyEvent.VK_7: case KeyEvent.VK_8:
-				case KeyEvent.VK_9: case KeyEvent.VK_NUMPAD0: case KeyEvent.VK_NUMPAD1: case KeyEvent.VK_NUMPAD2:
-				case KeyEvent.VK_NUMPAD3: case KeyEvent.VK_NUMPAD4: case KeyEvent.VK_NUMPAD5: case KeyEvent.VK_NUMPAD6:
-				case KeyEvent.VK_NUMPAD7: case KeyEvent.VK_NUMPAD8: case KeyEvent.VK_NUMPAD9: case KeyEvent.VK_COMMA:
-				case KeyEvent.VK_PERIOD: case KeyEvent.VK_BACK_SLASH: case KeyEvent.VK_UP: case KeyEvent.VK_DOWN:
-				case KeyEvent.VK_LEFT: case KeyEvent.VK_RIGHT: case KeyEvent.VK_KP_UP: case KeyEvent.VK_KP_DOWN:
-				case KeyEvent.VK_KP_LEFT: case KeyEvent.VK_KP_RIGHT:
-					controlsController.changeButton(key);
-					break;
-				default:
-					break;
-				}
+				if(controlsController.buttonToChange <= -2 && -9 <= controlsController.buttonToChange)
+					switch(key) {
+					case KeyEvent.VK_A: case KeyEvent.VK_B: case KeyEvent.VK_C: case KeyEvent.VK_D:
+					case KeyEvent.VK_E: case KeyEvent.VK_F: case KeyEvent.VK_G: case KeyEvent.VK_H:
+					case KeyEvent.VK_I: case KeyEvent.VK_J: case KeyEvent.VK_K: case KeyEvent.VK_L:
+					case KeyEvent.VK_M: case KeyEvent.VK_N: case KeyEvent.VK_O: case KeyEvent.VK_P:
+					case KeyEvent.VK_Q: case KeyEvent.VK_R: case KeyEvent.VK_S: case KeyEvent.VK_T:
+					case KeyEvent.VK_U: case KeyEvent.VK_V: case KeyEvent.VK_W: case KeyEvent.VK_X:
+					case KeyEvent.VK_Y: case KeyEvent.VK_Z: case KeyEvent.VK_SPACE: case KeyEvent.VK_BACK_SPACE:
+					case KeyEvent.VK_ESCAPE: case KeyEvent.VK_SHIFT: case KeyEvent.VK_ENTER:  case KeyEvent.VK_0:
+					case KeyEvent.VK_1: case KeyEvent.VK_2: case KeyEvent.VK_3: case KeyEvent.VK_4: 
+					case KeyEvent.VK_5: case KeyEvent.VK_6: case KeyEvent.VK_7: case KeyEvent.VK_8:
+					case KeyEvent.VK_9: case KeyEvent.VK_NUMPAD0: case KeyEvent.VK_NUMPAD1: case KeyEvent.VK_NUMPAD2:
+					case KeyEvent.VK_NUMPAD3: case KeyEvent.VK_NUMPAD4: case KeyEvent.VK_NUMPAD5: case KeyEvent.VK_NUMPAD6:
+					case KeyEvent.VK_NUMPAD7: case KeyEvent.VK_NUMPAD8: case KeyEvent.VK_NUMPAD9: case KeyEvent.VK_COMMA:
+					case KeyEvent.VK_PERIOD: /*case KeyEvent.VK_BACK_SLASH:*/ case KeyEvent.VK_UP: case KeyEvent.VK_DOWN:
+					case KeyEvent.VK_LEFT: case KeyEvent.VK_RIGHT: /*case KeyEvent.VK_KP_UP: case KeyEvent.VK_KP_DOWN:
+					case KeyEvent.VK_KP_LEFT: case KeyEvent.VK_KP_RIGHT:*/
+						controlsController.changeButton(key);
+						Game.escapePressedNegateAction = false;
+						Game.enterButtonPushedDown = false;
+						break;
+					default:
+						break;
+					}
 			}
 			else {
 				switch(key) {
@@ -7160,6 +10326,27 @@ public class Game extends Canvas implements Runnable {
 						if(Game.selectorButtonPosition == -1) {
 							Game.selectorButtonPosition = -4;
 							Game.State = Game.STATE.SETTINGS;
+							if(Game.smb3KickSoundLoop.clipIsActive())
+								Game.smb3KickSoundLoop.stop();
+							Game.smb3KickSoundLoop.play();
+						}
+						else if(Game.selectorButtonPosition == 0) {
+							if(Game.rescanButtonCounter < 10) {
+								ReadAllEvents.resettingControllerEnvironment = true;
+								DirectAndRawInputEnvironmentPlugin directEnv = new DirectAndRawInputEnvironmentPlugin();
+								if(directEnv != null & directEnv.isSupported())
+									ControllerEnvironment.setDefaultEnvironment(directEnv);
+								ReadAllEvents.controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
+								Game.rescanButtonCounter++;
+							}
+							else {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
 						}
 						else if(Game.selectorButtonPosition == -26) {
 							Game.upKey = KeyEvent.VK_W;
@@ -7170,6 +10357,14 @@ public class Game extends Canvas implements Runnable {
 							Game.itemKey = KeyEvent.VK_E;
 							Game.pauseKey = KeyEvent.VK_ENTER;
 							Game.cancelKey = KeyEvent.VK_ESCAPE;
+							XInputDevice.upKey = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+							XInputDevice.downKey = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+							XInputDevice.leftKey = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+							XInputDevice.rightKey = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+							XInputDevice.shootKey = XInputConstants.XINPUT_GAMEPAD_A;
+							XInputDevice.itemKey = XInputConstants.XINPUT_GAMEPAD_X;
+							XInputDevice.pauseKey = XInputConstants.XINPUT_GAMEPAD_START;
+							XInputDevice.cancelKey = XInputConstants.XINPUT_GAMEPAD_B;
 							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
 							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
 							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
@@ -7186,6 +10381,9 @@ public class Game extends Canvas implements Runnable {
 							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
 							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
 							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+							XInputDevice.lTrigger = XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER;
+							XInputDevice.rTrigger = XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER;
+							SwitchedValues.resetControlsfromResetButton();
 							Game.writeOnceToSettings = true;
 							Game.writeOnceProperty = "upKey";
 							Game.writeOnceString = String.valueOf(KeyEvent.VK_W);
@@ -7203,6 +10401,22 @@ public class Game extends Canvas implements Runnable {
 							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ENTER));
 							Game.writeMultipleProperty.add("cancelKey");
 							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ESCAPE));
+							Game.writeMultipleProperty.add("upKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP));
+							Game.writeMultipleProperty.add("downKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN));
+							Game.writeMultipleProperty.add("leftKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT));
+							Game.writeMultipleProperty.add("rightKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT));
+							Game.writeMultipleProperty.add("shootKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_A));
+							Game.writeMultipleProperty.add("itemKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_X));
+							Game.writeMultipleProperty.add("pauseKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_START));
+							Game.writeMultipleProperty.add("cancelKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_B));
 							Game.writeMultipleProperty.add("upButton");
 							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP));
 							Game.writeMultipleProperty.add("downButton");
@@ -7235,15 +10449,45 @@ public class Game extends Canvas implements Runnable {
 							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON));
 							Game.writeMultipleProperty.add("unknownButton");
 							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_UNKNOWN));
+							Game.writeMultipleProperty.add("lTriggerButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER));
+							Game.writeMultipleProperty.add("rTriggerButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER));
+							Game.writeMultipleProperty.add("upKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.upKey);
+							Game.writeMultipleProperty.add("downKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.downKey);
+							Game.writeMultipleProperty.add("leftKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.leftKey);
+							Game.writeMultipleProperty.add("rightKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.rightKey);
+							Game.writeMultipleProperty.add("shootKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.shootKey);
+							Game.writeMultipleProperty.add("itemKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.itemKey);
+							Game.writeMultipleProperty.add("pauseKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.pauseKey);
+							Game.writeMultipleProperty.add("cancelKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.cancelKey);
 							Game.settingsSetup = false;
+							if(Game.smb3TailSoundLoop.clipIsActive())
+								Game.smb3TailSoundLoop.stop();
+							Game.smb3TailSoundLoop.play();
 						}
 						else if(Game.selectorButtonPosition < -1 && Game.selectorButtonPosition > -26) {
+							if(Game.selectorButtonPosition<= -18 && -25 <= Game.selectorButtonPosition) {
+								Game.gameControllerInUse = true;
+								Game.gameControllerInUseDI = true;
+								Game.gameControllerSwitchBack = true;
+								Game.gameControllerSwitchBackDI = true;
+							}
+							else if(Game.selectorButtonPosition<= -10 && -17 <= Game.selectorButtonPosition) {
+								Game.gameControllerInUse = true;
+								Game.gameControllerSwitchBack = true;
+							}
 							ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
 							ControlsController.buttonToChange = Game.selectorButtonPosition;
 						}
-						if(smb3KickSoundLoop.clipIsActive())
-							smb3KickSoundLoop.stop();
-						smb3KickSoundLoop.play();
 					}
 					Game.escapePressedNegateAction = false;
 					break;
@@ -7276,11 +10520,447 @@ public class Game extends Canvas implements Runnable {
 					case -1:
 						Game.selectorButtonPosition = -5;
 						Game.State = Game.STATE.SETTINGS;
-						break;	
+						if(Game.smb3KickSoundLoop.clipIsActive())
+							Game.smb3KickSoundLoop.stop();
+						Game.smb3KickSoundLoop.play();
+						break;
+					case -2:
+						if(Game.gameTrackPosition > 0)
+							Game.gameTrackPosition--;
+						else
+							Game.gameTrackPosition = 7;//Set to Max Tracks
+						Game.gameTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.gameTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -3:
+						if(Game.menuTrackPosition > 0)
+							Game.menuTrackPosition--;
+						else
+							Game.menuTrackPosition = 4;//Set to Max Tracks
+						Game.menuTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.menuTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -4:
+						if(Game.gameTrackPosition == 7)//Max Tracks
+							Game.gameTrackPosition = 0;
+						else 
+							Game.gameTrackPosition++;
+						Game.gameTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.gameTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -5:
+						if(Game.menuTrackPosition == 4)//Max Tracks
+							Game.menuTrackPosition = 0;
+						else 
+							Game.menuTrackPosition++;
+						Game.menuTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.menuTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -6://play1
+						boolean b = true;
+						switch(Game.gameTrackPosition) {
+						case 4:
+							if(!Game.track4Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								b = false;
+							}
+							break;
+						case 5:
+							if(!Game.track5Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								b = false;
+							}
+							break;
+						case 6:
+							if(!Game.track6Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								b = false;
+							}
+							break;
+						default:
+							break;
+						}
+						if(b)
+							TrackController.readyToSwitch1 = true;
+						break;
+					case -7://play2
+						boolean bb = true;
+						switch(Game.menuTrackPosition) {
+						case 4:
+							if(!Game.menuTrack4Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								bb = false;
+							}
+							break;
+						default:
+							break;
+						}
+						if(bb)
+							TrackController.readyToSwitch2 = true;
+						break;
+					case -8://stop1
+						if(Game.gameTrackCurrentlyPlaying != -1) {// && Game.gameTrackCurrentlyPlaying == Game.gameTrackPosition) {
+							TrackController.trackSetup = false;
+							Game.trackCurrentlyPlaying = false;
+							Game.gameSoundLoops.get(Game.gameTrackCurrentlyPlaying).stop();
+							Game.gameSoundLoops.get(Game.gameTrackCurrentlyPlaying).setFramePosition(0);
+						}
+						else
+							Game.gameSoundLoops.get(Game.gameTrackPosition).setFramePosition(0);
+						if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+							Game.smb3Checkmark2SoundLoop.stop();
+						Game.smb3Checkmark2SoundLoop.play();
+						break;
+					case -9://stop2
+						if(Game.trackCurrentlyPlaying && Game.menuTrackCurrentlyPlaying != -1) { //&& Game.menuTrackCurrentlyPlaying == Game.menuTrackPosition) {
+							TrackController.trackSetup = false;
+							Game.trackCurrentlyPlaying = false;
+							Game.menuSoundLoops.get(Game.menuTrackCurrentlyPlaying).stop();
+							Game.menuSoundLoops.get(Game.menuTrackCurrentlyPlaying).setFramePosition(0);
+						}
+						else if(Game.menuTrackCurrentlyPlaying != -1)//Game.menuTrackPosition != Game.menuSoundLoopRandomizer)
+							Game.menuSoundLoops.get(Game.menuTrackPosition).setFramePosition(0);
+						if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+							Game.smb3Checkmark2SoundLoop.stop();
+						Game.smb3Checkmark2SoundLoop.play();
+						break;
+					case -10://set1
+						String s = "";
+						String ss = "";
+						switch(Game.gameTrackPosition) {
+						case 0:
+							s = "gameTrack1Set";
+							if(Game.gameTrack1Set) {
+								Game.gameTrack1Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack1Set = true;
+								ss = "true";
+							}
+							break;
+						case 1:
+							s = "gameTrack2Set";
+							if(Game.gameTrack2Set) {
+								Game.gameTrack2Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack2Set = true;
+								ss = "true";
+							}
+							break;
+						case 2:
+							s = "gameTrack3Set";
+							if(Game.gameTrack3Set) {
+								Game.gameTrack3Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack3Set = true;
+								ss = "true";
+							}
+							break;
+						case 3:
+							s = "gameTrack4Set";
+							if(Game.gameTrack4Set) {
+								Game.gameTrack4Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack4Set = true;
+								ss = "true";
+							}
+							break;
+						case 4:
+							s = "gameTrack5Set";
+							if(Game.gameTrack5Set || !Game.track4Unlocked) {
+								if(!Game.track4Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.gameTrack5Set = false;
+								ss = "false";
+							}
+							else {
+								Game.gameTrack5Set = true;
+								ss = "true";
+							}
+							break;
+						case 5:
+							s = "gameTrack6Set";
+							if(Game.gameTrack6Set || !Game.track5Unlocked) {
+								if(!Game.track5Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.gameTrack6Set = false;
+								ss = "false";
+							}
+							else {
+								Game.gameTrack6Set = true;
+								ss = "true";
+							}
+							break;
+						case 6:
+							s = "gameTrack7Set";
+							if(Game.gameTrack7Set || !Game.track6Unlocked) {
+								if(!Game.track6Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.gameTrack7Set = false;
+								ss = "false";
+							}
+							else {
+								Game.gameTrack7Set = true;
+								ss = "true";
+							}
+							break;
+						case 7:
+							s = "gameTrack8Set";
+							if(Game.gameTrack8Set) {
+								Game.gameTrack8Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack8Set = true;
+								ss = "true";
+							}
+							break;
+						default:
+							break;
+						}
+						if(ss.equals("true")) {
+							if(Game.smb3ItemSoundLoop.clipIsActive())
+								Game.smb3ItemSoundLoop.stop();
+							Game.smb3ItemSoundLoop.play();
+						}
+						if(!s.equals("") && !ss.equals("")) {
+							try {
+								LeaderboardController.writeToSettings(s, ss);
+							} catch (IOException e1) {
+							}
+							if(ss.equals("true") && Game.soundRandomizer == 8 && Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1) {
+								int randomIPlus = 0;
+								if(Game.track4Unlocked)
+									randomIPlus++;
+								if(Game.track5Unlocked)
+									randomIPlus++;
+								if(Game.track6Unlocked)
+									randomIPlus++;
+								Random rand = new Random();
+								Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+								Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+								//setsetup[VolumeSlider.TrackSetup]
+								if(Game.soundRandomizer != -4) {
+									Game.gameSoundLoops.get(Game.soundRandomizer).stop();
+									Game.gameSoundLoops.get(Game.soundRandomizer).setSoundLoopBoolean(true);
+									Game.gameSoundLoops.get(Game.soundRandomizer).setFramePosition(0);
+//									Game.gameSoundLoops.get(Game.soundRandomizer).play();
+								}
+								else
+									Game.soundRandomizer = 8;
+							}
+							else if(ss.equals("false")) {  
+								if(Game.gameTrack1Set == false && Game.gameTrack2Set == false && Game.gameTrack3Set == false && 
+									Game.gameTrack4Set == false && Game.gameTrack5Set == false && Game.gameTrack6Set == false && 
+									Game.gameTrack7Set == false && Game.gameTrack8Set == false && Game.soundRandomizer != 8 &&
+									Game.soundRandomizer != -4) 
+								Game.soundRandomizer = 8;
+							}
+						}
+						break;
+					case -11://set2
+						String string1 = "";
+						String string2 = "";
+						switch(Game.menuTrackPosition) {
+						case 0:
+							string1 = "menuTrack1Set";
+							if(Game.menuTrack1Set) {
+								Game.menuTrack1Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 0) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack1Set = true;
+								string2 = "true";
+							}
+							break;
+						case 1:
+							string1 = "menuTrack2Set";
+							if(Game.menuTrack2Set) {
+								Game.menuTrack2Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 1) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack2Set = true;
+								string2 = "true";
+							}
+							break;
+						case 2:
+							string1 = "menuTrack3Set";
+							if(Game.menuTrack3Set) {
+								Game.menuTrack3Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 2) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack3Set = true;
+								string2 = "true";
+							}
+							break;
+						case 3:
+							string1 = "menuTrack4Set";
+							if(Game.menuTrack4Set) {
+								Game.menuTrack4Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 3) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack4Set = true;
+								string2 = "true";
+							}
+							break;
+						case 4:
+							string1 = "menuTrack5Set";
+							if(Game.menuTrack5Set || !Game.menuTrack4Unlocked) {
+								if(!Game.menuTrack4Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.menuTrack5Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 4) 
+									Game.resetMenuSound();
+							}
+							else {
+								Game.menuTrack5Set = true;
+								string2 = "true";
+							}
+							break;
+						default:
+							break;
+						}
+						if(string2.equals("true")) {
+							if(Game.smb3ItemSoundLoop.clipIsActive())
+								Game.smb3ItemSoundLoop.stop();
+							Game.smb3ItemSoundLoop.play();
+						}
+						if(!string1.equals("") && !string2.equals("")) {
+							try {
+								LeaderboardController.writeToSettings(string1, string2);
+							} catch (IOException e1) {
+							}
+
+							if(string2.equals("true") && Game.menuSoundLoopRandomizer == 5 && Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1) {
+								Random rand = new Random();
+								Game.menuSoundLoopRandomizer = rand.nextInt(5);
+								VolumeSlider.adjustVolume(Game.menuSoundLoops, Game.gameSoundLoops);
+								Game.menuSoundLoopRandomizer = VolumeSlider.menuTrackSetup(Game.menuSoundLoopRandomizer);
+								if(Game.menuSoundLoopRandomizer == -2)
+									Game.menuSoundLoopRandomizer = 5;
+								if(Game.menuSoundLoopRandomizer == 2) 
+//									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(864007, 1728014);//Seconds.millisec * 44100
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(432004, 864007);//Seconds.millisec * 22050
+								else if(Game.menuSoundLoopRandomizer == 3) 
+//									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(464196, 1949705);//Seconds.millisec * 44100
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(232098, 974853);//Seconds.millisec * 22050
+								else if(Game.menuSoundLoopRandomizer == 4)
+//									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(545561, 2291391);//Seconds.millisec * 44100
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(272781, 1145696);//Seconds.millisec * 22050
+								else
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loop();
+								Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+							}
+							else if(string2.equals("false")) {
+								if(Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1 && 
+									Game.menuTrack1Set == false && Game.menuTrack2Set == false && Game.menuTrack3Set == false && 
+									Game.menuTrack4Set == false && Game.menuTrack5Set == false && Game.menuSoundLoopRandomizer != 5 &&
+									Game.menuSoundLoopRandomizer != -2) {
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).stop();
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setFramePosition(0);
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
+									Game.menuSoundLoopRandomizer = 5;
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loop();
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+								}
+							}
+						}
+						break;
 					}
-					if(smb3KickSoundLoop.clipIsActive())
-						smb3KickSoundLoop.stop();
-					smb3KickSoundLoop.play();
 				}
 				Game.escapePressedNegateAction = false;
 				break;
@@ -7292,8 +10972,6 @@ public class Game extends Canvas implements Runnable {
 						Game.keysAreInUse = false;
 					else
 						Game.keysAreInUse = true;
-					if(Game.selectorButtonPosition != -1)
-						Game.selectorButtonPosition = -1;
 					break;
 				}
 				break;
@@ -7307,23 +10985,43 @@ public class Game extends Canvas implements Runnable {
 		}
 	}
 	public void deviceInput() {
+		if(connectingToServer)
+			return;
 		XInputComponents components = device.getComponents();
 	    XInputButtons buttons = components.getButtons();
 	    XInputAxes axes = components.getAxes();
 	    XInputComponentsDelta delta = device.getDelta();
 	    XInputButtonsDelta buttonsDelta = delta.getButtons();
 	    XInputAxesDelta axesDelta = delta.getAxes();
+	    int lTrigger = axes.ltRaw;
+	    int rTrigger = axes.rtRaw;
 	    float lX = axes.lx;
 	    float lY = axes.ly;
 	    float rX = axes.rx;
 	    float rY = axes.ry;
-	    float lTrigger = axes.lt;
-	    float rTrigger = axes.rt;
+	    float lTriggerFloat = axes.lt;
+	    float rTriggerFloat = axes.rt;
 	    float lXDelta = axesDelta.getLXDelta();
 	    float lYDelta = axesDelta.getLYDelta();
 	    float rXDelta = axesDelta.getRXDelta();
 	    float rYDelta = axesDelta.getRYDelta();
-	    if(gameControllerInUse == false) {
+    	//TRIGGERS
+    	if(0.3 < lTrigger && (!XInputDevice.lTriggerPressed || !XInputDevice.lTriggerReleased)) {
+	    	XInputDevice.lTriggerPressed = true;
+	    	XInputDevice.lTriggerReleased = true;
+	    }
+	    else if(lTrigger ==0 && XInputDevice.lTriggerPressed){
+	    	XInputDevice.lTriggerPressed = false;
+	    }
+	    if(0.3 < rTrigger && (!XInputDevice.rTriggerPressed || !XInputDevice.rTriggerReleased)) {
+	    	XInputDevice.rTriggerPressed = true;
+	    	XInputDevice.rTriggerReleased = true;
+	    }
+	    else if(rTrigger ==0 && XInputDevice.rTriggerPressed){
+	    	XInputDevice.rTriggerPressed = false;
+	    }
+    	//TRIGGERS
+	    if(gameControllerInUse == false || gameControllerInUseDI == true) {
 	    	joystickTimer = 0;
 	    	if(lX > 0.15 || lX < -0.15 || rX > 0.15 || rX < -0.15 || lY > 0.15 || lY < -0.15 || rY > 0.15 || rY < -0.15) {
 	 	    	if(Game.State == STATE.SET_SCORE && selectorButtonPosition == 0 ||
@@ -7332,14 +11030,19 @@ public class Game extends Canvas implements Runnable {
 	 	    	else
 	 	    		Game.keysAreInUse = true;
 	    		gameControllerInUse = true;
+	    		gameControllerInUseDI = false;
+	    		XInputDevice.reset();
 	    	}
-	    	if(lTrigger == 1 || rTrigger == 1) {
+	    	if((!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased) || 
+	    			(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)) {
 	    		if(Game.State == STATE.SET_SCORE && selectorButtonPosition == 0 ||
 		 	    		((State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN || State == STATE.TRANSITION_ITEM)))
 		 	    		Game.keysAreInUse = false;
 	 	    	else
 	 	    		Game.keysAreInUse = true;
 	    		gameControllerInUse = true;
+	    		gameControllerInUseDI = false;
+	    		XInputDevice.reset();
 	    	}
 	    	if(buttonsDelta.isReleased(XInputButton.A) || buttonsDelta.isReleased(XInputButton.B) ||
 	    		buttonsDelta.isReleased(XInputButton.X) || buttonsDelta.isReleased(XInputButton.Y) ||
@@ -7395,40 +11098,80 @@ public class Game extends Canvas implements Runnable {
 	 	    		Game.keysAreInUse = true;
 	 	    	}
 	    		gameControllerInUse = true;
-	    		return;
+	    		gameControllerInUseDI = false;
+	    		XInputDevice.reset();
 	    	}
 	    	XInputDevice.upHeld = false;
 	    	XInputDevice.downHeld = false;
 	    	XInputDevice.leftHeld = false;
 	    	XInputDevice.rightHeld = false;
+    		return;
 	    }
-	    if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
-			XInputDevice.upHeld = true;
-		}
-		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
-			XInputDevice.downHeld = true;
-		}
-		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
-			XInputDevice.leftHeld = true;
-		}
-		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
-			XInputDevice.rightHeld = true;
-		}
-	    if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
-			XInputDevice.upHeld = false;
-		}
-		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
-			XInputDevice.downHeld = false;
-		}
-		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
-			XInputDevice.leftHeld = false;
-		}
-		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
-			XInputDevice.rightHeld = false;
-		}
+	    if(gameControllerInUseDI)
+	    	return;
+//	    System.out.println("lTriggerPressed = "+XInputDevice.lTriggerPressed+" lTriggerReleased = "+XInputDevice.lTriggerReleased);
+	    //TEST
+    	if(ControlsController.buttonChangeTimer < System.currentTimeMillis()) {
+    		XInputDevice.emulatedControls(this,lTrigger,rTrigger);
+    	}
+//	    if(0.3 < lTrigger && (!XInputDevice.lTriggerPressed || !XInputDevice.lTriggerReleased)) {
+//	    	XInputDevice.lTriggerPressed = true;
+//	    	XInputDevice.lTriggerReleased = true;
+//	    }
+//	    else if(lTrigger == 0 && XInputDevice.lTriggerPressed){
+//	    	XInputDevice.lTriggerPressed = false;
+//	    }
+//	    if(0.3 < rTrigger && (!XInputDevice.rTriggerPressed || !XInputDevice.rTriggerReleased)) {
+//	    	XInputDevice.rTriggerPressed = true;
+//	    	XInputDevice.rTriggerReleased = true;
+//	    }
+//	    else if(rTrigger == 0 && XInputDevice.rTriggerPressed){
+//	    	XInputDevice.rTriggerPressed = false;
+//	    }
+//	    if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased){
+//	    	if(XInputDevice.a == XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER)
+//	    		XInputButtons
+//	    }
+	    //TEST
+//	    if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+//			XInputDevice.upHeld = true;
+//		}
+//		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+//			XInputDevice.downHeld = true;
+//		}
+//		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+//			XInputDevice.leftHeld = true;
+//		}
+//		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+//			XInputDevice.rightHeld = true;
+//		}
+//	    if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+//			XInputDevice.upHeld = false;
+//		}
+//		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+//			XInputDevice.downHeld = false;
+//		}
+//		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+//			XInputDevice.leftHeld = false;
+//		}
+//		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+//			XInputDevice.rightHeld = false;
+//		}
 	    if(State == STATE.MENU && gameControllerInUse) {
 	    	//if((lY > .65 || (device.getComponents().getButtons().up)) && joystickTimer < System.currentTimeMillis()) {
 	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if((XInputDevice.upHeld) && cheatTimer < System.currentTimeMillis()) {
+	    			cheatString = "u";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.upHeld) && System.currentTimeMillis() < cheatTimer && cheatString.equals("u")) {
+	    			cheatString = "uu";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.upHeld) && System.currentTimeMillis() < cheatTimer) {
+	    			cheatString = "";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
 	    		if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				if(Game.selectorButtonPosition > 0) {
@@ -7454,6 +11197,18 @@ public class Game extends Canvas implements Runnable {
 	    	}
 	    	//else if((lY < -.65 || (device.getComponents().getButtons().down)) && joystickTimer < System.currentTimeMillis()) {
 	    	else if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if((XInputDevice.downHeld) && System.currentTimeMillis() < cheatTimer && cheatString.equals("uu")) {
+	    			cheatString = "uud";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.downHeld) && System.currentTimeMillis() < cheatTimer && cheatString.equals("uud")) {
+	    			cheatString = "uudd";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.downHeld) && System.currentTimeMillis() < cheatTimer) {
+	    			cheatString = "";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
 	    		if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				if(Game.selectorButtonPosition < 0) {
@@ -7479,6 +11234,18 @@ public class Game extends Canvas implements Runnable {
 	    	}
 	    	//if((lX < -.65 || (device.getComponents().getButtons().left)) && joystickTimer < System.currentTimeMillis()) {
 	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if((XInputDevice.leftHeld) && System.currentTimeMillis() < cheatTimer && cheatString.equals("uudd")) {
+	    			cheatString = "uuddl";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.leftHeld) && System.currentTimeMillis() < cheatTimer && cheatString.equals("uuddlr")) {
+	    			cheatString = "uuddlrl";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.leftHeld) && System.currentTimeMillis() < cheatTimer) {
+	    			cheatString = "";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
 	    		if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				if(Game.selectorButtonPosition == 0) {
@@ -7504,6 +11271,18 @@ public class Game extends Canvas implements Runnable {
 	    	}
 	    	//else if((lX > .65 || (device.getComponents().getButtons().right)) && joystickTimer < System.currentTimeMillis()) {
 	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if((XInputDevice.rightHeld) && System.currentTimeMillis() < cheatTimer && cheatString.equals("uuddl")) {
+	    			cheatString = "uuddlr";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.rightHeld) && System.currentTimeMillis() < cheatTimer && cheatString.equals("uuddlrl")) {
+	    			cheatString = "uuddlrlr";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+	    		else if((XInputDevice.rightHeld) && System.currentTimeMillis() < cheatTimer) {
+	    			cheatString = "";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
 	    		if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 				if(Game.selectorButtonPosition == 0) {
@@ -7537,91 +11316,144 @@ public class Game extends Canvas implements Runnable {
 	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 	    		joystickTimer = 0;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.A)||
-		    	device.getDelta().getButtons().isPressed(XInputButton.START)) {
-				Game.enterButtonPushedDown = true;
+	    	if(XInputDevice.shootPressed ||
+		    	XInputDevice.pausePressed) {
+	    		if(!cheatString.equals("uuddlrlrb") && !cheatString.equals("uuddlrlrba"))
+	    			Game.enterButtonPushedDown = true;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.A)||
-	    		device.getDelta().getButtons().isReleased(XInputButton.START)) {
-				Game.enterButtonPushedDown = false;
-				if(!Game.escapePressedNegateAction) {
-					switch(Game.selectorButtonPosition) {
-						case -3:
-							Game.selectorButtonPosition = -1;
-							State = STATE.LEADERBOARD;
-							if(smb3OpenSoundLoop.clipIsActive())
-								smb3OpenSoundLoop.stop();
-							smb3OpenSoundLoop.play();
-							break;
-						case -2:
-							Game.selectorButtonPosition = -1;
-							State = STATE.SETTINGS;
-							if(smb3OpenSoundLoop.clipIsActive())
-								smb3OpenSoundLoop.stop();
-							smb3OpenSoundLoop.play();
-							break;
-						case -1:
-							Game.selectorButtonPosition = -1;
-							State = STATE.HELP;
-							if(smb3OpenSoundLoop.clipIsActive())
-								smb3OpenSoundLoop.stop();
-							smb3OpenSoundLoop.play();
-							break;
-						case 0:
-							if(skipAnimations)
-								State = STATE.GAME;
-							else
-								State = STATE.TRANSITION_ENTRANCE;
-							Game.keysAreInUse = false;
-							smb3CoinSoundLoop.play();
-							break;
-						case 1:
-							Game.selectorButtonPosition = -1;
-							State = STATE.SHOP;
-							if(smb3OpenSoundLoop.clipIsActive())
-								smb3OpenSoundLoop.stop();
-							smb3OpenSoundLoop.play();
-							break;
-						case 2:
-							System.exit(1);
-							break;
-					}
-				}
-				Game.escapePressedNegateAction = false;
-	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)	||	
-	    		device.getDelta().getButtons().isPressed(XInputButton.BACK)) {
-	    		if(Game.mouseIsClickedDown) {
-					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.playHighlighted ||
-							Game.shopHighlighted || Game.exitHighlighted || Game.helpHighlighted ||
-							Game.settingsHighlighted || Game.leaderboardHighlighted))
-						Game.mouseIsOffClickedObjectAndHeldDown = true;
-					Game.playClicked = false;
-					Game.shopClicked = false;
-					Game.exitClicked = false;
-					Game.helpClicked = false;
-					Game.settingsClicked = false;
-					Game.leaderboardClicked = false;
-					Game.escapePressedNegateAction = true;
+	    	if((!XInputDevice.shootPressed && XInputDevice.shootReleased)||
+	    			(!XInputDevice.pausePressed && XInputDevice.pauseReleased)) {
+//	    		if(device.getDelta().getButtons().isReleased(XInputButton.B) &&
+	    		if((!XInputDevice.shootPressed && XInputDevice.shootReleased) && 
+	    				System.currentTimeMillis() < cheatTimer && cheatString.equals("uuddlrlrb")) {
+	    			cheatString = "uuddlrlrba";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
 	    		}
-	    		else if(Game.enterButtonPushedDown)
-					Game.escapePressedNegateAction = true;
-	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.B) ||
-		    	device.getDelta().getButtons().isReleased(XInputButton.X)	||	
-		    	device.getDelta().getButtons().isReleased(XInputButton.BACK)) {
-	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
-					Game.selectorBPMP = Game.selectorButtonPosition;
+	    		else if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) && 
+	    				System.currentTimeMillis() < cheatTimer && cheatString.equals("uuddlrlrba")) {
+	    			if(smwCheatFullSoundLoop.clipIsActive())
+						smwCheatFullSoundLoop.stop();
+					smwCheatFullSoundLoop.play();
+					cheatString = "";
+					cheatTimer = System.currentTimeMillis() + 1500;
+					currentlySelectedFireball = 5;
+					currentlySelectedCharacterSkin = 5;
+					fireballPosition = 5;
+					characterSkinPosition = 5;
+					p.changeAnimations(5);
+					if(fireballSFX != null)
+						fireballSFX.close();
+					if(fireballPopSFX != null)
+						fireballPopSFX.close();
+					fireballSFX = new SoundLoops("res/Sounds/SFX/contrashootsfx.wav");
+					fireballPopSFX = new SoundLoops("res/Sounds/SFX/contrafireballpopsfx.wav");
+					VolumeSlider.adjustSFX(fireballSFX);
+					VolumeSlider.adjustSFX(fireballPopSFX);
+					skinNumber = null;
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    			return;
+	    		}
+	    		else {
+	    			if(System.currentTimeMillis() < cheatTimer) {
+		    		cheatString = "";
+		    		cheatTimer = System.currentTimeMillis() + 1500;
+	    			}
+					Game.enterButtonPushedDown = false;
+					if(!Game.escapePressedNegateAction) {
+						switch(Game.selectorButtonPosition) {
+							case -3:
+								Game.selectorButtonPosition = -1;
+								State = STATE.LEADERBOARD;
+								if(smb3OpenSoundLoop.clipIsActive())
+									smb3OpenSoundLoop.stop();
+								smb3OpenSoundLoop.play();
+								break;
+							case -2:
+								Game.selectorButtonPosition = -1;
+								State = STATE.SETTINGS;
+								if(smb3OpenSoundLoop.clipIsActive())
+									smb3OpenSoundLoop.stop();
+								smb3OpenSoundLoop.play();
+								break;
+							case -1:
+								Game.selectorButtonPosition = -1;
+								State = STATE.HELP;
+								if(smb3OpenSoundLoop.clipIsActive())
+									smb3OpenSoundLoop.stop();
+								smb3OpenSoundLoop.play();
+								break;
+							case 0:
+								if(skipAnimations)
+									State = STATE.GAME;
+								else
+									State = STATE.TRANSITION_ENTRANCE;
+								Game.keysAreInUse = false;
+								smb3CoinSoundLoop.play();
+								break;
+							case 1:
+								Game.selectorButtonPosition = -1;
+								State = STATE.SHOP;
+								if(smb3OpenSoundLoop.clipIsActive())
+									smb3OpenSoundLoop.stop();
+								smb3OpenSoundLoop.play();
+								break;
+							case 2:
+								this.closeGame();
+								System.exit(1);
+								break;
+						}
+					}
 					Game.escapePressedNegateAction = false;
-					if(Game.gameControllerInUse) {
-						Game.gameControllerInUse = false;
-						Game.keysAreInUse = false;
-					}
-					else {
-						Game.gameControllerInUse = true;
-						Game.keysAreInUse = true;
-					}
+	    		}
+	    	}
+	    	if(XInputDevice.cancelPressed || XInputDevice.itemPressed) {
+	    		if(!cheatString.equals("uuddlrlr")) {
+		    		if(Game.mouseIsClickedDown) {
+						if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.playHighlighted ||
+								Game.shopHighlighted || Game.exitHighlighted || Game.helpHighlighted ||
+								Game.settingsHighlighted || Game.leaderboardHighlighted))
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.playClicked = false;
+						Game.shopClicked = false;
+						Game.exitClicked = false;
+						Game.helpClicked = false;
+						Game.settingsClicked = false;
+						Game.leaderboardClicked = false;
+						Game.escapePressedNegateAction = true;
+		    		}
+		    		else if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+	    		}
+	    	}
+	    	if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+	    			(!XInputDevice.itemPressed && XInputDevice.itemReleased)) {
+//	    		if(device.getDelta().getButtons().isReleased(XInputButton.B) &&
+	    		if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) &&
+	    				System.currentTimeMillis() < cheatTimer && cheatString.equals("uuddlrlr")) {
+	    			cheatString = "uuddlrlrb";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+	    		}
+//	    		else if(System.currentTimeMillis() < cheatTimer) {
+//	    			cheatString = "";
+//	    			cheatTimer = System.currentTimeMillis() + 1500;
+//	    		}
+	    		else {
+	    			cheatString = "";
+	    			cheatTimer = System.currentTimeMillis() + 1500;
+		    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
+						Game.selectorBPMP = Game.selectorButtonPosition;
+						Game.escapePressedNegateAction = false;
+						if(Game.gameControllerInUse) {
+							Game.gameControllerInUse = false;
+							Game.keysAreInUse = false;
+							if(gameControllerInUseDI)
+								gameControllerInUseDI = false;
+						}
+						else {
+							Game.gameControllerInUse = true;
+							Game.keysAreInUse = true;
+						}
+		    		}
 	    		}
 	    	}
 	    	/*
@@ -7654,14 +11486,15 @@ public class Game extends Canvas implements Runnable {
 		    			p.animr.setSpeed(10);
 		    		}
 		    		else if(p.getVelX() >= 3 && p.getVelX() <= 5) {
-		    			p.setVelX(p.getVelX() + lX/3);
+		    			p.setVelX(p.getVelX() + lX/4);//lX/3
 		    			p.animr.setSpeed(8);
 		    		}
 		    		else if(!xLBoolean)
-		    			p.setVelX(p.getVelX() + lX/6);
+		    			p.setVelX(p.getVelX() + lX/7);//lX/6
 		    		if(p.getVelX() >= 5) {
 		    			p.setVelX(5);
 		    			p.animr.setSpeed(6);
+		    			slowDownForAnalogTimer = System.currentTimeMillis() + 200;
 		    		}
 		    		/*
 		    		if(lX*7 > 5) 
@@ -7670,7 +11503,11 @@ public class Game extends Canvas implements Runnable {
 		    			p.setVelX(lX*7);
 		    		*/
 					xRBoolean = true;
-					xLBoolean = false;
+					if(xLBoolean) {
+//						runningTimerLong = System.currentTimeMillis();	//No slide after change
+//						slowDownForAnalogTimer = 0;						//No slide after change
+						xLBoolean = false;
+					}
 					slowingDownTimerLong = 0;
 					slowingDownActivatedl = false;
 					slowingDownActivatedr = false;
@@ -7695,14 +11532,15 @@ public class Game extends Canvas implements Runnable {
 		    			p.animl.setSpeed(10);
 		    		}
 		    		else if(p.getVelX() <= -3 && p.getVelX() >= -5) {
-		    			p.setVelX(p.getVelX()+ lX/3);
+		    			p.setVelX(p.getVelX()+ lX/4);//lX/3
 		    			p.animl.setSpeed(8);
 		    		}
 		    		else if(!xRBoolean)
-		    			p.setVelX(p.getVelX() +lX/6);
+		    			p.setVelX(p.getVelX() +lX/7);//lX/6
 		    		if(p.getVelX() <= -5) {
 		    			p.setVelX(-5);
 		    			p.animl.setSpeed(6);
+		    			slowDownForAnalogTimer = System.currentTimeMillis() + 200;
 		    		}
 		    		/*
 		    		if(lX*7 < -5)
@@ -7711,7 +11549,11 @@ public class Game extends Canvas implements Runnable {
 		    			p.setVelX(lX*7);
 		    			*/
 					xLBoolean = true;
-					xRBoolean = false;
+					if(xRBoolean) {
+//						runningTimerLong = System.currentTimeMillis();	//No slide after change
+//						slowDownForAnalogTimer = 0;						//No slide after change
+						xRBoolean = false;
+					}
 					slowingDownTimerLong = 0;
 					slowingDownActivatedl = false;
 					slowingDownActivatedr = false;
@@ -7765,6 +11607,7 @@ public class Game extends Canvas implements Runnable {
 				if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
 					p.setRunningStartUp(0);
 				xLBoolean = true;
+				xRBoolean = false;
 				slowingDownTimerLong = 0;
 				slowingDownActivatedl = false;
 				slowingDownActivatedr = false;
@@ -7786,6 +11629,7 @@ public class Game extends Canvas implements Runnable {
 				if(p.getVelX() == 0 || (slowingDownActivatedl || slowingDownActivatedr))
 					p.setRunningStartUp(0);
 				xRBoolean = true;
+				xLBoolean = false;
 				slowingDownTimerLong = 0;
 				slowingDownActivatedl = false;
 				slowingDownActivatedr = false;
@@ -7801,7 +11645,7 @@ public class Game extends Canvas implements Runnable {
 					p.setRunningStartL(false);
 				}*/
 	    	}
-	    	else if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+	    	else if(XInputDevice.leftReleased) {
 				xLBoolean = false;
 				p.setRunningStartL(false);
 				if(xRBoolean == true){
@@ -7826,7 +11670,7 @@ public class Game extends Canvas implements Runnable {
 				if(pauseHoldOff)
 					pauseHoldOff = false;
 	    	}
-	    	else if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+	    	else if(XInputDevice.rightReleased) {
 				xRBoolean = false;
 				p.setRunningStartR(false);
 				if(xLBoolean == true){
@@ -7859,7 +11703,8 @@ public class Game extends Canvas implements Runnable {
 						p.setVelX(1.2);
 					}
 					else{
-						if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5 && p.getVelX() <= -1.73)){														//This activates sliding animation for left side
+						if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() <= -5) ||
+								System.currentTimeMillis() < slowDownForAnalogTimer){														//This activates sliding animation for left side
 							slowingDownActivatedl = true;
 							slowingDownTimerLong = System.currentTimeMillis() + 200;
 							slowingDown = -1.73;
@@ -7878,7 +11723,8 @@ public class Game extends Canvas implements Runnable {
 						p.setVelX(-1.2);
 					}
 					else{
-						if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5 && p.getVelX() >= 1.73)){														//This activates sliding animation for right side
+						if(System.currentTimeMillis() - runningTimerLong > 666/2 || (p.getVelX() >= 5) ||
+								System.currentTimeMillis() < slowDownForAnalogTimer){														//This activates sliding animation for right side
 							slowingDownActivatedr = true;
 							slowingDownTimerLong = System.currentTimeMillis() + 200;
 							slowingDown = 1.73;
@@ -7892,6 +11738,11 @@ public class Game extends Canvas implements Runnable {
 					runningTimerActivatedResponse = false;
 	    		}
 	    		if(p.getVelX() != 0 && p.getVelX() != slowingDown) {
+					p.setRunningStartUp(0);			//notsure
+					p.setRunningStartR(false);		//notsure
+					p.setRunningStartL(false);		//notsure
+					runningTimerActivated = false;	//notsure
+					runningTimerLong = 0;			//notsure
 	    			p.setVelX(0);
 					controllerSensitivityTimer = 0;
 	    		}
@@ -7906,7 +11757,7 @@ public class Game extends Canvas implements Runnable {
 	    	}
 	    	if(controllerSensitivityTimer != 0 && p.getVelX() == 0)
 	    		controllerSensitivityTimer = 0;
-	    	if (device.getDelta().getButtons().isPressed(XInputButton.A) && !isShooting){											//Fireballs
+	    	if (XInputDevice.shootPressed && !isShooting){											//Fireballs
 				isShooting = true;
 				if(ea.isEmpty() && !paused){
 					switch(currentlySelectedFireball) {
@@ -7933,12 +11784,14 @@ public class Game extends Canvas implements Runnable {
 					}
 					animationTimer1 = 10;
 					numberOfFireBallsShot++;
-					if(fireballSFX.clipIsActive())
+					if(fireballSFX.clipIsActive()) {
 						fireballSFX.stop();
+						fireballSFX.setFramePosition(0);
+					}
 					fireballSFX.play();
 				}
 			}
-			if(device.getDelta().getButtons().isPressed(XInputButton.START)){
+			if(XInputDevice.pausePressed){
 				if(paused == false && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
 					if(p.getMarioInvincible() == true)
 						this.marioStarSoundLoop.stop();
@@ -7949,6 +11802,10 @@ public class Game extends Canvas implements Runnable {
 					pauseSoundFXTimer = System.currentTimeMillis() + 685;
 					paused = true;
 					userHasPaused = true;
+					if(System.currentTimeMillis() < bowserSpawnSetup && bowserSpawnSetupBoolean == true) {
+						bowserSpawnSetup = 0;
+						bowserSpawnSetupBoolean = false;
+					}
 				}
 				else if(paused == true && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
 					if(pauseSoundFXTimer < System.currentTimeMillis()){
@@ -7974,10 +11831,10 @@ public class Game extends Canvas implements Runnable {
 						keepRunningAfterPauseR = true;
 				}
 			}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.A)){
+	    	if(XInputDevice.shootReleased){
 				isShooting = false;
 			} 
-	    	else if(device.getDelta().getButtons().isReleased(XInputButton.X) && !paused){
+	    	else if(!XInputDevice.itemPressed && XInputDevice.itemReleased && !paused){
 				if(hud.getItemObtained() == true){
 					/*
 					switch(hud.getItemName()){
@@ -7995,12 +11852,14 @@ public class Game extends Canvas implements Runnable {
 					else {
 						State = STATE.TRANSITION_ITEM;
 						Game.keysAreInUse = false;
+						sceneAcknowledgement = false;
+						askToSkipSequence = false;
 					}
 					this.itemName = hud.getItemName();
 					hud.setItemObtained(false);
 				}
 			}
-	    	else if(device.getDelta().getButtons().isReleased(XInputButton.START)) {
+	    	else if(XInputDevice.pauseReleased) {
 				if(!Game.keysAreInUse)
 					Game.keysAreInUse = true;
 			}
@@ -8044,7 +11903,7 @@ public class Game extends Canvas implements Runnable {
 				else
 					joystickTimer = System.currentTimeMillis() + 30;
 	    	}
-	    	else if(((lX > -0.65 && lX < -0.145 && lXDelta < 0.14) || (device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) ||
+	    	else if(((lX > -0.65 && lX < -0.145 && lXDelta < 0.14) || (XInputDevice.leftReleased) ||
 	    			(lX > .145 && keepRunningAfterPauseL)) && joystickTimer < System.currentTimeMillis()) {
 	    		if(!keepRunningAfterPauseR) {
 					dontRunAfterPause = true;
@@ -8065,7 +11924,7 @@ public class Game extends Canvas implements Runnable {
 				else
 					joystickTimer = System.currentTimeMillis() + 30;
 	    	}
-	    	else if(((lX < .65 && lX > 0.145 && lXDelta > -.14) || (device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) ||
+	    	else if(((lX < .65 && lX > 0.145 && lXDelta > -.14) || (XInputDevice.rightReleased) ||
 	    			(lX < -.145 && keepRunningAfterPauseR)) && joystickTimer < System.currentTimeMillis()) {
 	    		if(!keepRunningAfterPauseL) {
 					dontRunAfterPause = true;
@@ -8159,17 +12018,16 @@ public class Game extends Canvas implements Runnable {
 	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 	    		joystickTimer = 0;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    	if(XInputDevice.shootPressed) {
 				if(!Game.keysAreInUse) {
 					Game.keysAreInUse = true;
 				}else {
 					Game.enterButtonPushedDown = true;
 				}
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B)) {
-	    		if(Game.mouseIsClickedDown && !device.getDelta().getButtons().isPressed(XInputButton.START)) {
+	    	if(XInputDevice.pausePressed ||
+		    		XInputDevice.cancelPressed) {
+	    		if(Game.mouseIsClickedDown && !XInputDevice.pausePressed) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.resumeHighlighted ||
 							Game.homeHighlighted || Game.exitHighlighted))
 						Game.mouseIsOffClickedObjectAndHeldDown = true;
@@ -8178,7 +12036,7 @@ public class Game extends Canvas implements Runnable {
 					Game.exitClicked = false;
 					Game.escapePressedNegateAction = true;
 				}
-	    		else if(Game.enterButtonPushedDown && !device.getDelta().getButtons().isPressed(XInputButton.START))
+	    		else if(Game.enterButtonPushedDown && !XInputDevice.pausePressed)
 					Game.escapePressedNegateAction = true;
 				else if(paused == true && soundFXisPlaying == false && !this.pauseSoundFXSoundLoop.clipIsActive()){
 						Game.escapePressedNegateAction = false;
@@ -8195,8 +12053,9 @@ public class Game extends Canvas implements Runnable {
 						userHasPaused = false;
 					}
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    	if(!XInputDevice.shootPressed && XInputDevice.shootReleased) {
 	    		Game.enterButtonPushedDown = false;
+				setIsShooting(false);
 				if(!Game.escapePressedNegateAction) {
 					switch(Game.selectorButtonPosition) {
 						case 0:
@@ -8218,6 +12077,7 @@ public class Game extends Canvas implements Runnable {
 							Game.selectorButtonPosition = 0;
 							break;
 						case 2:
+							this.closeGame();
 							System.exit(1);
 							break;
 					}
@@ -8225,7 +12085,7 @@ public class Game extends Canvas implements Runnable {
 				Game.escapePressedNegateAction = false;
 	    	}
 	    }
-	    else if((State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN) && gameControllerInUse) {
+	    else if((State == STATE.TRANSITION_ENTRANCE || State == STATE.TRANSITION_WIN || State == STATE.CREDITS) && gameControllerInUse) {
 	    	if((lY > .65 || (XInputDevice.upHeld) ||
 	    		lY < -.65 || (XInputDevice.downHeld) ||
 	    		lX > .65 || (XInputDevice.leftHeld) ||
@@ -8242,9 +12102,8 @@ public class Game extends Canvas implements Runnable {
 	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 	    		joystickTimer = 0;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed
 		    		) {
 		    		if(Game.mouseIsClickedDown) {
 						if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.skipHighlighted)
@@ -8261,18 +12120,18 @@ public class Game extends Canvas implements Runnable {
 						Game.escapePressedNegateAction = true;
 					}
 		    	}
-		    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+		    	if(XInputDevice.pausePressed ||
+			    		XInputDevice.shootPressed) {
 		    		if(!Game.keysAreInUse) {//|| sceneAcknowledgement == true){
 						Game.keysAreInUse = true;
 						sceneAcknowledgement = true;
+						Game.enterButtonPushedDown = true;
 					}
 					else if(Game.escapePressedNegateAction == false)
 						Game.enterButtonPushedDown = true;
 		    	}
-		    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-			    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-			    		device.getDelta().getButtons().isReleased(XInputButton.X)
+		    	if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+		    			(!XInputDevice.itemPressed && XInputDevice.itemReleased)
 			    		) {
 		    		if(Game.mouseIsClickedDown || Game.enterButtonPushedDown) {
 					}
@@ -8282,17 +12141,32 @@ public class Game extends Canvas implements Runnable {
 					else {
 						askToSkipSequence = false;
 						Game.keysAreInUse = false;
+						Game.gameControllerInUse = false;
+						Game.gameControllerInUseDI = false;
 						sceneAcknowledgement = false;
 					}
 		    	}
-		    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-			    		device.getDelta().getButtons().isReleased(XInputButton.A)) {
+		    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+		    			(!XInputDevice.shootPressed && XInputDevice.shootReleased)) {
 		    		if(!askToSkipSequence) {
+		    			enterButtonPushedDown = false;
 						askToSkipSequence = true;
 					}
 		    		else {
-						if(askToSkipSequence && Game.escapePressedNegateAction == false)
+		    			if(askToSkipSequence && Game.escapePressedNegateAction == false) {
 							skipSequence = true;
+							if(State != STATE.CREDITS) {
+								if(sceneSkipCount < 1)
+									sceneSkipCount++;
+								else {
+									try {
+										LeaderboardController.writeToSettings("skipAnimations", "true");
+									} catch (IOException e1) {
+									}
+									skipAnimations = true;
+								}
+							}
+						}
 						Game.keysAreInUse = true;
 						Game.enterButtonPushedDown = false;
 						Game.escapePressedNegateAction = false;
@@ -8317,9 +12191,8 @@ public class Game extends Canvas implements Runnable {
 	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 	    		joystickTimer = 0;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed
 	    		) {
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.skipHighlighted)
@@ -8336,11 +12209,12 @@ public class Game extends Canvas implements Runnable {
 					Game.escapePressedNegateAction = true;
 				}
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    	if(XInputDevice.pausePressed ||
+	    			XInputDevice.shootPressed) {
 	    		if(!Game.keysAreInUse) {//|| sceneAcknowledgement == true){
 					Game.keysAreInUse = true;
 					sceneAcknowledgement = true;
+					Game.enterButtonPushedDown = true;
 				}
 				else if(Game.escapePressedNegateAction == false)
 					Game.enterButtonPushedDown = true;
@@ -8365,9 +12239,8 @@ public class Game extends Canvas implements Runnable {
 				this.runningTimerActivatedResponse = false;
 			if(runningTimerLong != 0)
 				this.runningTimerLong = 0;
-			if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+			if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+					(!XInputDevice.itemPressed && XInputDevice.itemReleased)
 		    		) {
 				if(Game.mouseIsClickedDown) {
 				}
@@ -8384,14 +12257,25 @@ public class Game extends Canvas implements Runnable {
 						sceneAcknowledgement = false;
 				}
 			}
-			if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.A)) {
+			if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+					(!XInputDevice.shootPressed && XInputDevice.shootReleased)) {
 				if(!askToSkipSequence) {
+	    			enterButtonPushedDown = false;
 					askToSkipSequence = true;
 				}
 				else {
-					if(askToSkipSequence && Game.escapePressedNegateAction == false)
+					if(askToSkipSequence && Game.escapePressedNegateAction == false) {
 						skipSequence = true;
+						if(sceneSkipCount < 1)
+							sceneSkipCount++;
+						else {
+							try {
+								LeaderboardController.writeToSettings("skipAnimations", "true");
+							} catch (IOException e1) {
+							}
+							skipAnimations = true;
+						}
+					}
 					Game.keysAreInUse = true;
 					Game.enterButtonPushedDown = false;
 					Game.escapePressedNegateAction = false;
@@ -8400,7 +12284,7 @@ public class Game extends Canvas implements Runnable {
 			}
 	    }
 	    else if(State == STATE.GAMEOVER && gameControllerInUse) {
-	    	if((lX > .65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
 	    		if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == 0) {
 	    			Game.selectorButtonPosition = -1;
 	    			if(Game.hudSFXPosition == 3)
@@ -8414,7 +12298,7 @@ public class Game extends Canvas implements Runnable {
 				else
 					joystickTimer = System.currentTimeMillis() + 30;
 	    	}
-	    	if((lX < -.65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    	if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
 	    		if(Game.selectorButtonPosition == -1 || Game.selectorButtonPosition == 0) {
 					Game.selectorButtonPosition = -2;
 					if(Game.hudSFXPosition == 3)
@@ -8463,19 +12347,22 @@ public class Game extends Canvas implements Runnable {
 						Game.hudSFXPosition++;
 					hudSFX.get(hudSFXPosition).play();
 				}
+				if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
 	    	}
 	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
 	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
 	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 	    		joystickTimer = 0;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    	if(XInputDevice.pausePressed ||
+	    			XInputDevice.shootPressed) {
 				Game.enterButtonPushedDown = true;
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)){
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed){
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.setScoreHighlighted ||
 							Game.playHighlighted || Game.exitHighlighted || Game.homeHighlighted|| 
@@ -8491,20 +12378,21 @@ public class Game extends Canvas implements Runnable {
 	    		else if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+	    			(!XInputDevice.shootPressed && XInputDevice.shootReleased)) {
 	    		Game.enterButtonPushedDown = false;
 				if(!Game.escapePressedNegateAction && Game.keysAreInUse) {
 					switch(Game.selectorButtonPosition) {
 						case -2:
 							State = STATE.LEADERBOARD;
-							Game.keysAreInUse = false;
+							Game.selectorButtonPosition = -1;
 							if(smb3OpenSoundLoop.clipIsActive())
 								smb3OpenSoundLoop.stop();
 							smb3OpenSoundLoop.play();
 							break;
 						case -1:
 							State = STATE.SET_SCORE;
+							Game.selectorButtonPosition = 0;
 							Game.keysAreInUse = false;//CHANGE FOR VIRTUAL KEYBOARD
 							//Game.gameControllerInUse = false;//CHANGE FOR VIRTUAL KEYBOARD
 							if(smb3KickSoundLoop.clipIsActive())
@@ -8523,15 +12411,15 @@ public class Game extends Canvas implements Runnable {
 							smb3OpenSoundLoop.play();
 							break;
 						case 2:
+							this.closeGame();
 							System.exit(1);
 							break;
 					}
 				}
 				Game.escapePressedNegateAction = false;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.X)){
+	    	if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+	    			(!XInputDevice.itemPressed && XInputDevice.itemReleased)){
 	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					Game.selectorBPMP = Game.selectorButtonPosition;
 					Game.escapePressedNegateAction = false;
@@ -8581,7 +12469,7 @@ public class Game extends Canvas implements Runnable {
 							Game.keysAreInUse = false;
 							Game.selectorButtonPosition++;
 						}
-						if(Game.selectorButtonPosition < 1)
+						if(Game.selectorButtonPosition < 2)
 							Game.selectorButtonPosition++;
 					}
 					if(joystickTimer == 0)
@@ -8594,13 +12482,19 @@ public class Game extends Canvas implements Runnable {
     	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
     	    		joystickTimer = 0;
     		    }
-		    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-				    	device.getDelta().getButtons().isPressed(XInputButton.A)) {
-						Game.enterButtonPushedDown = true;
+		    	if(XInputDevice.pausePressed ||
+		    			XInputDevice.shootPressed) {
+		    		if(Game.selectorButtonPosition == 2 && !Game.enterButtonPushedDown) {
+						if(Game.smb3CheckmarkSoundLoop.clipIsActive())
+							Game.smb3CheckmarkSoundLoop.stop();
+						if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+							Game.smb3Checkmark2SoundLoop.stop();
+						Game.smb3CheckmarkSoundLoop.play();
+					}
+					Game.enterButtonPushedDown = true;
 		    	}
-		    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-				    device.getDelta().getButtons().isPressed(XInputButton.B) ||
-				    device.getDelta().getButtons().isPressed(XInputButton.X)) {
+		    	if(XInputDevice.cancelPressed ||
+		    			XInputDevice.itemPressed) {
 		    		if(Game.mouseIsClickedDown) {
 						if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
 								Game.submitHighlighted))
@@ -8614,8 +12508,8 @@ public class Game extends Canvas implements Runnable {
 		    		else if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
 		    	}
-		    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-			    	device.getDelta().getButtons().isReleased(XInputButton.A)) {
+		    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+		    			(!XInputDevice.shootPressed && XInputDevice.shootReleased)) {
 		    		Game.enterButtonPushedDown = false;
 					if(!Game.escapePressedNegateAction) {
 						switch(Game.selectorButtonPosition) {
@@ -8624,8 +12518,34 @@ public class Game extends Canvas implements Runnable {
 								Game.State = Game.STATE.GAMEOVER;
 								break;
 							case 1:
-								postLetter = '~';
+								Game.postLetter = '~';
 								Game.selectorButtonPosition = 0;
+								if(Game.sendToServer && HUD.score != 0)
+									Game.connectingToServer = true;
+								if(Game.gameControllerInUse) {
+									Game.keysAreInUse = true;
+									Game.selectorButtonPosition = 0;
+								}
+								if(!LeaderboardController.globalList)
+									LeaderboardController.resetTrigger = true;
+								break;
+							case 2:
+								if(Game.sendToServer)
+									Game.sendToServer = false;
+								else
+									Game.sendToServer = true;
+								try {
+									if(Game.sendToServer)
+										LeaderboardController.writeToSettings("sendToServer", "true");
+									else
+										LeaderboardController.writeToSettings("sendToServer", "false");
+								} catch (IOException e1) {
+								}
+								if(Game.smb3CheckmarkSoundLoop.clipIsActive())
+									Game.smb3CheckmarkSoundLoop.stop();
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
 								break;
 							default:
 								break;
@@ -8633,9 +12553,8 @@ public class Game extends Canvas implements Runnable {
 					}
 					Game.escapePressedNegateAction = false;
 		    	}
-		    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.X)) {
+		    	if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+		    			(!XInputDevice.itemPressed && XInputDevice.itemReleased)) {
 		    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 						Game.selectorBPMP = Game.selectorButtonPosition;
 						Game.escapePressedNegateAction = false;
@@ -8697,7 +12616,7 @@ public class Game extends Canvas implements Runnable {
 					else
 						joystickTimer = System.currentTimeMillis() + 30;
 	    		}
-	    		if((lX > .65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
 					//TRAVERSE LETTERS
 	    			if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
@@ -8711,7 +12630,7 @@ public class Game extends Canvas implements Runnable {
 					else
 						joystickTimer = System.currentTimeMillis() + 30;
 	    		}
-	    		if((lX < -.65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
 	    			//TRAVERSE LETTERS
 	    			if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
@@ -8730,22 +12649,17 @@ public class Game extends Canvas implements Runnable {
     	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
     	    		joystickTimer = 0;
     		    }
-	    		if(device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    		if(XInputDevice.shootPressed) {
 	    			//about to enter letter
 	    			//gamepadKeyboardLetterPosition
 	    			//CREATE NEW LETTER WHEN PRESSED, DON'T CREATE ONE UNTIL THIS IS PRESSED
 	    			//
 	    			//OR MAKE TRANSPARENT LETTER(TWICE AS FAST AS TEXTINDICATOR) AND DON'T ENTER IT UNTIL THIS IS PRESSED
 	    		}
-	    		if(device.getDelta().getButtons().isPressed(XInputButton.B)) {
-	    			postLetter = '+';
-	    			//about to delete letter
-	    		}
-	    		if(device.getDelta().getButtons().isPressed(XInputButton.START)) {
+	    		if(XInputDevice.pausePressed) {
 					Game.enterButtonPushedDown = true;
 	    		}
-	    		if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    			device.getDelta().getButtons().isPressed(XInputButton.X)) {
+	    		if(XInputDevice.cancelPressed) {
 	    			if(Game.mouseIsClickedDown) {
 						if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
 								Game.submitHighlighted))
@@ -8765,7 +12679,11 @@ public class Game extends Canvas implements Runnable {
 	    			else
 	    				shiftOn = true;
 	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
+	    		if(!XInputDevice.itemPressed && XInputDevice.itemReleased) {
+	    			postLetter = '+';
+	    			//about to delete letter
+	    		}
+	    		if(!XInputDevice.shootPressed && XInputDevice.shootReleased) {
 	    			if(postLetter == '=') {
 		    			switch(gamepadKeyboardLetterPosition) {
 		    			case 0:
@@ -8899,30 +12817,131 @@ public class Game extends Canvas implements Runnable {
 		    			}
 	    			}
 	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.START)) {
-	    			if(!Game.escapePressedNegateAction) 
+	    		if(!XInputDevice.pausePressed && XInputDevice.pauseReleased) {
+	    			if(!Game.escapePressedNegateAction) {
 						postLetter = '~';
+						if(Game.sendToServer && HUD.score != 0)
+							Game.connectingToServer = true;
+						if(!LeaderboardController.globalList)
+							LeaderboardController.resetTrigger = true;
+						Game.selectorButtonPosition = 0;
+	    			}
 					Game.enterButtonPushedDown = false;
 					Game.escapePressedNegateAction = false;
 					//Game.keysAreInUse = true;
 					//Game.selectorButtonPosition = 0;
 	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-	    			device.getDelta().getButtons().isReleased(XInputButton.X)) {
+	    		if(!XInputDevice.cancelPressed && XInputDevice.cancelReleased) {
 	    			Game.keysAreInUse = true;
 					Game.selectorButtonPosition = -1;
 	    		}
 	    	}
-	    }
+	    }//START AGAIN HERE!
 	    else if(State == STATE.LEADERBOARD && gameControllerInUse) {
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.A)
+	    	if((lY < -0.65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.areYouSureBoolean) {}
+				else {
+					if(Game.selectorButtonPosition == 0)
+						Game.selectorButtonPosition = -1;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((0.65 < lY  || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+		    		int selector = Game.selectorButtonPosition;
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					if(Game.areYouSureBoolean) {}
+					else {
+						if(Game.selectorButtonPosition == -1)
+							Game.selectorButtonPosition = 0;
+					}
+					if(Game.selectorButtonPosition != selector) {
+						if(Game.hudSFXPosition == 3)
+							Game.hudSFXPosition = 0;
+						else
+							Game.hudSFXPosition++;
+						Game.hudSFX.get(Game.hudSFXPosition).play();
+					}
+		    		if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+		    	}
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.areYouSureBoolean) {
+					if(Game.selectorButtonPosition != 0)
+						Game.selectorButtonPosition = 0;
+				}
+				else {
+					if(Game.selectorButtonPosition == 1)
+						Game.selectorButtonPosition = 0;
+					else if(Game.selectorButtonPosition == 0)
+						Game.selectorButtonPosition = -1;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.areYouSureBoolean) {
+					if(Game.selectorButtonPosition != 1)
+						Game.selectorButtonPosition = 1;
+				}
+				else {
+					if(Game.selectorButtonPosition == -1 || Game.selectorButtonPosition == 0)
+						Game.selectorButtonPosition = 1;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
+		    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
+		    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
+		    		joystickTimer = 0;
+		    }
+	    	if(XInputDevice.pausePressed ||
+	    			XInputDevice.shootPressed
 		    		) {
 				Game.enterButtonPushedDown = true;
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed
 		    		) {
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && Game.backHighlighted)
@@ -8933,45 +12952,123 @@ public class Game extends Canvas implements Runnable {
 	    		else if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+	    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+	    			(!XInputDevice.shootPressed && XInputDevice.shootReleased)
 		    		) {
 	    		Game.enterButtonPushedDown = false;
 				if(!Game.escapePressedNegateAction) {
-					if(Game.backToGameOver) {
-						Game.selectorButtonPosition = -2;
-						Game.State = Game.STATE.GAMEOVER;
+					if(Game.areYouSureBoolean) {
+						switch(Game.selectorButtonPosition) {
+						case 0:
+							Game.selectorButtonPosition = 0;
+							Game.areYouSureBoolean = false;
+							Game.smb3KickSoundLoop.play();
+							break;	
+						case 1:
+							LeaderboardController.deleteTrigger = true;
+							Game.selectorButtonPosition = 0;
+							Game.areYouSureBoolean = false;
+							if(Game.smb3TailSoundLoop.clipIsActive())
+								Game.smb3TailSoundLoop.stop();
+							Game.smb3TailSoundLoop.play();
+							break;
+						}
 					}
 					else {
-						Game.selectorButtonPosition = -3;
-						Game.State = Game.STATE.MENU;
+						switch(Game.selectorButtonPosition) {
+						case -1:
+							//Back button
+							if(Game.backToGameOver) {
+								Game.selectorButtonPosition = -2;
+								Game.State = Game.STATE.GAMEOVER;
+							}
+							else {
+								Game.selectorButtonPosition = -3;
+								Game.State = Game.STATE.MENU;
+							}
+							if(Game.smb3KickSoundLoop.clipIsActive())
+								Game.smb3KickSoundLoop.stop();
+							Game.smb3KickSoundLoop.play();
+							break;
+						case 0:
+							if(LeaderboardController.globalList) {
+								//Local button
+								Game.selectorButtonPosition = 1;
+								LeaderboardController.globalList = false;
+								LeaderboardController.listTrigger = true;
+								if(Game.smb3ItemSoundLoop.clipIsActive())
+									Game.smb3ItemSoundLoop.stop();
+								Game.smb3ItemSoundLoop.play();
+							}
+							else {
+								//Reset Leaderboard Button
+								if(LeaderboardController.checkLeaderboard()) {
+									Game.selectorButtonPosition = 0;
+									Game.areYouSureBoolean = true;
+									Game.hudSFX.get(4).play();
+								}
+								else {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								break;	
+							}
+							break;
+						case 1:
+							if(LeaderboardController.globalList) {
+								//Upload button
+								if(!LeaderboardController.checkLeaderboard()) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									String s = "";
+									if(Game.scoreEntered && 0 < HUD.score) {
+										s=HUD.nameEntered;
+										s=s+": "+Long.toString((HUD.score));
+										//Game.saveName = s;
+									}
+									LeaderboardController.uploadTrigger = true;
+								}
+							}
+							else {
+								//Global button
+								LeaderboardController.globalList = true;
+								LeaderboardController.listTrigger = true;
+							}
+							break;
+						}
 					}
-					if(smb3KickSoundLoop.clipIsActive())
-						smb3KickSoundLoop.stop();
-					smb3KickSoundLoop.play();
 				}
 				Game.escapePressedNegateAction = false;
 			}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+	    	if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+	    			(!XInputDevice.itemPressed && XInputDevice.itemReleased)
 		    		) {
 	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					Game.selectorBPMP = Game.selectorButtonPosition;
 					Game.escapePressedNegateAction = false;
 					if(Game.gameControllerInUse) {
 						Game.gameControllerInUse = false;
+						Game.gameControllerInUseDI = false;
 						Game.keysAreInUse = false;
 					}
 					else {
 						Game.gameControllerInUse = true;
 						Game.keysAreInUse = true;
 					}
+					if(Game.areYouSureBoolean && Game.selectorButtonPosition != 0)
+						Game.selectorButtonPosition = 0;
 	    		}
 	    	}
 	    }
 	    else if(State == STATE.SHOP && gameControllerInUse) {
 	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+				if(allUnlockedScreen) {
+					return;
+				}
 				int selector = Game.selectorButtonPosition;
 				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
 					Game.selectorButtonPosition = 0;
@@ -9032,6 +13129,9 @@ public class Game extends Canvas implements Runnable {
 					joystickTimer = System.currentTimeMillis() + 30;
 	    	}
 	    	else if((lY < -.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+				if(allUnlockedScreen) {
+					return;
+				}
 	    		int selector = Game.selectorButtonPosition;
 				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
 					Game.selectorButtonPosition = 0;
@@ -9092,6 +13192,9 @@ public class Game extends Canvas implements Runnable {
 					joystickTimer = System.currentTimeMillis() + 30;
 	    	}
 	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+				if(allUnlockedScreen) {
+					return;
+				}
 	    		int selector = Game.selectorButtonPosition;
 				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
 					Game.selectorButtonPosition = 0;
@@ -9157,6 +13260,9 @@ public class Game extends Canvas implements Runnable {
 					joystickTimer = System.currentTimeMillis() + 30;
 	    	}
 	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+				if(allUnlockedScreen) {
+					return;
+				}
 	    		int selector = Game.selectorButtonPosition;
 				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
 					Game.selectorButtonPosition = 0;
@@ -9219,14 +13325,14 @@ public class Game extends Canvas implements Runnable {
 	    		joystickTimer = 0;
 		    }
 
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.A)
+	    	if(XInputDevice.pausePressed ||
+	    			XInputDevice.shootPressed
 	    		) {
-	    		Game.enterButtonPushedDown = true;
+				if(!Game.allUnlockedScreen) 
+					Game.enterButtonPushedDown = true;
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed
 	    		) {
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted ||
@@ -9261,9 +13367,14 @@ public class Game extends Canvas implements Runnable {
 	    		else if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+	    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+	    			(!XInputDevice.shootPressed && XInputDevice.shootReleased)
 		    		) {
+				if(allUnlockedScreen) {
+					allUnlockedScreen = false;
+					XInputDevice.reset();
+					return;
+				}
 	    		Game.enterButtonPushedDown = false;
 				if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
 					Game.selectorButtonPosition = 0;
@@ -9288,9 +13399,99 @@ public class Game extends Canvas implements Runnable {
 						break;
 					case -11:
 						//Item Buy
-						if(smb31PupSoundLoop.clipIsActive())
-							smb31PupSoundLoop.stop();
-						smb31PupSoundLoop.play();
+						if(currentItemLocked) {
+							switch(itemPosition){
+								case 4:
+									if(totalPoints >= 1000){
+										Game.item4Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedItem";
+										Game.writeOnceString = Integer.toString(Game.itemPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "item4Unlocked";
+										Game.itemPosition = 4;
+										Game.currentlySelectedItem = 4;
+										currentItemLocked = false;
+										skinNumber = null;
+										totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -12;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 5:
+									if(totalPoints >= 10000){
+										Game.item5Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedItem";
+										Game.writeOnceString = Integer.toString(Game.itemPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "item5Unlocked";
+										Game.itemPosition = 5;
+										Game.currentlySelectedItem = 5;
+										currentItemLocked = false;
+										skinNumber = null;
+										totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -12;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								case 6:
+									if(totalPoints >= 100000){
+										Game.item6Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "currentlySelectedItem";
+										Game.writeOnceString = Integer.toString(Game.itemPosition);
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "item6Unlocked";
+										Game.itemPosition = 6;
+										Game.currentlySelectedItem = 6;
+										currentItemLocked = false;
+										skinNumber = null;
+										totalPoints -= 100000;
+										Game.starExplode = true;
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(smb31PupSoundLoop.clipIsActive())
+											smb31PupSoundLoop.stop();
+										smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -12;
+									}
+									else{
+										if(smwErrorSoundLoop.clipIsActive())
+											smwErrorSoundLoop.stop();
+										smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+						}
 						break;
 					case -10:
 						//Fireballs Set
@@ -9300,15 +13501,32 @@ public class Game extends Canvas implements Runnable {
 									Game.smb3ItemSoundLoop.stop();
 								Game.smb3ItemSoundLoop.play();
 							}
+							else {
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
+							}
 							Game.currentlySelectedFireball = Game.fireballPosition;
+							Game.fireballSoundSet();
 							Game.writeOnceToSettings = true;
 							Game.writeOnceProperty = "currentlySelectedFireball";
 							Game.writeOnceString = Integer.toString(Game.fireballPosition);
 							//Game.settingsSetup = false;
 						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 						break;
 					case -9:
-						if(Game.fireballPosition == 3)//Max Fireballs
+						if(Game.fireballPosition == 3 && Game.currentlySelectedFireball == 4)//Max Fireballs
+							Game.fireballPosition = 4;
+						else if(Game.fireballPosition == 3 && Game.currentlySelectedFireball == 5) {
+							Game.fireballPosition = 5;
+							skinNumber = null;
+						}
+						else if(Game.fireballPosition == 3 || Game.fireballPosition == 4 || Game.fireballPosition == 5)
 							Game.fireballPosition = 0;
 						else
 							Game.fireballPosition++;
@@ -9322,7 +13540,7 @@ public class Game extends Canvas implements Runnable {
 						if(currentFireballLocked) {
 							switch(fireballPosition){
 								case 1:
-									if(totalPoints >= 100){
+									if(totalPoints >= 1000){
 										Game.fireball1Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -9334,10 +13552,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedFireball = 1;
 										currentFireballLocked = false;
 										skinNumber = null;
-										totalPoints -= 100;
+										totalPoints -= 1000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 336;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -9350,7 +13569,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 2:
-									if(totalPoints >= 1000){
+									if(totalPoints >= 10000){
 										Game.fireball2Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -9362,10 +13581,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedFireball = 2;
 										currentFireballLocked = false;
 										skinNumber = null;
-										totalPoints -= 1000;
+										totalPoints -= 10000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 336;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -9378,7 +13598,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 3:
-									if(totalPoints >= 10000){
+									if(totalPoints >= 100000){
 										Game.fireball3Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -9390,10 +13610,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedFireball = 3;
 										currentFireballLocked = false;
 										skinNumber = null;
-										totalPoints -= 10000;
+										totalPoints -= 100000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 336;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -9408,19 +13629,183 @@ public class Game extends Canvas implements Runnable {
 								default:
 									break;
 							}
-							
+							Game.fireballSoundSet();
 						}
 						//else
 							//Play error noise
 						break;
 					case -7:
 						//Tracks Set
-						if(smb3ItemSoundLoop.clipIsActive())
-							smb3ItemSoundLoop.stop();
-						smb3ItemSoundLoop.play();
+						if(!Game.currentTrackLocked) {
+							boolean b = false;
+							String s = "";
+							String ss = "";
+							switch(Game.trackPosition) {
+							case 0:
+								s = "gameTrack1Set";
+								if(Game.gameTrack1Set) {
+									Game.gameTrack1Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack1Set = true;
+									ss = "true";
+								}
+								break;
+							case 1:
+								s = "gameTrack2Set";
+								if(Game.gameTrack2Set) {
+									Game.gameTrack2Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack2Set = true;
+									ss = "true";
+								}
+								break;
+							case 2:
+								s = "gameTrack3Set";
+								if(Game.gameTrack3Set) {
+									Game.gameTrack3Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack3Set = true;
+									ss = "true";
+								}
+								break;
+							case 3:
+								s = "gameTrack4Set";
+								if(Game.gameTrack4Set) {
+									Game.gameTrack4Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack4Set = true;
+									ss = "true";
+								}
+								break;
+							case 4:
+								s = "gameTrack5Set";
+								if(Game.gameTrack5Set || !Game.track4Unlocked) {
+									if(!Game.track4Unlocked) {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									Game.gameTrack5Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack5Set = true;
+									ss = "true";
+								}
+								break;
+							case 5:
+								s = "gameTrack6Set";
+								if(Game.gameTrack6Set || !Game.track5Unlocked) {
+									if(!Game.track5Unlocked) {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									Game.gameTrack6Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack6Set = true;
+									ss = "true";
+								}
+								break;
+							case 6:
+								s = "gameTrack7Set";
+								if(Game.gameTrack7Set || !Game.track6Unlocked) {
+									if(!Game.track6Unlocked) {
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									Game.gameTrack7Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack7Set = true;
+									ss = "true";
+								}
+								break;
+							case 7:
+								s = "gameTrack8Set";
+								if(Game.gameTrack8Set) {
+									Game.gameTrack8Set = false;
+									ss = "false";
+								}
+								else {
+									b = true;
+									Game.gameTrack8Set = true;
+									ss = "true";
+								}
+								break;
+							default:
+								break;
+							}
+							if(b) {
+								if(Game.smb3ItemSoundLoop.clipIsActive())
+									Game.smb3ItemSoundLoop.stop();
+								Game.smb3ItemSoundLoop.play();
+							}
+							if(!s.equals("") && !ss.equals("")) {
+								try {
+									LeaderboardController.writeToSettings(s, ss);
+								} catch (IOException e1) {
+								}
+								if(ss.equals("true") && Game.soundRandomizer == 8 && Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1) {
+									int randomIPlus = 0;
+									if(Game.track4Unlocked)
+										randomIPlus++;
+									if(Game.track5Unlocked)
+										randomIPlus++;
+									if(Game.track6Unlocked)
+										randomIPlus++;
+									Random rand = new Random();
+									Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+									Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+									//setsetup[VolumeSlider.TrackSetup]
+									if(Game.soundRandomizer != -4) {
+										Game.gameSoundLoops.get(Game.soundRandomizer).stop();
+										Game.gameSoundLoops.get(Game.soundRandomizer).setSoundLoopBoolean(true);
+										Game.gameSoundLoops.get(Game.soundRandomizer).setFramePosition(0);
+//										Game.gameSoundLoops.get(Game.soundRandomizer).play();
+									}
+									else
+										Game.soundRandomizer = 8;
+								}
+								else if(ss.equals("false")) {  
+									if(Game.gameTrack1Set == false && Game.gameTrack2Set == false && Game.gameTrack3Set == false && 
+										Game.gameTrack4Set == false && Game.gameTrack5Set == false && Game.gameTrack6Set == false && 
+										Game.gameTrack7Set == false && Game.gameTrack8Set == false && Game.soundRandomizer != 8 &&
+										Game.soundRandomizer != -4) 
+									Game.soundRandomizer = 8;
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+							}
+						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 						break;
 					case -6:
-						if(Game.trackPosition == 1)//Max Tracks
+						if(Game.trackPosition == 7)//Max Tracks
 							Game.trackPosition = 0;
 						else 
 							Game.trackPosition++;
@@ -9431,9 +13816,135 @@ public class Game extends Canvas implements Runnable {
 						break;
 					case -5:
 						//Tracks Buy
-						if(smb31PupSoundLoop.clipIsActive())
-							smb31PupSoundLoop.stop();
-						smb31PupSoundLoop.play();
+						if(currentTrackLocked) {
+							switch(trackPosition){
+								case 4:
+									if(Game.totalPoints >= 1000){
+										Game.track4Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "gameTrack5Set";
+										Game.writeOnceString = "true";
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "track4Unlocked";
+										Game.trackPosition = 4;
+										Game.currentlySelectedTrack = 4;
+										Game.currentTrackLocked = false;
+										Game.skinNumber = null;
+										Game.totalPoints -= 1000;
+										Game.starExplode = true;
+										Game.track4Unlocked = true;
+										Game.gameTrack5Set = true;
+										int randomIPlus = 0;
+										if(Game.track4Unlocked)
+											randomIPlus++;
+										if(Game.track5Unlocked)
+											randomIPlus++;
+										if(Game.track6Unlocked)
+											randomIPlus++;
+										Random rand = new Random();
+										Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+										Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(Game.smb31PupSoundLoop.clipIsActive())
+											Game.smb31PupSoundLoop.stop();
+										Game.smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -6;
+									}
+									else{
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									break;
+								case 5:
+									if(Game.totalPoints >= 10000){
+										Game.track5Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "gameTrack6Set";
+										Game.writeOnceString = "true";
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "track5Unlocked";
+										Game.trackPosition = 5;
+										Game.currentlySelectedTrack = 5;
+										Game.currentTrackLocked = false;
+										Game.skinNumber = null;
+										Game.totalPoints -= 10000;
+										Game.starExplode = true;
+										Game.track5Unlocked = true;
+										Game.gameTrack6Set = true;
+										int randomIPlus = 0;
+										if(Game.track4Unlocked)
+											randomIPlus++;
+										if(Game.track5Unlocked)
+											randomIPlus++;
+										if(Game.track6Unlocked)
+											randomIPlus++;
+										Random rand = new Random();
+										Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+										Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(Game.smb31PupSoundLoop.clipIsActive())
+											Game.smb31PupSoundLoop.stop();
+										Game.smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -6;
+									}
+									else{
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									break;
+								case 6:
+									if(Game.totalPoints >= 100000){
+										Game.track6Unlocked = true;
+										//Game.settingsSetup = false;
+										Game.writeOnceToSettings = true;
+										Game.writeOnceProperty = "gameTrack7Set";
+										Game.writeOnceString = "true";
+										Game.writeOnceToSettingswithPoints = true;
+										Game.writeOnceUnlock = "track6Unlocked";
+										Game.trackPosition = 6;
+										Game.currentlySelectedTrack = 6;
+										Game.currentTrackLocked = false;
+										Game.skinNumber = null;
+										Game.totalPoints -= 100000;
+										Game.starExplode = true;
+										Game.track6Unlocked = true;
+										Game.gameTrack7Set = true;
+										int randomIPlus = 0;
+										if(Game.track4Unlocked)
+											randomIPlus++;
+										if(Game.track5Unlocked)
+											randomIPlus++;
+										if(Game.track6Unlocked)
+											randomIPlus++;
+										Random rand = new Random();
+										Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+										Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+										Game.mx = Game.WIDTH +9;
+										Game.my = 136;
+										Game.checkIfAllUnlocked();
+										if(Game.smb31PupSoundLoop.clipIsActive())
+											Game.smb31PupSoundLoop.stop();
+										Game.smb31PupSoundLoop.play();
+										Game.selectorButtonPosition = -6;
+									}
+									else{
+										if(Game.smwErrorSoundLoop.clipIsActive())
+											Game.smwErrorSoundLoop.stop();
+										Game.smwErrorSoundLoop.play();
+									}
+									break;
+								default:
+									break;
+							}
+						}
 						break;
 					case -4:
 						//Skin Set
@@ -9443,20 +13954,37 @@ public class Game extends Canvas implements Runnable {
 									Game.smb3ItemSoundLoop.stop();
 								Game.smb3ItemSoundLoop.play();
 							}
+							else {
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
+							}
 							Game.currentlySelectedCharacterSkin = Game.characterSkinPosition;
 							Game.writeOnceToSettings = true;
 							Game.writeOnceProperty = "currentlySelectedCharacterSkin";
 							Game.writeOnceString = Integer.toString(Game.characterSkinPosition);
 							//Game.settingsSetup = false;
 						}
+						else {
+							if(Game.smwErrorSoundLoop.clipIsActive())
+								Game.smwErrorSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
 						break;
 					case -3:
-						if(Game.characterSkinPosition == 3)//Max Skins
+						if(Game.characterSkinPosition == 3 && Game.currentlySelectedCharacterSkin == 4)//Max Skins
+							Game.characterSkinPosition = 4;
+						else if(Game.characterSkinPosition == 3 && Game.currentlySelectedCharacterSkin == 5) 
+							Game.characterSkinPosition = 5;
+						else if (Game.characterSkinPosition == 3 || Game.characterSkinPosition == 4 || Game.characterSkinPosition == 5)
 							Game.characterSkinPosition = 0;
 						else {
 							Game.characterSkinPosition++;
 						}
-						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
+						if(Game.currentlySelectedCharacterSkin == 5 && characterSkinPosition == 5)
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition)), 10, 10);
+						else
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
 						smb3Bump2SoundLoop.play();
@@ -9466,7 +13994,7 @@ public class Game extends Canvas implements Runnable {
 						if(currentSkinLocked) {
 							switch(characterSkinPosition){
 								case 1:
-									if(totalPoints >= 100){
+									if(totalPoints >= 1000){
 										Game.skin1Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -9478,10 +14006,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedCharacterSkin = 1;
 										currentSkinLocked = false;
 										skinNumber = null;
-										totalPoints -= 100;
+										totalPoints -= 1000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 136;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -9494,7 +14023,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 2:
-									if(totalPoints >= 1000){
+									if(totalPoints >= 10000){
 										Game.skin2Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -9506,10 +14035,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedCharacterSkin = 2;
 										currentSkinLocked = false;
 										skinNumber = null;
-										totalPoints -= 1000;
+										totalPoints -= 10000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 136;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -9522,7 +14052,7 @@ public class Game extends Canvas implements Runnable {
 									}
 									break;
 								case 3:
-									if(totalPoints >= 10000){
+									if(totalPoints >= 100000){
 										Game.skin3Unlocked = true;
 										//Game.settingsSetup = false;
 										Game.writeOnceToSettings = true;
@@ -9534,10 +14064,11 @@ public class Game extends Canvas implements Runnable {
 										Game.currentlySelectedCharacterSkin = 3;
 										currentSkinLocked = false;
 										skinNumber = null;
-										totalPoints -= 10000;
+										totalPoints -= 100000;
 										Game.starExplode = true;
 										Game.mx = Game.WIDTH +9;
 										Game.my = 136;
+										Game.checkIfAllUnlocked();
 										if(smb31PupSoundLoop.clipIsActive())
 											smb31PupSoundLoop.stop();
 										smb31PupSoundLoop.play();
@@ -9565,11 +14096,20 @@ public class Game extends Canvas implements Runnable {
 						smb3KickSoundLoop.play();
 						break;
 					case 0:
-						if(Game.characterSkinPosition > 0)
+						if(Game.characterSkinPosition == 5)
+							Game.characterSkinPosition-=2;
+						else if(Game.characterSkinPosition > 0)
 							Game.characterSkinPosition--;
+						else if(Game.currentlySelectedCharacterSkin == 4)
+							Game.characterSkinPosition = 4;
+						else if(Game.currentlySelectedCharacterSkin == 5) 
+							Game.characterSkinPosition = 5;
 						else
 							Game.characterSkinPosition = 3;//Set to Max Skins
-						Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
+						if(Game.currentlySelectedCharacterSkin == 5 && characterSkinPosition == 5)
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition)), 10, 10);
+						else
+							Game.skinNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.characterSkinPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
 						smb3Bump2SoundLoop.play();
@@ -9578,15 +14118,23 @@ public class Game extends Canvas implements Runnable {
 						if(Game.trackPosition > 0)
 							Game.trackPosition--;
 						else
-							Game.trackPosition = 1;//Set to Max Tracks
+							Game.trackPosition = 7;//Set to Max Tracks
 						Game.trackNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.trackPosition+1)), 10, 10);
 						if(smb3Bump2SoundLoop.clipIsActive())
 							smb3Bump2SoundLoop.stop();
 						smb3Bump2SoundLoop.play();
 						break;
 					case 2:
-						if(Game.fireballPosition > 0)
+						if(Game.fireballPosition == 5)
+							Game.fireballPosition-=2;
+						else if(Game.fireballPosition > 0)
 							Game.fireballPosition--;
+						else if(Game.currentlySelectedFireball == 4)
+							Game.fireballPosition = 4;
+						else if(Game.currentlySelectedFireball == 5) {
+							Game.fireballPosition = 5;
+							skinNumber = null;
+						}
 						else
 							Game.fireballPosition = 3;//Set to Max Fireballs
 						Game.fireballNumber = Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.fireballPosition+1)), 10, 10);
@@ -9608,10 +14156,13 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.escapePressedNegateAction = false;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+	    	if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+	    			(!XInputDevice.itemPressed && XInputDevice.itemReleased)
 		    		) {
+				if(allUnlockedScreen) {
+					allUnlockedScreen = false;
+					return;
+				}
 	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					if(Game.selectorButtonPosition == -2 && currentSkinLocked == false)
 						Game.selectorButtonPosition = 0;
@@ -9704,7 +14255,7 @@ public class Game extends Canvas implements Runnable {
 				else {
 					if(selectorButtonPosition == -2)
 						selectorButtonPosition = 0;
-					else if(selectorButtonPosition == -3)
+					else if(selectorButtonPosition == -3 || Game.selectorButtonPosition == 2)
 						selectorButtonPosition = 1;
 					else if(selectorButtonPosition == -4)
 						selectorButtonPosition = -1;
@@ -9736,7 +14287,7 @@ public class Game extends Canvas implements Runnable {
 				else {
 					if(selectorButtonPosition == 0)
 						selectorButtonPosition = -2;
-					else if(selectorButtonPosition == 1)
+					else if(selectorButtonPosition == 1 || Game.selectorButtonPosition == 2)
 						selectorButtonPosition = -3;
 					else if(selectorButtonPosition == -2 || selectorButtonPosition == -1)
 						selectorButtonPosition = -4;
@@ -9760,8 +14311,8 @@ public class Game extends Canvas implements Runnable {
 	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 	    		joystickTimer = 0;
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-			    	device.getDelta().getButtons().isPressed(XInputButton.A)){
+	    	if(XInputDevice.pausePressed ||
+	    			XInputDevice.shootPressed){
 				if(Game.selectorButtonPosition == 2 && !Game.enterButtonPushedDown) {
 					if(smb3CheckmarkSoundLoop.clipIsActive())
 						smb3CheckmarkSoundLoop.stop();
@@ -9771,9 +14322,8 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.enterButtonPushedDown = true;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed
 	    		) {
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.yesHighlighted || Game.noHighlighted ||
@@ -9799,8 +14349,8 @@ public class Game extends Canvas implements Runnable {
 	    		else if(Game.enterButtonPushedDown)
 					Game.escapePressedNegateAction = true;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-			    device.getDelta().getButtons().isReleased(XInputButton.A)){
+	    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+	    			(!XInputDevice.shootPressed && XInputDevice.shootReleased)){
 	    		Game.enterButtonPushedDown = false;
 				if(!Game.escapePressedNegateAction) {
 					if(areYouSureBoolean) {
@@ -9814,13 +14364,18 @@ public class Game extends Canvas implements Runnable {
 							Game.skin1Unlocked = false;
 							Game.skin2Unlocked = false;
 							Game.skin3Unlocked = false;
-							Game.track1Unlocked = false;
+							Game.track4Unlocked = false;
+							Game.track5Unlocked = false;
+							Game.track6Unlocked = false;
 							Game.fireball1Unlocked = false;
 							Game.fireball2Unlocked = false;
 							Game.fireball3Unlocked = false;
 							Game.item4Unlocked = false;
 							Game.item5Unlocked = false;
 							Game.item6Unlocked = false;
+							Game.menuTrack4Unlocked = false;
+							Game.menuTrack5Set = false;
+							Game.firstTimeBeating = false;
 							Game.currentlySelectedCharacterSkin = 0;
 							Game.currentlySelectedTrack = 0;
 							Game.currentlySelectedFireball = 0;
@@ -9832,23 +14387,24 @@ public class Game extends Canvas implements Runnable {
 							Game.fireballPosition = 0;
 							Game.itemPosition = 0;
 							skinNumber = null;
-							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
-							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
-							XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
-							XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
-							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
-							XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
-							XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
-							XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
-							XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
-							XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
-							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
-							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
-							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
-							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
-							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
-							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+//							XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+//							XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+//							XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+//							XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+//							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+//							XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+//							XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+//							XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+//							XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+//							XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+//							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+//							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+//							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+//							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+//							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+//							XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
 							Game.totalPoints = 0;
+							Game.highScore = 0;
 							Game.skipAnimations = false;
 							try {
 								LeaderboardController.resetScore();
@@ -9870,6 +14426,8 @@ public class Game extends Canvas implements Runnable {
 						switch(Game.selectorButtonPosition) {
 						case -5:
 							Game.selectorButtonPosition = -1;
+							if(Game.trackCurrentlyPlaying == false)
+								TrackController.reset();
 							Game.State = Game.STATE.TRACKLIST;
 							if(smb3OpenSoundLoop.clipIsActive())
 								smb3OpenSoundLoop.stop();
@@ -9952,9 +14510,8 @@ public class Game extends Canvas implements Runnable {
 				}
 				Game.escapePressedNegateAction = false;
 	    	}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-	    		device.getDelta().getButtons().isReleased(XInputButton.X)
+	    	if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+	    			(!XInputDevice.itemPressed && XInputDevice.itemReleased)
 	    		) {
 	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					Game.selectorBPMP = Game.selectorButtonPosition;
@@ -9967,11 +14524,12 @@ public class Game extends Canvas implements Runnable {
 						Game.gameControllerInUse = true;
 						Game.keysAreInUse = true;
 					}
-					if(areYouSureBoolean && Game.selectorButtonPosition != 1)
+					if(areYouSureBoolean && Game.selectorButtonPosition != 0)
 						Game.selectorButtonPosition = 0;
 				}
 	    	}
 	    }
+	    //START AGAIN HERE
 	    else if(State == STATE.CONTROLS) {
 	    	if((lY > .65 || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
 	    		if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
@@ -9980,8 +14538,7 @@ public class Game extends Canvas implements Runnable {
 		    		if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
 		    		else {
-						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == -10 ||
-								Game.selectorButtonPosition == -18) {
+						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == -10) {
 							Game.selectorButtonPosition = -1;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -9989,7 +14546,15 @@ public class Game extends Canvas implements Runnable {
 								Game.hudSFXPosition++;
 							hudSFX.get(hudSFXPosition).play();
 						}
-						else if(Game.selectorButtonPosition != -1){
+						else if(Game.selectorButtonPosition == -18) {
+							Game.selectorButtonPosition = 0;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							Game.hudSFX.get(Game.hudSFXPosition).play();
+						}
+						else if(Game.selectorButtonPosition != -1 && Game.selectorButtonPosition != 0){
 							Game.selectorButtonPosition++;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -10014,6 +14579,14 @@ public class Game extends Canvas implements Runnable {
 						if(Game.selectorButtonPosition == -9 || Game.selectorButtonPosition == -17 ||
 								Game.selectorButtonPosition == -25)
 						{}
+						else if(Game.selectorButtonPosition == 0){
+							Game.selectorButtonPosition = -18;
+							if(Game.hudSFXPosition == 3)
+								Game.hudSFXPosition = 0;
+							else
+								Game.hudSFXPosition++;
+							Game.hudSFX.get(Game.hudSFXPosition).play();
+						}
 						else if(Game.selectorButtonPosition != -26){
 							Game.selectorButtonPosition--;
 							if(Game.hudSFXPosition == 3)
@@ -10036,7 +14609,7 @@ public class Game extends Canvas implements Runnable {
 					if(Game.enterButtonPushedDown)
 						Game.escapePressedNegateAction = true;
 					else {
-						if(Game.selectorButtonPosition == -2) {
+						if(Game.selectorButtonPosition == -2 || Game.selectorButtonPosition == 0) {
 							Game.selectorButtonPosition = -1;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -10067,7 +14640,7 @@ public class Game extends Canvas implements Runnable {
 						joystickTimer = System.currentTimeMillis() + 30;
 				}
 	    	}
-	    	else if((lX > .65 || device.rightHeld) && joystickTimer < System.currentTimeMillis()) {
+	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
 	    		if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
 				}
 				else {
@@ -10090,7 +14663,7 @@ public class Game extends Canvas implements Runnable {
 								Game.hudSFXPosition++;
 							hudSFX.get(hudSFXPosition).play();
 						}
-						else if (Game.selectorButtonPosition > -18){
+						else if (Game.selectorButtonPosition > -18 && Game.selectorButtonPosition != 0){
 							Game.selectorButtonPosition -= 8;
 							if(Game.hudSFXPosition == 3)
 								Game.hudSFXPosition = 0;
@@ -10122,13 +14695,12 @@ public class Game extends Canvas implements Runnable {
 //    		if(device.getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
 //    			XInputDevice.rightHeld = true;
 //    		}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-		    	device.getDelta().getButtons().isPressed(XInputButton.A)){
+	    	if(XInputDevice.pausePressed ||
+	    			XInputDevice.shootPressed){
 				Game.enterButtonPushedDown = true;
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed
 	    		) {
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted || Game.resetHighlighted))
@@ -10152,6 +14724,20 @@ public class Game extends Canvas implements Runnable {
 					Game.escapePressedNegateAction = true;
 	    	}
 	    	if(System.currentTimeMillis() < ControlsController.buttonChangeTimer) {
+	    		if(0.3 < lTrigger && (!XInputDevice.lTriggerPressed || !XInputDevice.lTriggerReleased)) {
+	    			XInputDevice.lTriggerPressed = true;
+	    			XInputDevice.lTriggerReleased = true;
+	    	    }
+	    	    else if(lTrigger == 0 && XInputDevice.lTriggerPressed){
+	    	    	XInputDevice.lTriggerPressed = false;
+	    	    }
+	    		if(0.3 < rTrigger && (!XInputDevice.rTriggerPressed || !XInputDevice.rTriggerReleased)) {
+	    			XInputDevice.rTriggerPressed = true;
+	    			XInputDevice.rTriggerReleased = true;
+	    	    }
+	    	    else if(rTrigger == 0 && XInputDevice.rTriggerPressed){
+	    	    	XInputDevice.rTriggerPressed = false;
+	    	    }
 	    		short aFake = 0;
 	    		short bFake = 0;
 	    		short xFake = 0;
@@ -10168,88 +14754,127 @@ public class Game extends Canvas implements Runnable {
 	    		short downFake = 0;
 	    		short leftFake = 0;
 	    		short rightFake = 0;
-	    		if(revertControllerSettings == false) {
-	    			device.aFake = XInputDevice.a;
-	    			device.bFake = XInputDevice.b;
-	    			device.xFake = XInputDevice.x;
-	    			device.yFake = XInputDevice.y;
-	    			device.backFake = XInputDevice.back;
-	    			device.startFake = XInputDevice.start;
-	    			device.lShoulderFake = XInputDevice.lShoulder;
-	    			device.rShoulderFake = XInputDevice.rShoulder;
-	    			device.lThumbFake = XInputDevice.lThumb;
-	    			device.rThumbFake = XInputDevice.rThumb;
-	    			device.guideFake = XInputDevice.guide;
-	    			device.unknownFake = XInputDevice.unknown;
-	    			device.upFake = XInputDevice.up;
-	    			device.downFake = XInputDevice.down;
-	    			device.leftFake = XInputDevice.left;
-	    			device.rightFake = XInputDevice.right;
-		    		XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
-		    		XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
-		    		XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
-		    		XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
-		    		XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
-		    		XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
-		    		XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
-		    		XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
-		    		XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
-		    		XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
-		    		XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
-		    		XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
-		    		XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
-		    		XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
-		    		XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
-		    		XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
-		    		revertControllerSettings = true;
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.a);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.B)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.b);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.X)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.x);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.Y)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.y);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.BACK)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.back);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.START)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.start);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.lShoulder);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.rShoulder);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.lThumb);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.rThumb);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.guide);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.unknown);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.up);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.down);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.left);
-	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
-	    			controlsController.changeButtonXDevice(XInputDevice.right);
+	    		if(ControlsController.buttonToChange <= -10 && -17 <= ControlsController.buttonToChange) {
+//		    		if(revertControllerSettings == false) {
+//		    			device.aFake = XInputDevice.a;
+//		    			device.bFake = XInputDevice.b;
+//		    			device.xFake = XInputDevice.x;
+//		    			device.yFake = XInputDevice.y;
+//		    			device.backFake = XInputDevice.back;
+//		    			device.startFake = XInputDevice.start;
+//		    			device.lShoulderFake = XInputDevice.lShoulder;
+//		    			device.rShoulderFake = XInputDevice.rShoulder;
+//		    			device.lThumbFake = XInputDevice.lThumb;
+//		    			device.rThumbFake = XInputDevice.rThumb;
+//		    			device.guideFake = XInputDevice.guide;
+//		    			device.unknownFake = XInputDevice.unknown;
+//		    			device.upFake = XInputDevice.up;
+//		    			device.downFake = XInputDevice.down;
+//		    			device.leftFake = XInputDevice.left;
+//		    			device.rightFake = XInputDevice.right;
+//		    			device.lTriggerFake = XInputDevice.lTrigger;
+//		    			device.rTriggerFake = XInputDevice.rTrigger;
+//			    		XInputDevice.a = XInputConstants.XINPUT_GAMEPAD_A;
+//			    		XInputDevice.b = XInputConstants.XINPUT_GAMEPAD_B;
+//			    		XInputDevice.x = XInputConstants.XINPUT_GAMEPAD_X;
+//			    		XInputDevice.y = XInputConstants.XINPUT_GAMEPAD_Y;
+//			    		XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
+//			    		XInputDevice.start = XInputConstants.XINPUT_GAMEPAD_START;
+//			    		XInputDevice.lShoulder = XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER;
+//			    		XInputDevice.rShoulder = XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER;
+//			    		XInputDevice.lThumb = XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB;
+//			    		XInputDevice.rThumb = XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB;
+//			    		XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
+//			    		XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+//			    		XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+//			    		XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+//			    		XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+//			    		XInputDevice.right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+//			    		XInputDevice.lTrigger = XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER;
+//			    		XInputDevice.rTrigger = XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER;
+//			    		revertControllerSettings = true;
+//		    		}
+	    		//if(ControlsController.buttonToChange <= -10 && -17 <= ControlsController.buttonToChange) {
+	    			try {
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.A)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.a);
+						controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_A);
+						
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.B)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.b);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_B);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.X)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.x);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_X);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.Y)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.y);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_Y);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.BACK)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.back);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_BACK);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.START)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.start);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_START);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.lShoulder);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.rShoulder);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.lThumb);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.rThumb);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.guide);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.unknown);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_UNKNOWN);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.up);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_DPAD_UP);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.down);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.left);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT);
+		    		}
+		    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.right);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT);
+		    		}
+		    	    if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.lTrigger);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER);
+		    			//add method
+		    	    }
+		    	    if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased) {
+//		    			controlsController.changeButtonXDevice(XInputDevice.rTrigger);
+		    			controlsController.changeButtonXDeviceEmulated(XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER);
+		    			//add method
+		    	    }
+		    	    } catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	    		}
 	    		if(joystickTimer == 0)
 					joystickTimer = System.currentTimeMillis() + 500;
@@ -10269,13 +14894,34 @@ public class Game extends Canvas implements Runnable {
 //	    		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
 //	    			XInputDevice.rightHeld = false;
 //	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-	    		    device.getDelta().getButtons().isReleased(XInputButton.A)){
+	    		if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) || 
+	    				(!XInputDevice.shootPressed && XInputDevice.shootReleased)){
 					Game.enterButtonPushedDown = false;
 	    			if(!Game.escapePressedNegateAction) {
 						if(Game.selectorButtonPosition == -1) {
 							Game.selectorButtonPosition = -4;
 							Game.State = Game.STATE.SETTINGS;
+							if(Game.smb3KickSoundLoop.clipIsActive())
+								Game.smb3KickSoundLoop.stop();
+							Game.smb3KickSoundLoop.play();
+						}
+						else if(Game.selectorButtonPosition == 0) {
+							if(Game.rescanButtonCounter < 10) {
+								ReadAllEvents.resettingControllerEnvironment = true;
+								DirectAndRawInputEnvironmentPlugin directEnv = new DirectAndRawInputEnvironmentPlugin();
+								if(directEnv != null & directEnv.isSupported())
+									ControllerEnvironment.setDefaultEnvironment(directEnv);
+								ReadAllEvents.controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+								if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+									Game.smb3Checkmark2SoundLoop.stop();
+								Game.smb3Checkmark2SoundLoop.play();
+								Game.rescanButtonCounter++;
+							}
+							else {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+							}
 						}
 						else if(Game.selectorButtonPosition == -26) {
 							Game.upKey = KeyEvent.VK_W;
@@ -10286,6 +14932,14 @@ public class Game extends Canvas implements Runnable {
 							Game.itemKey = KeyEvent.VK_E;
 							Game.pauseKey = KeyEvent.VK_ENTER;
 							Game.cancelKey = KeyEvent.VK_ESCAPE;
+							XInputDevice.upKey = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+							XInputDevice.downKey = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+							XInputDevice.leftKey = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+							XInputDevice.rightKey = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+							XInputDevice.shootKey = XInputConstants.XINPUT_GAMEPAD_A;
+							XInputDevice.itemKey = XInputConstants.XINPUT_GAMEPAD_X;
+							XInputDevice.pauseKey = XInputConstants.XINPUT_GAMEPAD_START;
+							XInputDevice.cancelKey = XInputConstants.XINPUT_GAMEPAD_B;
 							XInputDevice.up = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
 							XInputDevice.down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
 							XInputDevice.left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
@@ -10302,6 +14956,9 @@ public class Game extends Canvas implements Runnable {
 							XInputDevice.back = XInputConstants.XINPUT_GAMEPAD_BACK;
 							XInputDevice.guide = XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
 							XInputDevice.unknown = XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+							XInputDevice.lTrigger = XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER;
+							XInputDevice.rTrigger = XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER;
+							SwitchedValues.resetControlsfromResetButton();
 							Game.writeOnceToSettings = true;
 							Game.writeOnceProperty = "upKey";
 							Game.writeOnceString = String.valueOf(KeyEvent.VK_W);
@@ -10319,6 +14976,22 @@ public class Game extends Canvas implements Runnable {
 							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ENTER));
 							Game.writeMultipleProperty.add("cancelKey");
 							Game.writeMultipleString.add(String.valueOf(KeyEvent.VK_ESCAPE));
+							Game.writeMultipleProperty.add("upKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP));
+							Game.writeMultipleProperty.add("downKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN));
+							Game.writeMultipleProperty.add("leftKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT));
+							Game.writeMultipleProperty.add("rightKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT));
+							Game.writeMultipleProperty.add("shootKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_A));
+							Game.writeMultipleProperty.add("itemKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_X));
+							Game.writeMultipleProperty.add("pauseKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_START));
+							Game.writeMultipleProperty.add("cancelKeyXInput");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_B));
 							Game.writeMultipleProperty.add("upButton");
 							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP));
 							Game.writeMultipleProperty.add("downButton");
@@ -10351,22 +15024,44 @@ public class Game extends Canvas implements Runnable {
 							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON));
 							Game.writeMultipleProperty.add("unknownButton");
 							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_UNKNOWN));
+							Game.writeMultipleProperty.add("lTriggerButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER));
+							Game.writeMultipleProperty.add("rTriggerButton");
+							Game.writeMultipleString.add(String.valueOf(XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER));
+							Game.writeMultipleProperty.add("upKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.upKey);
+							Game.writeMultipleProperty.add("downKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.downKey);
+							Game.writeMultipleProperty.add("leftKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.leftKey);
+							Game.writeMultipleProperty.add("rightKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.rightKey);
+							Game.writeMultipleProperty.add("shootKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.shootKey);
+							Game.writeMultipleProperty.add("itemKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.itemKey);
+							Game.writeMultipleProperty.add("pauseKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.pauseKey);
+							Game.writeMultipleProperty.add("cancelKeyDirectInput");
+							Game.writeMultipleString.add(SwitchedValues.cancelKey);
 							Game.settingsSetup = false;
+							if(Game.smb3TailSoundLoop.clipIsActive())
+								Game.smb3TailSoundLoop.stop();
+							Game.smb3TailSoundLoop.play();
 						}
 						else if(Game.selectorButtonPosition < -1 && Game.selectorButtonPosition > -26) {
+							if(Game.selectorButtonPosition<= -18 && -25 <= Game.selectorButtonPosition) {
+								Game.gameControllerInUseDI = true;
+								Game.gameControllerSwitchBackDI = true;
+							}
 							ControlsController.buttonChangeTimer = System.currentTimeMillis() + 3000;
 							ControlsController.buttonToChange = Game.selectorButtonPosition;
 						}
-						if(smb3KickSoundLoop.clipIsActive())
-							smb3KickSoundLoop.stop();
-						smb3KickSoundLoop.play();
 					}
 					Game.escapePressedNegateAction = false;
 	    		}
-	    		if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-    	    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-    	    		device.getDelta().getButtons().isReleased(XInputButton.X)
-    	    		) {
+	    		if((!XInputDevice.cancelPressed && XInputDevice.cancelReleased) || 
+	    				(!XInputDevice.itemPressed && XInputDevice.itemReleased)) {
 	    			if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 	    				Game.selectorBPMP = Game.selectorButtonPosition;
 						Game.escapePressedNegateAction = false;
@@ -10381,20 +15076,135 @@ public class Game extends Canvas implements Runnable {
 					}
 	    		}
 	    	}
-	    }
+	    }//START AGAIN HERE
 	    else if(State == STATE.TRACKLIST && gameControllerInUse) {
+	    	if((0.65 < lY  || (XInputDevice.upHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				switch(Game.selectorButtonPosition) {
+				case -11:
+					Game.selectorButtonPosition = -10;
+					break;
+				case -9:
+					Game.selectorButtonPosition = -8;
+					break;
+				case -7:
+					Game.selectorButtonPosition = -6;
+					break;
+				case -5:
+					Game.selectorButtonPosition = -4;
+					break;
+				case -3:
+					Game.selectorButtonPosition = -2;
+					break;
+				case -2: case -4: case -6: case -8: case -10:
+					Game.selectorButtonPosition = -1;
+					break;
+				default:
+					break;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lY < -0.65 || (XInputDevice.downHeld)) && joystickTimer < System.currentTimeMillis()) {
+		    		int selector = Game.selectorButtonPosition;
+					if(Game.enterButtonPushedDown)
+						Game.escapePressedNegateAction = true;
+					switch(Game.selectorButtonPosition) {
+					case -10:
+						Game.selectorButtonPosition = -11;
+						break;
+					case -8:
+						Game.selectorButtonPosition = -9;
+						break;
+					case -6:
+						Game.selectorButtonPosition = -7;
+						break;
+					case -4:
+						Game.selectorButtonPosition = -5;
+						break;
+					case -2:
+						Game.selectorButtonPosition = -3;
+						break;
+					case -1:
+						Game.selectorButtonPosition = -2;
+						break;
+					default:
+						break;
+					}
+					if(Game.selectorButtonPosition != selector) {
+						if(Game.hudSFXPosition == 3)
+							Game.hudSFXPosition = 0;
+						else
+							Game.hudSFXPosition++;
+						Game.hudSFX.get(Game.hudSFXPosition).play();
+					}
+		    		if(joystickTimer == 0)
+						joystickTimer = System.currentTimeMillis() + 500;
+					else
+						joystickTimer = System.currentTimeMillis() + 30;
+		    	}
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.selectorButtonPosition < -3)
+					Game.selectorButtonPosition+=2;
+				else if(Game.selectorButtonPosition != -2 && Game.selectorButtonPosition != -3)
+					Game.selectorButtonPosition = -1;
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(-9 <= Game.selectorButtonPosition && Game.selectorButtonPosition != -1)
+					Game.selectorButtonPosition-=2;
+				else if(Game.selectorButtonPosition != -10 && Game.selectorButtonPosition != -1)
+					Game.selectorButtonPosition = -11;
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
 	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
 	    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
 	    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 	    		joystickTimer = 0;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    	if(XInputDevice.pausePressed ||
+	    			XInputDevice.shootPressed) {
 				Game.enterButtonPushedDown = true;
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)){
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed){
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
 						Game.mouseIsOffClickedObjectAndHeldDown = true;
@@ -10405,22 +15215,461 @@ public class Game extends Canvas implements Runnable {
 					Game.escapePressedNegateAction = true;
 	    	}
 
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+	    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) ||
+	    		(!XInputDevice.shootPressed && XInputDevice.shootReleased)
 		    		) {
 	    		Game.enterButtonPushedDown = false;
 				if(!Game.escapePressedNegateAction) {
-					Game.selectorButtonPosition = -5;
-					Game.State = Game.STATE.SETTINGS;
-					if(smb3KickSoundLoop.clipIsActive())
-						smb3KickSoundLoop.stop();
-					smb3KickSoundLoop.play();
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						Game.selectorButtonPosition = -5;
+						Game.State = Game.STATE.SETTINGS;
+						if(Game.smb3KickSoundLoop.clipIsActive())
+							Game.smb3KickSoundLoop.stop();
+						Game.smb3KickSoundLoop.play();
+						break;
+					case -2:
+						if(Game.gameTrackPosition > 0)
+							Game.gameTrackPosition--;
+						else
+							Game.gameTrackPosition = 7;//Set to Max Tracks
+						Game.gameTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.gameTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -3:
+						if(Game.menuTrackPosition > 0)
+							Game.menuTrackPosition--;
+						else
+							Game.menuTrackPosition = 4;//Set to Max Tracks
+						Game.menuTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.menuTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -4:
+						if(Game.gameTrackPosition == 7)//Max Tracks
+							Game.gameTrackPosition = 0;
+						else 
+							Game.gameTrackPosition++;
+						Game.gameTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.gameTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -5:
+						if(Game.menuTrackPosition == 4)//Max Tracks
+							Game.menuTrackPosition = 0;
+						else 
+							Game.menuTrackPosition++;
+						Game.menuTrackNumber = Game.makeTransparent(Game.resize(HUD.stringToMario3FontImage(Integer.toString(Game.menuTrackPosition+1)), 20, 20));
+						if(Game.smb3Bump2SoundLoop.clipIsActive())
+							Game.smb3Bump2SoundLoop.stop();
+						Game.smb3Bump2SoundLoop.play();
+						break;
+					case -6://play1
+						boolean b = true;
+						switch(Game.gameTrackPosition) {
+						case 4:
+							if(!Game.track4Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								b = false;
+							}
+							break;
+						case 5:
+							if(!Game.track5Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								b = false;
+							}
+							break;
+						case 6:
+							if(!Game.track6Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								b = false;
+							}
+							break;
+						default:
+							break;
+						}
+						if(b)
+							TrackController.readyToSwitch1 = true;
+						break;
+					case -7://play2
+						boolean bb = true;
+						switch(Game.menuTrackPosition) {
+						case 4:
+							if(!Game.menuTrack4Unlocked) {
+								if(Game.smwErrorSoundLoop.clipIsActive())
+									Game.smwErrorSoundLoop.stop();
+								Game.smwErrorSoundLoop.play();
+								bb = false;
+							}
+							break;
+						default:
+							break;
+						}
+						if(bb)
+							TrackController.readyToSwitch2 = true;
+						break;
+					case -8://stop1
+						if(Game.gameTrackCurrentlyPlaying != -1) {// && Game.gameTrackCurrentlyPlaying == Game.gameTrackPosition) {
+							TrackController.trackSetup = false;
+							Game.trackCurrentlyPlaying = false;
+							Game.gameSoundLoops.get(Game.gameTrackCurrentlyPlaying).stop();
+							Game.gameSoundLoops.get(Game.gameTrackCurrentlyPlaying).setFramePosition(0);
+						}
+						else
+							Game.gameSoundLoops.get(Game.gameTrackPosition).setFramePosition(0);
+						if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+							Game.smb3Checkmark2SoundLoop.stop();
+						Game.smb3Checkmark2SoundLoop.play();
+						break;
+					case -9://stop2
+						if(Game.trackCurrentlyPlaying && Game.menuTrackCurrentlyPlaying != -1) { //&& Game.menuTrackCurrentlyPlaying == Game.menuTrackPosition) {
+							TrackController.trackSetup = false;
+							Game.trackCurrentlyPlaying = false;
+							Game.menuSoundLoops.get(Game.menuTrackCurrentlyPlaying).stop();
+							Game.menuSoundLoops.get(Game.menuTrackCurrentlyPlaying).setFramePosition(0);
+						}
+						else if(Game.menuTrackCurrentlyPlaying != -1)//Game.menuTrackPosition != Game.menuSoundLoopRandomizer)
+							Game.menuSoundLoops.get(Game.menuTrackPosition).setFramePosition(0);
+						if(Game.smb3Checkmark2SoundLoop.clipIsActive())
+							Game.smb3Checkmark2SoundLoop.stop();
+						Game.smb3Checkmark2SoundLoop.play();
+						break;
+					case -10://set1
+						String s = "";
+						String ss = "";
+						switch(Game.gameTrackPosition) {
+						case 0:
+							s = "gameTrack1Set";
+							if(Game.gameTrack1Set) {
+								Game.gameTrack1Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack1Set = true;
+								ss = "true";
+							}
+							break;
+						case 1:
+							s = "gameTrack2Set";
+							if(Game.gameTrack2Set) {
+								Game.gameTrack2Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack2Set = true;
+								ss = "true";
+							}
+							break;
+						case 2:
+							s = "gameTrack3Set";
+							if(Game.gameTrack3Set) {
+								Game.gameTrack3Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack3Set = true;
+								ss = "true";
+							}
+							break;
+						case 3:
+							s = "gameTrack4Set";
+							if(Game.gameTrack4Set) {
+								Game.gameTrack4Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack4Set = true;
+								ss = "true";
+							}
+							break;
+						case 4:
+							s = "gameTrack5Set";
+							if(Game.gameTrack5Set || !Game.track4Unlocked) {
+								if(!Game.track4Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.gameTrack5Set = false;
+								ss = "false";
+							}
+							else {
+								Game.gameTrack5Set = true;
+								ss = "true";
+							}
+							break;
+						case 5:
+							s = "gameTrack6Set";
+							if(Game.gameTrack6Set || !Game.track5Unlocked) {
+								if(!Game.track5Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.gameTrack6Set = false;
+								ss = "false";
+							}
+							else {
+								Game.gameTrack6Set = true;
+								ss = "true";
+							}
+							break;
+						case 6:
+							s = "gameTrack7Set";
+							if(Game.gameTrack7Set || !Game.track6Unlocked) {
+								if(!Game.track6Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.gameTrack7Set = false;
+								ss = "false";
+							}
+							else {
+								Game.gameTrack7Set = true;
+								ss = "true";
+							}
+							break;
+						case 7:
+							s = "gameTrack8Set";
+							if(Game.gameTrack8Set) {
+								Game.gameTrack8Set = false;
+								ss = "false";
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.gameTrack8Set = true;
+								ss = "true";
+							}
+							break;
+						default:
+							break;
+						}
+						if(ss.equals("true")) {
+							if(Game.smb3ItemSoundLoop.clipIsActive())
+								Game.smb3ItemSoundLoop.stop();
+							Game.smb3ItemSoundLoop.play();
+						}
+						if(!s.equals("") && !ss.equals("")) {
+							try {
+								LeaderboardController.writeToSettings(s, ss);
+							} catch (IOException e1) {
+							}
+							if(ss.equals("true") && Game.soundRandomizer == 8 && Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1) {
+								int randomIPlus = 0;
+								if(Game.track4Unlocked)
+									randomIPlus++;
+								if(Game.track5Unlocked)
+									randomIPlus++;
+								if(Game.track6Unlocked)
+									randomIPlus++;
+								Random rand = new Random();
+								Game.soundRandomizer = rand.nextInt(7) + (-3+randomIPlus);
+								Game.soundRandomizer = VolumeSlider.gameTrackSetup(Game.soundRandomizer);
+								//setsetup[VolumeSlider.TrackSetup]
+								if(Game.soundRandomizer != -4) {
+									Game.gameSoundLoops.get(Game.soundRandomizer).stop();
+									Game.gameSoundLoops.get(Game.soundRandomizer).setSoundLoopBoolean(true);
+									Game.gameSoundLoops.get(Game.soundRandomizer).setFramePosition(0);
+//									Game.gameSoundLoops.get(Game.soundRandomizer).play();
+								}
+								else
+									Game.soundRandomizer = 8;
+							}
+							else if(ss.equals("false")) {  
+								if(Game.gameTrack1Set == false && Game.gameTrack2Set == false && Game.gameTrack3Set == false && 
+									Game.gameTrack4Set == false && Game.gameTrack5Set == false && Game.gameTrack6Set == false && 
+									Game.gameTrack7Set == false && Game.gameTrack8Set == false && Game.soundRandomizer != 8 &&
+									Game.soundRandomizer != -4) 
+								Game.soundRandomizer = 8;
+							}
+						}
+						break;
+					case -11://set2
+						String string1 = "";
+						String string2 = "";
+						switch(Game.menuTrackPosition) {
+						case 0:
+							string1 = "menuTrack1Set";
+							if(Game.menuTrack1Set) {
+								Game.menuTrack1Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 0) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack1Set = true;
+								string2 = "true";
+							}
+							break;
+						case 1:
+							string1 = "menuTrack2Set";
+							if(Game.menuTrack2Set) {
+								Game.menuTrack2Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 1) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack2Set = true;
+								string2 = "true";
+							}
+							break;
+						case 2:
+							string1 = "menuTrack3Set";
+							if(Game.menuTrack3Set) {
+								Game.menuTrack3Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 2) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack3Set = true;
+								string2 = "true";
+							}
+							break;
+						case 3:
+							string1 = "menuTrack4Set";
+							if(Game.menuTrack4Set) {
+								Game.menuTrack4Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 3) 
+									Game.resetMenuSound();
+								if(Game.smbPopSoundLoop.clipIsActive())
+									Game.smbPopSoundLoop.stop();
+								Game.smbPopSoundLoop.play();
+							}
+							else {
+								Game.menuTrack4Set = true;
+								string2 = "true";
+							}
+							break;
+						case 4:
+							string1 = "menuTrack5Set";
+							if(Game.menuTrack5Set || !Game.menuTrack4Unlocked) {
+								if(!Game.menuTrack4Unlocked) {
+									if(Game.smwErrorSoundLoop.clipIsActive())
+										Game.smwErrorSoundLoop.stop();
+									Game.smwErrorSoundLoop.play();
+								}
+								else {
+									if(Game.smbPopSoundLoop.clipIsActive())
+										Game.smbPopSoundLoop.stop();
+									Game.smbPopSoundLoop.play();
+								}
+								Game.menuTrack5Set = false;
+								string2 = "false";
+								if(Game.menuSoundLoopRandomizer == 4) 
+									Game.resetMenuSound();
+							}
+							else {
+								Game.menuTrack5Set = true;
+								string2 = "true";
+							}
+							break;
+						default:
+							break;
+						}
+						if(string2.equals("true")) {
+							if(Game.smb3ItemSoundLoop.clipIsActive())
+								Game.smb3ItemSoundLoop.stop();
+							Game.smb3ItemSoundLoop.play();
+						}
+						if(!string1.equals("") && !string2.equals("")) {
+							try {
+								LeaderboardController.writeToSettings(string1, string2);
+							} catch (IOException e1) {
+							}
+
+							if(string2.equals("true") && Game.menuSoundLoopRandomizer == 5 && Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1) {
+								Random rand = new Random();
+								Game.menuSoundLoopRandomizer = rand.nextInt(5);
+								VolumeSlider.adjustVolume(Game.menuSoundLoops, Game.gameSoundLoops);
+								Game.menuSoundLoopRandomizer = VolumeSlider.menuTrackSetup(Game.menuSoundLoopRandomizer);
+								if(Game.menuSoundLoopRandomizer == -2)
+									Game.menuSoundLoopRandomizer = 5;
+								if(Game.menuSoundLoopRandomizer == 2) 
+//									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(864007, 1728014);//Seconds.millisec * 44100
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(432004, 864007);//Seconds.millisec * 22050
+								else if(Game.menuSoundLoopRandomizer == 3) 
+//									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(464196, 1949705);//Seconds.millisec * 44100
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(232098, 974853);//Seconds.millisec * 22050
+								else if(Game.menuSoundLoopRandomizer == 4)
+//									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(545561, 2291391);//Seconds.millisec * 44100
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loopSegmentFromStart(272781, 1145696);//Seconds.millisec * 22050
+								else
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loop();
+								Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+							}
+							else if(string2.equals("false")) {
+								if(Game.gameTrackCurrentlyPlaying == -1  && Game.menuTrackCurrentlyPlaying == -1 && 
+									Game.menuTrack1Set == false && Game.menuTrack2Set == false && Game.menuTrack3Set == false && 
+									Game.menuTrack4Set == false && Game.menuTrack5Set == false && Game.menuSoundLoopRandomizer != 5 &&
+									Game.menuSoundLoopRandomizer != -2) {
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).stop();
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setFramePosition(0);
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setSoundLoopBoolean(false);
+									Game.menuSoundLoopRandomizer = 5;
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).loop();
+									Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+								}
+							}
+						}
+						break;
+					}
 				}
 				Game.escapePressedNegateAction = false;
 			}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.X)
+	    	if((!XInputDevice.itemPressed && XInputDevice.itemReleased) ||
+		    	(!XInputDevice.cancelPressed && XInputDevice.cancelReleased)
 		    		) {
 	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					Game.selectorBPMP = Game.selectorButtonPosition;
@@ -10437,18 +15686,57 @@ public class Game extends Canvas implements Runnable {
 	    	}
 	    }
 	    else if(State == STATE.HELP && gameControllerInUse) {
+	    	if((lX < -.65 || (XInputDevice.leftHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.firstTimeBeating) {
+					if(Game.selectorButtonPosition != -1)
+						Game.selectorButtonPosition = -1;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
+	    	else if((lX > .65 || (XInputDevice.rightHeld)) && joystickTimer < System.currentTimeMillis()) {
+	    		int selector = Game.selectorButtonPosition;
+				if(Game.enterButtonPushedDown)
+					Game.escapePressedNegateAction = true;
+				if(Game.firstTimeBeating) {
+					if(Game.selectorButtonPosition != 0)
+						Game.selectorButtonPosition = 0;
+				}
+				if(Game.selectorButtonPosition != selector) {
+					if(Game.hudSFXPosition == 3)
+						Game.hudSFXPosition = 0;
+					else
+						Game.hudSFXPosition++;
+					Game.hudSFX.get(Game.hudSFXPosition).play();
+				}
+	    		if(joystickTimer == 0)
+					joystickTimer = System.currentTimeMillis() + 500;
+				else
+					joystickTimer = System.currentTimeMillis() + 30;
+	    	}
 	    	if(lX < 0.145 && lX > -0.145 && lY < 0.145 && lY > -0.145 &&
 		    		!(XInputDevice.rightHeld) && !(XInputDevice.leftHeld)&&
 		    		!(XInputDevice.upHeld) && !(XInputDevice.downHeld)) {
 		    		joystickTimer = 0;
 		    }
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.START) ||
-		    		device.getDelta().getButtons().isPressed(XInputButton.A)) {
+	    	if(XInputDevice.pausePressed ||
+			    	XInputDevice.shootPressed) {
 				Game.enterButtonPushedDown = true;
 	    	}
-	    	if(device.getDelta().getButtons().isPressed(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.B) ||
-	    		device.getDelta().getButtons().isPressed(XInputButton.X)){
+	    	if(XInputDevice.cancelPressed ||
+	    			XInputDevice.itemPressed){
 	    		if(Game.mouseIsClickedDown) {
 					if(!Game.mouseIsOffClickedObjectAndHeldDown && (Game.backHighlighted))
 						Game.mouseIsOffClickedObjectAndHeldDown = true;
@@ -10459,22 +15747,39 @@ public class Game extends Canvas implements Runnable {
 					Game.escapePressedNegateAction = true;
 	    	}
 
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.START) ||
-		    		device.getDelta().getButtons().isReleased(XInputButton.A)
+	    	if((!XInputDevice.pausePressed && XInputDevice.pauseReleased) ||
+		    	(!XInputDevice.shootPressed && XInputDevice.shootReleased)
 		    		) {
 	    		Game.enterButtonPushedDown = false;
 				if(!Game.escapePressedNegateAction) {
-					Game.selectorButtonPosition = -1;
-					Game.State = Game.STATE.MENU;
-					if(smb3KickSoundLoop.clipIsActive())
-						smb3KickSoundLoop.stop();
-					smb3KickSoundLoop.play();
+					switch(Game.selectorButtonPosition) {
+					case -1:
+						Game.selectorButtonPosition = -1;
+						Game.State = Game.STATE.MENU;
+						if(Game.smb3KickSoundLoop.clipIsActive())
+							Game.smb3KickSoundLoop.stop();
+						Game.smb3KickSoundLoop.play();
+						break;
+					case 0:
+						if(Game.firstTimeBeating) {
+							Game.State = STATE.CREDITS;
+							if(Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).clipIsActive()) {
+								Game.menuSoundLoops.get(Game.menuSoundLoopRandomizer).stop();
+							}
+							Game.keysAreInUse = false;
+							Game.gameControllerInUse = false;
+							Game.gameControllerInUseDI = false;
+							Game.skipSequence = false;
+							Game.askToSkipSequence = false;
+							Game.selectorButtonPosition = 0;
+						}
+						break;
+					}
 				}
 				Game.escapePressedNegateAction = false;
 			}
-	    	if(device.getDelta().getButtons().isReleased(XInputButton.BACK) ||
-	    		device.getDelta().getButtons().isReleased(XInputButton.B) ||
-	    		device.getDelta().getButtons().isReleased(XInputButton.X)
+	    	if((!XInputDevice.itemPressed && XInputDevice.itemReleased) ||
+			    (!XInputDevice.cancelPressed && XInputDevice.cancelReleased)
 	    		) {
 	    		if(!Game.mouseIsClickedDown && !Game.enterButtonPushedDown) {
 					Game.selectorBPMP = Game.selectorButtonPosition;
@@ -10490,19 +15795,411 @@ public class Game extends Canvas implements Runnable {
 	    		}
 	    	}
 	    }
-	    if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
-			XInputDevice.upHeld = false;
-		}
-		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
-			XInputDevice.downHeld = false;
-		}
-		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
-			XInputDevice.leftHeld = false;
-		}
-		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
-			XInputDevice.rightHeld = false;
-		}
+		 if(!XInputDevice.shootPressed && XInputDevice.shootReleased)
+			 XInputDevice.shootReleased = false;
+		 if(!XInputDevice.itemPressed && XInputDevice.itemReleased)
+			 XInputDevice.itemReleased = false;
+		 if(!XInputDevice.pausePressed && XInputDevice.pauseReleased)
+			 XInputDevice.pauseReleased = false;
+		 if(!XInputDevice.cancelPressed && XInputDevice.cancelReleased)
+			 XInputDevice.cancelReleased = false;
+		 if(!XInputDevice.upHeld && XInputDevice.upReleased)
+			 XInputDevice.upReleased = false;
+		 if(!XInputDevice.downHeld && XInputDevice.downReleased)
+			 XInputDevice.downReleased = false;
+		 if(!XInputDevice.leftHeld && XInputDevice.leftReleased)
+			 XInputDevice.leftReleased = false;
+		 if(!XInputDevice.rightHeld && XInputDevice.rightReleased)
+			 XInputDevice.rightReleased = false;
+//	    //TEST
+		 if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+			 XInputDevice.lTriggerReleased = false;
+		 if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+			 XInputDevice.rTriggerReleased = false;
+//	    //TEST
+//	    if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+//			XInputDevice.upHeld = false;
+//		}
+//		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+//			XInputDevice.downHeld = false;
+//		}
+//		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+//			XInputDevice.leftHeld = false;
+//		}
+//		if(device.getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+//			XInputDevice.rightHeld = false;
+//		}
 		//gameControllerInUse = true;//activate this when you actually do something
+	}
+//	public static void directInput() {
+//		Component comp = ReadAllEvents.event.getComponent();
+//		float value = ReadAllEvents.event.getValue();
+//		if(comp == null)
+//			return;
+//		if(comp.isAnalog() && !comp.isRelative()) {
+//			if(!Game.keysAreInUse)
+//				Game.keysAreInUse = true;
+//			//CONTROLLER ANALOG STICK
+//			if(comp.getName().equals("Y Axis") ||comp.getName().equals("y")) {
+//				if(0 < value) {
+//					Game.selectorButtonPosition--;
+//				}
+//			}
+//		}
+//	}
+	public static void helpLinesLastSetup() {
+		BufferedImage line = null;
+		int noRepeatingLines = helpLineRandomizer;
+		Random rand = new Random();
+		int randomIPlus = 0;
+		if(Game.item4Unlocked)
+			randomIPlus++;
+		if(Game.item5Unlocked)
+			randomIPlus++;
+		if(Game.item6Unlocked)
+			randomIPlus++;
+		helpLineRandomizer = rand.nextInt(16) + (-3+randomIPlus);
+		if(helpLineRandomizer == noRepeatingLines && helpLineRandomizer == 15)
+			helpLineRandomizer = 0;
+		else if(helpLineRandomizer == noRepeatingLines && helpLineRandomizer != 16)
+			helpLineRandomizer++;
+//		helpLineRandomizer=0;
+		switch(helpLineRandomizer) {
+		case 0:
+//			line = HUD.stringToMario3FontImage("Blocks give no points for stopping enemies");
+			line = HUD.stringToMario3FontImage("Enemies give no points if stopped by blocks");
+			line = Game.resize(line, (int)(line.getWidth()/1.1), (line.getHeight()));
+			break;
+		case 1: case -1:
+			line = HUD.stringToMario3FontImage("Blocks are worth more points if saved");
+			break;
+		case 2: case -2:
+			line = HUD.stringToMario3FontImage("Skipping scenes activates skip animations");
+			line = Game.resize(line, (int)(line.getWidth()/1.1), (line.getHeight()));
+			break;
+		case 3: case -3:
+			line = HUD.stringToMario3FontImage("You can set certain songs in settings");
+			break;
+		case 4: case -4:
+			line = HUD.stringToMario3FontImage("You can customize controls in settings");
+			break;
+		case 5: case -5:
+			line = HUD.stringToMario3FontImage("Post your scores online in leaderboard");
+			break;
+		case 6: case -6:
+			switch(Game.characterSkinPosition) {
+			case 3:
+				line = HUD.stringToMario3FontImage("Luigi can turn when time's stopped");
+				break;
+			case 4:
+				line = HUD.stringToMario3FontImage("Mike can turn when time's stopped");
+				break;
+			case 5:
+				line = HUD.stringToMario3FontImage("Bill can turn when time's stopped");
+				break;
+			default:
+				line = HUD.stringToMario3FontImage("Mario can turn when time's stopped");
+				break;
+			}
+			break;
+		case 7: case -7:
+			switch(Game.characterSkinPosition) {
+			case 3:
+				line = HUD.stringToMario3FontImage("Luigi slides when changing direction");
+				break;
+			case 4:
+				line = HUD.stringToMario3FontImage("Mike slides when changing direction");
+				break;
+			case 5:
+				line = HUD.stringToMario3FontImage("Bill slides when changing direction");
+				break;
+			default:
+				line = HUD.stringToMario3FontImage("Mario slides when changing direction");
+				break;
+			}
+			break;
+		case 8: case -8:
+			switch(Game.fireballPosition) {
+			case 1:
+				line = HUD.stringToMario3FontImage("Green shells carry your momentum");
+				break;
+			case 2:
+				line = HUD.stringToMario3FontImage("Red shells track enemies");
+				break;
+			case 3:
+				line = HUD.stringToMario3FontImage("Buzzy beetle shells can endure impacts");
+				break;
+			case 4:
+				line = HUD.stringToMario3FontImage("Gloves go faster if you're Mike");
+				break;
+			case 5:
+				line = HUD.stringToMario3FontImage("Contra shots are the smallest projectiles");
+				line = Game.resize(line, (int)(line.getWidth()/1.1), (line.getHeight()));
+				break;
+			default:
+				line = HUD.stringToMario3FontImage("Fireballs always shoot straight ahead");
+				break;
+			}
+			break;
+		case 9://chainchomp
+			line = HUD.stringToMario3FontImage("Chain chomp can eat buzzy beetle shells");
+			break;
+		case 10://bulletbill
+			line = HUD.stringToMario3FontImage("Bullet bill might withstand a collision");
+			break;
+		case 11://bombombs
+			line = HUD.stringToMario3FontImage("Watch out for bombombs schrapnel");
+			break;
+		case 12://cheepcheeps
+			line = HUD.stringToMario3FontImage("Cheep cheeps will help for 15 seconds");
+			break;
+		/******************UNLOCKS*************************/
+		case 13://amp wiggler lakitu
+			if(item4Unlocked)
+				line = HUD.stringToMario3FontImage("Buzzy beetle shells will destroy amp");
+			else if(item5Unlocked)
+				line = HUD.stringToMario3FontImage("Wiggler appears below important enemies");
+			else if(item6Unlocked)
+				line = HUD.stringToMario3FontImage("Watch out for items lakitu drops");
+			else
+				line = HUD.stringToMario3FontImage("Created by Thomas Rader");
+			break;
+		case 14://wiggler lakitu
+			if(item5Unlocked)
+				line = HUD.stringToMario3FontImage("Wiggler appears below important enemies");
+			else if(item6Unlocked)
+				line = HUD.stringToMario3FontImage("Watch out for items lakitu drops");
+			else
+				line = HUD.stringToMario3FontImage("Created by Thomas Rader");
+			break;
+		case 15://lakitu
+			if(item6Unlocked)
+				line = HUD.stringToMario3FontImage("Watch out for items lakitu drops");
+			else
+				line = HUD.stringToMario3FontImage("Created by Thomas Rader");
+			break;
+		default:
+			line = HUD.stringToMario3FontImage("Created by Thomas Rader");
+			break;
+		}
+		line = Game.resize(line, (line.getWidth()/2), (line.getHeight()/2));
+		helpLinesLast = line;
+	}
+	public static void checkIfAllUnlocked() {
+		if(skin1Unlocked && skin2Unlocked && skin3Unlocked &&
+			fireball1Unlocked && fireball2Unlocked && fireball3Unlocked && 
+			track4Unlocked && track5Unlocked && track6Unlocked && 
+			item4Unlocked && item5Unlocked && item6Unlocked) {
+			allUnlockedScreen = true;
+			menuTrack4Unlocked = true;
+			menuTrack5Set = true;
+			try {
+				LeaderboardController.writeToSettings("menuTrack4Unlocked", "true");
+				LeaderboardController.writeToSettings("menuTrack5Set", "true");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	public static void resetMenuSound() {
+		if(menuSoundLoopRandomizer >= 0 && menuSoundLoopRandomizer < 6) {
+			menuSoundLoops.get(menuSoundLoopRandomizer).stop();
+			menuSoundLoops.get(menuSoundLoopRandomizer).setFramePosition(0);
+			menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(false);
+		}
+		Random rand = new Random();
+		menuSoundLoopRandomizer = rand.nextInt(5);
+		VolumeSlider.adjustVolume(menuSoundLoops, gameSoundLoops);
+		menuSoundLoopRandomizer = VolumeSlider.menuTrackSetup(menuSoundLoopRandomizer);
+		if(menuSoundLoopRandomizer == -2)
+			menuSoundLoopRandomizer = 5;
+		if(!Game.trackCurrentlyPlaying) {//MAYBE DELETE THIS IF STATEMENT
+			if(menuSoundLoopRandomizer == 2) 
+//				menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(864007, 1728014);//Seconds.millisec * 44100
+				menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(432004, 864007);//Seconds.millisec * 22050
+			else if(menuSoundLoopRandomizer == 3) 
+//				menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(464196, 1949705);//Seconds.millisec * 44100
+				menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(232098, 974853);//Seconds.millisec * 22050
+			else if(menuSoundLoopRandomizer == 4)
+//				menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(545561, 2291391);//Seconds.millisec * 44100
+				menuSoundLoops.get(menuSoundLoopRandomizer).loopSegmentFromStart(272781, 1145696);//Seconds.millisec * 22050
+			else
+				menuSoundLoops.get(menuSoundLoopRandomizer).loop();
+			menuSoundLoops.get(menuSoundLoopRandomizer).setSoundLoopBoolean(true);
+		}
+	}
+	private void chompedStarFX(double x, double y, int width, int height) {
+//		for(int i = 0; i < this.getController().getEntityF().size(); i ++){
+//			EntityF tempEnt = this.getController().getEntityF().get(i);
+//			if(this.getController().getEntityF().get(i).getY() > ((Game.HEIGHT * Game.SCALE) - MARIO_HEIGHT - 30) && 
+//					this.getController().getEntityF().get(i).entityName().equals("chompFX")) {
+//				this.getController().getEntityF().remove(tempEnt);
+//			}
+//		}
+		ChompFX chomped;
+		Random rand = new Random();
+		int randInt = rand.nextInt(10);
+		switch(randInt) {
+		case 0:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"Fireball");
+			break;
+		case 1:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"Flower");
+			break;
+		case 2:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"Goomba");
+			break;
+		case 3:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"GreenShell");
+			break;
+		case 4:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"BuzzyBeetleShell");
+			break;
+		case 5:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"GloveFireball");
+			break;
+		case 6:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"Wiggler");
+			break;
+		case 7:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"Cloud");
+			break;
+		case 8:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"CheepCheeps");
+			break;
+		case 9:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"Lakitu");
+			break;
+		default:
+			chomped = new ChompFX(this,x+(width/2),y+(height/2),"Flower");
+			break;
+		}
+		c.addEntity(chomped);
+	}
+	public void fireballSplash(double x, double y) {
+		if(Game.currentlySelectedFireball == 0) {
+			this.getController().addEntity(new ChompFX(this,x+4,y+4,"Fireball"));
+		}
+		else if(Game.currentlySelectedFireball == 1) {
+			this.getController().addEntity(new ChompFX(this,x+4,y+4,"GreenShell"));
+		}
+		else if(Game.currentlySelectedFireball == 2) {
+			this.getController().addEntity(new ChompFX(this,x+4,y+4,"RedShell"));
+		}
+		else if(Game.currentlySelectedFireball == 3) {
+			this.getController().addEntity(new ChompFX(this,x+4,y+4,"BuzzyBeetleShell"));
+		}
+		else if(Game.currentlySelectedFireball == 4) {
+			this.getController().addEntity(new ChompFX(this,x+4,y+4,"GloveFireball"));
+		}
+		else if(Game.currentlySelectedFireball == 5) {
+			this.getController().addEntity(new ChompFX(this,x+4,y+4,"ContraFireball"));
+		}
+	}
+	public void pointUpdate() throws IOException {
+		if(LeaderboardController.getFromSettings("Total Points: ").equals("")) {
+			if(hud.getScore() < 999999) {
+				LeaderboardController.writeToSettings("Total Points: ", String.valueOf(hud.getScore()));
+				if(highScore < 999999)
+					LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
+			}
+			else {
+				LeaderboardController.writeToSettings("Total Points: ", "999999");
+				if(highScore < hud.getScore())
+					LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
+			}
+		}
+		else {
+			int i = Integer.valueOf(LeaderboardController.getFromSettings("Total Points: "));
+			i += hud.getScore();
+			if(i < 999999){}
+			else
+				i = 999999;
+			if(highScore < hud.getScore())
+				LeaderboardController.writeToSettings("High Score: ", String.valueOf(hud.getScore()));
+			LeaderboardController.writeToSettings("Total Points: ", String.valueOf(i));
+		}
+		if(!LeaderboardController.getFromSettings("Total Points: ").equals("")) {
+			totalPointsImage = HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: "));
+			totalPointsImage = Game.resize(HUD.stringToMario3FontImage(LeaderboardController.getFromSettings("Total Points: ")), totalPointsImage.getWidth()/2, totalPointsImage.getHeight()/2);
+		}
+	}
+	public static void soundPop() {
+		if(smbPopSoundLoop.clipIsActive()) {
+			smbPopSoundLoop.stop();
+			smbPopSoundLoop.setFramePosition(0);
+		}
+		smbPopSoundLoop.play();
+	}
+	public static void soundFireballPop() {
+		if(fireballPopSFX.clipIsActive()) {
+			fireballPopSFX.stop();
+			fireballPopSFX.setFramePosition(0);
+		}
+		fireballPopSFX.play();
+	}
+	public static void fireballSoundSet() {
+		if(fireballSFX != null)
+			fireballSFX.close();
+		if(fireballPopSFX != null)
+			fireballPopSFX.close();
+		switch(currentlySelectedFireball) {
+		case 0:
+			fireballSFX = new SoundLoops("res/Sounds/SFX/smb3_fireball.wav");
+			fireballPopSFX = new SoundLoops("res/Sounds/SFX/mariofireballsfx.wav");
+			break;
+		case 1: case 2: case 3:
+			fireballSFX = new SoundLoops("res/Sounds/SFX/nsmbwiiMenuCancel.wav");
+			fireballPopSFX = new SoundLoops("res/Sounds/SFX/ssbm_shell.wav");
+			break;
+		case 4:
+			fireballSFX = new SoundLoops("res/Sounds/SFX/miketysonpunchoutglovesfx.wav");
+			fireballPopSFX = new SoundLoops("res/Sounds/SFX/miketysonpunchoutglovepopsfx.wav");
+			break;
+		case 5:
+			fireballSFX = new SoundLoops("res/Sounds/SFX/contrashootsfx.wav");
+			fireballPopSFX = new SoundLoops("res/Sounds/SFX/contrafireballpopsfx.wav");
+			break;
+		default:
+			fireballSFX = new SoundLoops("res/Sounds/SFX/smb3_fireball.wav");
+			fireballPopSFX = new SoundLoops("res/Sounds/SFX/mariofireballsfx.wav");
+			break;
+		}
+		VolumeSlider.adjustSFX(fireballSFX);
+		VolumeSlider.adjustSFX(fireballPopSFX);
+	}
+	public static BufferedImage makeTransparent(BufferedImage img) {
+		BufferedImage result = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		for(int i = 0; i < result.getWidth();i++) {
+	        for(int j = 0; j < result.getHeight(); j ++){
+	        	Color color = new Color(img.getRGB(i, j));
+	        	Color colornext = new Color(img.getRGB(i, j));
+	        	Color colorprev = new Color(img.getRGB(i, j));
+	        	if(i == result.getWidth() -1 )
+	        		colornext = new Color(img.getRGB(i, j));
+	        	else if(i == result.getWidth() -2)
+	        		colornext = new Color(img.getRGB(i+1, j));
+	        	else if(i == result.getWidth() -3)
+	        		colornext = new Color(img.getRGB(i+2, j));
+	        	else
+	        		colornext = new Color(img.getRGB(i+3, j));
+	        	if(i == 0)
+	        		colorprev = new Color(img.getRGB(i, j));
+	        	else if(i == 1)
+	        		colorprev = new Color(img.getRGB(i-1, j));
+	        	else if(i == 2)
+	        		colorprev = new Color(img.getRGB(i-2, j));
+	        	else
+	        		colorprev = new Color(img.getRGB(i-3, j));
+	        	if((color.getRed() > 20 || color.getGreen() > 20 || color.getBlue() > 20) ||
+	        		(colornext.getRed() > 20 || colornext.getGreen() > 20 || colornext.getBlue() > 20) ||
+	        		(colorprev.getRed() > 20 || colorprev.getGreen() > 20 || colorprev.getBlue() > 20))
+	        		result.setRGB(i, j, color.getRGB());
+	        	else
+	        		result.setRGB(i, j, (new Color(0.0f, 0.0f, 0.0f, 0.0f)).getRGB());
+	        }
+		}
+		return result;
 	}
 	public static Boolean isPixelTransparentinBufferedImage(BufferedImage img, int x, int y) {
 		//System.out.println(img.getWidth()+"x is "+x);
@@ -10558,25 +16255,694 @@ public class Game extends Canvas implements Runnable {
 		else
 			return var;
 	}
-	
+	private byte[] makeIV() {
+		SecureRandom random = new SecureRandom();
+		byte iv[] = new byte[16];//generate random 16 byte IV AES is always 16bytes
+        random.nextBytes(iv);
+        return iv;
+	}
+	private String encryptMessageAESKey(String gay) {
+		String encodedKey = Base64.getEncoder().encodeToString(EncryptionAES.secretKeyPublic.getEncoded());
+		byte[] ivBytes = makeIV();
+		byte[] hi = EncryptionAES.encryptCBC2Byte(gay, encodedKey, ivBytes);
+		byte[] concatBytes = new byte[ivBytes.length+hi.length];
+		System.arraycopy(ivBytes, 0, concatBytes, 0, ivBytes.length);
+		System.arraycopy(hi, 0, concatBytes, ivBytes.length, hi.length);
+		String message = Base64.getEncoder().encodeToString(concatBytes);
+		return message;
+	}
+	private String decryptMessageAESKey(String gay) {
+		String encodedKey = Base64.getEncoder().encodeToString(EncryptionAES.secretKeyPublic.getEncoded());
+		String ivs = gay.substring(0,16);
+		gay = gay.substring(16, gay.length());
+		if(gay.length() % 8 != 0) {
+			if(gay.length()+1 % 8 == 0)
+				gay = gay.substring(0, gay.length()+1);
+			else
+				gay = gay.substring(0, gay.length()-1);
+		}
+		if(EncryptionAES.decryptCBC2(gay,encodedKey,ivs) != null) {
+			return EncryptionAES.decryptCBC2(gay,encodedKey,ivs);
+		}
+		else
+			return null;
+	}
+	public String sendMessage(String msg, BufferedReader in) throws IOException {
+		String t="";
+		String resp = "";
+		String decoy = "";
+		try {
+	        out.println(msg);
+//	        while((decoy = in.readLine()) != null) {
+//	        	System.out.println(decoy);
+//	        	resp=resp+"\n"+decoy;
+//	        	if(decoy.contains("END:END:"))
+//	        		break;
+//	        	//decoy
+//	        }
+	        resp = in.readLine();
+	        return resp;
+		} catch (IOException ex){
+			System.out.println("Can't send message, IOException: " + ex);
+			return t;
+		}
+    }
+	public void clientToServer(String s) throws UnknownHostException, IOException {
+		//if(s.length() <= 60) {
+		final Thread outThread = new Thread() {
+			@Override
+			public void run() {
+			while(connectingToServer) {
+			try {
+				renderConnectingMessage();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			boolean b = false;
+			boolean versionCheck = false;
+			String line = "";
+			//String ip = "192.168.1.235";
+			String ip = "23.127.171.17";
+			int port = 8591;
+			int i = 0;
+			int j = 0;
+    		Scanner input = new Scanner(s);
+			try {
+				//put run animation here for image progression in renderConnectingMessage()
+				if(clientSocket == null)
+				clientSocket = new Socket(ip , port);
+				//clientSocket.setReuseAddress(true);
+				if(out == null)
+		        out = new PrintWriter(clientSocket.getOutputStream(), true);
+				if(in == null)
+		        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		        //String response =  sendMessage(s,in);
+		        //Check version with server
+				String gay = "";
+				if(!serverVerified) {
+					ServerVerify serverVerify = new ServerVerify();
+					if(serverVerify.serverVerify() == -1)
+						throw new IOException("Verification failed.");
+				}
+				else if((gay = in.readLine()) == null) {
+					gay = "";
+					//serverVerified = false;
+        			//throw new IOException("Server is down.");
+        		}
+//				if((gay = in.readLine()) == null) {
+//					serverVerified = false;
+//        			throw new IOException("Server is down.");
+//        		}
+//				System.out.println("sending ki key ");
+				out.println(encryptMessageAESKey(KIVersion));
+				//String gay = "";
+				if((gay = in.readLine()) == null) {
+					serverVerified = false;
+        			throw new IOException("Server is down.");
+        		}
+				if(gay.equals("END:END:") && ((gay = in.readLine()) == null)) {
+					serverVerified = false;
+        			throw new IOException("Server is down.");
+        		}
+//				System.out.println("s = "+s);
+//				System.out.println("gay = "+gay+" size = "+gay.length());
+				gay = decryptMessageAESKey(gay);
+//				System.out.println("LENGTH = "+Base64.getMimeDecoder().decode(gay).length);
+//				System.out.println("decrypted... "+decryptMessageAESKey(gay));
+			 if(gay.contains(KIVersion)) {
+//				 System.out.println("We are sending: "+s);
+			        if(s.contains("UPLOAD:UPLOAD:")) {
+	    		        if(s.contains("DELETE:DELETE:")) {
+		    	        	saveName = "";
+		    	        	LeaderboardController.writeToSettings("saveName", "");
+	    		        }
+			        	while (input.hasNextLine()) {
+			        		if (i == 0) {input.nextLine();}
+			        		else {
+			        			line = input.nextLine();
+			        			if(line.contains("UPLOAD:UPLOAD:")) {
+			        				i++;
+			        				continue;
+			        			}
+			        			line = line.replace("\n", "");
+//			        			System.out.println("line = "+ line);
+//			        			if(line.equals("") || line.equals("\n"))
+//			        				break;
+			    		        out.println(encryptMessageAESKey(line));//send input
+			    		        line = in.readLine();//receive input
+//			    		        System.out.println("received line = "+line);
+			    		        if(input.hasNextLine()) {
+			    		        	out.println(encryptMessageAESKey(KIVersion));
+			    		        	line = in.readLine();
+			    		        }
+			        		}
+			        		i++;
+			        	}
+//			        	if(State == STATE.LEADERBOARD) {
+			        	//change leaderboard
+			        	leaderboard.resetLeaderboard();
+						out.println(encryptMessageAESKey(KIVersion));
+						if((gay = in.readLine()) == null) {
+		        			throw new IOException("Server is down.");
+		        		}
+		        		out.println(encryptMessageAESKey("SEND:SEND:"));
+		        		while((line = in.readLine()) != null) {
+		        			line = decryptMessageAESKey(line);
+//				        	System.out.println(line);
+		        			line = line.replace("\n", "");
+		        			if(!line.equals("END:END:") && !Character.isDigit(line.charAt(line.length()-1)))
+		        				line = line.substring(0,line.length()-1);
+//				        	System.out.println(line);
+				        	if(line.contains("END:END:") || line.contains(s))
+				        		break;
+				        	if(!line.contains("END:END:")) {
+				        		leaderboard.setupText(line);
+				        	}
+				        	
+		        		}
+		        		leaderboard.sortText();
+		        		leaderboard.addCommas();
+		        		leaderboard.displayText();
+//			        	}
+						if(Game.smb3ItemSoundLoop.clipIsActive())
+							Game.smb3ItemSoundLoop.stop();
+						Game.smb3ItemSoundLoop.play();
+			        	//
+			        }
+			        else if(s.contains("DELETE:DELETE:")) {
+			        	while (input.hasNextLine()) {
+			        		if (i == 0) {input.nextLine();}
+			        		else {
+			    		        out.println(input.nextLine());//send input
+			    		        line = in.readLine();//receive input
+			    		        if(input.hasNextLine()) {
+									out.println(KIVersion);
+									if((gay = in.readLine()) == null) {
+					        			throw new IOException("Server is down.");
+					        		}
+			    		        }
+			        		}
+			        		i++;
+			        	}
+				        if(Game.State == STATE.SET_SCORE && LeaderboardController.globalList == true) {
+				        	//change leaderboard
+//					        	leaderboard.resetLeaderboard();
+//					        	leaderboard.setupText(HUD.nameEntered+": "+HUD.score);
+//				        		leaderboard.sortText();
+//				        		leaderboard.displayText();
+//					        	leaderboard.initialize();
+				        	for(int i2 = 0; i2 <= leaderboard.getNames().size()-1; i2++) {
+				        		//System.out.println(leaderboard.getNames().get(i2).toString());
+				        		//System.out.println("saveName = "+saveName);
+				        		if(saveName.equals(leaderboard.getNames().get(i2)+Long.toString(HUD.score))) {
+				        			leaderboard.getNames().remove(i2);
+				        			leaderboard.getScores().remove(i2);
+				        			i2--;
+				        		}
+				        	}
+				        	leaderboard.removeCommas();
+				        	//leaderboard.getNames().add(HUD.nameEntered);
+				        	//leaderboard.getScores().add(Long.toString(HUD.score));
+				        	leaderboard.setupText(HUD.nameEntered+": "+HUD.score);
+			        		leaderboard.sortText();
+			        		leaderboard.addCommas();
+			        		leaderboard.displayText();
+				        }
+			        	saveName = "";
+			        	LeaderboardController.writeToSettings("saveName", "");
+			        }
+			        else {
+//			        out.println(encryptMessageAESKey(s));
+			        if(s.contains("DELETE:DELETE:")) {
+	    	        	saveName = "";
+	    	        	LeaderboardController.writeToSettings("saveName", "");
+			        }
+			        if(Game.State == STATE.LEADERBOARD) {
+			        	out.println(encryptMessageAESKey(s));
+				        while((line = in.readLine()) != null) {
+				        	line = decryptMessageAESKey(line);
+//				        	System.out.println(line);
+		        			line = line.replace("\n", "");
+		        			if(!line.equals("END:END:") && !Character.isDigit(line.charAt(line.length()-1)))
+		        				line = line.substring(0,line.length()-1);
+//				        	System.out.println(line);
+				        	if(line.contains("END:END:") || line.contains(s)) {
+//				        	System.out.println("Broke away with = "+line);
+				        		break;
+				        	}
+				        	if(s.contains("SEND:SEND:") && !line.contains("END:END:")) {
+				        		leaderboard.setupText(line);
+				        	}
+				        	//System.out.println(line);
+				        }
+			        }
+			        else if(Game.State == STATE.SET_SCORE) {
+			        	String fago = s+"\n";
+			        	out.println(encryptMessageAESKey(fago));
+//				        while((line = in.readLine()) != null) {
+			        	line = in.readLine();
+				        	line = decryptMessageAESKey(line);
+		        			line = line.replace("\n", "");
+		        			fago = fago.replace("\n", "");
+//		        			System.out.println("line = "+ line);
+//		    		        System.out.println("received line = "+line);
+//		        			if(line.contains(fago))
+//		        				break;
+//		    		        out.println(encryptMessageAESKey(line));//send input
+//			        		line = in.readLine();//receive input
+//				        }
+							out.println(encryptMessageAESKey(KIVersion));
+							if((gay = in.readLine()) == null) {
+			        			throw new IOException("Server is down.");
+			        		}
+			        		out.println(encryptMessageAESKey("SEND:SEND:"));
+			        		while((line = in.readLine()) != null) {
+			        			line = decryptMessageAESKey(line);
+//					        	System.out.println(line);
+			        			line = line.replace("\n", "");
+			        			if(!line.equals("END:END:") && !Character.isDigit(line.charAt(line.length()-1)))
+			        				line = line.substring(0,line.length()-1);
+//					        	System.out.println(line);
+					        	if(line.contains("END:END:") || line.contains(s))
+					        		break;
+					        	
+			        		}
+//							out.println(encryptMessageAESKey(KIVersion));
+//							if((gay = in.readLine()) == null) {
+//			        			throw new IOException("Server is down.");
+//			        		}
+//			        		out.println(encryptMessageAESKey("SEND:SEND:"));
+//			        		while((line = in.readLine()) != null) {
+//			        			line = decryptMessageAESKey(line);
+//					        	System.out.println(line);
+//			        			line = line.replace("\n", "");
+//			        			if(!line.equals("END:END:") && !Character.isDigit(line.charAt(line.length()-1)))
+//			        				line = line.substring(0,line.length()-1);
+//					        	System.out.println(line);
+//					        	if(line.contains("END:END:") || line.contains(s))
+//					        		break;
+//					        	
+//			        		}
+			        }
+				        if(Game.State == STATE.SET_SCORE && LeaderboardController.globalList == true) {
+				        	//change leaderboard
+//					        	leaderboard.resetLeaderboard();
+//					        	leaderboard.setupText(HUD.nameEntered+": "+HUD.score);
+//				        		leaderboard.sortText();
+//				        		leaderboard.displayText();
+//					        	leaderboard.initialize();
+				        	for(int i2 = 0; i2 <= leaderboard.getNames().size()-1; i2++) {
+				        		if(saveName.equals(leaderboard.getNames().get(i2)+Long.toString(HUD.score))) {
+				        			leaderboard.getNames().remove(i2);
+				        			leaderboard.getScores().remove(i2);
+				        			i2--;
+				        		}
+				        	}
+				        	leaderboard.removeCommas();
+//					        	leaderboard.getNames().add(HUD.nameEntered+": ");
+//					        	leaderboard.getScores().add(Long.toString(HUD.score));
+				        	leaderboard.setupText(HUD.nameEntered+": "+HUD.score);
+			        		leaderboard.sortText();
+			        		leaderboard.addCommas();
+			        		leaderboard.displayText();
+//					        	leaderboard.resetLeaderboard();
+//				        		out.println("SEND:SEND:");
+//				        		while((line = in.readLine()) != null) {
+//						        	if(line.contains("END:END:"))
+//						        		break;
+//						        	if(!line.contains("END:END:")) {
+//						        		leaderboard.setupText(line);
+//						        	}
+//						        	
+//				        		}
+//				        		leaderboard.listTrigger = true;
+//				        		leaderboard.globalListStayOn = true;
+				        }
+				        else if(Game.State == STATE.LEADERBOARD) {
+					        if(s.contains("SEND:SEND:")){
+				        		leaderboard.sortText();
+				        		leaderboard.addCommas();
+				        		leaderboard.displayText();
+					        }
+							if(Game.smb3ItemSoundLoop.clipIsActive())
+								Game.smb3ItemSoundLoop.stop();
+							Game.smb3ItemSoundLoop.play();
+						}
+			        }
+			        }
+			        else {
+		        	System.out.println("Koopa's Invaders Version Error");
+					serverVerified = false;
+					serverErrorMessage = true;
+					updateToConnect = true;
+					serverErrorMessageTimer = System.currentTimeMillis() + 1000;
+					if(Game.State == STATE.LEADERBOARD) {
+						if(LeaderboardController.uploadTrigger) {
+							leaderboard.resetLeaderboard();
+							try {
+								leaderboard.setupText();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			        		leaderboard.sortText();
+			        		leaderboard.addCommas();
+			        		leaderboard.displayText();
+							leaderboard.resetLeaderboardImage();
+						}
+							LeaderboardController.globalList = false;
+							LeaderboardController.listTrigger = false;
+							LeaderboardController.uploadTrigger = false;
+						if(Game.smb3ItemSoundLoop.clipIsActive())
+							Game.smb3ItemSoundLoop.stop();
+						Game.smwErrorSoundLoop.play();
+					}
+					else if(Game.State == STATE.SET_SCORE) {
+						if(Game.smb3OpenSoundLoop.clipIsActive())
+							Game.smb3OpenSoundLoop.stop();
+						Game.smwErrorSoundLoop.play();
+					}
+					connectingToServer = false;
+//			        clientSocket.close();
+//			        out.close();
+//			        in.close();
+					break;
+		        }
+//		        clientSocket.close();
+//		        out.close();
+//		        in.close();
+		        if(!s.contains("SEND:SEND:") && !HUD.nameEntered.isEmpty() && scoreEntered == true && !serverErrorMessage) {
+					saveName = HUD.nameEntered+": "+HUD.score;
+		        	//System.out.println(saveName);
+		        }
+				connectingToServer = false;
+				break;
+			} catch(UnknownHostException ex) {
+				System.out.println("UnknownHostException: "+ex);
+				serverErrorMessage = true;
+				serverErrorMessageTimer = System.currentTimeMillis() + 1000;
+				serverVerified = false;
+				if(Game.State == STATE.LEADERBOARD) {
+					if(LeaderboardController.uploadTrigger) {
+						leaderboard.resetLeaderboard();
+						try {
+							leaderboard.setupText();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		        		leaderboard.sortText();
+		        		leaderboard.addCommas();
+		        		leaderboard.displayText();
+						leaderboard.resetLeaderboardImage();
+					}
+						LeaderboardController.globalList = false;
+						LeaderboardController.listTrigger = false;
+						LeaderboardController.uploadTrigger = false;
+					if(Game.smb3ItemSoundLoop.clipIsActive())
+						Game.smb3ItemSoundLoop.stop();
+					Game.smwErrorSoundLoop.play();
+				}
+				else if(Game.State == STATE.SET_SCORE) {
+					if(Game.smb3OpenSoundLoop.clipIsActive())
+						Game.smb3OpenSoundLoop.stop();
+					Game.smwErrorSoundLoop.play();
+				}
+				if(clientSocket != null)
+					try {
+						clientSocket.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				clientSocket = null;
+				if(out != null)
+					out.close();
+				out = null;
+				if(in != null)
+					try {
+						in.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				in = null;
+				if(lastDisconnectedTimer != 0)
+					lastDisconnectedTimer = 0;
+				connectingToServer = false;
+				break;
+				
+			} catch(IOException ex) {
+				if(Game.lastDisconnectedTimer != 0 && System.currentTimeMillis() < Game.lastDisconnectedTimer + TIME_OUT) {
+					//System.out.println("HERE");
+					try {
+						clientToServer(s);
+					} catch (UnknownHostException e) {
+						System.out.println("UnknownHostException: "+ex);
+						serverErrorMessage = true;
+						serverErrorMessageTimer = System.currentTimeMillis() + 1000;
+						serverVerified = false;
+						if(Game.State == STATE.LEADERBOARD) {
+							if(LeaderboardController.uploadTrigger) {
+								leaderboard.resetLeaderboard();
+								try {
+									leaderboard.setupText();
+								} catch (IOException zee) {
+									// TODO Auto-generated catch block
+									zee.printStackTrace();
+								}
+				        		leaderboard.sortText();
+				        		leaderboard.addCommas();
+				        		leaderboard.displayText();
+								leaderboard.resetLeaderboardImage();
+							}
+								LeaderboardController.globalList = false;
+								LeaderboardController.listTrigger = false;
+								LeaderboardController.uploadTrigger = false;
+							if(Game.smb3ItemSoundLoop.clipIsActive())
+								Game.smb3ItemSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
+						else if(Game.State == STATE.SET_SCORE) {
+							if(Game.smb3OpenSoundLoop.clipIsActive())
+								Game.smb3OpenSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
+						if(clientSocket != null)
+							try {
+								clientSocket.close();
+							} catch (IOException f) {
+								// TODO Auto-generated catch block
+								f.printStackTrace();
+							}
+						clientSocket = null;
+						if(out != null)
+							out.close();
+						out = null;
+						if(in != null)
+							try {
+								in.close();
+							} catch (IOException ee) {
+								// TODO Auto-generated catch block
+								ee.printStackTrace();
+							}
+						in = null;
+						if(lastDisconnectedTimer != 0)
+							lastDisconnectedTimer = 0;
+						connectingToServer = false;
+						break;
+					} catch (IOException e) {
+						System.out.println("Can't connect to host, IOException: " + ex);
+						serverErrorMessage = true;
+						serverErrorMessageTimer = System.currentTimeMillis() + 1000;
+						serverVerified = false;
+						if(Game.State == STATE.LEADERBOARD) {
+							if(LeaderboardController.uploadTrigger) {
+								leaderboard.resetLeaderboard();
+								try {
+									leaderboard.setupText();
+								} catch (IOException eee) {
+									// TODO Auto-generated catch block
+									eee.printStackTrace();
+								}
+				        		leaderboard.sortText();
+				        		leaderboard.addCommas();
+				        		leaderboard.displayText();
+								leaderboard.resetLeaderboardImage();
+							}
+							LeaderboardController.globalList = false;
+							LeaderboardController.listTrigger = false;
+							LeaderboardController.uploadTrigger = false;
+							if(Game.smb3ItemSoundLoop.clipIsActive())
+								Game.smb3ItemSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
+						else if(Game.State == STATE.SET_SCORE) {
+							if(Game.smb3OpenSoundLoop.clipIsActive())
+								Game.smb3OpenSoundLoop.stop();
+							Game.smwErrorSoundLoop.play();
+						}
+						if(clientSocket != null)
+							try {
+								clientSocket.close();
+							} catch (IOException ioo) {
+								// TODO Auto-generated catch block
+								ioo.printStackTrace();
+							}
+						clientSocket = null;
+						if(out != null)
+							out.close();
+						out = null;
+						if(in != null)
+							try {
+								in.close();
+							} catch (IOException iooo) {
+								// TODO Auto-generated catch block
+								iooo.printStackTrace();
+							}
+						in = null;
+						if(lastDisconnectedTimer != 0)
+							lastDisconnectedTimer = 0;
+						connectingToServer = false;
+						break;
+					}
+					return;
+				}
+				System.out.println("Can't connect to host, IOException: " + ex);
+				serverErrorMessage = true;
+				serverErrorMessageTimer = System.currentTimeMillis() + 1000;
+				serverVerified = false;
+				if(Game.State == STATE.LEADERBOARD) {
+//					if(LeaderboardController.uploadTrigger) {
+						leaderboard.resetLeaderboard();
+						try {
+							leaderboard.setupText();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		        		leaderboard.sortText();
+		        		leaderboard.addCommas();
+		        		leaderboard.displayText();
+						leaderboard.resetLeaderboardImage();
+//					}
+					LeaderboardController.globalList = false;
+					LeaderboardController.listTrigger = false;
+					LeaderboardController.uploadTrigger = false;
+					if(Game.smb3ItemSoundLoop.clipIsActive())
+						Game.smb3ItemSoundLoop.stop();
+					Game.smwErrorSoundLoop.play();
+				}
+				else if(Game.State == STATE.SET_SCORE) {
+					if(Game.smb3OpenSoundLoop.clipIsActive())
+						Game.smb3OpenSoundLoop.stop();
+					Game.smwErrorSoundLoop.play();
+				}
+				if(clientSocket != null)
+					try {
+						clientSocket.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				clientSocket = null;
+				if(out != null)
+					out.close();
+				out = null;
+				if(in != null)
+					try {
+						in.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				in = null;
+				if(lastDisconnectedTimer != 0)
+					lastDisconnectedTimer = 0;
+				connectingToServer = false;
+				break;
+			}
+			}
+			};
+		};
+		outThread.start();
+	        //assertEquals("hello client", response);
+		//}
+	}
+	public static void closeGame() {
+	    	if(clientSocket != null) {
+				try {
+					clientSocket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Game.lastDisconnectedTimer = System.currentTimeMillis();
+	    	}
+	    	else if(Game.lastDisconnectedTimer != 0)
+	    		Game.lastDisconnectedTimer = 0;
+	    	if(out != null)
+	    		out.close();
+	    	if(in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    	}
+	    	try {
+				if(LeaderboardController.checkForDataCorruption("settings.properties") == true && LeaderboardController.checkForDataCorruption("./src/settingsBackup.properties") == true) {
+//				System.out.println("DATA CORRUPTION IN SETTINGS & BACKUP");
+				}
+				else if(LeaderboardController.checkForDataCorruption("settings.properties") == true) {
+//				System.out.println("DATA CORRUPTION IN SETTINGS");
+					LeaderboardController.loadSettingsIntoSettings("./src/settingsBackup.properties","settings.properties");
+					LeaderboardController.loadSettingsIntoSettings("settings.properties","./src/settingsBackup.properties");
+				}
+				else {
+//				System.out.println("NO DATA CORRUPTION");
+					LeaderboardController.loadSettingsIntoSettings("settings.properties","./src/settingsBackup.properties");
+				}
+				LeaderboardController.gameUnlocksToSettings();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
 	public static void main(String args[])
 		throws Exception{
 		String gameAudioFile = "res/Sounds/Music/mario1remix.wav";													//Loading in Music
 		String gameAudioFile2 = "res/Sounds/Music/marioremixbitch1c.wav";
-		String gameAudioFile3 = "res/Sounds/Music/bowser1bbnolaugh.wav";//bowsertrack
+		String gameAudioFile3 = "res/Sounds/Music/icedlandmarioremixxx2bbb.wav";
+		String gameAudioFile4 = "res/Sounds/Music/nokibay2gggextranote.wav";
+		String gameAudioFile5 = "res/Sounds/Music/snooopy2ii.wav";
+		String gameAudioFile6 = "res/Sounds/Music/beatboREmixxx1aDIFFTURNEDINTOMARIOREMIX1e.wav";
+		String gameAudioFile7 = "res/Sounds/Music/anothermariomixxx5dSLOW4d.wav";
+		String gameAudioFile8 = "res/Sounds/Music/bowser1bbnolaughextended2.wav";//bowsertrack
+		String gameAudioFile9 = "res/Sounds/Music/10secondsofsilence.wav";//silence
 		String menuAudioFile = "res/Sounds/Music/supermarioworldremix1.wav";
 		String menuAudioFile2 = "res/Sounds/Music/menuloop2.wav";
+		String menuAudioFile3 = "res/Sounds/Music/mariosaunas1cexported.wav";
+		String menuAudioFile4 = "res/Sounds/Music/hmmm2delfino2DIFFOG2b.wav";
+		String menuAudioFile5 = "res/Sounds/Music/hmmm2delfino2DIFFdddddddnoooohigher2e.wav";
+		String menuAudioFile6 = "res/Sounds/Music/10secondsofsilencee.wav";//silence
 		String gameOverAudioFile = "res/Sounds/SFX/smw_game_over.wav";
 		String gameOverWinningAudioFile = "res/Sounds/SFX/smb_stage_clear.wav";
+		String gameOverWinningMikeTysonAudioFile = "res/Sounds/SFX/MarioVoice/miketysonsfxwin.wav";
+		String gameOverWinningContraAudioFile = "res/Sounds/SFX/MarioVoice/contrasfxwin.wav";
 		String gameOverIrisAudioFile = "res/Sounds/SFX/smw_goal_iris-out.wav";
+		String creditsSongAudioFile = "res/Sounds/Music/hammertimefileselectremix2guitar4cc.wav";
 		String marioStarAudioFile = "res/Sounds/SFX/mariowhistle.wav";
-		String soundFXClip1 = "res/Sounds/SFX/riseupacoustic1cWAVE.wav";
+		String soundFXClip1 = "res/Sounds/SFX/smb_pipe.wav";//"res/Sounds/SFX/riseupacoustic1cWAVE.wav";
 		String soundFXClip2 = "res/Sounds/SFX/MariopowerupSFX.wav";
 		String fireballFXFile = "res/Sounds/SFX/smb3_fireball.wav";
+		String fireballPopFXFile = "res/Sounds/SFX/mariofireballsfx.wav";
 		String pauseSoundFXFile = "res/Sounds/SFX/smb_pause.wav";
 		String marioSpinningFile = "res/Sounds/SFX/smw_feather_get.wav";
 		String marioDeathFile = "res/Sounds/SFX/smb3_player_down.wav";
 		String itemSwooshFile = "res/Sounds/SFX/spacewhooshsfxMARIO.wav";
+		String itemPauseFile = "res/Sounds/SFX/spacewhooseshortened.wav";
 		String smb3CoinFile = "res/Sounds/SFX/smb3_coin.wav";
 		String smb3BumpFile = "res/Sounds/SFX/smb3_bump.wav";
 		String smb3Bump2File = "res/Sounds/SFX/smb3_bump2.wav";
@@ -10586,9 +16952,24 @@ public class Game extends Canvas implements Runnable {
 		String smb31PupFile = "res/Sounds/SFX/smb3_1pup.wav";
 		String smb3ItemFile = "res/Sounds/SFX/smb3_item.wav";
 		String smb3BeepFile = "res/Sounds/SFX/smb3_beep.wav";
+		String smbCoinPointsFile = "res/Sounds/SFX/smb_coin.wav";
+		String smbPopFile = "res/Sounds/SFX/mariopopsfx.wav";
+		String smbFireworkFile = "res/Sounds/SFX/smb_fireworks.wav";
 		String smb3CheckmarkFile = "res/Sounds/SFX/checkmarksound1.wav";
 		String smb3Checkmark2File = "res/Sounds/SFX/checkmarksound2.wav";
+		String smb3TextFile = "res/Sounds/SFX/smb3_text.wav";
 		String smwErrorFile = "res/Sounds/SFX/smw_lemmy_wendy_incorrect.wav";
+		String smwCheatFile = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short.wav";
+		String smwCheat2File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short2.wav";
+		String smwCheat3File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short3.wav";
+		String smwCheat4File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short4.wav";
+		String smwCheat5File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short5.wav";
+		String smwCheat6File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short6.wav";
+		String smwCheat7File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short7.wav";
+		String smwCheat8File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short8.wav";
+		String smwCheat9File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short9.wav";
+		String smwCheat10File = "res/Sounds/SFX/CheatSFX/smw2_flower_get_short10.wav";
+		String smwCheatFullFile = "res/Sounds/SFX/CheatSFX/smw2_flower_get_shortfull.wav";
 		String marioVoiceLetsGoFile = "res/Sounds/SFX/MarioVoice/mk64_mario02.wav";
 		String marioVoiceHereWeGoFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_33_mario_27.wav";
 		String marioVoiceYelpFile = "res/Sounds/SFX/MarioVoice/ssbm_dr_mario_22_mario_16.wav";
@@ -10598,6 +16979,11 @@ public class Game extends Canvas implements Runnable {
 		String luigiVoiceYahFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_16.wav";
 		String luigiVoiceAhhaFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_18.wav";
 		String luigiVoiceWoohooFile = "res/Sounds/SFX/LuigiVoice/ssbm_luigi_24.wav";
+		String mikeTysonVoice1File = "res/Sounds/SFX/MarioVoice/miketysonsfx1.wav";
+		String mikeTysonVoice2File = "res/Sounds/SFX/MarioVoice/miketysonsfx2.wav";
+		String contraVoice1File = "res/Sounds/SFX/MarioVoice/contrasfx1.wav";
+		String contraVoice2File = "res/Sounds/SFX/MarioVoice/contrasfx2.wav";
+		String contraVoice3File = "res/Sounds/SFX/MarioVoice/contrasfx3.wav";
 		String hudSFXFile1 = "res/Sounds/SFX/hudeffectnoises1.wav";
 		String hudSFXFile2 = "res/Sounds/SFX/hudeffectnoises2.wav";
 		String hudSFXFile3 = "res/Sounds/SFX/hudeffectnoises3.wav";
@@ -10631,20 +17017,35 @@ public class Game extends Canvas implements Runnable {
 		String marioDanceSoundFXFile26 = "res/Sounds/SFX/DanceSFX/mariodancepart26.wav";
 		SoundLoops menuSoundLoop = new SoundLoops(menuAudioFile);
 		SoundLoops menuSoundLoop2 = new SoundLoops(menuAudioFile2);
+		SoundLoops menuSoundLoop3 = new SoundLoops(menuAudioFile3);
+		SoundLoops menuSoundLoop4 = new SoundLoops(menuAudioFile4);
+		SoundLoops menuSoundLoop5 = new SoundLoops(menuAudioFile5);
+		SoundLoops menuSoundLoop6 = new SoundLoops(menuAudioFile6);
 		SoundLoops gameSoundLoop = new SoundLoops(gameAudioFile);
 		SoundLoops gameSoundLoop2 = new SoundLoops(gameAudioFile2);
 		SoundLoops gameSoundLoop3 = new SoundLoops(gameAudioFile3);
+		SoundLoops gameSoundLoop4 = new SoundLoops(gameAudioFile4);
+		SoundLoops gameSoundLoop5 = new SoundLoops(gameAudioFile5);
+		SoundLoops gameSoundLoop6 = new SoundLoops(gameAudioFile6);
+		SoundLoops gameSoundLoop7 = new SoundLoops(gameAudioFile7);
+		SoundLoops gameSoundLoop8 = new SoundLoops(gameAudioFile8);
+		SoundLoops gameSoundLoop9 = new SoundLoops(gameAudioFile9);
 		SoundLoops gameOverSoundLoop = new SoundLoops(gameOverAudioFile);
 		SoundLoops gameOverWinningSoundLoop = new SoundLoops(gameOverWinningAudioFile);
+		SoundLoops gameOverWinningMikeTysonSoundLoop = new SoundLoops(gameOverWinningMikeTysonAudioFile);
+		SoundLoops gameOverWinningContraSoundLoop = new SoundLoops(gameOverWinningContraAudioFile);
 		SoundLoops gameOverIrisSoundLoop = new SoundLoops(gameOverIrisAudioFile);
+		SoundLoops creditsSongSoundLoop = new SoundLoops(creditsSongAudioFile);
 		SoundLoops marioStarSoundLoop = new SoundLoops(marioStarAudioFile);
 		SoundLoops soundFXClip1SoundLoop = new SoundLoops(soundFXClip1);
 		SoundLoops soundFXClip2SoundLoop = new SoundLoops(soundFXClip2);
 		SoundLoops fireballFXSoundLoop = new SoundLoops(fireballFXFile);
+		SoundLoops fireballPopFXSoundLoop = new SoundLoops(fireballPopFXFile);
 		SoundLoops pauseSoundFXSoundLoop = new SoundLoops(pauseSoundFXFile);
 		SoundLoops marioSpinningSoundLoop = new SoundLoops(marioSpinningFile);
 		SoundLoops marioDeathSoundLoop = new SoundLoops(marioDeathFile);
 		SoundLoops itemSwooshSoundLoop = new SoundLoops(itemSwooshFile);
+		SoundLoops itemPauseSoundLoop = new SoundLoops(itemPauseFile);
 		SoundLoops smb3CoinSoundLoop = new SoundLoops(smb3CoinFile);
 		SoundLoops smb3BumpSoundLoop = new SoundLoops(smb3BumpFile);
 		SoundLoops smb3Bump2SoundLoop = new SoundLoops(smb3Bump2File);
@@ -10654,9 +17055,24 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops smb31PupSoundLoop = new SoundLoops(smb31PupFile);
 		SoundLoops smb3ItemSoundLoop = new SoundLoops(smb3ItemFile);
 		SoundLoops smb3BeepSoundLoop = new SoundLoops(smb3BeepFile);
+		SoundLoops smbCoinPointsSoundLoop = new SoundLoops(smbCoinPointsFile);
+		SoundLoops smbPopSoundLoop = new SoundLoops(smbPopFile);
+		SoundLoops smbFireworkSoundLoop = new SoundLoops(smbFireworkFile);
 		SoundLoops smb3CheckmarkSoundLoop = new SoundLoops(smb3CheckmarkFile);
 		SoundLoops smb3Checkmark2SoundLoop = new SoundLoops(smb3Checkmark2File);
+		SoundLoops smb3TextSoundLoop = new SoundLoops(smb3TextFile);
 		SoundLoops smwErrorSoundLoop = new SoundLoops(smwErrorFile);
+		SoundLoops smwCheatSoundLoop = new SoundLoops(smwCheatFile);
+		SoundLoops smwCheat2SoundLoop = new SoundLoops(smwCheat2File);
+		SoundLoops smwCheat3SoundLoop = new SoundLoops(smwCheat3File);
+		SoundLoops smwCheat4SoundLoop = new SoundLoops(smwCheat4File);
+		SoundLoops smwCheat5SoundLoop = new SoundLoops(smwCheat5File);
+		SoundLoops smwCheat6SoundLoop = new SoundLoops(smwCheat6File);
+		SoundLoops smwCheat7SoundLoop = new SoundLoops(smwCheat7File);
+		SoundLoops smwCheat8SoundLoop = new SoundLoops(smwCheat8File);
+		SoundLoops smwCheat9SoundLoop = new SoundLoops(smwCheat9File);
+		SoundLoops smwCheat10SoundLoop = new SoundLoops(smwCheat10File);
+		SoundLoops smwCheatFullSoundLoop = new SoundLoops(smwCheatFullFile);
 		SoundLoops marioVoiceLetsGoSoundLoop = new SoundLoops(marioVoiceLetsGoFile);
 		SoundLoops marioVoiceHereWeGoSoundLoop = new SoundLoops(marioVoiceHereWeGoFile);
 		SoundLoops marioVoiceYelpSoundLoop = new SoundLoops(marioVoiceYelpFile);
@@ -10666,6 +17082,11 @@ public class Game extends Canvas implements Runnable {
 		SoundLoops luigiVoiceYahSoundLoop = new SoundLoops(luigiVoiceYahFile);
 		SoundLoops luigiVoiceAhhaSoundLoop = new SoundLoops(luigiVoiceAhhaFile);
 		SoundLoops luigiVoiceWoohooSoundLoop = new SoundLoops(luigiVoiceWoohooFile);
+		SoundLoops mikeTysonVoice1SoundLoop = new SoundLoops(mikeTysonVoice1File);
+		SoundLoops mikeTysonVoice2SoundLoop = new SoundLoops(mikeTysonVoice2File);
+		SoundLoops contraVoice1SoundLoop = new SoundLoops(contraVoice1File);
+		SoundLoops contraVoice2SoundLoop = new SoundLoops(contraVoice2File);
+		SoundLoops contraVoice3SoundLoop = new SoundLoops(contraVoice3File);
 		SoundLoops hudSFXSoundLoop1 = new SoundLoops(hudSFXFile1);
 		SoundLoops hudSFXSoundLoop2 = new SoundLoops(hudSFXFile2);
 		SoundLoops hudSFXSoundLoop3 = new SoundLoops(hudSFXFile3);
@@ -10705,9 +17126,19 @@ public class Game extends Canvas implements Runnable {
 		game.setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		game.menuSoundLoops.add(menuSoundLoop);
 		game.menuSoundLoops.add(menuSoundLoop2);
+		game.menuSoundLoops.add(menuSoundLoop3);
+		game.menuSoundLoops.add(menuSoundLoop4);
+		game.menuSoundLoops.add(menuSoundLoop5);
+		game.menuSoundLoops.add(menuSoundLoop6);
 		game.gameSoundLoops.add(gameSoundLoop);
 		game.gameSoundLoops.add(gameSoundLoop2);
 		game.gameSoundLoops.add(gameSoundLoop3);
+		game.gameSoundLoops.add(gameSoundLoop4);
+		game.gameSoundLoops.add(gameSoundLoop5);
+		game.gameSoundLoops.add(gameSoundLoop6);
+		game.gameSoundLoops.add(gameSoundLoop7);
+		game.gameSoundLoops.add(gameSoundLoop8);
+		game.gameSoundLoops.add(gameSoundLoop9);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop1);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop2);
 		game.marioDanceSoundLoops.add(marioDanceSoundFXSoundLoop3);
@@ -10738,6 +17169,11 @@ public class Game extends Canvas implements Runnable {
 		game.marioVoices.add(marioVoiceHereWeGoSoundLoop);
 		game.marioVoices.add(marioVoiceYelpSoundLoop);
 		game.marioVoices.add(marioVoiceWoohooSoundLoop);
+		game.marioVoices.add(mikeTysonVoice1SoundLoop);
+		game.marioVoices.add(mikeTysonVoice2SoundLoop);
+		game.marioVoices.add(contraVoice1SoundLoop);
+		game.marioVoices.add(contraVoice2SoundLoop);
+		game.marioVoices.add(contraVoice3SoundLoop);
 		game.luigiVoices.add(luigiVoiceLetsGoSoundLoop);
 		game.luigiVoices.add(luigiVoiceYipeeSoundLoop);
 		game.luigiVoices.add(luigiVoiceYahSoundLoop);
@@ -10752,10 +17188,12 @@ public class Game extends Canvas implements Runnable {
 		game.soundFXClip1SoundLoop = soundFXClip1SoundLoop;
 		game.soundFXClip2SoundLoop = soundFXClip2SoundLoop;
 		game.fireballSFX = fireballFXSoundLoop;
+		game.fireballPopSFX = fireballPopFXSoundLoop;
 		game.pauseSoundFXSoundLoop = pauseSoundFXSoundLoop;
 		game.marioSpinningSoundLoop = marioSpinningSoundLoop;
 		game.marioDeathSoundLoop = marioDeathSoundLoop;
 		game.itemSwooshSoundLoop = itemSwooshSoundLoop;
+		game.itemPauseSoundLoop = itemPauseSoundLoop;
 		game.smb3CoinSoundLoop = smb3CoinSoundLoop;
 		game.smb3BumpSoundLoop = smb3BumpSoundLoop;
 		game.smb3Bump2SoundLoop = smb3Bump2SoundLoop;
@@ -10765,28 +17203,128 @@ public class Game extends Canvas implements Runnable {
 		game.smb31PupSoundLoop = smb31PupSoundLoop;
 		game.smb3ItemSoundLoop = smb3ItemSoundLoop;
 		game.smb3BeepSoundLoop = smb3BeepSoundLoop;
+		game.smbCoinPointsSoundLoop = smbCoinPointsSoundLoop;
+		game.smbCoinPoints2SoundLoop = smbCoinPointsSoundLoop;
+		game.smbPopSoundLoop = smbPopSoundLoop;
+		game.smbFireworkSoundLoop = smbFireworkSoundLoop;
 		game.smb3CheckmarkSoundLoop = smb3CheckmarkSoundLoop;
 		game.smb3Checkmark2SoundLoop = smb3Checkmark2SoundLoop;
+		game.smb3TextSoundLoop = smb3TextSoundLoop;
 		game.smwErrorSoundLoop = smwErrorSoundLoop;
+		game.smwCheatSoundLoop = smwCheatSoundLoop;
+		game.smwCheat2SoundLoop = smwCheat2SoundLoop;
+		game.smwCheat3SoundLoop = smwCheat3SoundLoop;
+		game.smwCheat4SoundLoop = smwCheat4SoundLoop;
+		game.smwCheat5SoundLoop = smwCheat5SoundLoop;
+		game.smwCheat6SoundLoop = smwCheat6SoundLoop;
+		game.smwCheat7SoundLoop = smwCheat7SoundLoop;
+		game.smwCheat8SoundLoop = smwCheat8SoundLoop;
+		game.smwCheat9SoundLoop = smwCheat9SoundLoop;
+		game.smwCheat10SoundLoop = smwCheat10SoundLoop;
+		game.smwCheatFullSoundLoop = smwCheatFullSoundLoop;
 		game.gameOverSoundLoop = gameOverSoundLoop;
 		game.gameOverWinningSoundLoop = gameOverWinningSoundLoop;
+		game.gameOverWinningMikeTysonSoundLoop = gameOverWinningMikeTysonSoundLoop;
+		game.gameOverWinningContraSoundLoop = gameOverWinningContraSoundLoop;
 		game.gameOverIrisSoundLoop = gameOverIrisSoundLoop;
+		game.creditsSong = creditsSongSoundLoop;
+//		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + "./src");
+		String path = new File(".").getCanonicalPath();
+		System.setProperty("net.java.games.input.librarypath", path+"/src/");
 		XInputDevice[] devices = XInputDevice.getAllDevices();
 		XInputDevice device = XInputDevice.getDeviceFor(0);
-		XInputDevice14[] devices14 = XInputDevice14.getAllDevices();
-		XInputDevice14 device14 = XInputDevice14.getDeviceFor(0);
+		//XInputDevice14[] devices14 = XInputDevice14.getAllDevices();
+		//XInputDevice14 device14 = XInputDevice14.getDeviceFor(0);
 		game.device = device;
-		game.device14 = device14;
+		//game.device14 = device14;
+		//LeaderboardController.settingsBackup();
+//		System.out.println("LIB ="+System.getProperty("java.library.path"));
+		//if([function checking if settings has any null values, returns true if so] == true){
+		//load backup settings to settings}
+		//else{
+		//store settings to backup}
 		JFrame frame = new JFrame(game.TITLE);
+		ImageIcon img = new ImageIcon("res/mario_jump.png");
 		frame.add(game);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter()
+		//DO THIS WITH BOTH EXIT BUTTONS!!
+		{
+		    @Override
+		    public void windowClosing(WindowEvent we)
+		    {
+		    	game.closeGame();
+		        //Code goes here
+		    }
+		});
+		//DO THIS WITH BOTH EXIT BUTTONS!!
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		frame.setIconImage(img.getImage());
 		game.start();
+		XInputDevice.game = game;
+		ReadAllEvents.game = game;
+		final Thread outThread = new Thread() {
+			@Override
+			public void run() {
+		try {
+//		ReadAllEvents j = new ReadAllEvents();
+		directInputEvents = new ReadAllEvents();
+		}catch(Exception e) {
+			System.out.println(e.toString());
+			throw e;
+		}
+			};
+		};
+		outThread.start();
+//		EncryptionRSA.keyGenerator();
+//		EncryptionRSA rsa = new EncryptionRSA();
+//		System.out.println(rsa.encrypt("gay", rsa.getPublicKey()));
+//		System.out.println(EncryptionRSA.decrypt(EncryptionRSA.encrypt("gay", rsa.getPublicKey()),rsa.getPrivateKey()));
 		
+//		System.out.println(EncryptionAES.encryptLocal("haha"));
+//		System.out.println(EncryptionAES.decryptLocal(EncryptionAES.encryptLocal("haha")));
+//		Runnable controllerDIUpdate = new Runnable() {
+//			@Override
+//		    public void run() {
+//				if(!gameControllerInUseDI) {
+////				    DirectAndRawInputEnvironmentPlugin directEnv = new DirectAndRawInputEnvironmentPlugin();
+////					if(directEnv != null & directEnv.isSupported())
+////						ControllerEnvironment.setDefaultEnvironment(directEnv);
+//					ReadAllEvents.controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+//					ReadAllEvents.resettingControllerEnvironment = true;
+////					//THIS KILLS THE THREAD
+////					final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+////					int i = 0;
+////					Thread threadtoDelete = null;
+////					for (final Thread thread : threadSet) {
+////					  final String name = thread.getClass().getName();
+////					  System.out.println(name);
+////					  if (name.equals("net.java.games.input.RawInputEventQueue$QueueThread") && 0 < i && threadtoDelete != null) {
+////						  threadtoDelete.interrupt();
+////						    try {
+////						    	threadtoDelete.join();
+////						    } catch (final InterruptedException e) {
+////						    	threadtoDelete.interrupt();
+////						    }
+////						    i = 0;
+////						  }
+////					  if (name.equals("net.java.games.input.RawInputEventQueue$QueueThread")) {
+////						  threadtoDelete = thread;
+////						  i++;
+////					  }
+////					}
+//				}
+//		    }
+//		};
+//		
+//
+//		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+//		executor.scheduleAtFixedRate(controllerDIUpdate, 0, 10, TimeUnit.SECONDS);
 	}
+	
 	public Textures getTextures() {
 		return tex;
 	}
@@ -10797,6 +17335,18 @@ public class Game extends Canvas implements Runnable {
 	
 	public ControlsController getControlsController() {
 		return controlsController;
+	}
+	
+	public CreditsController getCreditsController() {
+		return creditsController;
+	}
+	
+	public LeaderboardController getLeaderboard() {
+		return leaderboard;
+	}
+	
+	public XInputDevice getDevice() {
+		return device;
 	}
 	
 	public int playerX(){
@@ -10826,11 +17376,43 @@ public class Game extends Canvas implements Runnable {
 	public int getSoundRandomizer() {
 		return soundRandomizer;
 	}
-
-	public int animationTimer1(){
+	
+	public int getMenuSoundRandomizer() {
+		return menuSoundLoopRandomizer;
+	}
+	
+	public int getAnimationTimer1() {
 		return animationTimer1;
 	}
 	
+	public int getNumberOfFireBallsShot() {
+		return numberOfFireBallsShot;
+	}
+
+	public void setNumberOfFireBallsShot(int numberOfFireBallsShot) {
+		this.numberOfFireBallsShot = numberOfFireBallsShot;
+	}
+
+	public int getNumberOfFireBallsShotDecoy() {
+		return numberOfFireBallsShotDecoy;
+	}
+
+	public void setNumberOfFireBallsShotDecoy(int numberOfFireBallsShotDecoy) {
+		this.numberOfFireBallsShotDecoy = numberOfFireBallsShotDecoy;
+	}
+
+	public void setAnimationTimer1(int animationTimer1) {
+		this.animationTimer1 = animationTimer1;
+	}
+	
+	public double getSlowingDown() {
+		return slowingDown;
+	}
+
+	public void setSlowingDown(double slowingDown) {
+		this.slowingDown = slowingDown;
+	}
+
 	public static boolean isPaused(){
 		return paused;
 	}
@@ -10847,6 +17429,46 @@ public class Game extends Canvas implements Runnable {
 		Game.userHasPaused = userHasPaused;
 	}
 	
+	public boolean getSceneAcknowledgement() {
+		return sceneAcknowledgement;
+	}
+
+	public void setSceneAcknowledgement(boolean sceneAcknowledgement) {
+		this.sceneAcknowledgement = sceneAcknowledgement;
+	}
+
+	public boolean getKeepRunningAfterPauseL() {
+		return keepRunningAfterPauseL;
+	}
+
+	public void setKeepRunningAfterPauseL(boolean keepRunningAfterPauseL) {
+		this.keepRunningAfterPauseL = keepRunningAfterPauseL;
+	}
+
+	public boolean getKeepRunningAfterPauseR() {
+		return keepRunningAfterPauseR;
+	}
+
+	public void setKeepRunningAfterPauseR(boolean keepRunningAfterPauseR) {
+		this.keepRunningAfterPauseR = keepRunningAfterPauseR;
+	}
+	
+	public boolean getDontRunAfterPause() {
+		return dontRunAfterPause;
+	}
+
+	public void setDontRunAfterPause(boolean dontRunAfterPause) {
+		this.dontRunAfterPause = dontRunAfterPause;
+	}
+	
+	public boolean getSlowingDownFromPause() {
+		return slowingDownFromPause;
+	}
+
+	public void setSlowingDownFromPause(boolean slowingDownFromPause) {
+		this.slowingDownFromPause = slowingDownFromPause;
+	}
+
 	public static boolean getSoundFXisPlaying(){
 		return soundFXisPlaying;
 	}
@@ -10866,7 +17488,23 @@ public class Game extends Canvas implements Runnable {
 	public boolean isMarioInvincible(){
 		return p.getMarioInvincible();
 	}
-	
+
+	public boolean getIsShooting() {
+		return isShooting;
+	}
+
+	public void setIsShooting(boolean isShooting) {
+		this.isShooting = isShooting;
+	}
+
+	public boolean getSpawnItem() {
+		return spawnItem;
+	}
+
+	public void setSpawnItem(boolean spawnItem) {
+		this.spawnItem = spawnItem;
+	}
+
 	public static long getPauseSoundFXTimer() {
 		return pauseSoundFXTimer;
 	}
@@ -10898,13 +17536,117 @@ public class Game extends Canvas implements Runnable {
 	public void setWaitToPause(long waitToPause) {
 		this.waitToPause = waitToPause;
 	}
+
+	public long getSlowingDownTimerLong() {
+		return slowingDownTimerLong;
+	}
+
+	public void setSlowingDownTimerLong(long slowingDownTimerLong) {
+		this.slowingDownTimerLong = slowingDownTimerLong;
+	}
 	
+	public long getRunningTimerLong() {
+		return runningTimerLong;
+	}
+
+	public void setRunningTimerLong(long runningTimerLong) {
+		this.runningTimerLong = runningTimerLong;
+	}
+
 	public long getJoystickTimer() {
 		return joystickTimer;
 	}
 
 	public void setJoystickTimer(long joystickTimer) {
 		this.joystickTimer = joystickTimer;
+	}
+
+	public long getSlowDownForAnalogTimer() {
+		return slowDownForAnalogTimer;
+	}
+
+	public void setSlowDownForAnalogTimer(long slowDownForAnalogTimer) {
+		this.slowDownForAnalogTimer = slowDownForAnalogTimer;
+	}
+
+	public long getCheatTimer() {
+		return cheatTimer;
+	}
+
+	public void setCheatTimer(long cheatTimer) {
+		this.cheatTimer = cheatTimer;
+	}
+	
+	public String getCheatString() {
+		return cheatString;
+	}
+	
+	public void setCheatString(String cheatString) {
+		this.cheatString = cheatString;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public boolean getPauseHoldOff() {
+		return pauseHoldOff;
+	}
+
+	public void setPauseHoldOff(boolean pauseHoldOff) {
+		this.pauseHoldOff = pauseHoldOff;
+	}
+	
+	public boolean getxLBoolean() {
+		return xLBoolean;
+	}
+
+	public void setxLBoolean(boolean xLBoolean) {
+		this.xLBoolean = xLBoolean;
+	}
+
+	public boolean getxRBoolean() {
+		return xRBoolean;
+	}
+
+	public void setxRBoolean(boolean xRBoolean) {
+		this.xRBoolean = xRBoolean;
+	}
+	
+	public boolean getSlowingDownActivatedl() {
+		return slowingDownActivatedl;
+	}
+
+	public void setSlowingDownActivatedl(boolean slowingDownActivatedl) {
+		this.slowingDownActivatedl = slowingDownActivatedl;
+	}
+
+	public boolean getSlowingDownActivatedr() {
+		return slowingDownActivatedr;
+	}
+
+	public void setSlowingDownActivatedr(boolean slowingDownActivatedr) {
+		this.slowingDownActivatedr = slowingDownActivatedr;
+	}
+
+	public boolean getRunningTimerActivated() {
+		return runningTimerActivated;
+	}
+
+	public void setRunningTimerActivated(boolean runningTimerActivated) {
+		this.runningTimerActivated = runningTimerActivated;
+	}
+
+	public boolean getRunningTimerActivatedResponse() {
+		return runningTimerActivatedResponse;
+	}
+
+	public void setRunningTimerActivatedResponse(boolean runningTimerActivatedResponse) {
+		this.runningTimerActivatedResponse = runningTimerActivatedResponse;
 	}
 
 	public boolean getSpawnDone(){
@@ -10922,7 +17664,31 @@ public class Game extends Canvas implements Runnable {
 	public boolean getSpawnDone4(){
 		return spawnDone4;
 	}
-	
+
+	public boolean getShiftOn() {
+		return shiftOn;
+	}
+
+	public void setShiftOn(boolean shiftOn) {
+		this.shiftOn = shiftOn;
+	}
+
+	public boolean getBowserSpawnSetupBoolean() {
+		return bowserSpawnSetupBoolean;
+	}
+
+	public void setBowserSpawnSetupBoolean(boolean bowserSpawnSetupBoolean) {
+		this.bowserSpawnSetupBoolean = bowserSpawnSetupBoolean;
+	}
+
+	public long getBowserSpawnSetup() {
+		return bowserSpawnSetup;
+	}
+
+	public void setBowserSpawnSetup(long bowserSpawnSetup) {
+		this.bowserSpawnSetup = bowserSpawnSetup;
+	}
+
 	public boolean getMarioDancePosePause() {
 		return marioDancePosePause;
 	}
@@ -11171,6 +17937,10 @@ public class Game extends Canvas implements Runnable {
 		return marioNESContraEntranceSprites;
 	}
 	
+	public BufferedImage getVictoryPoseSpinningSprites(){
+		return victoryPoseSpinningSprites;
+	}
+	
 	public BufferedImage getAnimatedStar(){
 		return animatedStar;
 	}
@@ -11221,6 +17991,14 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getBigMario6ItemAnimationSheet(){
 		return bigMario6ItemAnimationSheet;
+	}
+	
+	public BufferedImage getLakituDeathAnimationSheet(){
+		return lakituDeathAnimationSheet;
+	}
+
+	public BufferedImage getDancingAnimationSheet(){
+		return dancingAnimationSheet;
 	}
 	
 	public BufferedImage getItemSilhouetteSheet(){
@@ -11297,6 +18075,10 @@ public class Game extends Canvas implements Runnable {
 	
 	public BufferedImage getGoombaDeathSpriteSheet() {
 		return goombaDeathSpriteSheet;
+	}
+	
+	public BufferedImage getYoshiSpriteSheet() {
+		return yoshiSpriteSheet;
 	}
 
 	public BufferedImage getBuyTitle() {

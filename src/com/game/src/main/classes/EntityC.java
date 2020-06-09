@@ -16,5 +16,6 @@ public interface EntityC {
 	public boolean getEntityCDead();
 	public void setEntityCDead(boolean dead);
 	public String entityName();
+	public void renderFlicker();
 	public void close();
 }

@@ -30,6 +30,8 @@ public final class XInputConstants {
     public static final short XINPUT_GAMEPAD_B = 0x2000;
     public static final short XINPUT_GAMEPAD_X = 0x4000;
     public static final short XINPUT_GAMEPAD_Y = (short) 0x8000;
+    public static final short XINPUT_GAMEPAD_LEFT_TRIGGER = 665;
+    public static final short XINPUT_GAMEPAD_RIGHT_TRIGGER = 667;
 
     // Device types
     public static final byte XINPUT_DEVTYPE_GAMEPAD = 0x01;

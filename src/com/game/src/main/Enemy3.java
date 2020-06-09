@@ -15,6 +15,9 @@ public class Enemy3 extends GameObject implements EntityB{
 	private Game game;
 	private Controller c;
 	public double speedIncrease = 0.1;
+	private long flickerTimer1 = 0;
+	private long flickerTimer2 = 0;
+	private boolean flicker = false;
 	private boolean goombaisDead = false;
 	private String enemyType = "Goomba3";
 	
@@ -224,6 +227,20 @@ public class Enemy3 extends GameObject implements EntityB{
 	}
 	
 	public void render(Graphics g){
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
 		if(!goombaisDead)
 			anim.drawAnimation(g, x, y, 0);
 		else if(goombaisDead && animDeath.getCount() != 3)
@@ -320,6 +337,10 @@ public class Enemy3 extends GameObject implements EntityB{
 		this.x = x;
 	}
 
+	public void renderFlicker() {
+		flicker = true;
+	}
+	
 	public void close() {
 		goomba3DeathSoundLoop.close();
 		goomba3DeathSmokeSoundLoop.close();

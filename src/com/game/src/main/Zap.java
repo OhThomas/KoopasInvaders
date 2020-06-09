@@ -203,6 +203,18 @@ public class Zap extends GameObject implements EntityF{
 	public double getY() {
 		return 0;
 	}
+	
+	public double getVelX() {
+		return 0;
+	}
+
+	public double getVelY() {
+		return 0;
+	}
+
+	public String entityName() {
+		return "zapFX";
+	}
 
 	public void close() {
 		

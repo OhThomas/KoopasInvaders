@@ -15,9 +15,12 @@ public class GreenShellCircle extends GameObject implements EntityC{
 	private Game game;
 	private boolean circleSpawn = false;
 	private boolean circling = false;
+	private boolean flicker = false;
 	private boolean greenShellisDead = false;
 	private boolean pauseSoundLoop = false;
 	private int startAtTop = 377;
+	private long flickerTimer1 = 0;
+	private long flickerTimer2 = 0;
 	private String entityName = "GreenShellCircle";
 	Animation anim;
 	Animation animDead;
@@ -91,7 +94,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 			for(int i = 0; i < game.ea.size(); i ++){
 				EntityA tempEnt = game.ea.get(i);
 				
-				if(Physics.Collision(this, tempEnt)){
+				if(Physics.Collision(this, tempEnt) && !greenShellisDead){
 					greenShellisDead = true;
 					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
@@ -105,7 +108,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 			for(int i = 0; i < game.ea.size(); i ++){
 				EntityA tempEnt = game.ea.get(i);
 				
-				if(Physics.Collision(this, tempEnt)){
+				if(Physics.Collision(this, tempEnt) && !greenShellisDead){
 					greenShellisDead = true;
 					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
@@ -124,7 +127,7 @@ public class GreenShellCircle extends GameObject implements EntityC{
 			for(int i = 0; i < game.ea.size(); i ++){
 				EntityA tempEnt = game.ea.get(i);
 				
-				if(Physics.Collision(this, tempEnt)){
+				if(Physics.Collision(this, tempEnt) && !greenShellisDead){
 					greenShellisDead = true;
 					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 						game.ea.remove(game.ea.getLast());
@@ -209,6 +212,20 @@ public class GreenShellCircle extends GameObject implements EntityC{
 	}
 	
 	public void render(Graphics g){
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
 		if(greenShellisDead)
 			animDead.drawAnimation(g, x, y, 0);
 		else
@@ -261,11 +278,15 @@ public class GreenShellCircle extends GameObject implements EntityC{
 	}
 
 	public void setEntityCDead(boolean dead) {
-		if(dead) {
+		if(dead && !greenShellisDead) {
 			game.getHUD().setScore(200);
 			shellHit.play();
 		}
 		greenShellisDead = dead;
+	}
+
+	public void renderFlicker() {
+		flicker = true;
 	}
 
 	public void close() {

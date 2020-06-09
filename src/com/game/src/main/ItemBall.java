@@ -45,6 +45,11 @@ public class ItemBall extends GameObject implements EntityD{
 			randomIPlus++;
 		Random rand = new Random();
 		randomItem = rand.nextInt(7) + (-3+randomIPlus);
+//		if(rand.nextInt(2) == 0)	//DELETE
+//			randomItem = 6;			//DELETE
+//		else						//DELETE
+//			randomItem = 0;			//DELETE
+//		randomItem = 4;//LAKITU DELETE
 		switch(randomItem) {
 		case 0:
 			anim = new Animation(1, tex.chainChompItemBall[0], tex.chainChompItemBall[1], tex.chainChompItemBall[2], tex.chainChompItemBall[3],
@@ -68,7 +73,7 @@ public class ItemBall extends GameObject implements EntityD{
 			VolumeSlider.adjustSFX(itemSoundLoop);
 			this.itemName = "chainChompItem";
 			break;
-		case 1:
+		case 1: case -1:
 			anim = new Animation(1, tex.bulletBillItemBall[0], tex.bulletBillItemBall[1], tex.bulletBillItemBall[2], tex.bulletBillItemBall[3],
 					tex.bulletBillItemBall[4], tex.bulletBillItemBall[5], tex.bulletBillItemBall[6], tex.bulletBillItemBall[7],
 					tex.bulletBillItemBall[8], tex.bulletBillItemBall[9], tex.bulletBillItemBall[10], tex.bulletBillItemBall[11],
@@ -83,13 +88,13 @@ public class ItemBall extends GameObject implements EntityD{
 					tex.bulletBillItemBall[4], tex.bulletBillItemBall[3], tex.bulletBillItemBall[2], tex.bulletBillItemBall[1],
 					tex.bulletBillItemBall[0]);
 			
-			itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+			itemFile = "res/Sounds/SFX/nsmbwiiBulletBillCannon2.wav";
 			itemSoundLoop = new SoundLoops(itemFile);
 			itemSoundLoop.reduceSound(10f);
 			VolumeSlider.adjustSFX(itemSoundLoop);
 			this.itemName = "bulletBillItem";
 			break;
-		case 2:
+		case 2: case -2:
 			anim = new Animation(1, tex.bombOmbItemBall[0], tex.bombOmbItemBall[1], tex.bombOmbItemBall[2], tex.bombOmbItemBall[3],
 					tex.bombOmbItemBall[4], tex.bombOmbItemBall[5], tex.bombOmbItemBall[6], tex.bombOmbItemBall[7],
 					tex.bombOmbItemBall[8], tex.bombOmbItemBall[9], tex.bombOmbItemBall[10], tex.bombOmbItemBall[11],
@@ -104,13 +109,13 @@ public class ItemBall extends GameObject implements EntityD{
 					tex.bombOmbItemBall[4], tex.bombOmbItemBall[3], tex.bombOmbItemBall[2], tex.bombOmbItemBall[1],
 					tex.bombOmbItemBall[0]);
 			
-			itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+			itemFile = "res/Sounds/SFX/Items/mparty8_bob-omb.wav";
 			itemSoundLoop = new SoundLoops(itemFile);
 			itemSoundLoop.reduceSound(10f);
 			VolumeSlider.adjustSFX(itemSoundLoop);
 			this.itemName = "bombOmbItem";
 			break;
-		case 3:
+		case 3: case -3:
 			anim = new Animation(1, tex.cheepCheepsItemBall[0], tex.cheepCheepsItemBall[1], tex.cheepCheepsItemBall[2], tex.cheepCheepsItemBall[3],
 					tex.cheepCheepsItemBall[4], tex.cheepCheepsItemBall[5], tex.cheepCheepsItemBall[6], tex.cheepCheepsItemBall[7],
 					tex.cheepCheepsItemBall[8], tex.cheepCheepsItemBall[9], tex.cheepCheepsItemBall[10], tex.cheepCheepsItemBall[11],
@@ -147,7 +152,7 @@ public class ItemBall extends GameObject implements EntityD{
 						tex.ampItemBall[4], tex.ampItemBall[3], tex.ampItemBall[2], tex.ampItemBall[1],
 						tex.ampItemBall[0]);
 				
-				itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+				itemFile = "res/Sounds/SFX/Items/tinyzap.wav";
 				itemSoundLoop = new SoundLoops(itemFile);
 				itemSoundLoop.reduceSound(10f);
 				VolumeSlider.adjustSFX(itemSoundLoop);
@@ -169,7 +174,7 @@ public class ItemBall extends GameObject implements EntityD{
 						tex.wigglerItemBall[4], tex.wigglerItemBall[3], tex.wigglerItemBall[2], tex.wigglerItemBall[1],
 						tex.wigglerItemBall[0]);
 				
-				itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+				itemFile = "res/Sounds/SFX/Items/sm64_wiggler_hit.wav";
 				itemSoundLoop = new SoundLoops(itemFile);
 				itemSoundLoop.reduceSound(10f);
 				VolumeSlider.adjustSFX(itemSoundLoop);
@@ -191,7 +196,7 @@ public class ItemBall extends GameObject implements EntityD{
 						tex.lakituItemBall[4], tex.lakituItemBall[3], tex.lakituItemBall[2], tex.lakituItemBall[1],
 						tex.lakituItemBall[0]);
 				
-				itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+				itemFile = "res/Sounds/SFX/Items/lakitucam.wav";
 				itemSoundLoop = new SoundLoops(itemFile);
 				itemSoundLoop.reduceSound(10f);
 				VolumeSlider.adjustSFX(itemSoundLoop);
@@ -215,7 +220,7 @@ public class ItemBall extends GameObject implements EntityD{
 						tex.wigglerItemBall[4], tex.wigglerItemBall[3], tex.wigglerItemBall[2], tex.wigglerItemBall[1],
 						tex.wigglerItemBall[0]);
 				
-				itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+				itemFile = "res/Sounds/SFX/Items/sm64_wiggler_hit.wav";
 				itemSoundLoop = new SoundLoops(itemFile);
 				itemSoundLoop.reduceSound(10f);
 				VolumeSlider.adjustSFX(itemSoundLoop);
@@ -237,7 +242,7 @@ public class ItemBall extends GameObject implements EntityD{
 						tex.lakituItemBall[4], tex.lakituItemBall[3], tex.lakituItemBall[2], tex.lakituItemBall[1],
 						tex.lakituItemBall[0]);
 				
-				itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+				itemFile = "res/Sounds/SFX/Items/lakitucam.wav";
 				itemSoundLoop = new SoundLoops(itemFile);
 				itemSoundLoop.reduceSound(10f);
 				VolumeSlider.adjustSFX(itemSoundLoop);
@@ -260,7 +265,7 @@ public class ItemBall extends GameObject implements EntityD{
 					tex.lakituItemBall[4], tex.lakituItemBall[3], tex.lakituItemBall[2], tex.lakituItemBall[1],
 					tex.lakituItemBall[0]);
 			
-			itemFile = "res/Sounds/SFX/Items/sm64_scuttlebug_hop.wav";
+			itemFile = "res/Sounds/SFX/Items/lakitucam.wav";
 			itemSoundLoop = new SoundLoops(itemFile);
 			itemSoundLoop.reduceSound(10f);
 			VolumeSlider.adjustSFX(itemSoundLoop);

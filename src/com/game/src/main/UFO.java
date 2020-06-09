@@ -165,6 +165,10 @@ public class UFO extends GameObject implements EntityB{
 		this.y = y;
 	}
 
+	public void renderFlicker() {
+		
+	}
+	
 	public void close() {
 		return;
 	}

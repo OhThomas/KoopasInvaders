@@ -136,6 +136,326 @@ public class StarExplosion {
 		setup = true;
 		iStart = false;
 	}
+
+	public void StarExplosionSetup(int x, int y, int x2, int y2) {
+		this.x = x;
+		this.y = y;
+		straightLine = 1;
+		curvedLine = 1;
+		imageTranslucentVelocity = 0;
+		imageTranslucent = 1;
+		/*
+		if(!p.isEmpty()) {//JUST REMOVE WHEN THE TRANSPARENCY REACHES 100
+			for(int i = 0; i <= p.size()-1; i++) {
+				p.remove(i);
+				pInts.remove(i);
+				pTrajectory.remove(i);
+				pStraightorCurved.remove(i);
+				this.randomI.remove(i);
+				i--;
+			}
+		}*/
+		int ii = 20;
+		for(int i = 0; i <= ii; i++) {
+			if(!iStart && !p.isEmpty()) {
+				i = p.size();
+				ii = p.size() + 20;
+			}
+			iStart = true;
+			//if(i == 0 && !this.p.isEmpty())
+				//i = p.size()-1;
+			Polygon p = new Polygon();
+			Random randomPoints = new Random();
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x-5,this.y-3);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x-5, this.y);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x-3, this.y+2);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x, this.y+5);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x+3, this.y+2);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x+5, this.y);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x+3, this.y-2);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x, this.y-5);
+			Random randle = new Random();
+			Random randle2 = new Random();
+			p.translate(randle.nextInt(70)-35, randle2.nextInt(70)-35);
+			Rectangle r = p.getBounds();
+			this.pInts.add(new ArrayList<Integer>(2));
+			this.pTrajectory.add(new ArrayList<Float>(2));
+			this.pStraightorCurved.add(new ArrayList<Boolean>(2));
+			this.randomI.add(new ArrayList<Integer>(2));
+			pInts.get(i).add(r.x);
+			pInts.get(i).add(r.y);
+			if(r.x < this.x)//r.y < Game.my SPIRAL EFFECT
+				pTrajectory.get(i).add((float) -1);//1
+			else
+				pTrajectory.get(i).add((float) 1);//-1
+			if(r.y < this.y)//r.x < Game.mx SPIRAL EFFECT
+				pTrajectory.get(i).add((float) -1);
+			else
+				pTrajectory.get(i).add((float) 1);
+			if(r.x < this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(-1 * straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else if(r.x < this.x && r.y > this.y) {
+				//pTrajectory.get(i).add(curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else if(r.x > this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else {
+				//pTrajectory.get(i).add(-1 * curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			if(r.x < this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(-1 * curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else if(r.x < this.x && r.y > this.y) {
+				//pTrajectory.get(i).add(-1 * straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else if(r.x > this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else {
+				//pTrajectory.get(i).add(straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			this.p.add(p);
+			this.randomI.get(i).add(randomPoints.nextInt(9)+1);
+			this.randomI.get(i).add(randomPoints.nextInt(9)+1);
+			this.pImageTrans.add((double)1);
+			double dd =(1); //- (randomPoints.nextDouble()/100));
+			//System.out.println(dd);
+			this.pImageTransVel.add(dd);
+			//g.drawPolygon(p);
+		}
+		iStart = false;
+		
+		this.x = x2;
+		this.y = y2;
+		straightLine = 1;
+		curvedLine = 1;
+		imageTranslucentVelocity = 0;
+		imageTranslucent = 1;
+		/*
+		if(!p.isEmpty()) {//JUST REMOVE WHEN THE TRANSPARENCY REACHES 100
+			for(int i = 0; i <= p.size()-1; i++) {
+				p.remove(i);
+				pInts.remove(i);
+				pTrajectory.remove(i);
+				pStraightorCurved.remove(i);
+				this.randomI.remove(i);
+				i--;
+			}
+		}*/
+		ii = 20;
+		for(int i = 0; i <= ii; i++) {
+			if(!iStart && !p.isEmpty()) {
+				i = p.size();
+				ii = p.size() + 20;
+			}
+			iStart = true;
+			//if(i == 0 && !this.p.isEmpty())
+				//i = p.size()-1;
+			Polygon p = new Polygon();
+			Random randomPoints = new Random();
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x-5,this.y-3);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x-5, this.y);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x-3, this.y+2);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x, this.y+5);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x+3, this.y+2);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x+5, this.y);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x+3, this.y-2);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x, this.y-5);
+			Random randle = new Random();
+			Random randle2 = new Random();
+			p.translate(randle.nextInt(70)-35, randle2.nextInt(70)-35);
+			Rectangle r = p.getBounds();
+			this.pInts.add(new ArrayList<Integer>(2));
+			this.pTrajectory.add(new ArrayList<Float>(2));
+			this.pStraightorCurved.add(new ArrayList<Boolean>(2));
+			this.randomI.add(new ArrayList<Integer>(2));
+			pInts.get(i).add(r.x);
+			pInts.get(i).add(r.y);
+			if(r.x < this.x)//r.y < Game.my SPIRAL EFFECT
+				pTrajectory.get(i).add((float) -1);//1
+			else
+				pTrajectory.get(i).add((float) 1);//-1
+			if(r.y < this.y)//r.x < Game.mx SPIRAL EFFECT
+				pTrajectory.get(i).add((float) -1);
+			else
+				pTrajectory.get(i).add((float) 1);
+			if(r.x < this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(-1 * straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else if(r.x < this.x && r.y > this.y) {
+				//pTrajectory.get(i).add(curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else if(r.x > this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else {
+				//pTrajectory.get(i).add(-1 * curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			if(r.x < this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(-1 * curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else if(r.x < this.x && r.y > this.y) {
+				//pTrajectory.get(i).add(-1 * straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else if(r.x > this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else {
+				//pTrajectory.get(i).add(straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			this.p.add(p);
+			this.randomI.get(i).add(randomPoints.nextInt(9)+1);
+			this.randomI.get(i).add(randomPoints.nextInt(9)+1);
+			this.pImageTrans.add((double)1);
+			double dd =(1); //- (randomPoints.nextDouble()/100));
+			//System.out.println(dd);
+			this.pImageTransVel.add(dd);
+			//g.drawPolygon(p);
+		}
+		iStart = false;
+		setup = true;
+	}
+	public void StarExplosionSmallSetup(int x, int y) {
+		this.x = x;
+		this.y = y;
+		straightLine = 1;
+		curvedLine = 1;
+		imageTranslucentVelocity = 0;
+		imageTranslucent = 1;
+		/*
+		if(!p.isEmpty()) {//JUST REMOVE WHEN THE TRANSPARENCY REACHES 100
+			for(int i = 0; i <= p.size()-1; i++) {
+				p.remove(i);
+				pInts.remove(i);
+				pTrajectory.remove(i);
+				pStraightorCurved.remove(i);
+				this.randomI.remove(i);
+				i--;
+			}
+		}*/
+		int ii = 7;
+		for(int i = 0; i <= ii; i++) {
+			if(!iStart && !p.isEmpty()) {
+				i = p.size();
+				ii = p.size() + 20;
+			}
+			iStart = true;
+			//if(i == 0 && !this.p.isEmpty())
+				//i = p.size()-1;
+			Polygon p = new Polygon();
+			Random randomPoints = new Random();
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(this.x-3,this.y-2);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(x-3, y);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(x-2, y+1);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(x, y+3);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(x+2, y+1);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(x+3, y);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(x+2, y-1);
+			if(randomPoints.nextInt(5) != 1)
+				p.addPoint(x, y-3);
+			Random randle = new Random();
+			Random randle2 = new Random();
+			p.translate(randle.nextInt(70)-35, randle2.nextInt(70)-35);
+			Rectangle r = p.getBounds();
+			this.pInts.add(new ArrayList<Integer>(2));
+			this.pTrajectory.add(new ArrayList<Float>(2));
+			this.pStraightorCurved.add(new ArrayList<Boolean>(2));
+			this.randomI.add(new ArrayList<Integer>(2));
+			pInts.get(i).add(r.x);
+			pInts.get(i).add(r.y);
+			if(r.x < this.x)//r.y < Game.my SPIRAL EFFECT
+				pTrajectory.get(i).add((float) -1);//1
+			else
+				pTrajectory.get(i).add((float) 1);//-1
+			if(r.y < this.y)//r.x < Game.mx SPIRAL EFFECT
+				pTrajectory.get(i).add((float) -1);
+			else
+				pTrajectory.get(i).add((float) 1);
+			if(r.x < this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(-1 * straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else if(r.x < this.x && r.y > this.y) {
+				//pTrajectory.get(i).add(curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else if(r.x > this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else {
+				//pTrajectory.get(i).add(-1 * curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			if(r.x < this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(-1 * curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else if(r.x < this.x && r.y > this.y) {
+				//pTrajectory.get(i).add(-1 * straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			else if(r.x > this.x && r.y < this.y) {
+				//pTrajectory.get(i).add(curvedLine);
+				pStraightorCurved.get(i).add(false);
+			}
+			else {
+				//pTrajectory.get(i).add(straightLine);
+				pStraightorCurved.get(i).add(true);
+			}
+			this.p.add(p);
+			this.randomI.get(i).add(randomPoints.nextInt(9)+1);
+			this.randomI.get(i).add(randomPoints.nextInt(9)+1);
+			this.pImageTrans.add((double)1);
+			double dd =(1); //- (randomPoints.nextDouble()/100));
+			//System.out.println(dd);
+			this.pImageTransVel.add(dd);
+			//g.drawPolygon(p);
+		}
+		setup = true;
+		iStart = false;
+	}
 	public void Explosion(Graphics g) {
 		for(int i = 0; i <= p.size()-1; i++) {
 			

@@ -63,7 +63,7 @@ public class BulletBillItem extends GameObject implements EntityE {
 		animURItem.setCount(0);
 		animUDisintegrate.nextFrame();
 		animUDisintegrate.setCount(0);
-		String itemFile = "res/Sounds/SFX/Items/sm64_chain_chomp.wav";
+		String itemFile = "res/Sounds/SFX/nsmbwiiBulletBillCannon2.wav";
 		String deathFile = "res/Sounds/SFX/smb2_bbdeathsfx.wav";
 		SoundLoops itemSoundLoop = new SoundLoops(itemFile);
 		SoundLoops deathSoundLoop = new SoundLoops(deathFile);
@@ -227,10 +227,13 @@ public class BulletBillItem extends GameObject implements EntityE {
 								if(game.getWaitToPause() < System.currentTimeMillis()) {
 									game.setEnemyHitPauseTimer(System.currentTimeMillis() + 500);
 									game.setWaitToPause(System.currentTimeMillis() + 4000);
+									if(!Game.itemPauseSoundLoop.clipIsActive()) {
+										Game.itemPauseSoundLoop.setFramePosition(0);
+										Game.itemPauseSoundLoop.play();
+									}
 								}
 								else {
-									scoreFollowMe = true;
-									Game.scoreFollowingBoolean = true;
+									setScoreFollowersFalse();
 									game.setWaitToPause(System.currentTimeMillis() + 2000);
 								}
 								game.getHUD().setEnemyHitPauseTimer(System.currentTimeMillis() + 300);
@@ -282,7 +285,8 @@ public class BulletBillItem extends GameObject implements EntityE {
 								ecMarked = i;
 						}
 						if(Physics.Collision(this, tempEnt) && !tempEnt.getEntityCDead()){
-							if(hitCount == 1 || tempEnt.entityName().equals("BuzzyBeetleShell") || tempEnt.entityName().equals("BulletBill")) {
+							if(hitCount == 1 || tempEnt.entityName().equals("BuzzyBeetleShell") || tempEnt.entityName().equals("BulletBill") ||
+									tempEnt.entityName().equals("Mechakoopa")) {
 								if(tempEnt.entityName().equals("BuzzyBeetleShell")) {
 									//game.getHUD().setScore(500);
 									ecMarked = -1;
@@ -328,10 +332,13 @@ public class BulletBillItem extends GameObject implements EntityE {
 							if(game.getWaitToPause() < System.currentTimeMillis()) {
 								game.setEnemyHitPauseTimer(System.currentTimeMillis() + 500);
 								game.setWaitToPause(System.currentTimeMillis() + 4000);
+								if(!Game.itemPauseSoundLoop.clipIsActive()) {
+									Game.itemPauseSoundLoop.setFramePosition(0);
+									Game.itemPauseSoundLoop.play();
+								}
 							}
 							else {
-								scoreFollowMe = true;
-								Game.scoreFollowingBoolean = true;
+								setScoreFollowersFalse();
 								game.setWaitToPause(System.currentTimeMillis() + 2000);
 							}
 							game.getHUD().setEnemyHitPauseTimer(System.currentTimeMillis() + 300);
@@ -477,6 +484,17 @@ public class BulletBillItem extends GameObject implements EntityE {
 			}
 		}
 	}
+
+	public void setScoreFollowersFalse() {
+		for(int e = 0; e < game.ee.size(); e++){
+			EntityE tempEntE = game.ee.get(e);
+			if(this == tempEntE)
+				game.ee.get(e).setScoreFollowMe(true);
+			else
+				game.ee.get(e).setScoreFollowMe(false);
+		}
+		Game.scoreFollowingBoolean = true;
+	}
 	
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, 16, 16);
@@ -488,6 +506,34 @@ public class BulletBillItem extends GameObject implements EntityE {
 
 	public double getY() {
 		return y;
+	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return velX;
+	}
+
+	public double getVelY() {
+		return velY;
+	}
+
+	public void setVelX(double velX) {
+		this.velX = velX;
+	}
+
+	public void setVelY(double velY) {
+		this.velY = velY;
+	}
+	
+	public void setScoreFollowMe(boolean b) {
+		this.scoreFollowMe = b;
 	}
 	
 	public String entityName() {

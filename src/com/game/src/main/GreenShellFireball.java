@@ -14,10 +14,13 @@ public class GreenShellFireball extends GameObject implements EntityA {
 	private Game game;
 	Animation anim;
 	double velX = 0;
+	double starVel = 1;
 	public GreenShellFireball(double x, double y, Textures tex, Double velX, Game game){
 		super(x, y);
 		this.tex = tex;
 		this.game = game;
+		if(game.getPlayer().getMarioInvincible())
+			starVel = 1.5;
 		if(velX!=0) {
 			if(Game.WIDTH * Game.SCALE <= this.x+16) {
 				this.x-=11;
@@ -30,16 +33,16 @@ public class GreenShellFireball extends GameObject implements EntityA {
 					velX = 0.0;
 			}
 			if(velX < 0)
-				this.velX = -5;
+				this.velX = -5*starVel;
 			else if(velX > 0)
-				this.velX = 5;
+				this.velX = 5*starVel;
 		}
 		anim = new Animation(5,tex.greenShell[0],tex.greenShell[1],tex.greenShell[2],tex.greenShell[3]);
 	}
 	
 	public void tick(){
 		if(!Physics.Collision(this, game.getBb())){
-			y -= 8;
+			y -= 8*starVel;
 			x+=velX;
 			if (this.getY() <= -8)
 				game.ea.remove(this);
@@ -80,7 +83,7 @@ public class GreenShellFireball extends GameObject implements EntityA {
 			}*/
 			if(velX!=0)
 				velX = velX * -1;
-			y-=0.5;
+			y-=0.5*starVel;
 		}
 		anim.runAnimation();
 	}

@@ -31,6 +31,7 @@ public class Textures {
 	public BufferedImage[] marioStarNESContra2 = new BufferedImage[16];
 	public BufferedImage[] marioStarNESContra3 = new BufferedImage[16];
 	public BufferedImage[] marioSlowingDown = new BufferedImage[2];
+	public BufferedImage[] yoshi = new BufferedImage[25];
 	public BufferedImage[] ufo = new BufferedImage[10];
 	public BufferedImage[] ufoExplosion = new BufferedImage[10];
 	public BufferedImage[] fireball = new BufferedImage[4];
@@ -50,17 +51,27 @@ public class Textures {
 	public BufferedImage[] animatedStar = new BufferedImage[20];
 	public BufferedImage[] animatedShootingStar = new BufferedImage[12];
 	public BufferedImage[] mario1Star = new BufferedImage[4];
-	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[18];
+	public BufferedImage[] marioItemAnimationBeginning = new BufferedImage[21];
 	public BufferedImage[] marioItemAnimationBeginning2 = new BufferedImage[18];
 	public BufferedImage[] marioItemAnimationBeginning3 = new BufferedImage[18];
 	public BufferedImage[] marioItemAnimationBeginning4 = new BufferedImage[18];
 	public BufferedImage[] marioItemAnimationBeginning5 = new BufferedImage[18];
 	public BufferedImage[] marioItemAnimationBeginning6 = new BufferedImage[18];
+	public BufferedImage[] marioHeadBob = new BufferedImage[14];
+	public BufferedImage[] marioWormDance = new BufferedImage[11];
+	public BufferedImage[] marioButtShake = new BufferedImage[6];
+	public BufferedImage[] marioRunningBigger = new BufferedImage[3];
+	public BufferedImage[] luigiDance = new BufferedImage[14];
+	public BufferedImage[] toadDance = new BufferedImage[22];
+	public BufferedImage[] spikey = new BufferedImage[2];
 	public BufferedImage[] bigChainChompItemBall = new BufferedImage[9];
 	public BufferedImage[] chainChompItemBall = new BufferedImage[25];
 	public BufferedImage[] chainChompItem = new BufferedImage[5];
 	public BufferedImage[] chainChompChompin = new BufferedImage[12];
 	public BufferedImage[] chainChompDisintegrate = new BufferedImage[8];
+	public BufferedImage[] chainChompDancing = new BufferedImage[9];
+	public BufferedImage[] chainChompDancing2 = new BufferedImage[24];
+	public BufferedImage[] chainChompChainBigger = new BufferedImage[5];
 	public BufferedImage[] bulletBillItemBall = new BufferedImage[24];
 	public BufferedImage[] bulletBillUItem = new BufferedImage[17];
 	public BufferedImage[] bulletBillULItem = new BufferedImage[10];
@@ -76,7 +87,26 @@ public class Textures {
 	public BufferedImage[] ampItemDeath = new BufferedImage[6];
 	public BufferedImage[] ampItemZap = new BufferedImage[8];
 	public BufferedImage[] wigglerItemBall = new BufferedImage[24];
+	public BufferedImage[] wigglerItemHead = new BufferedImage[6];
+	public BufferedImage[] wigglerItemBody = new BufferedImage[8];
+	public BufferedImage[] wigglerItemHeadMad = new BufferedImage[6];
+	public BufferedImage[] wigglerItemBodyMad = new BufferedImage[8];
+	public BufferedImage[] wigglerItemFlower = new BufferedImage[2];
+	public BufferedImage[] wigglerItemHeadWithoutFlower = new BufferedImage[6];
+	public BufferedImage[] wigglerItemMadColorChangeL = new BufferedImage[5];
+	public BufferedImage[] wigglerItemMadColorChangeR = new BufferedImage[5];
 	public BufferedImage[] lakituItemBall = new BufferedImage[24];
+	public BufferedImage[] lakituItem = new BufferedImage[13];
+	public BufferedImage[] lakituItemDeath = new BufferedImage[26];
+	public BufferedImage[] lakituFish = new BufferedImage[6];
+	public BufferedImage[] lakituSpike = new BufferedImage[2];
+	public BufferedImage[] lakituBombOmb = new BufferedImage[20];
+	public BufferedImage[] lakituBat = new BufferedImage[20];
+	public BufferedImage[] lavaUpDown = new BufferedImage[4];
+	public BufferedImage[] lavaDiagonal = new BufferedImage[8];
+	public BufferedImage[] cloudDisappearing = new BufferedImage[6];
+	public BufferedImage[] marioItemBall = new BufferedImage[2];
+	public BufferedImage[] bowserMinion = new BufferedImage[6];
 	public BufferedImage[] bowserEntrance = new BufferedImage[16];
 	public BufferedImage[] bowser = new BufferedImage[2];
 	public BufferedImage[] bowserHit = new BufferedImage[2];
@@ -117,6 +147,7 @@ public class Textures {
 	public BufferedImage[] enemy3Explosion = new BufferedImage[13];
 	public BufferedImage[] star = new BufferedImage[20];
 	public BufferedImage[] coin = new BufferedImage[3];
+	public BufferedImage[] extraMario = new BufferedImage [2];
 	public BufferedImage[] marioEntrance = new BufferedImage[21];
 	public BufferedImage[] marioEntranceNES = new BufferedImage[21];
 	public BufferedImage[] marioEntranceNES3 = new BufferedImage[23];
@@ -129,6 +160,12 @@ public class Textures {
 	public BufferedImage[] marioDeathSNESFireLuigi = new BufferedImage[2];
 	public BufferedImage[] marioDeathNESMikeTyson = new BufferedImage[2];
 	public BufferedImage[] marioDeathNESContra = new BufferedImage[2];
+	public BufferedImage[] marioSpinning = new BufferedImage[24];
+	public BufferedImage[] marioSpinningNES = new BufferedImage[24];
+	public BufferedImage[] marioSpinningNES3 = new BufferedImage[24];
+	public BufferedImage[] marioSpinningSNESFireLuigi = new BufferedImage[24];
+	public BufferedImage[] marioSpinningNESMikeTyson = new BufferedImage[24];
+	public BufferedImage[] marioSpinningNESContra = new BufferedImage[24];
 	public BufferedImage[] marioSkin1 = new BufferedImage[3];
 	public BufferedImage[] marioSkin2 = new BufferedImage[4];
 	public BufferedImage[] marioSkin3 = new BufferedImage[4];
@@ -143,7 +180,7 @@ public class Textures {
 	public BufferedImage[] transparentBlocks = new BufferedImage[3];
 	public BufferedImage[] marioNumbersSmall = new BufferedImage[12];
 	public BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
-	public BufferedImage[] mario3Font = new BufferedImage[42];
+	public BufferedImage[] mario3Font = new BufferedImage[43];
 	//BUTTONS
 	public BufferedImage[] upButtonImageWASD = new BufferedImage[3];//0 = normal; 1 = glow; 2 = clicked
 	public BufferedImage[] downButtonImageWASD = new BufferedImage[3];
@@ -195,8 +232,11 @@ public class Textures {
 	public BufferedImage bigAmpItemBall;
 	public BufferedImage bigWigglerItemBall;
 	public BufferedImage bigLakituItemBall;
+	public BufferedImage thwimp;
+	public BufferedImage chainChompChain;
 	public BufferedImage pressE;
 	public BufferedImage pressX;
+	public BufferedImage pressDI;
 	public BufferedImage empty;
 	public BufferedImage textIndicator;
 	public BufferedImage gameover;
@@ -223,6 +263,7 @@ public class Textures {
 	private SpriteSheet marioSNESFireLuigiEntranceSprites;
 	private SpriteSheet marioNESMikeTysonEntranceSprites;
 	private SpriteSheet marioNESContraEntranceSprites;
+	private SpriteSheet victoryPoseSpinningSprites;
 	private SpriteSheet starSprites;
 	private SpriteSheet shootingStarSprites;
 	private SpriteSheet ufoSprites;
@@ -241,6 +282,8 @@ public class Textures {
 	private SpriteSheet bigMario4ItemAnimationSprites;
 	private SpriteSheet bigMario5ItemAnimationSprites;
 	private SpriteSheet bigMario6ItemAnimationSprites;
+	private SpriteSheet lakituDeathAnimationSprites;
+	private SpriteSheet dancingAnimationSprites;
 	private SpriteSheet itemSilhouetteSprites;
 	private SpriteSheet chainChompItemGettingBiggerSprites;
 	private SpriteSheet chainChompSprites;
@@ -257,6 +300,7 @@ public class Textures {
 	private SpriteSheet dotdotdotSprites;
 	private SpriteSheet goombaDeathSprites;
 	private SpriteSheet transparentBlocksSprites;
+	private SpriteSheet yoshiSprites;
 	
 	public Textures(Game game){
 		ss = new SpriteSheet(game.getSpriteSheet());
@@ -270,6 +314,7 @@ public class Textures {
 		marioSNESFireLuigiEntranceSprites = new SpriteSheet(game.getMarioSNESFireLuigiEntranceSprites());
 		marioNESMikeTysonEntranceSprites = new SpriteSheet(game.getMarioNESMikeTysonEntranceSprites());
 		marioNESContraEntranceSprites = new SpriteSheet(game.getMarioNESContraEntranceSprites());
+		victoryPoseSpinningSprites = new SpriteSheet(game.getVictoryPoseSpinningSprites());
 		starSprites = new SpriteSheet(game.getAnimatedStar());
 		shootingStarSprites = new SpriteSheet(game.getAnimatedShootingStar());
 		ufoSprites = new SpriteSheet(game.getUFOSprites());
@@ -288,6 +333,8 @@ public class Textures {
 		bigMario4ItemAnimationSprites = new SpriteSheet(game.getBigMario4ItemAnimationSheet());
 		bigMario5ItemAnimationSprites = new SpriteSheet(game.getBigMario5ItemAnimationSheet());
 		bigMario6ItemAnimationSprites = new SpriteSheet(game.getBigMario6ItemAnimationSheet());
+		lakituDeathAnimationSprites = new SpriteSheet(game.getLakituDeathAnimationSheet());
+		dancingAnimationSprites = new SpriteSheet(game.getDancingAnimationSheet());
 		itemSilhouetteSprites = new SpriteSheet(game.getItemSilhouetteSheet());
 		chainChompItemGettingBiggerSprites = new SpriteSheet(game.getChainChompItemGettingBiggerSheet());
 		chainChompSprites = new SpriteSheet(game.getChainChompSheet());
@@ -304,6 +351,7 @@ public class Textures {
 		dotdotdotSprites = new SpriteSheet(game.getDotDotDot());
 		goombaDeathSprites = new SpriteSheet(game.getGoombaDeathSpriteSheet());
 		transparentBlocksSprites = new SpriteSheet(game.getTransparentBlocks());
+		yoshiSprites = new SpriteSheet(game.getYoshiSpriteSheet());
 		
 		getTextures();
 	}
@@ -418,9 +466,9 @@ public class Textures {
 		playerNES[19] = ssNES.grabMarioImage(8, 5, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNES1[0] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES1[1] = ssNES.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES1[2] = ssNES.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES1[3] = ssNES.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[1] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[2] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES1[3] = ssNES.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNES1[4] = ssNES.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNES1[5] = ssNES.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -438,9 +486,9 @@ public class Textures {
 		marioStarNES1[15] = ssNES.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNES2[0] = ssNES.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES2[1] = ssNES.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES2[2] = ssNES.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES2[3] = ssNES.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[1] = ssNES.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[2] = ssNES.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES2[3] = ssNES.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNES2[4] = ssNES.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNES2[5] = ssNES.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -458,9 +506,9 @@ public class Textures {
 		marioStarNES2[15] = ssNES.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
 
 		marioStarNES3[0] = ssNES.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES3[1] = ssNES.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES3[2] = ssNES.grabMarioImage(11, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNES3[3] = ssNES.grabMarioImage(12, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[1] = ssNES.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[2] = ssNES.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNES3[3] = ssNES.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNES3[4] = ssNES.grabMarioImage(9, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNES3[5] = ssNES.grabMarioImage(10, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -504,9 +552,9 @@ public class Textures {
 		//player3NES[19] = ssNES3.grabMarioImage(8, 5, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStar3NES1[0] = ssNES3.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES1[1] = ssNES3.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES1[2] = ssNES3.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES1[3] = ssNES3.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[1] = ssNES3.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[2] = ssNES3.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES1[3] = ssNES3.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStar3NES1[4] = ssNES3.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStar3NES1[5] = ssNES3.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -524,9 +572,9 @@ public class Textures {
 		marioStar3NES1[15] = ssNES3.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStar3NES2[0] = ssNES3.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES2[1] = ssNES3.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES2[2] = ssNES3.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES2[3] = ssNES3.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[1] = ssNES3.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[2] = ssNES3.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES2[3] = ssNES3.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStar3NES2[4] = ssNES3.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStar3NES2[5] = ssNES3.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -544,9 +592,9 @@ public class Textures {
 		marioStar3NES2[15] = ssNES3.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
 
 		marioStar3NES3[0] = ssNES3.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES3[1] = ssNES3.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES3[2] = ssNES3.grabMarioImage(11, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStar3NES3[3] = ssNES3.grabMarioImage(12, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[1] = ssNES3.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[2] = ssNES3.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStar3NES3[3] = ssNES3.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStar3NES3[4] = ssNES3.grabMarioImage(9, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStar3NES3[5] = ssNES3.grabMarioImage(10, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -590,9 +638,9 @@ public class Textures {
 		//playerSNESFireLuigi[19] = ssSNESFireLuigi.grabMarioImage(8, 5, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarSNESFireLuigi1[0] = ssSNESFireLuigi.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi1[1] = ssSNESFireLuigi.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi1[2] = ssSNESFireLuigi.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi1[3] = ssSNESFireLuigi.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[1] = ssSNESFireLuigi.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[2] = ssSNESFireLuigi.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi1[3] = ssSNESFireLuigi.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarSNESFireLuigi1[4] = ssSNESFireLuigi.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarSNESFireLuigi1[5] = ssSNESFireLuigi.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -610,9 +658,9 @@ public class Textures {
 		marioStarSNESFireLuigi1[15] = ssSNESFireLuigi.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarSNESFireLuigi2[0] = ssSNESFireLuigi.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi2[1] = ssSNESFireLuigi.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi2[2] = ssSNESFireLuigi.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi2[3] = ssSNESFireLuigi.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[1] = ssSNESFireLuigi.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[2] = ssSNESFireLuigi.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi2[3] = ssSNESFireLuigi.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarSNESFireLuigi2[4] = ssSNESFireLuigi.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarSNESFireLuigi2[5] = ssSNESFireLuigi.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -630,9 +678,9 @@ public class Textures {
 		marioStarSNESFireLuigi2[15] = ssSNESFireLuigi.grabMarioImage(8, 3, MARIO_WIDTH, MARIO_HEIGHT);
 
 		marioStarSNESFireLuigi3[0] = ssSNESFireLuigi.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi3[1] = ssSNESFireLuigi.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi3[2] = ssSNESFireLuigi.grabMarioImage(11, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarSNESFireLuigi3[3] = ssSNESFireLuigi.grabMarioImage(12, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[1] = ssSNESFireLuigi.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[2] = ssSNESFireLuigi.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarSNESFireLuigi3[3] = ssSNESFireLuigi.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarSNESFireLuigi3[4] = ssSNESFireLuigi.grabMarioImage(9, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarSNESFireLuigi3[5] = ssSNESFireLuigi.grabMarioImage(10, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -763,8 +811,8 @@ public class Textures {
 		
 		marioStarNESContra1[0] = ssNESContra.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNESContra1[1] = ssNESContra.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNESContra1[2] = ssNESContra.grabMarioImage(3, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNESContra1[3] = ssNESContra.grabMarioImage(4, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNESContra1[2] = ssNESContra.grabMarioImage(1, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNESContra1[3] = ssNESContra.grabMarioImage(2, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNESContra1[4] = ssNESContra.grabMarioImage(1, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNESContra1[5] = ssNESContra.grabMarioImage(2, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -782,9 +830,9 @@ public class Textures {
 		marioStarNESContra1[15] = ssNESContra.grabMarioImage(4, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNESContra2[0] = ssNESContra.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNESContra2[1] = ssNESContra.grabMarioImage(6, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNESContra2[2] = ssNESContra.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNESContra2[3] = ssNESContra.grabMarioImage(8, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNESContra2[1] = ssNESContra.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNESContra2[2] = ssNESContra.grabMarioImage(5, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNESContra2[3] = ssNESContra.grabMarioImage(7, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNESContra2[4] = ssNESContra.grabMarioImage(5, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNESContra2[5] = ssNESContra.grabMarioImage(6, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -803,8 +851,8 @@ public class Textures {
 
 		marioStarNESContra3[0] = ssNESContra.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNESContra3[1] = ssNESContra.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNESContra3[2] = ssNESContra.grabMarioImage(11, 1, MARIO_WIDTH, MARIO_HEIGHT);
-		marioStarNESContra3[3] = ssNESContra.grabMarioImage(12, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNESContra3[2] = ssNESContra.grabMarioImage(9, 1, MARIO_WIDTH, MARIO_HEIGHT);
+		marioStarNESContra3[3] = ssNESContra.grabMarioImage(10, 1, MARIO_WIDTH, MARIO_HEIGHT);
 		
 		marioStarNESContra3[4] = ssNESContra.grabMarioImage(9, 2, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNESContra3[5] = ssNESContra.grabMarioImage(10, 2, MARIO_WIDTH, MARIO_HEIGHT);
@@ -820,6 +868,156 @@ public class Textures {
 		marioStarNESContra3[13] = ssNESContra.grabMarioImage(10, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNESContra3[14] = ssNESContra.grabMarioImage(11, 3, MARIO_WIDTH, MARIO_HEIGHT);
 		marioStarNESContra3[15] = ssNESContra.grabMarioImage(12, 3, MARIO_WIDTH, MARIO_HEIGHT);
+		
+		marioSpinning[0] = victoryPoseSpinningSprites.grabExactImage(0, 0, 21, 29);//0
+		marioSpinning[1] = victoryPoseSpinningSprites.grabExactImage(0, 31, 20, 28);
+		marioSpinning[2] = victoryPoseSpinningSprites.grabExactImage(0, 65, 23, 27);
+		marioSpinning[3] = victoryPoseSpinningSprites.grabExactImage(0, 98, 28, 27);
+		marioSpinning[4] = victoryPoseSpinningSprites.grabExactImage(0, 131, 29, 26);
+		marioSpinning[5] = victoryPoseSpinningSprites.grabExactImage(0, 160, 30, 25);
+		marioSpinning[6] = victoryPoseSpinningSprites.grabExactImage(0, 186, 29, 21);//90
+		marioSpinning[7] = victoryPoseSpinningSprites.grabExactImage(0, 212, 28, 20);
+		marioSpinning[8] = victoryPoseSpinningSprites.grabExactImage(0, 235, 27, 24);
+		marioSpinning[9] = victoryPoseSpinningSprites.grabExactImage(0, 261, 27, 27);
+		marioSpinning[10] = victoryPoseSpinningSprites.grabExactImage(0, 291, 26, 30);
+		marioSpinning[11] = victoryPoseSpinningSprites.grabExactImage(0, 323, 24, 30);
+		marioSpinning[12] = victoryPoseSpinningSprites.grabExactImage(0, 354, 21, 29);//180
+		marioSpinning[13] = victoryPoseSpinningSprites.grabExactImage(365, 324, 20, 28);
+		marioSpinning[14] = victoryPoseSpinningSprites.grabExactImage(362, 291, 23, 27);
+		marioSpinning[15] = victoryPoseSpinningSprites.grabExactImage(357, 258, 28, 27);
+		marioSpinning[16] = victoryPoseSpinningSprites.grabExactImage(356, 226, 29, 26);
+		marioSpinning[17] = victoryPoseSpinningSprites.grabExactImage(355, 198, 30, 25);
+		marioSpinning[18] = victoryPoseSpinningSprites.grabExactImage(356, 176, 29, 21);//270
+		marioSpinning[19] = victoryPoseSpinningSprites.grabExactImage(357, 151, 28, 20);
+		marioSpinning[20] = victoryPoseSpinningSprites.grabExactImage(358, 124, 27, 24);
+		marioSpinning[21] = victoryPoseSpinningSprites.grabExactImage(358, 95, 27, 27);
+		marioSpinning[22] = victoryPoseSpinningSprites.grabExactImage(359, 62, 26, 30);
+		marioSpinning[23] = victoryPoseSpinningSprites.grabExactImage(361, 30, 24, 30);
+		
+		marioSpinningNES[0] = victoryPoseSpinningSprites.grabExactImage(31, 0, 16, 28);//0
+		marioSpinningNES[1] = victoryPoseSpinningSprites.grabExactImage(26, 31, 20, 29);
+		marioSpinningNES[2] = victoryPoseSpinningSprites.grabExactImage(25, 65, 24, 29);
+		marioSpinningNES[3] = victoryPoseSpinningSprites.grabExactImage(30, 100, 28, 28);
+		marioSpinningNES[4] = victoryPoseSpinningSprites.grabExactImage(32, 133, 29, 24);
+		marioSpinningNES[5] = victoryPoseSpinningSprites.grabExactImage(32, 162, 30, 20);
+		marioSpinningNES[6] = victoryPoseSpinningSprites.grabExactImage(32, 187, 28, 16);//90
+		marioSpinningNES[7] = victoryPoseSpinningSprites.grabExactImage(30, 209, 29, 20);
+		marioSpinningNES[8] = victoryPoseSpinningSprites.grabExactImage(30, 233, 29, 24);
+		marioSpinningNES[9] = victoryPoseSpinningSprites.grabExactImage(30, 259, 28, 27);
+		marioSpinningNES[10] = victoryPoseSpinningSprites.grabExactImage(28, 289, 24, 29);
+		marioSpinningNES[11] = victoryPoseSpinningSprites.grabExactImage(28, 323, 20, 30);
+		marioSpinningNES[12] = victoryPoseSpinningSprites.grabExactImage(23, 355, 16, 28);//180
+		marioSpinningNES[13] = victoryPoseSpinningSprites.grabExactImage(339, 323, 20, 29);
+		marioSpinningNES[14] = victoryPoseSpinningSprites.grabExactImage(336, 289, 24, 29);
+		marioSpinningNES[15] = victoryPoseSpinningSprites.grabExactImage(327, 255, 28, 28);
+		marioSpinningNES[16] = victoryPoseSpinningSprites.grabExactImage(323, 226, 30, 24);
+		marioSpinningNES[17] = victoryPoseSpinningSprites.grabExactImage(323, 201, 30, 20);
+		marioSpinningNES[18] = victoryPoseSpinningSprites.grabExactImage(325, 180, 28, 16);//270
+		marioSpinningNES[19] = victoryPoseSpinningSprites.grabExactImage(326, 154, 29, 20);
+		marioSpinningNES[20] = victoryPoseSpinningSprites.grabExactImage(326, 126, 29, 24);
+		marioSpinningNES[21] = victoryPoseSpinningSprites.grabExactImage(327, 97, 28, 27);
+		marioSpinningNES[22] = victoryPoseSpinningSprites.grabExactImage(333, 65, 24, 29);
+		marioSpinningNES[23] = victoryPoseSpinningSprites.grabExactImage(337, 30, 20, 30);
+		
+		marioSpinningNES3[0] = victoryPoseSpinningSprites.grabExactImage(60, 0, 16, 28);//0
+		marioSpinningNES3[1] = victoryPoseSpinningSprites.grabExactImage(55, 31, 21, 30);
+		marioSpinningNES3[2] = victoryPoseSpinningSprites.grabExactImage(51, 67, 25, 31);
+		marioSpinningNES3[3] = victoryPoseSpinningSprites.grabExactImage(62, 101, 28, 29);
+		marioSpinningNES3[4] = victoryPoseSpinningSprites.grabExactImage(63, 135, 30, 26);
+		marioSpinningNES3[5] = victoryPoseSpinningSprites.grabExactImage(66, 163, 30, 21);
+		marioSpinningNES3[6] = victoryPoseSpinningSprites.grabExactImage(65, 187, 28, 16);//90
+		marioSpinningNES3[7] = victoryPoseSpinningSprites.grabExactImage(61, 209, 29, 21);
+		marioSpinningNES3[8] = victoryPoseSpinningSprites.grabExactImage(62, 232, 30, 26);
+		marioSpinningNES3[9] = victoryPoseSpinningSprites.grabExactImage(62, 258, 29, 28);
+		marioSpinningNES3[10] = victoryPoseSpinningSprites.grabExactImage(55, 288, 26, 30);
+		marioSpinningNES3[11] = victoryPoseSpinningSprites.grabExactImage(50, 322, 21, 30);
+		marioSpinningNES3[12] = victoryPoseSpinningSprites.grabExactImage(43, 355, 16, 28);//180
+		marioSpinningNES3[13] = victoryPoseSpinningSprites.grabExactImage(309, 322, 21, 30);
+		marioSpinningNES3[14] = victoryPoseSpinningSprites.grabExactImage(309, 285, 25, 31);
+		marioSpinningNES3[15] = victoryPoseSpinningSprites.grabExactImage(295, 253, 28, 29);
+		marioSpinningNES3[16] = victoryPoseSpinningSprites.grabExactImage(292, 222, 30, 26);
+		marioSpinningNES3[17] = victoryPoseSpinningSprites.grabExactImage(289, 199, 30, 21);
+		marioSpinningNES3[18] = victoryPoseSpinningSprites.grabExactImage(292, 180, 28, 16);//270
+		marioSpinningNES3[19] = victoryPoseSpinningSprites.grabExactImage(295, 153, 29, 21);
+		marioSpinningNES3[20] = victoryPoseSpinningSprites.grabExactImage(293, 125, 30, 26);
+		marioSpinningNES3[21] = victoryPoseSpinningSprites.grabExactImage(294, 97, 29, 28);
+		marioSpinningNES3[22] = victoryPoseSpinningSprites.grabExactImage(304, 65, 26, 30);
+		marioSpinningNES3[23] = victoryPoseSpinningSprites.grabExactImage(314, 31, 21, 30);
+
+		marioSpinningSNESFireLuigi[0] = victoryPoseSpinningSprites.grabExactImage(154, 0, 17, 28);//0
+		marioSpinningSNESFireLuigi[1] = victoryPoseSpinningSprites.grabExactImage(146, 30, 22, 29);
+		marioSpinningSNESFireLuigi[2] = victoryPoseSpinningSprites.grabExactImage(137, 67, 25, 31);
+		marioSpinningSNESFireLuigi[3] = victoryPoseSpinningSprites.grabExactImage(157, 100, 29, 30);
+		marioSpinningSNESFireLuigi[4] = victoryPoseSpinningSprites.grabExactImage(160, 134, 29, 27);
+		marioSpinningSNESFireLuigi[5] = victoryPoseSpinningSprites.grabExactImage(158, 161, 30, 22);
+		marioSpinningSNESFireLuigi[6] = victoryPoseSpinningSprites.grabExactImage(155, 187, 28, 17);//90
+		marioSpinningSNESFireLuigi[7] = victoryPoseSpinningSprites.grabExactImage(152, 207, 29, 21);
+		marioSpinningSNESFireLuigi[8] = victoryPoseSpinningSprites.grabExactImage(150, 230, 30, 26);
+		marioSpinningSNESFireLuigi[9] = victoryPoseSpinningSprites.grabExactImage(152, 258, 30, 28);
+		marioSpinningSNESFireLuigi[10] = victoryPoseSpinningSprites.grabExactImage(130, 288, 26, 30);
+		marioSpinningSNESFireLuigi[11] = victoryPoseSpinningSprites.grabExactImage(118, 321, 21, 30);
+		marioSpinningSNESFireLuigi[12] = victoryPoseSpinningSprites.grabExactImage(100, 355, 17, 28);//180
+		marioSpinningSNESFireLuigi[13] = victoryPoseSpinningSprites.grabExactImage(217, 324, 22, 29);
+		marioSpinningSNESFireLuigi[14] = victoryPoseSpinningSprites.grabExactImage(223, 285, 25, 31);
+		marioSpinningSNESFireLuigi[15] = victoryPoseSpinningSprites.grabExactImage(199, 253, 29, 30);
+		marioSpinningSNESFireLuigi[16] = victoryPoseSpinningSprites.grabExactImage(196, 222, 29, 27);
+		marioSpinningSNESFireLuigi[17] = victoryPoseSpinningSprites.grabExactImage(197, 200, 30, 22);
+		marioSpinningSNESFireLuigi[18] = victoryPoseSpinningSprites.grabExactImage(202, 179, 28, 17);//270
+		marioSpinningSNESFireLuigi[19] = victoryPoseSpinningSprites.grabExactImage(204, 155, 29, 21);
+		marioSpinningSNESFireLuigi[20] = victoryPoseSpinningSprites.grabExactImage(205, 127, 30, 26);
+		marioSpinningSNESFireLuigi[21] = victoryPoseSpinningSprites.grabExactImage(203, 97, 30, 28);
+		marioSpinningSNESFireLuigi[22] = victoryPoseSpinningSprites.grabExactImage(229, 65, 26, 30);
+		marioSpinningSNESFireLuigi[23] = victoryPoseSpinningSprites.grabExactImage(246, 32, 21, 30);
+
+		marioSpinningNESMikeTyson[0] = victoryPoseSpinningSprites.grabExactImage(122, 0, 16, 28);//0
+		marioSpinningNESMikeTyson[1] = victoryPoseSpinningSprites.grabExactImage(118, 31, 20, 28);
+		marioSpinningNESMikeTyson[2] = victoryPoseSpinningSprites.grabExactImage(110, 68, 24, 26);
+		marioSpinningNESMikeTyson[3] = victoryPoseSpinningSprites.grabExactImage(126, 105, 27, 22);
+		marioSpinningNESMikeTyson[4] = victoryPoseSpinningSprites.grabExactImage(128, 137, 29, 17);
+		marioSpinningNESMikeTyson[5] = victoryPoseSpinningSprites.grabExactImage(128, 161, 30, 15);
+		marioSpinningNESMikeTyson[6] = victoryPoseSpinningSprites.grabExactImage(124, 187, 28, 16);//90
+		marioSpinningNESMikeTyson[7] = victoryPoseSpinningSprites.grabExactImage(122, 208, 28, 19);
+		marioSpinningNESMikeTyson[8] = victoryPoseSpinningSprites.grabExactImage(122, 232, 25, 24);
+		marioSpinningNESMikeTyson[9] = victoryPoseSpinningSprites.grabExactImage(128, 260, 22, 27);
+		marioSpinningNESMikeTyson[10] = victoryPoseSpinningSprites.grabExactImage(111, 289, 17, 30);
+		marioSpinningNESMikeTyson[11] = victoryPoseSpinningSprites.grabExactImage(102, 321, 14, 30);
+		marioSpinningNESMikeTyson[12] = victoryPoseSpinningSprites.grabExactImage(80, 354, 16, 28);//180
+		marioSpinningNESMikeTyson[13] = victoryPoseSpinningSprites.grabExactImage(247, 324, 20, 28);
+		marioSpinningNESMikeTyson[14] = victoryPoseSpinningSprites.grabExactImage(251, 289, 24, 26);
+		marioSpinningNESMikeTyson[15] = victoryPoseSpinningSprites.grabExactImage(232, 256, 27, 22);
+		marioSpinningNESMikeTyson[16] = victoryPoseSpinningSprites.grabExactImage(228, 229, 29, 17);
+		marioSpinningNESMikeTyson[17] = victoryPoseSpinningSprites.grabExactImage(227, 207, 30, 15);
+		marioSpinningNESMikeTyson[18] = victoryPoseSpinningSprites.grabExactImage(233, 180, 28, 16);//270
+		marioSpinningNESMikeTyson[19] = victoryPoseSpinningSprites.grabExactImage(235, 156, 28, 19);
+		marioSpinningNESMikeTyson[20] = victoryPoseSpinningSprites.grabExactImage(238, 127, 25, 24);
+		marioSpinningNESMikeTyson[21] = victoryPoseSpinningSprites.grabExactImage(235, 96, 22, 27);
+		marioSpinningNESMikeTyson[22] = victoryPoseSpinningSprites.grabExactImage(257, 64, 17, 30);
+		marioSpinningNESMikeTyson[23] = victoryPoseSpinningSprites.grabExactImage(269, 32, 14, 30);
+		
+		marioSpinningNESContra[0] = victoryPoseSpinningSprites.grabExactImage(91, 0, 15, 28);//0
+		marioSpinningNESContra[1] = victoryPoseSpinningSprites.grabExactImage(86, 31, 21, 27);
+		marioSpinningNESContra[2] = victoryPoseSpinningSprites.grabExactImage(80, 69, 26, 25);
+		marioSpinningNESContra[3] = victoryPoseSpinningSprites.grabExactImage(94, 107, 28, 22);
+		marioSpinningNESContra[4] = victoryPoseSpinningSprites.grabExactImage(96, 137, 30, 20);
+		marioSpinningNESContra[5] = victoryPoseSpinningSprites.grabExactImage(96, 162, 30, 17);
+		marioSpinningNESContra[6] = victoryPoseSpinningSprites.grabExactImage(95, 187, 28, 15);//90
+		marioSpinningNESContra[7] = victoryPoseSpinningSprites.grabExactImage(92, 206, 27, 21);
+		marioSpinningNESContra[8] = victoryPoseSpinningSprites.grabExactImage(96, 232, 25, 26);
+		marioSpinningNESContra[9] = victoryPoseSpinningSprites.grabExactImage(96, 259, 22, 29);
+		marioSpinningNESContra[10] = victoryPoseSpinningSprites.grabExactImage(82, 288, 20, 30);
+		marioSpinningNESContra[11] = victoryPoseSpinningSprites.grabExactImage(76, 321, 17, 31);
+		marioSpinningNESContra[12] = victoryPoseSpinningSprites.grabExactImage(63, 355, 15, 28);//180
+		marioSpinningNESContra[13] = victoryPoseSpinningSprites.grabExactImage(278, 325, 21, 27);
+		marioSpinningNESContra[14] = victoryPoseSpinningSprites.grabExactImage(279, 289, 26, 25);
+		marioSpinningNESContra[15] = victoryPoseSpinningSprites.grabExactImage(263, 254, 28, 22);
+		marioSpinningNESContra[16] = victoryPoseSpinningSprites.grabExactImage(259, 226, 30, 20);
+		marioSpinningNESContra[17] = victoryPoseSpinningSprites.grabExactImage(259, 204, 30, 17);
+		marioSpinningNESContra[18] = victoryPoseSpinningSprites.grabExactImage(262, 181, 28, 15);//270
+		marioSpinningNESContra[19] = victoryPoseSpinningSprites.grabExactImage(266, 156, 27, 21);
+		marioSpinningNESContra[20] = victoryPoseSpinningSprites.grabExactImage(264, 125, 25, 26);
+		marioSpinningNESContra[21] = victoryPoseSpinningSprites.grabExactImage(267, 95, 22, 29);
+		marioSpinningNESContra[22] = victoryPoseSpinningSprites.grabExactImage(283, 65, 20, 30);
+		marioSpinningNESContra[23] = victoryPoseSpinningSprites.grabExactImage(292, 31, 17, 31);
 		
 		animatedStar[0] = starSprites.grab6pxImage(1, 1, 6, 6);
 		animatedStar[1] = starSprites.grab6pxImage(2, 1, 6, 6);
@@ -900,12 +1098,15 @@ public class Textures {
 		marioItemAnimationBeginning[9] = bigMarioItemAnimationSprites.grabExactImage(264 * 4, 715 * 4, 16 * 4, 29 * 4);
 		marioItemAnimationBeginning[10] = bigMarioItemAnimationSprites.grabExactImage(144 * 4, 715 * 4, 16 * 4, 29 * 4);
 		marioItemAnimationBeginning[11] = bigMarioItemAnimationSprites.grabExactImage(8, 2720, 80, 116);
-		marioItemAnimationBeginning[12] = bigMarioItemAnimationSprites.grabExactImage(92, 2720, 88, 116);
+		marioItemAnimationBeginning[12] = bigMarioItemAnimationSprites.grabExactImage(92, 2720, 88, 116);//ee
 		marioItemAnimationBeginning[13] = bigMarioItemAnimationSprites.grabExactImage(1376, 2708, 76, 116);
 		marioItemAnimationBeginning[14] = bigMarioItemAnimationSprites.grabExactImage(1452, 2708, 64, 116);
 		marioItemAnimationBeginning[15] = bigMarioItemAnimationSprites.grabExactImage(1496, 2828, 64, 116);
 		marioItemAnimationBeginning[16] = bigMarioItemAnimationSprites.grabExactImage(1496, 2944, 64, 116);
 		marioItemAnimationBeginning[17] = bigMarioItemAnimationSprites.grabExactImage(8, 3020, 64, 116);
+		marioItemAnimationBeginning[18] = bigMarioItemAnimationSprites.grabExactImage(576, 3020, 64, 116);
+		marioItemAnimationBeginning[19] = bigMarioItemAnimationSprites.grabExactImage(456, 3020, 64, 116);
+		marioItemAnimationBeginning[20] = bigMarioItemAnimationSprites.grabExactImage(0, 2837, 88, 116);
 		
 		marioItemAnimationBeginning2[0] = bigMario2ItemAnimationSprites.grabExactImage(1200, 1500, 80, 140);
 		marioItemAnimationBeginning2[1] = bigMario2ItemAnimationSprites.grabExactImage(171 * 4, 755 * 4, 21 * 4, 29 * 4);
@@ -1002,6 +1203,86 @@ public class Textures {
 		marioItemAnimationBeginning6[16] = bigMario6ItemAnimationSprites.grabExactImage(1496, 2944, 64, 116);
 		marioItemAnimationBeginning6[17] = bigMario6ItemAnimationSprites.grabExactImage(8, 3020, 64, 116);
 		
+		marioHeadBob[0] = bigMarioItemAnimationSprites.grabExactImage(0, 1449, 64, 112);
+		marioHeadBob[1] = bigMarioItemAnimationSprites.grabExactImage(76, 1449, 64, 112);
+		marioHeadBob[2] = bigMarioItemAnimationSprites.grabExactImage(149, 1449, 65, 112);//x-1
+		marioHeadBob[3] = bigMarioItemAnimationSprites.grabExactImage(221, 1449, 66, 112);//x-2
+		marioHeadBob[4] = bigMarioItemAnimationSprites.grabExactImage(291, 1449, 69, 112);//x-5
+		marioHeadBob[5] = bigMarioItemAnimationSprites.grabExactImage(364, 1449, 75, 112);//x-11
+		marioHeadBob[6] = bigMarioItemAnimationSprites.grabExactImage(441, 1449, 72, 112);//x-8
+		marioHeadBob[7] = bigMarioItemAnimationSprites.grabExactImage(450, 1562, 64, 112);
+		marioHeadBob[8] = bigMarioItemAnimationSprites.grabExactImage(374, 1562, 64, 112);
+		marioHeadBob[9] = bigMarioItemAnimationSprites.grabExactImage(300, 1562, 65, 112);//x-1
+		marioHeadBob[10] = bigMarioItemAnimationSprites.grabExactImage(227, 1562, 66, 112);//x-2
+		marioHeadBob[11] = bigMarioItemAnimationSprites.grabExactImage(154, 1562, 69, 112);//x-5
+		marioHeadBob[12] = bigMarioItemAnimationSprites.grabExactImage(75, 1562, 75, 112);//x-11
+		marioHeadBob[13] = bigMarioItemAnimationSprites.grabExactImage(1, 1562, 72, 112);//x-8
+		
+		marioWormDance[0] = bigMarioItemAnimationSprites.grabExactImage(0, 2498, 72, 108);
+		marioWormDance[1] = bigMarioItemAnimationSprites.grabExactImage(73, 2498, 76, 108);
+		marioWormDance[2] = bigMarioItemAnimationSprites.grabExactImage(155, 2498, 88, 108);
+		marioWormDance[3] = bigMarioItemAnimationSprites.grabExactImage(245, 2498, 108, 108);
+		marioWormDance[4] = bigMarioItemAnimationSprites.grabExactImage(356, 2498, 108, 108);
+		marioWormDance[5] = bigMarioItemAnimationSprites.grabExactImage(466, 2498, 96, 108);
+		marioWormDance[6] = bigMarioItemAnimationSprites.grabExactImage(564, 2498, 92, 108);
+		marioWormDance[7] = bigMarioItemAnimationSprites.grabExactImage(171, 2380, 72, 108);
+		marioWormDance[8] = bigMarioItemAnimationSprites.grabExactImage(94, 2380, 76, 108);
+		marioWormDance[9] = bigMarioItemAnimationSprites.grabExactImage(0, 2380, 88, 108);
+		marioWormDance[10] = bigMarioItemAnimationSprites.grabExactImage(687, 2523, 88, 64);
+		
+		marioButtShake[0] = bigMarioItemAnimationSprites.grabExactImage(1061, 1458, 64, 112);
+		marioButtShake[1] = bigMarioItemAnimationSprites.grabExactImage(1129, 1458, 64, 112);
+		marioButtShake[2] = bigMarioItemAnimationSprites.grabExactImage(1198, 1458, 64, 112);
+		marioButtShake[3] = bigMarioItemAnimationSprites.grabExactImage(1272, 1458, 66, 112);
+		marioButtShake[4] = bigMarioItemAnimationSprites.grabExactImage(1342, 1458, 66, 112);
+		marioButtShake[5] = bigMarioItemAnimationSprites.grabExactImage(1412, 1458, 64, 112);
+		
+
+		marioRunningBigger[0] = bigMarioItemAnimationSprites.grabExactImage(828, 624, 72, 112);
+		marioRunningBigger[1] = bigMarioItemAnimationSprites.grabExactImage(988, 624, 72, 108);
+		marioRunningBigger[2] = bigMarioItemAnimationSprites.grabExactImage(1148, 624, 72, 112);
+		
+		luigiDance[0] = dancingAnimationSprites.grabExactImage(33, 55, 16, 30);
+		luigiDance[1] = dancingAnimationSprites.grabExactImage(85, 55, 16, 30);
+		luigiDance[2] = dancingAnimationSprites.grabExactImage(68, 55, 16, 30);
+		luigiDance[3] = dancingAnimationSprites.grabExactImage(51, 55, 16, 30);
+		luigiDance[4] = dancingAnimationSprites.grabExactImage(102, 55, 16, 30);
+		luigiDance[5] = dancingAnimationSprites.grabExactImage(119, 55, 16, 30);
+		luigiDance[6] = dancingAnimationSprites.grabExactImage(136, 55, 16, 30);
+		luigiDance[7] = dancingAnimationSprites.grabExactImage(153, 55, 21, 31);//otherdance
+		luigiDance[8] = dancingAnimationSprites.grabExactImage(175, 55, 16, 31);//otherdance
+		luigiDance[9] = dancingAnimationSprites.grabExactImage(192, 55, 16, 31);//otherdance
+		luigiDance[10] = dancingAnimationSprites.grabExactImage(209, 55, 21, 31);//otherdance
+		luigiDance[11] = dancingAnimationSprites.grabExactImage(0, 55, 16, 30);//looking up
+		luigiDance[12] = dancingAnimationSprites.grabExactImage(17, 55, 15, 30);//looking up
+		luigiDance[13] = ssSNESFireLuigi.grabMarioImage(8, 5, MARIO_WIDTH, MARIO_HEIGHT);//luigi Standing Right
+		
+		toadDance[0] = dancingAnimationSprites.grabExactImage(191, 86, 16, 29);
+		toadDance[1] = dancingAnimationSprites.grabExactImage(208, 86, 16, 29);
+		toadDance[2] = dancingAnimationSprites.grabExactImage(225, 86, 16, 29);
+		toadDance[3] = dancingAnimationSprites.grabExactImage(242, 86, 16, 29);
+		toadDance[4] = dancingAnimationSprites.grabExactImage(1, 86, 16, 29);
+		toadDance[5] = dancingAnimationSprites.grabExactImage(18, 86, 19, 29);
+		toadDance[6] = dancingAnimationSprites.grabExactImage(38, 86, 18, 29);
+		toadDance[7] = dancingAnimationSprites.grabExactImage(57, 86, 16, 29);
+		toadDance[8] = dancingAnimationSprites.grabExactImage(74, 86, 15, 29);
+		toadDance[9] = dancingAnimationSprites.grabExactImage(90, 86, 15, 29);
+		toadDance[10] = dancingAnimationSprites.grabExactImage(106, 86, 16, 29);
+		toadDance[11] = dancingAnimationSprites.grabExactImage(123, 86, 16, 29);
+		toadDance[12] = dancingAnimationSprites.grabExactImage(140, 86, 16, 29);
+		toadDance[13] = dancingAnimationSprites.grabExactImage(157, 86, 16, 29);
+		toadDance[14] = dancingAnimationSprites.grabExactImage(174, 86, 16, 29);
+		toadDance[15] = dancingAnimationSprites.grabExactImage(259, 86, 16, 29);//sitting head nods
+		toadDance[16] = dancingAnimationSprites.grabExactImage(277, 86, 16, 29);
+		toadDance[17] = dancingAnimationSprites.grabExactImage(248, 57, 16, 29);//blinky eyes
+		toadDance[18] = dancingAnimationSprites.grabExactImage(265, 57, 16, 29);
+		toadDance[19] = dancingAnimationSprites.grabExactImage(231, 57, 16, 29);//yawn
+		toadDance[20] = dancingAnimationSprites.grabExactImage(282, 57, 16, 29);//sleep
+		toadDance[21] = dancingAnimationSprites.grabExactImage(293, 86, 16, 29);//sleepbubble
+		
+		spikey[0] = dancingAnimationSprites.grabExactImage(0, 116, 16, 16);
+		spikey[1] = dancingAnimationSprites.grabExactImage(17, 116, 16, 16);
+		
 		bigChainChompItemBall[0] = marioItemAnimationSprites.grabExactImage(1776, 1841, 50, 48);
 		bigChainChompItemBall[1] = chainChompItemGettingBiggerSprites.grabExactImage(8, 288, 50, 48);
 		bigChainChompItemBall[2] = chainChompItemGettingBiggerSprites.grabExactImage(5, 211, 59, 56);
@@ -1072,6 +1353,48 @@ public class Textures {
 		chainChompDisintegrate[5] = chainChompDisintegrateSprites.grabExactImage(65,7,3,3);
 		chainChompDisintegrate[6] = chainChompDisintegrateSprites.grabExactImage(69,8,2,2);
 		chainChompDisintegrate[7] = chainChompDisintegrateSprites.grabExactImage(72,9,1,1);
+		
+		chainChompDancing[0] = dancingAnimationSprites.grabExactImage(0, 0, 34, 54);
+		chainChompDancing[1] = dancingAnimationSprites.grabExactImage(35, 0, 34, 54);
+		chainChompDancing[2] = dancingAnimationSprites.grabExactImage(70, 0, 34, 54);
+		chainChompDancing[3] = dancingAnimationSprites.grabExactImage(105, 0, 34, 54);
+		chainChompDancing[4] = dancingAnimationSprites.grabExactImage(140, 0, 34, 54);
+		chainChompDancing[5] = dancingAnimationSprites.grabExactImage(175, 0, 34, 54);
+		chainChompDancing[6] = dancingAnimationSprites.grabExactImage(210, 0, 34, 54);
+		chainChompDancing[7] = dancingAnimationSprites.grabExactImage(245, 0, 34, 54);
+		chainChompDancing[8] = dancingAnimationSprites.grabExactImage(280, 0, 34, 54);
+		
+		chainChompDancing2[0] = dancingAnimationSprites.grabExactImage(315, 0, 112, 54);
+		chainChompDancing2[1] = dancingAnimationSprites.grabExactImage(427, 0, 112, 54);//wink
+		chainChompDancing2[2] = dancingAnimationSprites.grabExactImage(539, 0, 112, 54);
+		chainChompDancing2[3] = dancingAnimationSprites.grabExactImage(651, 0, 112, 54);
+		chainChompDancing2[4] = dancingAnimationSprites.grabExactImage(763, 0, 112, 54);
+		chainChompDancing2[5] = dancingAnimationSprites.grabExactImage(875, 0, 112, 54);
+		chainChompDancing2[6] = dancingAnimationSprites.grabExactImage(987, 0, 112, 54);
+		chainChompDancing2[7] = dancingAnimationSprites.grabExactImage(1099, 0, 112, 54);
+		chainChompDancing2[8] = dancingAnimationSprites.grabExactImage(1211, 0, 112, 54);
+		chainChompDancing2[9] = dancingAnimationSprites.grabExactImage(1323, 0, 112, 54);
+		chainChompDancing2[10] = dancingAnimationSprites.grabExactImage(1435, 0, 112, 54);
+		chainChompDancing2[11] = dancingAnimationSprites.grabExactImage(1547, 0, 112, 54);
+		chainChompDancing2[12] = dancingAnimationSprites.grabExactImage(1659, 0, 112, 54);//end
+		chainChompDancing2[13] = dancingAnimationSprites.grabExactImage(1771, 0, 112, 54);//wink
+		chainChompDancing2[14] = dancingAnimationSprites.grabExactImage(314, 54, 112, 54);
+		chainChompDancing2[15] = dancingAnimationSprites.grabExactImage(426, 54, 112, 54);
+		chainChompDancing2[16] = dancingAnimationSprites.grabExactImage(538, 54, 112, 54);
+		chainChompDancing2[17] = dancingAnimationSprites.grabExactImage(650, 54, 112, 54);
+		chainChompDancing2[18] = dancingAnimationSprites.grabExactImage(762, 54, 112, 54);
+		chainChompDancing2[19] = dancingAnimationSprites.grabExactImage(874, 54, 112, 54);
+		chainChompDancing2[20] = dancingAnimationSprites.grabExactImage(986, 54, 112, 54);
+		chainChompDancing2[21] = dancingAnimationSprites.grabExactImage(1098, 54, 112, 54);
+		chainChompDancing2[22] = dancingAnimationSprites.grabExactImage(1210, 54, 112, 54);
+		chainChompDancing2[23] = dancingAnimationSprites.grabExactImage(1322, 54, 112, 54);
+		
+		chainChompChain = chainChompSprites.grabExactImage(284, 144, 6, 6);
+		chainChompChainBigger[0] = chainChompSprites.grabExactImage(269, 154, 10, 10);
+		chainChompChainBigger[1] = chainChompSprites.grabExactImage(269, 164, 10, 10);
+		chainChompChainBigger[2] = chainChompSprites.grabExactImage(279, 154, 10, 10);
+		chainChompChainBigger[3] = chainChompSprites.grabExactImage(289, 164, 10, 10);
+		chainChompChainBigger[4] = chainChompSprites.grabExactImage(289, 154, 10, 10);
 		
 		bulletBillItemBall[0] = marioItemsSprites.grabExactImage(76, 0, 16, 16);
 		bulletBillItemBall[1] = marioItemsSprites.grabExactImage(76, 18, 16, 16);
@@ -1222,6 +1545,9 @@ public class Textures {
 		lakituItemBall[21] = marioItemsSprites.grabExactImage(720, 398, 16, 16);
 		lakituItemBall[22] = marioItemsSprites.grabExactImage(720, 417, 16, 16);
 		lakituItemBall[23] = marioItemsSprites.grabExactImage(720, 436, 16, 16);
+		
+		marioItemBall[0] = marioItemsSprites.grabExactImage(739, 0, 25, 24);
+		marioItemBall[1] = marioItemsSprites.grabExactImage(765, 0, 25, 24);
 		
 		fireball[0] = ss.grabSmallImage(5, 1, 16, 16);
 		fireball[1] = ss.grabSmallImage(6, 1, 16, 16);
@@ -1769,6 +2095,171 @@ public class Textures {
 		ampItemZap[6] = bombOmbSprites.grabExactImage(188, 191, 19, 19);
 		ampItemZap[7] = bombOmbSprites.grabExactImage(209, 192, 17, 17);
 		
+		wigglerItemHead[0] =  bombOmbSprites.grabExactImage(0, 290, 16, 22);//L1 high
+		wigglerItemHead[1] =  bombOmbSprites.grabExactImage(0, 289, 16, 23);//L2
+		wigglerItemHead[2] =  bombOmbSprites.grabExactImage(0, 288, 16, 24);//L3
+		wigglerItemHead[3] =  bombOmbSprites.grabExactImage(0, 315, 16, 22);//R1 high
+		wigglerItemHead[4] =  bombOmbSprites.grabExactImage(0, 314, 16, 23);//R2
+		wigglerItemHead[5] =  bombOmbSprites.grabExactImage(0, 313, 16, 24);//R3
+		
+		wigglerItemBody[0] =  bombOmbSprites.grabExactImage(34, 297, 16, 15);//L1 Foot up
+		wigglerItemBody[1] =  bombOmbSprites.grabExactImage(17, 298, 16, 14);//L2
+		wigglerItemBody[2] =  bombOmbSprites.grabExactImage(51, 299, 16, 13);//L3 Foot down
+		wigglerItemBody[3] =  bombOmbSprites.grabExactImage(17, 298, 16, 14);//L4
+		wigglerItemBody[4] =  bombOmbSprites.grabExactImage(34, 322, 16, 15);//R1 Foot up
+		wigglerItemBody[5] =  bombOmbSprites.grabExactImage(17, 323, 16, 14);//R2
+		wigglerItemBody[6] =  bombOmbSprites.grabExactImage(51, 324, 16, 13);//R3 Foot down
+		wigglerItemBody[7] =  bombOmbSprites.grabExactImage(17, 323, 16, 14);//R4
+
+		wigglerItemHeadMad[0] =  bombOmbSprites.grabExactImage(68, 298, 16, 14);//L1 high
+		wigglerItemHeadMad[1] =  bombOmbSprites.grabExactImage(68, 297, 16, 15);//L2
+		wigglerItemHeadMad[2] =  bombOmbSprites.grabExactImage(68, 296, 16, 16);//L3
+		wigglerItemHeadMad[3] =  bombOmbSprites.grabExactImage(68, 323, 16, 14);//R1 high
+		wigglerItemHeadMad[4] =  bombOmbSprites.grabExactImage(68, 322, 16, 15);//R2
+		wigglerItemHeadMad[5] =  bombOmbSprites.grabExactImage(68, 321, 16, 16);//R3
+
+		wigglerItemBodyMad[0] =  bombOmbSprites.grabExactImage(102, 297, 16, 15);//L1 Foot up
+		wigglerItemBodyMad[1] =  bombOmbSprites.grabExactImage(85, 298, 16, 14);//L2
+		wigglerItemBodyMad[2] =  bombOmbSprites.grabExactImage(119, 299, 16, 13);//L3 Foot down
+		wigglerItemBodyMad[3] =  bombOmbSprites.grabExactImage(85, 298, 16, 14);//L4
+		wigglerItemBodyMad[4] =  bombOmbSprites.grabExactImage(102, 322, 16, 15);//R1 Foot up
+		wigglerItemBodyMad[5] =  bombOmbSprites.grabExactImage(85, 323, 16, 14);//R2
+		wigglerItemBodyMad[6] =  bombOmbSprites.grabExactImage(119, 324, 16, 13);//R3 Foot down
+		wigglerItemBodyMad[7] =  bombOmbSprites.grabExactImage(85, 323, 16, 14);//R4
+
+		wigglerItemMadColorChangeL[0] =  bombOmbSprites.grabExactImage(139,298,32,17);//L1 blue
+		wigglerItemMadColorChangeL[1] =  bombOmbSprites.grabExactImage(172,298,32,17);//L1 yellow
+		wigglerItemMadColorChangeL[2] =  bombOmbSprites.grabExactImage(205,298,32,17);//L1 grey
+		wigglerItemMadColorChangeL[3] =  bombOmbSprites.grabExactImage(139,323,32,17);//L1 brown
+		wigglerItemMadColorChangeL[4] =  bombOmbSprites.grabExactImage(139,323,32,17);//L1 green
+		
+		wigglerItemMadColorChangeR[0] =  bombOmbSprites.grabExactImage(66,341,32,17);//R1 blue
+		wigglerItemMadColorChangeR[1] =  bombOmbSprites.grabExactImage(33,341,32,17);//R1 yellow
+		wigglerItemMadColorChangeR[2] =  bombOmbSprites.grabExactImage(0,341,32,17);//R1 grey
+		wigglerItemMadColorChangeR[3] =  bombOmbSprites.grabExactImage(132,341,32,17);//R1 brown
+		wigglerItemMadColorChangeR[4] =  bombOmbSprites.grabExactImage(99,341,32,17);//R1 green
+		
+		wigglerItemFlower[0] =  bombOmbSprites.grabExactImage(8,290,8,8);//L
+		wigglerItemFlower[1] =  bombOmbSprites.grabExactImage(0,315,8,8);//R
+		
+		wigglerItemHeadWithoutFlower[0] = bombOmbSprites.grabExactImage(205,323,16,14);//L
+		wigglerItemHeadWithoutFlower[1] = bombOmbSprites.grabExactImage(205,322,16,15);//L2
+		wigglerItemHeadWithoutFlower[2] = bombOmbSprites.grabExactImage(205,321,16,16);//L3
+		wigglerItemHeadWithoutFlower[3] = bombOmbSprites.grabExactImage(222,323,16,14);//R
+		wigglerItemHeadWithoutFlower[4] = bombOmbSprites.grabExactImage(222,322,16,15);//R2
+		wigglerItemHeadWithoutFlower[5] = bombOmbSprites.grabExactImage(222,321,16,16);//R3
+		
+		lakituItem[0] = bombOmbSprites.grabExactImage(0,359,24,37);//L
+		lakituItem[1] = bombOmbSprites.grabExactImage(25,359,26,37);//L2
+		lakituItem[2] = bombOmbSprites.grabExactImage(137,359,24,37);//R
+		lakituItem[3] = bombOmbSprites.grabExactImage(110,359,26,37);//R2
+		lakituItem[4] = bombOmbSprites.grabExactImage(52,359,28,37);//Throwing Left
+		lakituItem[5] = bombOmbSprites.grabExactImage(81,359,28,37);//Throwing Right
+		lakituItem[6] = bombOmbSprites.grabExactImage(165,359,26,37);//Hit
+		lakituItem[7] = bombOmbSprites.grabExactImage(199,361,16,30);//Lakitu w/o Cloud 1
+		lakituItem[8] = bombOmbSprites.grabExactImage(216,361,16,30);//Lakitu w/o Cloud 2
+		lakituItem[9] = bombOmbSprites.grabExactImage(1,397,26,22);//Cloud1
+		lakituItem[10] = bombOmbSprites.grabExactImage(32,398,28,21);//Cloud2
+		lakituItem[11] = bombOmbSprites.grabExactImage(68,399,26,20);//Cloud3
+		lakituItem[12] = bombOmbSprites.grabExactImage(102,398,24,21);//Cloud4
+
+		cloudDisappearing[0] = bombOmbSprites.grabExactImage(167,341,19,17);//CloudDisappearing1
+		cloudDisappearing[1] = bombOmbSprites.grabExactImage(187,341,19,17);//CloudDisappearing2
+		cloudDisappearing[2] = bombOmbSprites.grabExactImage(208,341,19,17);//CloudDisappearing3
+		cloudDisappearing[3] = bombOmbSprites.grabExactImage(161,270,19,17);//CloudDisappearing4
+		cloudDisappearing[4] = bombOmbSprites.grabExactImage(183,270,19,17);//CloudDisappearing5
+		cloudDisappearing[5] = bombOmbSprites.grabExactImage(204,270,19,17);//CloudDisappearing6
+		
+		lakituItemDeath[0] = lakituDeathAnimationSprites.grabExactImage(12, 0, 16, 30);//L
+		lakituItemDeath[1] = lakituDeathAnimationSprites.grabExactImage(12, 30, 19, 30);
+		lakituItemDeath[2] = lakituDeathAnimationSprites.grabExactImage(11, 60, 22, 29);
+		lakituItemDeath[3] = lakituDeathAnimationSprites.grabExactImage(10, 90, 25, 26);
+		lakituItemDeath[4] = lakituDeathAnimationSprites.grabExactImage(7, 117, 28, 23);
+		lakituItemDeath[5] = lakituDeathAnimationSprites.grabExactImage(6, 141, 29, 20);
+		lakituItemDeath[6] = lakituDeathAnimationSprites.grabExactImage(6, 162, 30, 16);//L 90
+		lakituItemDeath[7] = lakituDeathAnimationSprites.grabExactImage(6, 197, 29, 20);
+		lakituItemDeath[8] = lakituDeathAnimationSprites.grabExactImage(7, 218, 28, 23);
+		lakituItemDeath[9] = lakituDeathAnimationSprites.grabExactImage(10, 242, 25, 26);
+		lakituItemDeath[10] = lakituDeathAnimationSprites.grabExactImage(11, 269, 22, 29);
+		lakituItemDeath[11] = lakituDeathAnimationSprites.grabExactImage(12, 298, 19, 30);
+		lakituItemDeath[12] = lakituDeathAnimationSprites.grabExactImage(12, 328, 16, 30);
+		lakituItemDeath[13] = lakituDeathAnimationSprites.grabExactImage(52, 0, 16, 30);//R
+		lakituItemDeath[14] = lakituDeathAnimationSprites.grabExactImage(49, 30, 19, 30);
+		lakituItemDeath[15] = lakituDeathAnimationSprites.grabExactImage(47, 60, 22, 29);
+		lakituItemDeath[16] = lakituDeathAnimationSprites.grabExactImage(45, 90, 25, 26);
+		lakituItemDeath[17] = lakituDeathAnimationSprites.grabExactImage(45, 117, 28, 23);
+		lakituItemDeath[18] = lakituDeathAnimationSprites.grabExactImage(45, 141, 29, 20);
+		lakituItemDeath[19] = lakituDeathAnimationSprites.grabExactImage(44, 162, 30, 16);//R 90
+		lakituItemDeath[20] = lakituDeathAnimationSprites.grabExactImage(45, 197, 29, 20);
+		lakituItemDeath[21] = lakituDeathAnimationSprites.grabExactImage(45, 218, 28, 23);
+		lakituItemDeath[22] = lakituDeathAnimationSprites.grabExactImage(45, 242, 25, 26);
+		lakituItemDeath[23] = lakituDeathAnimationSprites.grabExactImage(47, 269, 22, 29);
+		lakituItemDeath[24] = lakituDeathAnimationSprites.grabExactImage(49, 298, 19, 30);
+		lakituItemDeath[25] = lakituDeathAnimationSprites.grabExactImage(52, 328, 16, 30);
+
+		lakituFish[0] = bombOmbSprites.grabExactImage(162,399,15,16);//FishL
+		lakituFish[1] = bombOmbSprites.grabExactImage(178,399,16,16);//FishL2
+		lakituFish[2] = bombOmbSprites.grabExactImage(146,399,15,16);//FishR
+		lakituFish[3] = bombOmbSprites.grabExactImage(129,399,16,16);//FishR2
+		lakituFish[4] = bombOmbSprites.grabExactImage(162,416,15,16);//FishDeadL
+		lakituFish[5] = bombOmbSprites.grabExactImage(146,416,15,16);//FishDeadR
+		
+		lakituSpike[0] = bombOmbSprites.grabExactImage(196,399,16,16);
+		lakituSpike[1] = bombOmbSprites.grabExactImage(213,399,14,14);
+
+		lakituBombOmb[0] = bombOmbSprites.grabExactImage(0,422,21,31);
+		lakituBombOmb[1] = bombOmbSprites.grabExactImage(21,422,18,31);
+		lakituBombOmb[2] = bombOmbSprites.grabExactImage(40,422,16,31);
+		lakituBombOmb[3] = bombOmbSprites.grabExactImage(57,422,18,31);
+		lakituBombOmb[4] = bombOmbSprites.grabExactImage(75,422,21,31);
+		lakituBombOmb[5] = bombOmbSprites.grabExactImage(0,454,21,31);//glowing1
+		lakituBombOmb[6] = bombOmbSprites.grabExactImage(21,454,18,31);//glowing1
+		lakituBombOmb[7] = bombOmbSprites.grabExactImage(40,454,16,31);//glowing1
+		lakituBombOmb[8] = bombOmbSprites.grabExactImage(57,454,18,31);//glowing1
+		lakituBombOmb[9] = bombOmbSprites.grabExactImage(75,454,21,31);//glowing1
+		lakituBombOmb[10] = bombOmbSprites.grabExactImage(0,486,21,31);//glowing2
+		lakituBombOmb[11] = bombOmbSprites.grabExactImage(21,486,18,31);//glowing2
+		lakituBombOmb[12] = bombOmbSprites.grabExactImage(40,486,16,31);//glowing2
+		lakituBombOmb[13] = bombOmbSprites.grabExactImage(57,486,18,31);//glowing2
+		lakituBombOmb[14] = bombOmbSprites.grabExactImage(75,486,21,31);//glowing2
+		lakituBombOmb[15] = bombOmbSprites.grabExactImage(0,518,21,31);//glowing3
+		lakituBombOmb[16] = bombOmbSprites.grabExactImage(21,518,18,31);//glowing3
+		lakituBombOmb[17] = bombOmbSprites.grabExactImage(40,518,16,31);//glowing3
+		lakituBombOmb[18] = bombOmbSprites.grabExactImage(57,518,18,31);//glowing3
+		lakituBombOmb[19] = bombOmbSprites.grabExactImage(75,518,21,31);//glowing3
+
+		lakituBat[0] = bombOmbSprites.grabExactImage(178,416,13,16);
+		lakituBat[1] = bombOmbSprites.grabExactImage(192,416,16,16);
+		lakituBat[2] = bombOmbSprites.grabExactImage(209,416,16,16);
+		lakituBat[3] = bombOmbSprites.grabExactImage(226,416,13,16);
+		lakituBat[4] = bombOmbSprites.grabExactImage(178,433,13,16);
+		lakituBat[5] = bombOmbSprites.grabExactImage(192,433,16,16);
+		lakituBat[6] = bombOmbSprites.grabExactImage(209,433,16,16);
+		lakituBat[7] = bombOmbSprites.grabExactImage(226,433,13,16);
+		
+		lavaUpDown[0] = bombOmbSprites.grabExactImage(137, 450, 16, 16);
+		lavaUpDown[1] = bombOmbSprites.grabExactImage(156, 450, 16, 16);
+		lavaUpDown[2] = bombOmbSprites.grabExactImage(137, 467, 16, 16);//down
+		lavaUpDown[3] = bombOmbSprites.grabExactImage(156, 467, 16, 16);//down
+		
+		lavaDiagonal[0] = bombOmbSprites.grabExactImage(173,450,16,16);//UL
+		lavaDiagonal[1] = bombOmbSprites.grabExactImage(190,450,16,16);//UL
+		lavaDiagonal[2] = bombOmbSprites.grabExactImage(224,450,16,16);//UR
+		lavaDiagonal[3] = bombOmbSprites.grabExactImage(207,450,16,16);//UR
+		lavaDiagonal[4] = bombOmbSprites.grabExactImage(173,467,16,16);//DL
+		lavaDiagonal[5] = bombOmbSprites.grabExactImage(190,467,16,16);//DL
+		lavaDiagonal[6] = bombOmbSprites.grabExactImage(224,467,16,16);//DR
+		lavaDiagonal[7] = bombOmbSprites.grabExactImage(207,467,16,16);//DR
+		
+		bowserMinion[0] = bombOmbSprites.grabExactImage(151, 486, 28, 24);//L1
+		bowserMinion[1] = bombOmbSprites.grabExactImage(180, 486, 29, 23);//L2
+		bowserMinion[2] = bombOmbSprites.grabExactImage(210, 486, 30, 24);//L3
+		bowserMinion[3] = bombOmbSprites.grabExactImage(212, 511, 28, 24);//R1
+		bowserMinion[4] = bombOmbSprites.grabExactImage(182, 511, 29, 23);//R2
+		bowserMinion[5] = bombOmbSprites.grabExactImage(151, 511, 30, 24);//R3
+		
+		thwimp = bombOmbSprites.grabExactImage(161, 433, 16, 16);
+		
 		enemyExplosion[0] = goombaDeathSprites.grabExactImage(70, 67, 16, 15);
 		enemyExplosion[1] = goombaDeathSprites.grabExactImage(89, 67, 12, 14);
 		enemyExplosion[2] = goombaDeathSprites.grabExactImage(105, 67, 14, 14);
@@ -2020,9 +2511,13 @@ public class Textures {
 		marioSkin5[3] = ssNESContra.grabExactImage(112, 84, 16, 28);
 		
 		songTrackImages[0] = marioPaintSprites.grabExactImage(76, 76, 11, 16);//Song Note
-		songTrackImages[1] = marioPaintSprites.grabExactImage(132, 34, 16, 16);//Dinosaur
-		songTrackImages[2] = marioPaintSprites.grabExactImage(149, 34, 16, 16);//Tiger
-		songTrackImages[3] = marioPaintSprites.grabExactImage(169, 35, 16, 15);//Elephant
+		songTrackImages[1] = marioPaintSprites.grabExactImage(181, 16, 14, 13);//Cat
+		songTrackImages[2] = marioPaintSprites.grabExactImage(199, 16, 15, 13);//Dog
+		songTrackImages[3] = marioPaintSprites.grabExactImage(96, 38, 16, 12);//Fish
+		songTrackImages[4] = marioPaintSprites.grabExactImage(259, 35, 13, 15);//FishLegs
+		songTrackImages[5] = marioPaintSprites.grabExactImage(132, 34, 16, 16);//Dinosaur
+		songTrackImages[6] = marioPaintSprites.grabExactImage(149, 34, 16, 16);//Tiger
+		songTrackImages[7] = marioPaintSprites.grabExactImage(169, 35, 16, 15);//Elephant
 		
 		songTrackSilhouetteImages[0] = marioPaintSilhouetteSprites.grabExactImage(77, 77, 9, 14);//Song Note
 		songTrackSilhouetteImages[1] = marioPaintSilhouetteSprites.grabExactImage(130, 33, 18, 18);//Dinosaur
@@ -2107,6 +2602,7 @@ public class Textures {
 		mario3Font[39] = mario3FontSprites.grabExactImage(410, 66, 16, 64);//:
 		mario3Font[40] = mario3FontSprites.grabExactImage(428, 66, 28, 64);//,
 		mario3Font[41] = mario3FontSprites.grabExactImage(456, 66, 32, 64);//[SPACE]
+		mario3Font[42] = mario3FontSprites.grabExactImage(490, 66, 32, 64);//+
 		
 		//BUTTONS
 		upButtonImageDirectInput[0] = directInputButtonsSprites.grabExactImage(0, 190, 13, 16);
@@ -2156,6 +2652,35 @@ public class Textures {
 		dotdotdot[0] = dotdotdotSprites.grabExactImage(0, 0, 16, 16);
 		dotdotdot[1] = dotdotdotSprites.grabExactImage(0, 0, 40, 16);
 		dotdotdot[2] = dotdotdotSprites.grabExactImage(0, 0, 64, 16);
+
+		extraMario[0] = ss.grabExactImage(130, 0, 16, 28);
+		extraMario[1] = ss.grabExactImage(146, 0, 16, 28);
+		
+		yoshi[0] = yoshiSprites.grabExactImage(0,0,33,33);//running
+		yoshi[1] = yoshiSprites.grabExactImage(34,0,36,33);
+		yoshi[2] = yoshiSprites.grabExactImage(71,0,24,33);//brake
+		yoshi[3] = yoshiSprites.grabExactImage(96,0,27,33);//idle stand animation
+		yoshi[4] = yoshiSprites.grabExactImage(124,0,26,33);
+		yoshi[5] = yoshiSprites.grabExactImage(151,0,25,33);
+		yoshi[6] = yoshiSprites.grabExactImage(177,0,26,33);
+		yoshi[7] = yoshiSprites.grabExactImage(204,0,26,33);
+		yoshi[8] = yoshiSprites.grabExactImage(231,0,29,33);//tongue drop
+		yoshi[9] = yoshiSprites.grabExactImage(261,0,34,33);
+		yoshi[10] = yoshiSprites.grabExactImage(296,0,40,33);
+		yoshi[11] = yoshiSprites.grabExactImage(337,0,46,33);
+		yoshi[12] = yoshiSprites.grabExactImage(384,0,52,33);
+		yoshi[13] = yoshiSprites.grabExactImage(437,0,58,33);
+		yoshi[14] = yoshiSprites.grabExactImage(496,0,64,33);
+		yoshi[15] = yoshiSprites.grabExactImage(561,0,70,33);
+		yoshi[16] = yoshiSprites.grabExactImage(632,0,76,33);//last tongue
+		yoshi[17] = yoshiSprites.grabExactImage(709,0,31,33);//standing up
+		yoshi[18] = yoshiSprites.grabExactImage(741,0,30,33);
+		yoshi[19] = yoshiSprites.grabExactImage(772,0,28,33);//beginning to run
+		yoshi[20] = yoshiSprites.grabExactImage(801,0,28,33);
+		yoshi[21] = yoshiSprites.grabExactImage(830,0,28,33);
+		yoshi[22] = yoshiSprites.grabExactImage(859,0,28,33);
+		yoshi[23] = yoshiSprites.grabExactImage(888,0,34,33);//frantic run
+		yoshi[24] = yoshiSprites.grabExactImage(923,0,37,33);
 		
 		itemFrame = marioAdvanceSprites.grabExactImage(308, 268, 26, 26);
 		
@@ -2169,6 +2694,7 @@ public class Textures {
 		
 		pressE = marioAdvanceSprites.grabExactImage(450, 285, 47, 11);
 		pressX = marioAdvanceSprites.grabExactImage(166, 110, 47, 11);
+		pressDI = marioAdvanceSprites.grabExactImage(221, 86, 55, 11);
 		
 		empty = bombOmbSprites.grabExactImage(29, 1, 1, 1);
 		
@@ -2247,6 +2773,16 @@ public class Textures {
 			img[0] = xboxButtonsSprites.grabExactImage(0, 235, 16, 13);
 			img[1] = xboxButtonsSprites.grabExactImage(16, 235, 16, 13);
 			img[2] = xboxButtonsSprites.grabExactImage(32, 235, 16, 13);
+			break;
+		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+			img[0] = xboxButtonsSprites.grabExactImage(0, 128, 16, 16);
+			img[1] = xboxButtonsSprites.grabExactImage(16, 128, 16, 16);
+			img[2] = xboxButtonsSprites.grabExactImage(32, 128, 16, 16);
+			break;
+		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+			img[0] = xboxButtonsSprites.grabExactImage(0, 144, 17, 16);
+			img[1] = xboxButtonsSprites.grabExactImage(17, 144, 17, 16);
+			img[2] = xboxButtonsSprites.grabExactImage(34, 144, 17, 16);
 			break;
 		default:
 			break;
@@ -2550,6 +3086,195 @@ public class Textures {
 		}
 		return;
 	}
+	public void changeBufferedImagesDirectInput(BufferedImage[] img, String i) {
+		switch(i) {
+		case "Button 0"://B0
+			img[0] = directInputButtonsSprites.grabExactImage(0, 248, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 248, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 248, 16, 16);
+			break;
+		case "Button 1"://B1
+			img[0] = directInputButtonsSprites.grabExactImage(0, 0, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 0, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 0, 16, 16);
+			break;
+		case "Button 2"://B2
+			img[0] = directInputButtonsSprites.grabExactImage(0, 16, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 16, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 16, 16, 16);
+			break;
+		case "Button 3"://B3
+			img[0] = directInputButtonsSprites.grabExactImage(0, 32, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 32, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 32, 16, 16);
+			break;
+		case "Button 4"://B4
+			img[0] = directInputButtonsSprites.grabExactImage(0, 32, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 32, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 32, 16, 16);
+			break;
+		case "Button 5"://B5
+			img[0] = directInputButtonsSprites.grabExactImage(0, 264, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 264, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 264, 16, 16);
+			break;
+		case "Button 6"://B6
+			img[0] = directInputButtonsSprites.grabExactImage(0, 280, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 280, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 280, 16, 16);
+			break;
+		case "Button 7"://B7
+			img[0] = directInputButtonsSprites.grabExactImage(0, 296, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 296, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 296, 16, 16);
+			break;
+		case "Button 8"://B8
+			img[0] = directInputButtonsSprites.grabExactImage(0, 312, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 312, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 312, 16, 16);
+			break;
+		case "Button 9"://B9
+			img[0] = directInputButtonsSprites.grabExactImage(0, 328, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 328, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 328, 16, 16);
+			break;
+		case "Button 10"://B10
+			img[0] = directInputButtonsSprites.grabExactImage(0, 344, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 344, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 344, 15, 16);
+			break;
+		case "Button 11"://B11
+			img[0] = directInputButtonsSprites.grabExactImage(0, 360, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 360, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 360, 15, 16);
+			break;
+		case "Button 12"://B12
+			img[0] = directInputButtonsSprites.grabExactImage(0, 376, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 376, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 376, 15, 16);
+			break;
+		case "Button 13"://B13
+			img[0] = directInputButtonsSprites.grabExactImage(0, 392, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 392, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 392, 15, 16);
+			break;
+		case "Button 14"://B14
+			img[0] = directInputButtonsSprites.grabExactImage(0, 408, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 408, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 408, 15, 16);
+			break;
+		case "Button 15"://B15
+			img[0] = directInputButtonsSprites.grabExactImage(0, 424, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 424, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 424, 15, 16);
+			break;
+		case "Button 16"://B16
+			img[0] = directInputButtonsSprites.grabExactImage(0, 440, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 440, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 440, 15, 16);
+			break;
+		case "Button 17"://B17
+			img[0] = directInputButtonsSprites.grabExactImage(0, 456, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 456, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 456, 15, 16);
+			break;
+		case "Button 18"://B18
+			img[0] = directInputButtonsSprites.grabExactImage(0, 472, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 472, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 472, 15, 16);
+			break;
+		case "Button 19"://B19
+			img[0] = directInputButtonsSprites.grabExactImage(0, 488, 15, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 488, 15, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 488, 15, 16);
+			break;
+		case "Button L1"://L1
+			img[0] = directInputButtonsSprites.grabExactImage(0, 96, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 96, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 96, 16, 16);
+			break;
+		case "Button L2"://L2
+			img[0] = directInputButtonsSprites.grabExactImage(0, 128, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 128, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 128, 16, 16);
+			break;
+		case "Button R1"://R1
+			img[0] = directInputButtonsSprites.grabExactImage(0, 112, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 112, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 112, 16, 16);
+			break;
+		case "Button R2"://R2
+			img[0] = directInputButtonsSprites.grabExactImage(0, 144, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 144, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 144, 16, 16);
+			break;
+		case "Button Start"://Start
+			img[0] = directInputButtonsSprites.grabExactImage(0, 80, 9, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(9, 80, 9, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(18, 80, 9, 16);
+			break;
+		case "Button Select"://Select
+			img[0] = directInputButtonsSprites.grabExactImage(0, 64, 9, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(9, 64, 9, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(18, 64, 9, 16);
+			break;
+		case "Button L3"://L Analog Click
+			img[0] = directInputButtonsSprites.grabExactImage(0, 160, 12, 15);
+			img[1] = directInputButtonsSprites.grabExactImage(12, 160, 12, 15);
+			img[2] = directInputButtonsSprites.grabExactImage(24, 160, 12, 15);
+			break;
+		case "Button R3"://R Analog Click
+			img[0] = directInputButtonsSprites.grabExactImage(0, 175, 12, 15);
+			img[1] = directInputButtonsSprites.grabExactImage(12, 175, 12, 15);
+			img[2] = directInputButtonsSprites.grabExactImage(24, 175, 12, 15);
+			break;
+		case "Button Up"://Up
+			img[0] = directInputButtonsSprites.grabExactImage(0, 190, 13, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(13, 190, 13, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(26, 190, 13, 16);
+			break;
+		case "Button Down"://Down
+			img[0] = directInputButtonsSprites.grabExactImage(0, 206, 13, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(13, 206, 13, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(26, 206, 13, 16);
+			break;
+		case "Button Left"://Left
+			img[0] = directInputButtonsSprites.grabExactImage(0, 222, 16, 13);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 222, 16, 13);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 222, 16, 13);
+			break;
+		case "Button Right"://Right
+			img[0] = directInputButtonsSprites.grabExactImage(0, 235, 16, 13);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 235, 16, 13);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 235, 16, 13);
+			break;
+		case "Button X"://X
+			img[0] = directInputButtonsSprites.grabExactImage(0, 520, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 520, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 520, 16, 16);
+			break;
+		case "Button Circle"://Circle
+			img[0] = directInputButtonsSprites.grabExactImage(0, 536, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 536, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 536, 16, 16);
+			break;
+		case "Button Square"://Square
+			img[0] = directInputButtonsSprites.grabExactImage(0, 552, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 552, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 552, 16, 16);
+			break;
+		case "Button Triangle"://Triangle
+			img[0] = directInputButtonsSprites.grabExactImage(0, 568, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 568, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 568, 16, 16);
+			break;
+		default:
+			img[0] = directInputButtonsSprites.grabExactImage(0, 504, 16, 16);
+			img[1] = directInputButtonsSprites.grabExactImage(16, 504, 16, 16);
+			img[2] = directInputButtonsSprites.grabExactImage(32, 504, 16, 16);
+			break;
+		}
+	}
 	public void changePressX(short i) {
 		switch(i) {
 		case XInputConstants.XINPUT_GAMEPAD_A:
@@ -2593,6 +3318,12 @@ public class Textures {
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
 			pressX = marioAdvanceSprites.grabExactImage(166, 266, 51, 11);
+			break;
+		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+			pressX = marioAdvanceSprites.grabExactImage(166, 182, 54, 11);
+			break;
+		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+			pressX = marioAdvanceSprites.grabExactImage(166, 194, 54, 11);
 			break;
 		default:
 			break;
@@ -2779,7 +3510,121 @@ public class Textures {
 			break;
 		}
 	}
-	
+	public void changePressDI(String i) {
+		switch(i) {
+		case "Button 0"://B0
+			pressDI = marioAdvanceSprites.grabExactImage(221, 86, 55, 11);
+			break;
+		case "Button 1"://B1
+			pressDI = marioAdvanceSprites.grabExactImage(221, 98, 55, 11);
+			break;
+		case "Button 2"://B2
+			pressDI = marioAdvanceSprites.grabExactImage(221, 110, 55, 11);
+			break;
+		case "Button 3"://B3
+			pressDI = marioAdvanceSprites.grabExactImage(221, 122, 55, 11);
+			break;
+		case "Button 4"://B4
+			pressDI = marioAdvanceSprites.grabExactImage(221, 134, 55, 11);
+			break;
+		case "Button 5"://B5
+			pressDI = marioAdvanceSprites.grabExactImage(221, 146, 55, 11);
+			break;
+		case "Button 6"://B6
+			pressDI = marioAdvanceSprites.grabExactImage(221, 158, 55, 11);
+			break;
+		case "Button 7"://B7
+			pressDI = marioAdvanceSprites.grabExactImage(221, 170, 55, 11);
+			break;
+		case "Button 8"://B8
+			pressDI = marioAdvanceSprites.grabExactImage(221, 182, 55, 11);
+			break;
+		case "Button 9"://B9
+			pressDI = marioAdvanceSprites.grabExactImage(221, 194, 55, 11);
+			break;
+		case "Button 10"://B10
+			pressDI = marioAdvanceSprites.grabExactImage(112, 278, 63, 11);
+			break;
+		case "Button 11"://B11
+			pressDI = marioAdvanceSprites.grabExactImage(112, 290, 63, 11);
+			break;
+		case "Button 12"://B12
+			pressDI = marioAdvanceSprites.grabExactImage(112, 302, 63, 11);
+			break;
+		case "Button 13"://B13
+			pressDI = marioAdvanceSprites.grabExactImage(112, 314, 63, 11);
+			break;
+		case "Button 14"://B14
+			pressDI = marioAdvanceSprites.grabExactImage(112, 326, 63, 11);
+			break;
+		case "Button 15"://B15
+			pressDI = marioAdvanceSprites.grabExactImage(112, 338, 63, 11);
+			break;
+		case "Button 16"://B16
+			pressDI = marioAdvanceSprites.grabExactImage(176, 302, 63, 11);
+			break;
+		case "Button 17"://B17
+			pressDI = marioAdvanceSprites.grabExactImage(176, 314, 63, 11);
+			break;
+		case "Button 18"://B18
+			pressDI = marioAdvanceSprites.grabExactImage(176, 326, 63, 11);
+			break;
+		case "Button 19"://B19
+			pressDI = marioAdvanceSprites.grabExactImage(176, 338, 63, 11);
+			break;
+		case "Button L1"://L1
+			pressDI = marioAdvanceSprites.grabExactImage(221, 206, 55, 11);
+			break;
+		case "Button L2"://L2
+			pressDI = marioAdvanceSprites.grabExactImage(221, 218, 55, 11);
+			break;
+		case "Button R1"://R1
+			pressDI = marioAdvanceSprites.grabExactImage(221, 230, 55, 11);
+			break;
+		case "Button R2"://R2
+			pressDI = marioAdvanceSprites.grabExactImage(221, 242, 55, 11);
+			break;
+		case "Button Start"://Start
+			pressDI = marioAdvanceSprites.grabExactImage(221, 254, 47, 11);
+			break;
+		case "Button Select"://Select
+			pressDI = marioAdvanceSprites.grabExactImage(221, 266, 47, 11);
+			break;
+		case "Button L3"://L Analog Click
+			pressDI = marioAdvanceSprites.grabExactImage(221, 278, 52, 11);
+			break;
+		case "Button R3"://R Analog Click
+			pressDI = marioAdvanceSprites.grabExactImage(221, 290, 52, 11);
+			break;
+		case "Button Up"://Up
+			pressDI = marioAdvanceSprites.grabExactImage(103, 218, 51, 11);
+			break;
+		case "Button Down"://Down
+			pressDI = marioAdvanceSprites.grabExactImage(103, 230, 51, 11);
+			break;
+		case "Button Left"://Left
+			pressDI = marioAdvanceSprites.grabExactImage(103, 242, 51, 11);
+			break;
+		case "Button Right"://Right
+			pressDI = marioAdvanceSprites.grabExactImage(103, 254, 51, 11);
+			break;
+		case "Button X"://X
+			pressDI = marioAdvanceSprites.grabExactImage(281, 330, 49, 11);
+			break;
+		case "Button Circle"://Circle
+			pressDI = marioAdvanceSprites.grabExactImage(281, 342, 49, 11);
+			break;
+		case "Button Square"://Square
+			pressDI = marioAdvanceSprites.grabExactImage(331, 330, 49, 11);
+			break;
+		case "Button Triangle"://Triangle
+			pressDI = marioAdvanceSprites.grabExactImage(331, 342, 49, 11);
+			break;
+		default:
+			pressDI = Game.resize(HUD.stringToMario3FontImage("Press "+i),HUD.stringToMario3FontImage("Press "+i).getWidth()/6,HUD.stringToMario3FontImage("Press "+i).getHeight()/6);
+			break;
+		}
+	}
 	public void flush() {
 		for(int i = 0; i <= player.length-1; i++) {
 			player[i].flush();

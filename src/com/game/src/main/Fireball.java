@@ -12,20 +12,21 @@ public class Fireball extends GameObject implements EntityA {
 	
 	private Textures tex;
 	private Game game;
-	
+	double starVel = 1;
 	Animation anim;
 	
 	public Fireball(double x, double y, Textures tex, Game game){
 		super(x, y);
 		this.tex = tex;
 		this.game = game;
-		
+		if(game.getPlayer().getMarioInvincible())
+			starVel = 1.5;
 		anim = new Animation(5,tex.fireball[0],tex.fireball[1],tex.fireball[2],tex.fireball[3]);
 	}
 	
 	public void tick(){
 		if(!Physics.Collision(this, game.getBb())){
-			y -= 8;
+			y -= 8*starVel;
 			if (this.getY() <= -8)
 				game.ea.remove(this);
 			/*
@@ -61,7 +62,7 @@ public class Fireball extends GameObject implements EntityA {
 					}
 				}
 			}*/
-			y-=0.5;
+			y-=0.5*starVel;
 		}
 		anim.runAnimation();
 	}

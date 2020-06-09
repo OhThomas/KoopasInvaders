@@ -18,6 +18,9 @@ public class BulletBill extends GameObject implements EntityC{
 	public double speedIncrease = 0.1;								//way to set speed
 	private boolean bulletBillisDead = false;						//way to play death animation without killing Mario
 	private boolean stayTracked = false;							//will always track/follow mario if true
+	private boolean flicker = false;								//flicker triggers the render to not run every 60th millisecond
+	private long flickerTimer1 = 0;									//flicker timer to keep track of time on
+	private long flickerTimer2 = 0;									//flicker timer to keep track of time off
 	private int bulletBillXDirectionAfterDeath = 0;					//determines where the smoke effect goes after bb dies
 	private int smokeCount = 0;										//produces smoke
 	private String entityName = "BulletBill";						//name of entity
@@ -229,6 +232,27 @@ public class BulletBill extends GameObject implements EntityC{
 	}
 	
 	public void render(Graphics g){
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}/*
+		if(flicker) {
+			if(!(System.currentTimeMillis() % 200 == 0) || flickerTimer1 > System.currentTimeMillis()) {
+				if(flickerTimer1+200 < System.currentTimeMillis())
+					flickerTimer1 = System.currentTimeMillis() + 200;
+				return;
+			}
+		}*/
 		if(bulletBillisDead)
 			animExplosion.drawAnimation(g, x, y, 0);
 		else if(this.getX() > game.playerX()+6.4 && (int)this.timer1 > 0)
@@ -343,6 +367,10 @@ public class BulletBill extends GameObject implements EntityC{
 		bulletBillisDead = dead;
 	}
 
+	public void renderFlicker() {
+		flicker = true;
+	}
+	
 	public void close() {
 		bulletBillDeathSoundLoop.close();
 		bulletBillSpawnSoundLoop.close();

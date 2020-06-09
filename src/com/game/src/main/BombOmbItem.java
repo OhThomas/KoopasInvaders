@@ -16,6 +16,7 @@ public class BombOmbItem extends GameObject implements EntityE {
 	Animation walking;
 	Animation glowing;
 	Animation exploding;
+	SoundLoops explosionSound;
 	private boolean glowingBoolean = false;
 	private boolean explodingBoolean = false;
 	private boolean shrapnel1Spawn = false;
@@ -42,6 +43,11 @@ public class BombOmbItem extends GameObject implements EntityE {
 		glowing.setCount(0);
 		exploding.nextFrame();
 		exploding.setCount(0);
+		String deathFile = "res/Sounds/SFX/mariobombombexplosion.wav";
+		SoundLoops deathSoundLoop = new SoundLoops(deathFile);
+		VolumeSlider.adjustSFX(deathSoundLoop);
+		deathSoundLoop.increaseSound();
+		this.explosionSound = deathSoundLoop;
 	}
 
 	public void tick() {
@@ -53,7 +59,7 @@ public class BombOmbItem extends GameObject implements EntityE {
 				if(Physics.Collision(this, tempEnt)){
 					glowingBoolean = true;
 					explodingBoolean = true;
-					if(Game.currentlySelectedFireball != 3)
+					if(Game.currentlySelectedFireball != 3) 
 						game.ea.remove(tempEnt);
 					return;
 				}
@@ -104,7 +110,7 @@ public class BombOmbItem extends GameObject implements EntityE {
 				EntityA tempEnt = game.ea.get(i);
 				if(Physics.Collision(this, tempEnt)){
 					explodingBoolean = true;
-					if(Game.currentlySelectedFireball != 3)
+					if(Game.currentlySelectedFireball != 3) 
 						game.ea.remove(tempEnt);
 					return;
 				}
@@ -159,6 +165,11 @@ public class BombOmbItem extends GameObject implements EntityE {
 			}
 		}
 		else {
+			if(!explosionSound.getSoundLoopBoolean()) {
+				if(!explosionSound.clipIsActive())
+					explosionSound.play();
+				explosionSound.setSoundLoopBoolean(true);
+			}
 			if(exploding.getCount() == 2) {
 				y-=0.04;
 				x-=0.1;
@@ -266,6 +277,10 @@ public class BombOmbItem extends GameObject implements EntityE {
 						tempEnt.entityName().equals("bombOmbShrapnel1"))){
 					game.ee.remove(tempEnt);
 				}
+				else if(Physics.Collision(this, tempEnt) && (tempEnt.entityName().equals("lakituFish"))){
+					game.getController().addEntity(new ChompFX(game,tempEnt.getX()+(tempEnt.getBounds().width/2),tempEnt.getY()+(tempEnt.getBounds().height/2),"Fish"));
+					game.ee.remove(tempEnt);
+				}
 			}
 			y-=0.04;
 			x-=0.07;
@@ -331,7 +346,32 @@ public class BombOmbItem extends GameObject implements EntityE {
 	public double getY() {
 		return y;
 	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
 
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return 0;
+	}
+
+	public double getVelY() {
+		return 0;
+	}
+
+	public void setVelX(double velX) {
+	}
+
+	public void setVelY(double velY) {
+	}
+	
+	public void setScoreFollowMe(boolean b) {
+	}
+	
 	public String entityName() {
 		return "bombOmb";
 	}
@@ -354,7 +394,7 @@ public class BombOmbItem extends GameObject implements EntityE {
 	}
 	
 	public void close() {
-		
+		explosionSound.close();
 	}
 	
 }

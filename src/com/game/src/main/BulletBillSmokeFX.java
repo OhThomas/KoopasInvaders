@@ -79,7 +79,19 @@ public class BulletBillSmokeFX  extends GameObject implements EntityF{
 	public double getY() {
 		return y;
 	}
+	
+	public double getVelX() {
+		return 0;
+	}
 
+	public double getVelY() {
+		return 0;
+	}
+
+	public String entityName() {
+		return "bulletBillSmokeFX";
+	}
+	
 	public void close() {
 		//g2d.dispose();
 	}

@@ -12,9 +12,11 @@ public class HUD {
 	private Game game;
 	public static float HEALTH = 0;
 	private float greenValue = 255;
-	private long score = 0;
+	public static long score = 0;
+	public static String nameEntered = "";
 	private String scoreString;
 	public static String currentScoreFromChainChomp = "";
+	public static int currentScoreFromChainChompInt = 200;
 	private int level = 1;
 	private boolean itemObtained = false;
 	private String itemName = null;
@@ -25,6 +27,8 @@ public class HUD {
 	private long imageTranslucentTimer = 0;
 	private boolean imageIsGone = false;
 	private long enemyHitPauseTimer = 0;
+	private long enemyHitPauseTimer2 = 0;
+	private long enemyHitPauseTimer3 = 0;
 	private BufferedImage[] marioNumbersSmall = new BufferedImage[10];
 	private BufferedImage[] mario3FontNumbersSmall = new BufferedImage[11];
 	public static BufferedImage[] mario3Font = new BufferedImage[40];
@@ -39,6 +43,7 @@ public class HUD {
 	private BufferedImage lakituItemFrameDisplay = null;
 	private BufferedImage pressE = null;
 	private BufferedImage pressX = null;
+	private BufferedImage pressDI = null;
 	
 	private SoundLoops itemEnemySoundLoop = null;
 	
@@ -59,6 +64,7 @@ public class HUD {
 		this.lakituItemFrameDisplay = tex.lakituItemFrameDisplay;
 		this.pressE = tex.pressE;
 		this.pressX = tex.pressX;
+		this.pressDI = tex.pressDI;
 		String itemEnemyFile = "res/Sounds/SFX/smb3_sound_effects_inventory_open_close.wav";
 		SoundLoops itemEnemySoundLoops = new SoundLoops(itemEnemyFile);
 		VolumeSlider.adjustSFX(itemEnemySoundLoops);
@@ -110,7 +116,10 @@ public class HUD {
 					g.fillRect(15, 15, (int)HEALTH * 2, 32);
 					g.setColor(Color.white);
 					g.drawRect(15, 15, (int)HEALTH * 2, 32); //(x,x,200,x)
-					g.drawString(HEALTH+"%", 15, 15);
+					if(HEALTH < 0)
+						g.drawString("0%", 15, 15);
+					else
+						g.drawString(HEALTH+"%", 15, 15);
 				}
 				else if (timer1 <= 0 && HEALTH > 0){
 					g.setColor(Color.gray);
@@ -164,25 +173,43 @@ public class HUD {
 				Graphics2D g2d = (Graphics2D)g.create();
 				g2d.setComposite(makeComposite(imageTranslucent));
 				//g2d.drawImage(pressE,Game.WIDTH-10,28,null);
-				if(Game.gameControllerInUse)
+				if(Game.gameControllerInUseDI)
+					g2d.drawImage(pressDI,Game.WIDTH-((pressDI.getWidth()-26)/2),28,null);
+				else if(Game.gameControllerInUse)
 					g2d.drawImage(pressX,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
 				else
 					g2d.drawImage(pressE,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
 			}
 			if(enemyHitPauseTimer != 0 && System.currentTimeMillis() < enemyHitPauseTimer){
-				if(!this.itemEnemySoundLoop.clipIsActive()) {
+				if(enemyHitPauseTimer2 == 0) {
 					VolumeSlider.adjustSFX(itemEnemySoundLoop);
 					this.itemEnemySoundLoop.play();
 				}
-				if(currentScoreFromChainChomp.equals("null0")) {}
-				else if(currentScoreFromChainChomp.equals(""))
-					stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, "200", false);
-				else 
-					stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, currentScoreFromChainChomp, false);
+				else if(enemyHitPauseTimer2 != 0 && enemyHitPauseTimer2 < enemyHitPauseTimer) {
+//					currentScoreFromChainChompInt +=200;
+//					currentScoreFromChainChomp = Integer.toString(currentScoreFromChainChompInt);
+					enemyHitPauseTimer3 = System.currentTimeMillis() + 250;
+					VolumeSlider.adjustSFX(itemEnemySoundLoop);
+					if(this.itemEnemySoundLoop.clipIsActive()) 
+						this.itemEnemySoundLoop.play();
+					this.itemEnemySoundLoop.play();
+				}
+				if(enemyHitPauseTimer3 > System.currentTimeMillis()) {}
+				else {
+					if(currentScoreFromChainChomp.equals("null0")) {}
+					else if(currentScoreFromChainChomp.equals(""))
+						stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, "200", false);
+					else 
+						stringToScore(g, this.marioNumbersSmall, (int)(Game.currentEECollisionX + Game.currentEECollisionWidth), (int)Game.currentEECollisionY, currentScoreFromChainChomp, false);
+				}
+				enemyHitPauseTimer2 = enemyHitPauseTimer;
 			}
 			else if(enemyHitPauseTimer != 0) {
 				currentScoreFromChainChomp = "";
 				enemyHitPauseTimer = 0;
+				enemyHitPauseTimer2 = 0;
+				currentScoreFromChainChompInt = 200;
+				enemyHitPauseTimer3 = 0;
 			}
 				
 		}
@@ -249,11 +276,17 @@ public class HUD {
 				Graphics2D g2d = (Graphics2D)g.create();
 				g2d.setComposite(makeComposite(imageTranslucent));
 				//g2d.drawImage(pressE,Game.WIDTH-10,28,null);
-				if(Game.gameControllerInUse)
+				if(Game.gameControllerInUseDI)
+					g2d.drawImage(pressDI,Game.WIDTH-((pressDI.getWidth()-26)/2),28,null);
+				else if(Game.gameControllerInUse)
 					g2d.drawImage(pressX,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
 				else
 					g2d.drawImage(pressE,Game.WIDTH-((pressE.getWidth()-26)/2),28,null);
 			}
+		}if(Game.State == Game.STATE.TRANSITION_WIN) {
+			System.out.println("WTF");
+			scoreString = String.format("%d", this.score);
+			stringToScore(g, scoreString);
 		}
 			
 		//BufferedImage img = stringToBufferedImage(marioNumbersSmall, scoreString);
@@ -489,6 +522,8 @@ public class HUD {
 			return mario3Font[41];
 		case '\n':
 			return mario3Font[41];
+		case '+':
+			return mario3Font[42];
 		default: return mario3Font[36];
 		}
 	}
@@ -723,5 +758,26 @@ public class HUD {
 	
 	public void setPressX(BufferedImage img) {
 		this.pressX = img;
+	}
+
+	public void setPressDI(BufferedImage img) {
+		this.pressDI = img;
+	}
+	
+	public void reset() {
+		score = 0;
+		level = 1;
+		itemObtained = false;
+		itemName = null;
+		timer1 = 100;
+		timer2 = 100;
+		imageTranslucent = 0;
+		imageTranslucentVelocity = 0;
+		imageTranslucentTimer = 0;
+		imageIsGone = false;
+		enemyHitPauseTimer = 0;
+		HEALTH = 0;
+		nameEntered = "";
+		//itemEnemySoundLoop = null;
 	}
 }

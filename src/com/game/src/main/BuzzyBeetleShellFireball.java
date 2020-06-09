@@ -14,10 +14,13 @@ public class BuzzyBeetleShellFireball extends GameObject implements EntityA {
 	private Game game;
 	Animation anim;
 	double velX = 0;
+	double starVel = 1;
 	public BuzzyBeetleShellFireball(double x, double y, Textures tex, Double velX, Game game){
 		super(x, y);
 		this.tex = tex;
 		this.game = game;
+		if(game.getPlayer().getMarioInvincible())
+			starVel = 1.5;
 		if(velX!=0) {
 			if(Game.WIDTH * Game.SCALE <= this.x+16) {
 				this.x-=11;
@@ -39,8 +42,8 @@ public class BuzzyBeetleShellFireball extends GameObject implements EntityA {
 	
 	public void tick(){
 		if(!Physics.Collision(this, game.getBb())){
-			y -= 8;
-			x+=velX;
+			y -= 8*starVel;
+			x+=velX*starVel;
 			if (this.getY() <= -8)
 				game.ea.remove(this);
 			if(velX != 0 && (x+16 >= Game.WIDTH * Game.SCALE || x <= 0))
@@ -78,8 +81,8 @@ public class BuzzyBeetleShellFireball extends GameObject implements EntityA {
 					}
 				}
 			}*/
-			y-=0.5;
-			x+=(velX/12);
+			y-=0.5*starVel;
+			x+=(velX/12)*starVel;
 		}
 		anim.runAnimation();
 	}

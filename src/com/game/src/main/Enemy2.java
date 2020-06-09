@@ -2,6 +2,7 @@ package com.game.src.main;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.Random;
 
 import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
@@ -16,7 +17,10 @@ public class Enemy2 extends GameObject implements EntityB{
 	private Controller c;
 	public double speedIncrease = 0.1;
 	private int soundLoopPosition = 0;
+	private long flickerTimer1 = 0;
+	private long flickerTimer2 = 0;
 	private long goombaBounceDeathTimer = 0;
+	private boolean flicker = false;
 	private boolean goombaisDead = false;
 	private String enemyType = "Goomba2";
 	
@@ -35,7 +39,7 @@ public class Enemy2 extends GameObject implements EntityB{
 		this.tex = tex;
 		this.game = game;
 		this.c = c;
-		
+		Random rand = new Random();
 		anim = new Animation(6, tex.enemy2[0],tex.enemy2[1]);
 		animDeathBounceL = new Animation(2, tex.enemy2DeathL[0],tex.enemy2DeathR[0]);
 		animDeathBounceR = new Animation(2, tex.enemy2DeathR[0],tex.enemy2DeathL[0]);
@@ -50,6 +54,9 @@ public class Enemy2 extends GameObject implements EntityB{
 		
 		String goomba2DeathFile = "res/Sounds/SFX/smb3_kickspace.wav";
 		String starDingFile = "res/Sounds/SFX/belldings3.wav";
+		boolean randValue = rand.nextBoolean();
+		if(randValue == true)
+			starDingFile = "res/Sounds/SFX/stardingsoundeffect.wav";//MAKE THIS SAME LENGTH!!
 		SoundLoops goomba2DeathSoundLoop = new SoundLoops(goomba2DeathFile);
 		SoundLoops starDingSoundLoop = new SoundLoops(starDingFile);
 		starDingSoundLoop.reduceSound(16.5f);
@@ -57,6 +64,12 @@ public class Enemy2 extends GameObject implements EntityB{
 		VolumeSlider.adjustSFX(starDingSoundLoop);
 		if(starDingSoundLoop.getVolume() > -10f)
 			starDingSoundLoop.reduceSound(6.5f);
+		if(!randValue) {
+			starDingSoundLoop.reduceSound();
+			starDingSoundLoop.reduceSound();
+		}
+		else
+			starDingSoundLoop.increaseSound();
 		this.goomba2DeathSoundLoop = goomba2DeathSoundLoop;
 		this.goomba2DeathQuiterSoundLoop = goomba2DeathSoundLoop;
 		this.starDingSoundLoop = starDingSoundLoop;
@@ -261,6 +274,20 @@ public class Enemy2 extends GameObject implements EntityB{
 	}
 	
 	public void render(Graphics g){
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
 		if(animDeathBounceL.getCount() < 1 && animDeathBounceR.getCount() < 1)
 			anim.drawAnimation(g, x, y, 0);
 		else if(anim.getCount() == 1 && System.currentTimeMillis() < goombaBounceDeathTimer)
@@ -364,6 +391,10 @@ public class Enemy2 extends GameObject implements EntityB{
 		this.x = x;
 	}
 
+	public void renderFlicker() {
+		flicker = true;
+	}
+	
 	public void close() {
 		/*
 		for(int i = 0; i <= anim.getCount() -1; i++) {

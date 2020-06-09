@@ -13,6 +13,8 @@ public class CheepCheepsItemSpawner extends GameObject implements EntityE   {
 	private Game game;
 	private long timer = 0;
 	private long spawnTimer = 0;
+	private long pausedTimerAddition = 0;
+	private long pausedTimerAddition2 = 0;
 	
 	public CheepCheepsItemSpawner(double x, double y, Textures tex, Game game) {
 		super(x, y);
@@ -28,13 +30,25 @@ public class CheepCheepsItemSpawner extends GameObject implements EntityE   {
 	}
 
 	public void tick() {
+		if(pausedTimerAddition != 0) {
+			pausedTimerAddition2 = System.currentTimeMillis();
+			pausedTimerAddition2 = pausedTimerAddition2 - pausedTimerAddition;
+			if(pausedTimerAddition2 > 0) {
+				if(timer != 0)
+					timer+=pausedTimerAddition2;
+				if(spawnTimer != 0)
+					spawnTimer+=pausedTimerAddition2;
+			}
+			pausedTimerAddition = 0;
+		}
 		Random rand = new Random();
+		int yAdd = rand.nextInt(200);
 		if(spawnTimer < System.currentTimeMillis() && rand.nextInt(50) == 0) {
 			//Spawn CheepCheeps
 			if(rand.nextInt(2) == 0)
-				game.getController().addEntity(new CheepCheepsItem(0,370, tex, game,0));
+				game.getController().addEntity(new CheepCheepsItem(0,370-yAdd, tex, game,0));
 			else
-				game.getController().addEntity(new CheepCheepsItem(Game.WIDTH * Game.SCALE,370, tex, game,1));
+				game.getController().addEntity(new CheepCheepsItem(Game.WIDTH * Game.SCALE,370-yAdd, tex, game,1));
 			spawnTimer = System.currentTimeMillis() + 750;
 		}
 		if(timer < System.currentTimeMillis())
@@ -42,6 +56,9 @@ public class CheepCheepsItemSpawner extends GameObject implements EntityE   {
 	}
 
 	public void render(Graphics g) {
+		if((Game.isPaused() || System.currentTimeMillis() < game.getEnemyHitPauseTimer()) && pausedTimerAddition == 0 && (System.currentTimeMillis() < timer || System.currentTimeMillis() < spawnTimer)){
+			this.pausedTimerAddition = System.currentTimeMillis();
+		}
 		return;
 	}
 
@@ -55,6 +72,31 @@ public class CheepCheepsItemSpawner extends GameObject implements EntityE   {
 
 	public double getY() {
 		return y;
+	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return 0;
+	}
+
+	public double getVelY() {
+		return 0;
+	}
+
+	public void setVelX(double velX) {
+	}
+
+	public void setVelY(double velY) {
+	}
+	
+	public void setScoreFollowMe(boolean b) {
 	}
 
 	public String entityName() {

@@ -15,6 +15,8 @@ public class Bowser extends GameObject implements EntityB{
 	private Textures tex;
 	private Game game;
 	private Controller c;
+	private int fireballHitCount = 0;
+	private int shellDefenseCount = 0;
 	private double timer1 = 100;
 	private double timer2 = 0;
 	private double hitTimer = 0;
@@ -22,12 +24,27 @@ public class Bowser extends GameObject implements EntityB{
 	public double speedIncrease = 0.1;
 	private long start = 0;
 	private long spawningMoreItemsTimer = 0;
+	private long flickerTimer1 = 0;
+	private long flickerTimer2 = 0;
+	private boolean halfHealthMechanicSet = false;
+	private boolean quarterHealthMechanicSet = false;
+	private boolean almostDeadMechanicSet = false;
 	private boolean pauseSet = false;
 	private boolean itemPullout = false;
 	private boolean itemSpawning = false;
 	private boolean spawningMoreItems = false;
 	private boolean greenShellCircleSpawn = false;
+	private boolean redShellCircleSpawn = false;
 	private boolean buzzyBeetleShellSpawn = false;
+	private boolean swoopSpawn = false;
+	private boolean lavaBubbleSpawn = false;
+	private boolean zigzagLavaBubbleSpawn = false;
+	private boolean thwimpSpawn = false;
+	private boolean mechakoopaSpawn = false;
+	private boolean brigadeMechanic = false;
+	private boolean defenseMechanicSet = false;
+	private boolean scoreSetDeadBowser = false;
+	private boolean flicker = false;
 	private boolean deathTimerSet = false;
 	private boolean bowserisDead = false;
 	private String enemyType = "Bowser";
@@ -157,6 +174,12 @@ public class Bowser extends GameObject implements EntityB{
 		
 		animHit = new Animation(6,tex.bowserHit[0], tex.bowserHit[1]);
 		anim = new Animation(38, tex.bowser[0],tex.bowser[1]);
+		anim.nextFrame();
+		anim.setCount(0);
+		animHit.nextFrame();
+		animHit.setCount(0);
+		animEntrance.nextFrame();
+		animEntrance.setCount(0);
 		animItemPullout.nextFrame();
 		animItemPullout.setCount(0);
 		animItemPulloutR.nextFrame();
@@ -271,13 +294,30 @@ public class Bowser extends GameObject implements EntityB{
 			if(game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume() >= -70f)//changetolast	
 				game.gameSoundLoops.get(game.getSoundRandomizer()).shiftVolume(game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume(), game.gameSoundLoops.get(game.getSoundRandomizer()).getVolume()-1f, 200);
 			
+			if(game.isMarioInvincible() && game.marioStarSoundLoop.getVolume() >= -70f)//if invincible
+				game.marioStarSoundLoop.shiftVolume(game.marioStarSoundLoop.getVolume(), game.marioStarSoundLoop.getVolume()-1f, 200);
+			
 			//if(game.gameSoundLoops.getLast().getVolume() >= -70f)//changetolast	
 			//	game.gameSoundLoops.getLast().shiftVolume(game.gameSoundLoops.getLast().getVolume(), game.gameSoundLoops.getLast().getVolume()-1f, 200);
-			animHit.runAnimation();
+			if(itemPullout) {
+				if(animItemPullout.getCount() > 0)
+					animItemPullout.setCount(animItemPullout.getCount() - 1);
+				if(animItemPulloutR.getCount() > 0)
+					animItemPulloutR.setCount(animItemPulloutR.getCount() - 1);
+				if(animItemPullout.getCount() == 0 && animItemPulloutR.getCount() == 0) {
+					itemPullout = false;
+					animHit.runAnimation();
+				}
+			}
+			else
+				animHit.runAnimation();
 			if(HUD.getTimer2() <= 0) {
 				c.removeEntity(this);
 				game.gameSoundLoops.getLast().stop();
 				game.gameSoundLoops.getLast().setSoundLoopBoolean(false);
+				Game.gameSoundLoops.get(Game.soundRandomizer).stop();
+				Game.gameSoundLoops.get(Game.soundRandomizer).setSoundLoopBoolean(false);
+				Game.gameSoundLoops.get(Game.soundRandomizer).setFramePosition(0);
 			}
 			
 		}
@@ -297,16 +337,30 @@ public class Bowser extends GameObject implements EntityB{
 				hitTimer--;
 				animHit.runAnimation();
 			}
-			if(HUD.HEALTH <= 0) {
+			if(HUD.HEALTH <= 0 && timer1 <= 0) {
 				bowserisDead = true;
+				if(!scoreSetDeadBowser) {
+					game.getHUD().setScore(5000);
+					scoreSetDeadBowser = true;
+				}
 			}
 			if (game.enemyHitRightBarrier == false){
 				x+=game.enemySpeedIncrease; //x+=1;
 			}
+			if (y+96 >= game.getHeight()){
+				Game.Health -=100;
+			}
 			
 			if (x >= (Game.WIDTH * Game.SCALE)- 55 || game.enemyHitRightBarrier == true){
-				int i = r.nextInt(10);
-				if (barrier == false && i == 0 && y < ((Game.HEIGHT * Game.SCALE)/2) - 16)
+				int i = 0;
+				if(HUD.HEALTH < 25){}
+				else if(HUD.HEALTH < 50)
+					i = r.nextInt(2);
+				else if(HUD.HEALTH < 75)
+					i = r.nextInt(5);
+				else
+					i = r.nextInt(10);
+				if (barrier == false && i == 0)// && y < ((Game.HEIGHT * Game.SCALE)/2) - 16)
 					y += 16;
 				barrier = true;
 				game.enemyHitRightBarrier = true;
@@ -318,8 +372,15 @@ public class Bowser extends GameObject implements EntityB{
 			}
 			
 			if (x <= 0 || game.enemyHitRightBarrier == false){
-				int i = r.nextInt(10);
-				if (barrier == true && i == 0 && y < ((Game.HEIGHT * Game.SCALE)/2) - 16)
+				int i = 0;
+				if(HUD.HEALTH < 25){}
+				else if(HUD.HEALTH < 50)
+					i = r.nextInt(2);
+				else if(HUD.HEALTH < 75)
+					i = r.nextInt(5);
+				else
+					i = r.nextInt(10);
+				if (barrier == true && i == 0) //&& y < ((Game.HEIGHT * Game.SCALE)/2) - 16)
 					y +=16;
 				barrier = false;
 				game.enemyHitRightBarrier = false;
@@ -355,6 +416,72 @@ public class Bowser extends GameObject implements EntityB{
 					animItemPulloutR.nextFrame();
 				}
 			}
+			else if(swoopSpawn) {
+				game.addEntity(new Swoop(x+32,y + 41,tex, game,velX));
+				swoopSpawn = false;
+				itemSpawning = false;
+				start = System.currentTimeMillis();
+				if(!spawningMoreItems && (animItemPullout.getCount() == 6 ||animItemPulloutR.getCount() == 6)) {
+					animItemPullout.nextFrame();
+					animItemPulloutR.nextFrame();
+				}
+			}
+			else if(lavaBubbleSpawn) {
+				game.addEntity(new LavaBubble(x+32,y + 20,tex, game,velX));
+				lavaBubbleSpawn = false;
+				itemSpawning = false;
+				start = System.currentTimeMillis();
+				if(!spawningMoreItems && (animItemPullout.getCount() == 6 ||animItemPulloutR.getCount() == 6)) {
+					animItemPullout.nextFrame();
+					animItemPulloutR.nextFrame();
+				}
+			}
+			else if(zigzagLavaBubbleSpawn) {
+				Random rand = new Random();
+				if(rand.nextInt(2) == 0) {
+					game.addEntity(new ZigzagLavaBubble(x+32,y + 20,tex, game,-2));
+					game.addEntity(new ZigzagLavaBubble(x+32,y + 20,tex, game,2));
+				}
+				else
+					game.addEntity(new ZigzagLavaBubble(x+32,y + 20,tex, game,velX));
+				zigzagLavaBubbleSpawn = false;
+				itemSpawning = false;
+				start = System.currentTimeMillis();
+				if(!spawningMoreItems && (animItemPullout.getCount() == 6 ||animItemPulloutR.getCount() == 6)) {
+					animItemPullout.nextFrame();
+					animItemPulloutR.nextFrame();
+				}
+			}
+			else if(thwimpSpawn) {
+				game.addEntity(new Thwimp(x+32,y + 20,tex, game,game.enemyHitRightBarrier));
+				thwimpSpawn = false;
+				itemSpawning = false;
+				start = System.currentTimeMillis();
+				if(!spawningMoreItems && (animItemPullout.getCount() == 6 ||animItemPulloutR.getCount() == 6)) {
+					animItemPullout.nextFrame();
+					animItemPulloutR.nextFrame();
+				}
+			}
+			else if(mechakoopaSpawn) {
+				game.addEntity(new Mechakoopa(x+32,y + 20,tex, game,game.enemyHitRightBarrier));
+				mechakoopaSpawn = false;
+				itemSpawning = false;
+				start = System.currentTimeMillis();
+				if(!spawningMoreItems && (animItemPullout.getCount() == 6 ||animItemPulloutR.getCount() == 6)) {
+					animItemPullout.nextFrame();
+					animItemPulloutR.nextFrame();
+				}
+			}
+			else if(redShellCircleSpawn) {
+				game.addEntity(new RedShellCircle(x+32,y + 41,tex, game));
+				redShellCircleSpawn = false;
+				itemSpawning = false;
+				start = System.currentTimeMillis();
+				if(!spawningMoreItems && (animItemPullout.getCount() == 6 ||animItemPulloutR.getCount() == 6)) {
+					animItemPullout.nextFrame();
+					animItemPulloutR.nextFrame();
+				}
+			}
 			for(int i = 0; i < game.ea.size(); i++){
 				EntityA tempEnt = game.ea.get(i);
 				
@@ -363,11 +490,14 @@ public class Bowser extends GameObject implements EntityB{
 						game.enemySpeedIncrease+= 0.9;
 					game.enemySpeedIncrease+= 0.2; //0.7
 					HUD.HEALTH -= 3;//4
+//					HUD.HEALTH -= 100;
 					hitTimer = 80;
-					chomped = new ChompFX(tempEnt.getX()+4,tempEnt.getY()+4,"Fireball");
-					game.getController().addEntity(chomped);
-					if(game.ea.size() >= 1)
+					fireballHitCount++;
+					game.fireballSplash(tempEnt.getX(), tempEnt.getY());
+					if(game.ea.size() >= 1) {
 						game.ea.removeLast();
+						Game.soundFireballPop();
+					}
 					//c.removeEntity(tempEnt);
 					//c.removeEntity(this);
 				}
@@ -377,23 +507,104 @@ public class Bowser extends GameObject implements EntityB{
 		//itemspawning = true SPAWN ITEMS AND DON'T RUN itemPulloutAnimations if itemspawning == true
 		if((animItemPullout.getCount() == 6 || animItemPulloutR.getCount() == 6) && !itemSpawning && spawningMoreItemsTimer < System.currentTimeMillis()) {
 			Random rand = new Random();
-			int i = rand.nextInt(2);
-			switch(i) {
+			if(defenseMechanicSet && shellDefenseCount < 14) {
+				int i = rand.nextInt(2);
+				switch(i) {
 				case 0:
 					greenShellCircleSpawn = true;
 					break;
 				case 1:
-					buzzyBeetleShellSpawn = true;
+					redShellCircleSpawn = true;
 					break;
-					
+				default:
+					redShellCircleSpawn = true;
+					break;
+				}
+			}
+			else {
+				int i = rand.nextInt(7);
+//				i = 2;//Swoop spawn DELETE
+				switch(i) {
+					case 0:
+						greenShellCircleSpawn = true;
+	//					redShellCircleSpawn = true;
+						break;
+					case 1:
+						buzzyBeetleShellSpawn = true;
+	//					redShellCircleSpawn = true;
+						break;
+					case 2:
+						swoopSpawn = true;
+	//					redShellCircleSpawn = true;
+						break;
+					case 3:
+						lavaBubbleSpawn = true;
+	//					redShellCircleSpawn = true;
+						break;	
+					case 4:
+						zigzagLavaBubbleSpawn = true;
+	//					redShellCircleSpawn = true;
+						break;	
+					case 5:
+						thwimpSpawn = true;
+	//					redShellCircleSpawn = true;
+						break;
+					case 6:
+						mechakoopaSpawn = true;
+	//					redShellCircleSpawn = true;
+						break;
+					case 7:
+						redShellCircleSpawn = true;
+						break;
+				}
 			}
 			itemSpawning = true;
 			spawningMoreItems = false;
 			spawningMoreItemsTimer = 0;
-			int j = rand.nextInt(2);
-			if(j == 0) {
+			if(HUD.HEALTH > 75) {
+				int j = rand.nextInt(2);
+				if(j == 0) {
+					spawningMoreItems = true;
+					spawningMoreItemsTimer = System.currentTimeMillis() + 500;
+				}
+			}
+			else if(HUD.HEALTH > 50){
 				spawningMoreItems = true;
 				spawningMoreItemsTimer = System.currentTimeMillis() + 500;
+				int j = rand.nextInt(4);
+				if(j == 0) {
+					spawningMoreItems = false;
+					spawningMoreItemsTimer = 0;
+				}
+			}
+			else if(HUD.HEALTH > 25){
+				if(!halfHealthMechanicSet) {
+					if(10 < fireballHitCount) {
+						brigadeMechanic = true;
+					}
+					halfHealthMechanicSet = true;
+				}
+				spawningMoreItems = true;
+				spawningMoreItemsTimer = System.currentTimeMillis() + 500;
+				int j = rand.nextInt(6);
+				if(j == 0 && !brigadeMechanic) {
+					spawningMoreItems = false;
+					spawningMoreItemsTimer = 0;
+				}
+			}
+			else {
+				if(!defenseMechanicSet || shellDefenseCount < 14) {
+					if(!defenseMechanicSet)
+						defenseMechanicSet = true;
+					shellDefenseCount++;
+				}
+				spawningMoreItems = true;
+				spawningMoreItemsTimer = System.currentTimeMillis() + 500;
+				int j = rand.nextInt(16);
+				if(j == 0 && 14 <= shellDefenseCount) {
+					spawningMoreItems = false;
+					spawningMoreItemsTimer = 0;
+				}
 			}
 		}
 		if(animItemPullout.getCount() == 10 || animItemPulloutR.getCount() == 10) {
@@ -414,18 +625,36 @@ public class Bowser extends GameObject implements EntityB{
 			bowserShip12L.runAnimation();
 		}
 		else if(HUD.HEALTH <= 10) {
+			if(!almostDeadMechanicSet) {
+				if(15 < fireballHitCount) {
+					
+				}
+				almostDeadMechanicSet = true;
+			}
 			bowserShipHit11R.runAnimation();
 			bowserShip11R.runAnimation();
 			bowserShipHit11L.runAnimation();
 			bowserShip11L.runAnimation();
 		}
 		else if(HUD.HEALTH <= 19) {
+			if(!almostDeadMechanicSet) {
+				if(15 < fireballHitCount) {
+					
+				}
+				almostDeadMechanicSet = true;
+			}
 			bowserShipHit10R.runAnimation();
 			bowserShip10R.runAnimation();
 			bowserShipHit10L.runAnimation();
 			bowserShip10L.runAnimation();
 		}
 		else if(HUD.HEALTH <= 28) {
+			if(HUD.HEALTH <= 25 && !quarterHealthMechanicSet) {
+				if(!itemPullout && !itemSpawning && !spawningMoreItems && hitTimer <= 0 && timer1 <= 0 && timer2 <= 0) {
+					itemPullout = true;
+				}
+				quarterHealthMechanicSet = true;
+			}
 			bowserShipHit9R.runAnimation();
 			bowserShip9R.runAnimation();
 			bowserShipHit9L.runAnimation();
@@ -491,7 +720,34 @@ public class Bowser extends GameObject implements EntityB{
 				timer2 = 50;
 			}
 		}
-		if(timer1 > 0 && HUD.HEALTH > 0) {
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
+		if(bowserisDead) {
+			if(!itemPullout)
+				animHit.drawAnimation(g, x, y-9, 0);
+			else if(anim.getCount() == 1)
+				animItemPullout.drawAnimation(g, x, y, 0);
+			else
+				animItemPulloutR.drawAnimation(g, x, y, 0);
+
+			if(anim.getCount() == 1)
+				bowserShip12L.drawAnimation(g, x, y+41, 0);
+			else
+				bowserShip12R.drawAnimation(g, x, y+41, 0);
+		}
+		else if(timer1 > 0 && HUD.HEALTH > 0) {
 			animEntrance.drawAnimation(g, x, y, 0);
 			bowserShipL.drawAnimation(g, x, y+41, 0);
 		}
@@ -718,6 +974,10 @@ public class Bowser extends GameObject implements EntityB{
 		this.x = x;
 	}
 
+	public void renderFlicker() {
+		flicker = true;
+	}
+	
 	public void close() {
 		bowserLaugh.close();
 		return;

@@ -27,6 +27,8 @@ public class XInputButtonsDelta {
     public static short down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
     public static short left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
     public static short right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+    public static short lTrigger = XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER;
+    public static short rTrigger = XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER;
     
     protected XInputButtonsDelta(final XInputButtons lastButtons, final XInputButtons buttons) {
         this.lastButtons = lastButtons;
@@ -74,6 +76,10 @@ public class XInputButtonsDelta {
     		return XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON;
     	else if(XInputDevice.unknown == xInputConstant)
     		return XInputConstants.XINPUT_GAMEPAD_UNKNOWN;
+    	else if(XInputDevice.lTrigger == xInputConstant)
+    		return XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER;
+    	else if(XInputDevice.rTrigger == xInputConstant)
+    		return XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER;
     	else
     		return defaultButton;
     }
@@ -208,6 +214,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -273,6 +287,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -338,6 +360,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -403,6 +433,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -412,6 +450,7 @@ public class XInputButtonsDelta {
     		switch(buttonn) {
     		case XInputConstants.XINPUT_GAMEPAD_A:
 				button = XInputButton.A;
+				System.out.println(button.toString());
     			break;
     		case XInputConstants.XINPUT_GAMEPAD_B:
 				button = XInputButton.B;
@@ -458,6 +497,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -513,6 +560,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -568,6 +623,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -623,6 +686,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -678,6 +749,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -733,6 +812,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -788,6 +875,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -843,6 +938,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -898,6 +1001,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -953,6 +1064,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -1008,6 +1127,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -1063,6 +1190,14 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    			return false;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
+    			return false;
     		default:
     			break;
     		}
@@ -1168,6 +1303,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1233,6 +1374,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1298,6 +1445,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1363,6 +1516,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1418,6 +1577,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1473,6 +1638,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1528,6 +1699,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1583,6 +1760,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1638,6 +1821,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1693,6 +1882,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1748,6 +1943,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1803,6 +2004,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1858,6 +2065,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1913,6 +2126,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -1968,6 +2187,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -2023,6 +2248,12 @@ public class XInputButtonsDelta {
     		case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
     			button = XInputButton.UNKNOWN;
     			break;
+    		case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    			if(!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased)
+    				return true;
+    		case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    			if(!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased)
+    				return true;
     		default:
     			break;
     		}
@@ -2089,6 +2320,14 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);/*
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER://PROBABLY WRONG
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER://PROBABLY WRONG
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);*/
     	    	default:
     	    		return false;
             	}
@@ -2138,6 +2377,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2187,6 +2430,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2236,6 +2483,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2275,6 +2526,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2314,6 +2569,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2353,6 +2612,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2392,6 +2655,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2431,6 +2698,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2470,6 +2741,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2509,6 +2784,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2548,6 +2827,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2587,6 +2870,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2626,6 +2913,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2665,6 +2956,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}
@@ -2704,6 +2999,10 @@ public class XInputButtonsDelta {
                     return !from.left && to.left;
     	    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
                     return !from.right && to.right;
+    	    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+                    return (!XInputDevice.lTriggerPressed && XInputDevice.lTriggerReleased);
+    	    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+                    return (!XInputDevice.rTriggerPressed && XInputDevice.rTriggerReleased);
     	    	default:
     	    		return false;
             	}

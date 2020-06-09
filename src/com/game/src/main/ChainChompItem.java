@@ -8,12 +8,17 @@ import com.game.src.main.classes.EntityA;
 import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityE;
+import com.game.src.main.classes.EntityF;
 import com.game.src.main.libs.Animation;
 
 public class ChainChompItem extends GameObject implements EntityE {
 
 	private Textures tex;
 	private Game game;
+	private EntityF chainChompBall1;
+	private EntityF chainChompBall2;
+	private EntityF chainChompBall3;
+	private EntityE chainChompNumber;
 	private int xDestination = 10000;
 	private int ecMarked = -1;
 	private int ebMarked = -1;
@@ -24,6 +29,7 @@ public class ChainChompItem extends GameObject implements EntityE {
 	private int chain2Y = 0;
 	private int chain3X = 0;
 	private int chain3Y = 0;
+	private int silenceTracker = 0;
 	private long movingTimer1 = 0;
 	private long movingTimer2 = 0;
 	private long movingTimer3 = 0;
@@ -41,6 +47,7 @@ public class ChainChompItem extends GameObject implements EntityE {
 	Animation animDisintegrate;
 	SoundLoops itemSoundLoop;
 	SoundLoops chainChompDeathSoundLoop;
+	SoundLoops silenceSoundLoop;
 	EntityB tempEntB = null;
 	EntityC tempEntC = null;
 	ChompFX chomped;
@@ -72,23 +79,46 @@ public class ChainChompItem extends GameObject implements EntityE {
 		animChompinR.setCount(0);
 		String itemFile = "res/Sounds/SFX/Items/sm64_chain_chomp.wav";
 		String deathFile = "res/Sounds/SFX/Items/sm64_chainchompdisintegrating.wav";
+		String silenceFile = "res/Sounds/Music/10secondsofsilencee.wav";//silence
 		SoundLoops itemSoundLoop = new SoundLoops(itemFile);
 		SoundLoops deathSoundLoop = new SoundLoops(deathFile);
+		SoundLoops silenceSoundLoop = new SoundLoops(silenceFile);
 		itemSoundLoop.reduceSound(10f);
 		deathSoundLoop.reduceSound(7f);
 		VolumeSlider.adjustSFX(itemSoundLoop);
 		VolumeSlider.adjustSFX(deathSoundLoop);
 		this.itemSoundLoop = itemSoundLoop;
 		this.chainChompDeathSoundLoop = deathSoundLoop;
+		this.silenceSoundLoop = silenceSoundLoop;//Game.menuSoundLoops.get(Game.menuSoundLoops.size()-1);
 		movingTimer1 = System.currentTimeMillis() + 2000;
 		movingTimer2 = System.currentTimeMillis() + 2000;
 		movingTimer3 = System.currentTimeMillis() + 2000;
-		chain1X = (int)x;
-		chain1Y = (int)y-30;
-		chain2X = (int)x;
-		chain2Y = (int)y-30;
-		chain3X = (int)x;
-		chain3Y = (int)y-30;
+		chain1X = (int)x-5;
+		chain1Y = (int)y+30;
+		chain2X = (int)x-5;
+		chain2Y = (int)y+30;
+		chain3X = (int)x-5;
+		chain3Y = (int)y+30;
+		EntityE chainChompNumber;
+//		for(int i = 0; i < game.ee.size(); i++){
+//			EntityE tempEnt = game.ee.get(i);
+//			if(tempEnt == this) 
+//				break;
+//			if(tempEnt.entityName().equals("chainChomp")) 
+//				chainChompNumber++;
+//		}
+		chainChompNumber = this;
+		this.chainChompNumber = chainChompNumber;
+		chainChompBall1 = new ChainChompChainFX(chain1X+this.getBounds().width/2,chain1Y, tex, game,chainChompNumber);
+		chainChompBall2 = new ChainChompChainFX(chain2X+this.getBounds().width/2,chain2Y, tex, game,chainChompNumber,chainChompBall1,0);
+		chainChompBall3 = new ChainChompChainFX(chain3X+this.getBounds().width/2,chain3Y, tex, game,chainChompNumber,chainChompBall2,1);
+		game.getController().addEntity(chainChompBall1);//,0+(3*chainChompNumber)));
+		game.getController().addEntity(chainChompBall2);//,1+(3*chainChompNumber)));
+		game.getController().addEntity(chainChompBall3);//,2+(3*chainChompNumber)));
+		
+//		game.getController().addEntity(new ChainChompChainFX(chain1X+this.getBounds().width/2,chain1Y, tex, game,chainChompNumber));//,0+(3*chainChompNumber)));
+//		game.getController().addEntity(new ChainChompChainFX(chain2X+this.getBounds().width/2,chain2Y, tex, game,chainChompNumber));//,1+(3*chainChompNumber)));
+//		game.getController().addEntity(new ChainChompChainFX(chain3X+this.getBounds().width/2,chain3Y, tex, game,chainChompNumber));//,2+(3*chainChompNumber)));
 	}
 
 	public void tick(){
@@ -104,6 +134,10 @@ public class ChainChompItem extends GameObject implements EntityE {
 		if(keepChomping) {
 			animChompinL.setCount(0);
 			animChompinR.setCount(0);
+			silenceSoundLoop.stop();
+			silenceSoundLoop.setFramePosition(0);
+			silenceSoundLoop.setSoundLoopBoolean(false);
+			silenceTracker = 0;
 			keepChomping = false;
 			chompingLeft = false;
 			chompingRight = false;
@@ -120,7 +154,7 @@ public class ChainChompItem extends GameObject implements EntityE {
 		if(tempEntC != null) {
 			if(tempEntC.entityName().equals("BuzzyBeetleShell")) 
 				game.getHUD().setScore(500);
-			else if(tempEntC.entityName().equals("BulletBill")) 
+			else //if(tempEntC.entityName().equals("BulletBill")) 
 				game.getHUD().setScore(200);
 			game.getController().removeEntity(tempEntC);
 			tempEntC = null;
@@ -134,6 +168,7 @@ public class ChainChompItem extends GameObject implements EntityE {
 				scoreFollowMe = false;
 				Game.scoreFollowingBoolean = false;
 			}
+			removeChain();
 			game.ee.remove(this);
 		}
 		else if(chainChompisDead) {
@@ -171,8 +206,10 @@ public class ChainChompItem extends GameObject implements EntityE {
 				x += velX;
 			else
 				velX = 0;
-			if(y < -18)
+			if(y < -118) {
+				removeChain();
 				game.ee.remove(this);
+			}
 			if(movingTimer1 < System.currentTimeMillis()) {
 				if(movingTimer2 >= movingTimer3) {
 					if(movingTimer2Boolean == false) {
@@ -213,9 +250,9 @@ public class ChainChompItem extends GameObject implements EntityE {
 				for(int i = 0; i < game.ea.size(); i++){
 					EntityA tempEnt = game.ea.get(i);
 					if(Physics.Collision(this, tempEnt)){
-						chomped = new ChompFX(tempEnt.getX()+4,tempEnt.getY()+4,"Fireball");
-						game.getController().addEntity(chomped);
+						game.fireballSplash(tempEnt.getX(), tempEnt.getY());
 						game.ea.remove(tempEnt);
+						Game.soundFireballPop();
 						//MAKESOUND
 						return;
 					}
@@ -277,8 +314,7 @@ public class ChainChompItem extends GameObject implements EntityE {
 								Game.currentEECollisionWidth = this.getBounds().getWidth();
 								game.getHUD().setEnemyHitPauseTimer(System.currentTimeMillis() + 1300);
 								game.setWaitToPause(System.currentTimeMillis() + 2000);
-								scoreFollowMe = true;
-								Game.scoreFollowingBoolean = true;
+								setScoreFollowersFalse();
 							}
 							ebMarked = -1;
 						}
@@ -357,8 +393,7 @@ public class ChainChompItem extends GameObject implements EntityE {
 							Game.currentEECollisionWidth = this.getBounds().getWidth();
 							game.getHUD().setEnemyHitPauseTimer(System.currentTimeMillis() + 1300);
 							game.setWaitToPause(System.currentTimeMillis() + 2000);
-							scoreFollowMe = true;
-							Game.scoreFollowingBoolean = true;
+							setScoreFollowersFalse();
 							if(tempEntC.entityName().equals("BuzzyBeetleShell")) 
 								HUD.currentScoreFromChainChomp = "500";
 							else if(tempEntC.entityName().equals("BulletBill")) 
@@ -393,6 +428,17 @@ public class ChainChompItem extends GameObject implements EntityE {
 		if(g2d == null)
 			g2d = (Graphics2D)g.create();
 		if(keepChomping && Game.isPaused()) {
+			if(!silenceSoundLoop.getSoundLoopBoolean() && !silenceSoundLoop.clipIsActive()) {
+				silenceSoundLoop.setSoundLoopBoolean(true);
+				silenceSoundLoop.play();
+				if(!Game.itemPauseSoundLoop.clipIsActive()) {
+					Game.itemPauseSoundLoop.setFramePosition(0);
+					Game.itemPauseSoundLoop.play();
+				}
+			}
+			int i = 0;
+			if(silenceSoundLoop.getLongFramePosition() != 0)
+				i = (int)silenceSoundLoop.getLongFramePosition() / (int)(2368);//(4736);
 			if((animChompinL.getCount() == 5 || animChompinR.getCount() == 5) && (tempEntC != null || tempEntB != null)) {
 				if(tempEntB != null) {
 					if(this.itemSoundLoop.getSoundLoopBoolean() == false) {
@@ -401,7 +447,7 @@ public class ChainChompItem extends GameObject implements EntityE {
 					}
 					HUD.currentScoreFromChainChomp = "";
 					game.getHUD().setScore(200);
-					chomped = new ChompFX(tempEntB.getX(),tempEntB.getY(),tempEntB.enemyType());
+					chomped = new ChompFX(game,tempEntB.getX(),tempEntB.getY(),tempEntB.enemyType());
 					game.getController().addEntity(chomped);
 					game.getController().removeEntity(tempEntB);
 				}
@@ -422,16 +468,24 @@ public class ChainChompItem extends GameObject implements EntityE {
 						HUD.currentScoreFromChainChomp = "200";
 						game.getHUD().setScore(200);
 					}
-					chomped = new ChompFX(tempEntC.getX(),tempEntC.getY(),tempEntC.entityName());
+					chomped = new ChompFX(game,tempEntC.getX(),tempEntC.getY(),tempEntC.entityName());
 					game.getController().addEntity(chomped);
 					game.getController().removeEntity(tempEntC);
 				}
 				tempEntB = null;
 				tempEntC = null;
 			}
-			if(System.currentTimeMillis() % 60 == 0 && (animChompinL.getCount() != 10 || animChompinR.getCount() != 10)) {
+//			if(System.currentTimeMillis() % 60 == 0 && (animChompinL.getCount() != 10 || animChompinR.getCount() != 10)) {
+//				this.animChompinL.runAnimation();
+//				this.animChompinR.runAnimation();
+//			}
+			if(i != silenceTracker && (animChompinL.getCount() != 10 || animChompinR.getCount() != 10)) {
 				this.animChompinL.runAnimation();
 				this.animChompinR.runAnimation();
+				this.animChompinL.nextFrame();
+				this.animChompinR.nextFrame();
+				this.animChompinL.setCount(i);
+				this.animChompinR.setCount(i);
 			}
 			if(animChompinL.getCount() == 10 || animChompinR.getCount() == 10) {
 				anim.drawAnimation(g, x, y, 0);
@@ -448,6 +502,8 @@ public class ChainChompItem extends GameObject implements EntityE {
 				else
 					anim.drawAnimation(g, x, y, 0);
 			}
+			if(silenceTracker != i)
+				silenceTracker = i;
 		}
 		else {
 			if(chainChompisDead)
@@ -466,6 +522,42 @@ public class ChainChompItem extends GameObject implements EntityE {
 		}
 	}
 	
+	private void removeChain() {
+		int tracker = 0;
+		for(int i = 0; i < game.ef.size(); i++) {
+			EntityF tempEnt = game.ef.get(i);
+			if(tempEnt.entityName().equals("chainChompChainFX")) {
+				tracker++;
+				//if(chainChompNumber - (int)Math.floor(tracker/3) == 0) {
+				if(chainChompBall1 == tempEnt) {
+					game.ef.remove(i);
+					if(!game.ef.isEmpty()) {
+						if(game.ef.get(i).entityName().equals("chainChompChainFX")) {
+							game.ef.remove(i);
+							if(!game.ef.isEmpty()) {
+								if(game.ef.get(i).entityName().equals("chainChompChainFX")) {
+									game.ef.remove(i);
+								}
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	public void setScoreFollowersFalse() {
+		for(int e = 0; e < game.ee.size(); e++){
+			EntityE tempEntE = game.ee.get(e);
+			if(this == tempEntE)
+				game.ee.get(e).setScoreFollowMe(true);
+			else
+				game.ee.get(e).setScoreFollowMe(false);
+		}
+		Game.scoreFollowingBoolean = true;
+	}
+	
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, 30, 28);
 	}
@@ -476,6 +568,34 @@ public class ChainChompItem extends GameObject implements EntityE {
 
 	public double getY() {
 		return y;
+	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return velX;
+	}
+
+	public double getVelY() {
+		return velY;
+	}
+
+	public void setVelX(double velX) {
+		this.velX = velX;
+	}
+
+	public void setVelY(double velY) {
+		this.velY = velY;
+	}
+	
+	public void setScoreFollowMe(boolean b) {
+		this.scoreFollowMe = b;
 	}
 
 	public String entityName() {
@@ -491,6 +611,8 @@ public class ChainChompItem extends GameObject implements EntityE {
 	}
 	
 	public void setEntityEDead(boolean dead) {
+		if(dead) 
+			removeChain();
 		this.chainChompisDead = dead;
 	}
 	

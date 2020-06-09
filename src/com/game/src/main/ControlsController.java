@@ -3,9 +3,14 @@ package com.game.src.main;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import com.github.strikerx3.jxinput.XInputDevice;
 import com.github.strikerx3.jxinput.natives.XInputConstants;
+
+import net.java.games.input.SpecialCases;
+import net.java.games.input.SwitchedValues;
+import net.java.games.input.example.ReadAllEvents;
 
 public class ControlsController {
 	private Game game;
@@ -15,6 +20,7 @@ public class ControlsController {
 	public static boolean[] gamepadButtonHolderClicked;
 	public static boolean[] backOnGamepadButtonHolder;
 	public static int buttonToChange = 0;
+	private int textSoundCount = 0;
 	private int upKeyInt = 22;
 	private int downKeyInt = 18;
 	private int leftKeyInt = 0;
@@ -81,7 +87,7 @@ public class ControlsController {
 		tex.changeBufferedImagesXInput(shootKeyXDevice, XInputConstants.XINPUT_GAMEPAD_A);
 		tex.changeBufferedImagesXInput(itemKeyXDevice, XInputConstants.XINPUT_GAMEPAD_X);
 		tex.changeBufferedImagesXInput(pauseKeyXDevice, XInputConstants.XINPUT_GAMEPAD_START);
-		tex.changeBufferedImagesXInput(cancelKeyXDevice, XInputConstants.XINPUT_GAMEPAD_BACK);
+		tex.changeBufferedImagesXInput(cancelKeyXDevice, XInputConstants.XINPUT_GAMEPAD_B);
 		
 		upKeyDirectInput = tex.upButtonImageDirectInput;
 		downKeyDirectInput = tex.downButtonImageDirectInput;
@@ -91,15 +97,29 @@ public class ControlsController {
 		itemKeyDirectInput = tex.itemButtonImageDirectInput;
 		pauseKeyDirectInput = tex.pauseButtonImageDirectInput;
 		cancelKeyDirectInput = tex.cancelButtonImageDirectInput;
+		
+		//tex.changeBufferedImagesDirectInput(SpecialCases., i);
 	}
 	public void draw(Graphics g) {
 		//g.drawImage(gamepadButtonHolder,Game.WIDTH-51,305,null);
 		//g.drawImage(dotdotdot[2],524+30,263,null);//524+26,232
 		if(System.currentTimeMillis()+2000 < buttonChangeTimer) {
+			if(textSoundCount == 0)
+				Game.smb3TextSoundLoop.play();
+			if(textSoundCount != 1)
+				textSoundCount = 1;
 			g.drawImage(dotdotdot[0],524+30,263,null);
 		}else if(System.currentTimeMillis()+1000 < buttonChangeTimer) {
+			if(textSoundCount == 1)
+				Game.smb3TextSoundLoop.play();
+			if(textSoundCount != 2)
+				textSoundCount = 2;
 			g.drawImage(dotdotdot[1],524+30,263,null);
 		}else if(System.currentTimeMillis() < buttonChangeTimer) {
+			if(textSoundCount == 2)
+				Game.smb3TextSoundLoop.play();
+			if(textSoundCount != 0)
+				textSoundCount = 0;
 			g.drawImage(dotdotdot[2],524+30,263,null);
 		}else if(buttonToChange != 0) {
 			buttonToChange = 0;
@@ -242,6 +262,10 @@ public class ControlsController {
 			tex.changeBufferedImagesXInput(image, XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON);
 		else if(XInputDevice.unknown == xInputConstant)
 			tex.changeBufferedImagesXInput(image, XInputConstants.XINPUT_GAMEPAD_UNKNOWN);
+		else if(XInputDevice.lTrigger == xInputConstant)
+			tex.changeBufferedImagesXInput(image, XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER);
+		else if(XInputDevice.rTrigger == xInputConstant)
+			tex.changeBufferedImagesXInput(image, XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER);
 		return;
 	}
 	public void updateControls() {
@@ -421,7 +445,7 @@ public class ControlsController {
 			upKeyInt = 57;
 			break;
 		default:
-			upKeyInt = 22;
+//			upKeyInt = 22;
 			break;
 		}
 
@@ -601,7 +625,7 @@ public class ControlsController {
 			downKeyInt = 57;
 			break;
 		default:
-			downKeyInt = 18;
+//			downKeyInt = 18;
 			break;
 		}
 
@@ -781,7 +805,7 @@ public class ControlsController {
 			leftKeyInt = 57;
 			break;
 		default:
-			leftKeyInt = 0;
+//			leftKeyInt = 0;
 			break;
 		}
 
@@ -961,7 +985,7 @@ public class ControlsController {
 			rightKeyInt = 57;
 			break;
 		default:
-			rightKeyInt = 3;
+//			rightKeyInt = 3;
 			break;
 		}
 
@@ -1141,7 +1165,7 @@ public class ControlsController {
 			shootKeyInt = 57;
 			break;
 		default:
-			shootKeyInt = 46;
+//			shootKeyInt = 46;
 			break;
 		}
 
@@ -1321,7 +1345,7 @@ public class ControlsController {
 			itemKeyInt = 57;
 			break;
 		default:
-			itemKeyInt = 4;
+//			itemKeyInt = 4;
 			break;
 		}
 
@@ -1501,7 +1525,7 @@ public class ControlsController {
 			pauseKeyInt = 57;
 			break;
 		default:
-			pauseKeyInt = 50;
+//			pauseKeyInt = 50;
 			break;
 		}
 
@@ -1681,7 +1705,7 @@ public class ControlsController {
 			cancelKeyInt = 57;
 			break;
 		default:
-			cancelKeyInt = 48;
+//			cancelKeyInt = 48;
 			break;
 		}
 		tex.changeBufferedImagesWASD(upKeyWASD, upKeyInt);
@@ -1693,48 +1717,85 @@ public class ControlsController {
 		tex.changeBufferedImagesWASD(pauseKeyWASD, pauseKeyInt);
 		tex.changeBufferedImagesWASD(cancelKeyWASD, cancelKeyInt);
 		
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_UP,upKeyXDevice);
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN,downKeyXDevice);
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT,leftKeyXDevice);
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT,rightKeyXDevice);
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_A,shootKeyXDevice);
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_X,itemKeyXDevice);
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_START,pauseKeyXDevice);
-		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_BACK,cancelKeyXDevice);
+		tex.changeBufferedImagesXInput(upKeyXDevice, XInputDevice.upKey);
+		tex.changeBufferedImagesXInput(downKeyXDevice, XInputDevice.downKey);
+		tex.changeBufferedImagesXInput(leftKeyXDevice, XInputDevice.leftKey);
+		tex.changeBufferedImagesXInput(rightKeyXDevice, XInputDevice.rightKey);
+		tex.changeBufferedImagesXInput(shootKeyXDevice, XInputDevice.shootKey);
+		tex.changeBufferedImagesXInput(itemKeyXDevice, XInputDevice.itemKey);
+		tex.changeBufferedImagesXInput(pauseKeyXDevice, XInputDevice.pauseKey);
+		tex.changeBufferedImagesXInput(cancelKeyXDevice, XInputDevice.cancelKey);
+		tex.changePressX(XInputDevice.itemKey);
+		
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_UP,upKeyXDevice);
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN,downKeyXDevice);
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT,leftKeyXDevice);
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT,rightKeyXDevice);
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_A,shootKeyXDevice);
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_X,itemKeyXDevice);
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_START,pauseKeyXDevice);
+//		xInputImageSorter(XInputConstants.XINPUT_GAMEPAD_BACK,cancelKeyXDevice);
 		
 		tex.changePressE(itemKeyInt);
-		if(XInputDevice.a == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_A);
-		else if(XInputDevice.b == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_B);
-		else if(XInputDevice.x == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_X);
-		else if(XInputDevice.y == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_Y);
-		else if(XInputDevice.up == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_UP);
-		else if(XInputDevice.down == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN);
-		else if(XInputDevice.left == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT);
-		else if(XInputDevice.right == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT);
-		else if(XInputDevice.lShoulder == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER);
-		else if(XInputDevice.rShoulder == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER);
-		else if(XInputDevice.lThumb == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB);
-		else if(XInputDevice.rThumb == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB);
-		else if(XInputDevice.start == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_START);
-		else if(XInputDevice.back == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_BACK);
-		else if(XInputDevice.guide == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON);
-		else if(XInputDevice.unknown == XInputConstants.XINPUT_GAMEPAD_X)
-			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_UNKNOWN);
+//		if(XInputDevice.a == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_A);
+//		else if(XInputDevice.b == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_B);
+//		else if(XInputDevice.x == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_X);
+//		else if(XInputDevice.y == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_Y);
+//		else if(XInputDevice.up == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_UP);
+//		else if(XInputDevice.down == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN);
+//		else if(XInputDevice.left == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT);
+//		else if(XInputDevice.right == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT);
+//		else if(XInputDevice.lShoulder == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER);
+//		else if(XInputDevice.rShoulder == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER);
+//		else if(XInputDevice.lThumb == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB);
+//		else if(XInputDevice.rThumb == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB);
+//		else if(XInputDevice.start == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_START);
+//		else if(XInputDevice.back == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_BACK);
+//		else if(XInputDevice.guide == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON);
+//		else if(XInputDevice.unknown == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_UNKNOWN);
+//		else if(XInputDevice.lTrigger == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER);
+//		else if(XInputDevice.rTrigger == XInputConstants.XINPUT_GAMEPAD_X)
+//			tex.changePressX(XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER);
+		if(ReadAllEvents.controllerName != null) {
+			tex.changeBufferedImagesDirectInput(upKeyDirectInput, SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.upKey));
+			tex.changeBufferedImagesDirectInput(downKeyDirectInput,  SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.downKey));
+			tex.changeBufferedImagesDirectInput(leftKeyDirectInput, SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.leftKey));
+			tex.changeBufferedImagesDirectInput(rightKeyDirectInput,  SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.rightKey));
+			tex.changeBufferedImagesDirectInput(shootKeyDirectInput,  SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.shootKey));
+			tex.changeBufferedImagesDirectInput(itemKeyDirectInput,  SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.itemKey));
+			tex.changeBufferedImagesDirectInput(pauseKeyDirectInput,  SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.pauseKey));
+			tex.changeBufferedImagesDirectInput(cancelKeyDirectInput,  SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.cancelKey));
+			tex.changePressDI(SpecialCases.buttonName(ReadAllEvents.controllerName, SwitchedValues.itemKey));
+		}
+		else {
+			tex.changeBufferedImagesDirectInput(upKeyDirectInput, SwitchedValues.upKey);
+			tex.changeBufferedImagesDirectInput(downKeyDirectInput, SwitchedValues.downKey);
+			tex.changeBufferedImagesDirectInput(leftKeyDirectInput, SwitchedValues.leftKey);
+			tex.changeBufferedImagesDirectInput(rightKeyDirectInput, SwitchedValues.rightKey);
+			tex.changeBufferedImagesDirectInput(shootKeyDirectInput, SwitchedValues.shootKey);
+			tex.changeBufferedImagesDirectInput(itemKeyDirectInput, SwitchedValues.itemKey);
+			tex.changeBufferedImagesDirectInput(pauseKeyDirectInput, SwitchedValues.pauseKey);
+			tex.changeBufferedImagesDirectInput(cancelKeyDirectInput, SwitchedValues.cancelKey);
+			tex.changePressDI(SwitchedValues.itemKey);
+		}
+		game.getHUD().setPressDI(tex.pressDI);
 	}
 	public void changeButtonHelper(String key) {
 		switch(buttonToChange) {
@@ -1996,6 +2057,262 @@ public class ControlsController {
 				break;
 			}
 			break;
+		case -18:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.upKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.upKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.upKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.upKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.upKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.upKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.upKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.upKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.upKey;
+				break;
+			default:
+				break;
+			}
+			break;
+		case -19:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.downKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.downKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.downKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.downKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.downKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.downKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.downKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.downKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.downKey;
+				break;
+			default:
+				break;
+			}
+			break;
+		case -20:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.leftKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.leftKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.leftKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.leftKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.leftKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.leftKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.leftKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.leftKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.leftKey;
+				break;
+			default:
+				break;
+			}
+			break;
+		case -21:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.rightKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.rightKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.rightKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.rightKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.rightKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.rightKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.rightKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.rightKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.rightKey;
+				break;
+			default:
+				break;
+			}
+			break;
+		case -22:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.shootKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.shootKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.shootKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.shootKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.shootKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.shootKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.shootKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.shootKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.shootKey;
+				break;
+			default:
+				break;
+			}
+			break;
+		case -23:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.itemKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.itemKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.itemKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.itemKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.itemKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.itemKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.itemKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.itemKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.itemKey;
+				break;
+			default:
+				break;
+			}
+			break;
+		case -24:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.pauseKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.pauseKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.pauseKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.pauseKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.pauseKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.pauseKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.pauseKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.pauseKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.pauseKey;
+				break;
+			default:
+				break;
+			}
+			break;
+		case -25:
+			Game.writeMultipleString.add(String.valueOf(SwitchedValues.cancelKey));
+			switch(key) {
+			case "upKey":
+				SwitchedValues.upKey = SwitchedValues.cancelKey;
+				break;
+			case "downKey":
+				SwitchedValues.downKey = SwitchedValues.cancelKey;
+				break;
+			case "leftKey":
+				SwitchedValues.leftKey = SwitchedValues.cancelKey;
+				break;
+			case "rightKey":
+				SwitchedValues.rightKey = SwitchedValues.cancelKey;
+				break;
+			case "shootKey":
+				SwitchedValues.shootKey = SwitchedValues.cancelKey;
+				break;
+			case "itemKey":
+				SwitchedValues.itemKey = SwitchedValues.cancelKey;
+				Game.settingsSetup = false;
+				break;
+			case "pauseKey":
+				SwitchedValues.pauseKey = SwitchedValues.cancelKey;
+				break;
+			case "cancelKey":
+				SwitchedValues.cancelKey = SwitchedValues.cancelKey;
+				break;
+			default:
+				break;
+			}
+			break;
 		default:
 			break;
 		}
@@ -2056,6 +2373,72 @@ public class ControlsController {
 		case -9:
 			Game.cancelKey = key;
 			Game.writeOnceProperty = "cancelKey";
+			break;
+		default:
+			break;
+		}
+		if (buttonToChange != 0) {
+			updateControls();
+			Game.writeOnceToSettings = true;
+			Game.writeOnceString = String.valueOf(key);
+		}
+		buttonChangeTimer = 0;
+		return;
+	}
+	public void changeDirectInputButton(String key) {
+		if(buttonToChange!=0) {
+			if(key.equals(SwitchedValues.upKey) && buttonToChange != -18)
+				changeButtonHelper("upKey");
+			else if(key.equals(SwitchedValues.downKey) && buttonToChange != -19)
+				changeButtonHelper("downKey");
+			else if(key.equals(SwitchedValues.leftKey) && buttonToChange != -20)
+				changeButtonHelper("leftKey");
+			else if(key.equals(SwitchedValues.rightKey) && buttonToChange != -21)
+				changeButtonHelper("rightKey");
+			else if(key.equals(SwitchedValues.shootKey) && buttonToChange != -22)
+				changeButtonHelper("shootKey");
+			else if(key.equals(SwitchedValues.itemKey) && buttonToChange != -23)
+				changeButtonHelper("itemKey");
+			else if(key.equals(SwitchedValues.pauseKey) && buttonToChange != -24)
+				changeButtonHelper("pauseKey");
+			else if(key.equals(SwitchedValues.cancelKey) && buttonToChange != -25)
+				changeButtonHelper("cancelKey");
+		}
+		switch(buttonToChange) {
+		case 0:
+			break;
+		case -18:
+			SwitchedValues.upKey = key;
+			Game.writeOnceProperty = "upKeyDirectInput";
+			break;
+		case -19:
+			SwitchedValues.downKey = key;
+			Game.writeOnceProperty = "downKeyDirectInput";
+			break;
+		case -20:
+			SwitchedValues.leftKey = key;
+			Game.writeOnceProperty = "leftKeyDirectInput";
+			break;
+		case -21:
+			SwitchedValues.rightKey = key;
+			Game.writeOnceProperty = "rightKeyDirectInput";
+			break;
+		case -22:
+			SwitchedValues.shootKey = key;
+			Game.writeOnceProperty = "shootKeyDirectInput";
+			break;
+		case -23:
+			SwitchedValues.itemKey = key;
+			Game.writeOnceProperty = "itemKeyDirectInput";
+			Game.settingsSetup = false;
+			break;
+		case -24:
+			SwitchedValues.pauseKey = key;
+			Game.writeOnceProperty = "pauseKeyDirectInput";
+			break;
+		case -25:
+			SwitchedValues.cancelKey = key;
+			Game.writeOnceProperty = "cancelKeyDirectInput";
 			break;
 		default:
 			break;
@@ -2136,6 +2519,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
@@ -2204,6 +2595,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
@@ -2272,6 +2671,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
@@ -2340,6 +2747,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_A:
@@ -2408,6 +2823,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_A) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_A) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_X:
@@ -2476,6 +2899,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_X) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_X) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_START:
@@ -2544,6 +2975,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_START) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_START) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		case XInputConstants.XINPUT_GAMEPAD_BACK:
@@ -2612,6 +3051,14 @@ public class ControlsController {
 				XInputDevice.unknown = currentButton;
 				Game.writeMultipleString.add(String.valueOf(currentButton));
 				Game.writeMultipleProperty.add("unknownButton");
+			}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_BACK) {
+				XInputDevice.lTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("lTriggerButton");
+			}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_BACK) {
+				XInputDevice.rTrigger = currentButton;
+				Game.writeMultipleString.add(String.valueOf(currentButton));
+				Game.writeMultipleProperty.add("rTriggerButton");
 			}
 			break;
 		default:
@@ -2651,6 +3098,7 @@ public class ControlsController {
 		return;
 	}
 	public void changeButtonXDeviceOrganizer(short key, short xInputDeviceButton, String button ) {
+		System.out.println("button = "+ button + "key = " + key);
 		if(XInputConstants.XINPUT_GAMEPAD_A == key) {
 				xInputDeviceButton = XInputDevice.aFake;
 				Game.writeMultipleProperty.add(button);
@@ -2731,6 +3179,16 @@ public class ControlsController {
 			Game.writeMultipleProperty.add(button);
 			Game.writeMultipleString.add(String.valueOf(XInputDevice.unknownFake));
 		}
+		else if(XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER == key) {
+			xInputDeviceButton = XInputDevice.lTriggerFake;
+			Game.writeMultipleProperty.add(button);
+			Game.writeMultipleString.add(String.valueOf(XInputDevice.lTriggerFake));
+		}
+		else if(XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER == key) {
+			xInputDeviceButton = XInputDevice.rTriggerFake;
+			Game.writeMultipleProperty.add(button);
+			Game.writeMultipleString.add(String.valueOf(XInputDevice.rTriggerFake));
+		}
 		else {
 			xInputDeviceButton = key;
 			Game.writeMultipleProperty.add(button);
@@ -2749,6 +3207,8 @@ public class ControlsController {
 		short x1 = -1;
 		short start1 = -1;
 		short back1 = -1;
+		
+		//if the fakes are equal to the constant
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP)
 			up1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP)
@@ -2781,6 +3241,10 @@ public class ControlsController {
 			up1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP)
 			up1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP)
+			up1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP)
+			up1 = XInputDevice.rTrigger;
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN)
 			down1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN)
@@ -2813,6 +3277,10 @@ public class ControlsController {
 			down1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN)
 			down1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN)
+			down1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN)
+			down1 = XInputDevice.rTrigger;
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT)
 			left1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT)
@@ -2845,6 +3313,10 @@ public class ControlsController {
 			left1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT)
 			left1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT)
+			left1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT)
+			left1 = XInputDevice.rTrigger;
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT)
 			right1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT)
@@ -2877,6 +3349,10 @@ public class ControlsController {
 			right1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT)
 			right1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT)
+			right1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT)
+			right1 = XInputDevice.rTrigger;
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_A)
 			a1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_A)
@@ -2909,6 +3385,10 @@ public class ControlsController {
 			a1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_A)
 			a1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_A)
+			a1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_A)
+			a1 = XInputDevice.rTrigger;
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_X)
 			x1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_X)
@@ -2941,6 +3421,10 @@ public class ControlsController {
 			x1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_X)
 			x1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_X)
+			x1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_X)
+			x1 = XInputDevice.rTrigger;
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_START)
 			start1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_START)
@@ -2973,6 +3457,10 @@ public class ControlsController {
 			start1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_START)
 			start1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_START)
+			start1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_START)
+			start1 = XInputDevice.rTrigger;
 		if(XInputDevice.upFake == XInputConstants.XINPUT_GAMEPAD_BACK)
 			back1 = XInputDevice.up;
 		else if(XInputDevice.downFake == XInputConstants.XINPUT_GAMEPAD_BACK)
@@ -3005,6 +3493,10 @@ public class ControlsController {
 			back1 = XInputDevice.guide;
 		else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_BACK)
 			back1 = XInputDevice.unknown;
+		else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_BACK)
+			back1 = XInputDevice.lTrigger;
+		else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_BACK)
+			back1 = XInputDevice.rTrigger;
 		/**/
 		if(buttonToChange!=0) {
 			if((buttonToChange == -10 && key == up1) ||
@@ -3036,12 +3528,12 @@ public class ControlsController {
 				replaceCheck = true;
 			}
 			else if(key == a1) { //&& buttonToChange != -14) {
-				System.out.println("replaceCheck in A");
+//				System.out.println("replaceCheck in A");
 				changeButtonXDeviceNewHelper(a1,XInputConstants.XINPUT_GAMEPAD_A);
 				replaceCheck = true;
 			}
 			else if(key == x1) { //&& buttonToChange != -15) {
-				System.out.println("replaceCheck in X");
+//				System.out.println("replaceCheck in X");
 				changeButtonXDeviceNewHelper(x1,XInputConstants.XINPUT_GAMEPAD_X);
 				Game.settingsSetup = false;
 				replaceCheck = true;
@@ -3092,6 +3584,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_UP) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}	
 			Game.writeOnceString = String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_UP);
@@ -3133,6 +3629,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}
 			Game.writeOnceString = String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN);
@@ -3174,6 +3674,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}
 
@@ -3216,6 +3720,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}
 			Game.writeOnceString = String.valueOf(XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT);
@@ -3257,6 +3765,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_A) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_A) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_A) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}
 			Game.writeOnceString = String.valueOf(XInputConstants.XINPUT_GAMEPAD_A);
@@ -3299,6 +3811,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_X) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_X) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_X) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}
 
@@ -3342,6 +3858,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_START) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_START) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_START) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}	
 			Game.writeOnceString = String.valueOf(XInputConstants.XINPUT_GAMEPAD_START);
@@ -3383,6 +3903,10 @@ public class ControlsController {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.guide, "guideButton");
 				}else if(XInputDevice.unknownFake == XInputConstants.XINPUT_GAMEPAD_BACK) {
 					this.changeButtonXDeviceOrganizer(key, XInputDevice.unknown, "unknownButton");
+				}else if(XInputDevice.lTriggerFake == XInputConstants.XINPUT_GAMEPAD_BACK) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.lTrigger, "lTriggerButton");
+				}else if(XInputDevice.rTriggerFake == XInputConstants.XINPUT_GAMEPAD_BACK) {
+					this.changeButtonXDeviceOrganizer(key, XInputDevice.rTrigger, "rTriggerButton");
 				}
 			}
 			Game.writeOnceString = String.valueOf(XInputConstants.XINPUT_GAMEPAD_BACK);
@@ -3444,6 +3968,12 @@ public class ControlsController {
 			case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
 				Game.writeOnceProperty = "unknownButton";
 				break;
+			case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+				Game.writeOnceProperty = "lTriggerButton";
+				break;
+			case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+				Game.writeOnceProperty = "rTriggerButton";
+				break;
 			default:
 				break;
 			}
@@ -3463,7 +3993,121 @@ public class ControlsController {
 		//System.out.println("XInputDevice.x = " + XInputDevice.x);
 		return;
 	}
-
+	
+	public void changeButtonXDeviceEmulated(short i) throws IOException {
+		short buttonImOn = 0;
+		switch(buttonToChange) {
+		case -10:
+			buttonImOn = XInputDevice.upKey;
+			break;
+		case -11:
+			buttonImOn = XInputDevice.downKey;
+			break;
+		case -12:
+			buttonImOn = XInputDevice.leftKey;
+			break;
+		case -13:
+			buttonImOn = XInputDevice.rightKey;
+			break;
+		case -14:
+			buttonImOn = XInputDevice.shootKey;
+			break;
+		case -15:
+			buttonImOn = XInputDevice.itemKey;
+			break;
+		case -16:
+			buttonImOn = XInputDevice.pauseKey;
+			break;
+		case -17:
+			buttonImOn = XInputDevice.cancelKey;
+			break;
+		default:
+			break;
+		}
+		if(XInputDevice.upKey == i) {
+			XInputDevice.upKey = buttonImOn;
+			LeaderboardController.writeToSettings("upKeyXInput", String.valueOf(buttonImOn));
+		}
+		else if(XInputDevice.downKey == i) {
+			XInputDevice.downKey = buttonImOn;
+			LeaderboardController.writeToSettings("downKeyXInput", String.valueOf(buttonImOn));
+		}
+		else if(XInputDevice.leftKey == i) {
+			XInputDevice.leftKey = buttonImOn;
+			LeaderboardController.writeToSettings("leftKeyXInput", String.valueOf(buttonImOn));
+		}
+		else if(XInputDevice.rightKey == i) {
+			XInputDevice.rightKey = buttonImOn;
+			LeaderboardController.writeToSettings("rightKeyXInput", String.valueOf(buttonImOn));
+		}
+		else if(XInputDevice.shootKey == i) {
+			XInputDevice.shootKey = buttonImOn;
+			LeaderboardController.writeToSettings("shootKeyXInput", String.valueOf(buttonImOn));
+		}
+		else if(XInputDevice.itemKey == i) {
+			XInputDevice.itemKey = buttonImOn;
+			LeaderboardController.writeToSettings("itemKeyXInput", String.valueOf(buttonImOn));
+		}
+		else if(XInputDevice.pauseKey == i) {
+			XInputDevice.pauseKey = buttonImOn;
+			LeaderboardController.writeToSettings("pauseKeyXInput", String.valueOf(buttonImOn));
+		}
+		else if(XInputDevice.cancelKey == i) {
+			XInputDevice.cancelKey = buttonImOn;
+			LeaderboardController.writeToSettings("cancelKeyXInput", String.valueOf(buttonImOn));
+		}
+		switch(buttonToChange) {
+		case -10:
+			XInputDevice.upKey = i;
+			LeaderboardController.writeToSettings("upKeyXInput", String.valueOf(i));
+			break;
+		case -11:
+			XInputDevice.downKey = i;
+			LeaderboardController.writeToSettings("downKeyXInput", String.valueOf(i));
+			break;
+		case -12:
+			XInputDevice.leftKey = i;
+			LeaderboardController.writeToSettings("leftKeyXInput", String.valueOf(i));
+			break;
+		case -13:
+			XInputDevice.rightKey = i;
+			LeaderboardController.writeToSettings("rightKeyXInput", String.valueOf(i));
+			break;
+		case -14:
+			XInputDevice.shootKey = i;
+			LeaderboardController.writeToSettings("shootKeyXInput", String.valueOf(i));
+			break;
+		case -15:
+			XInputDevice.itemKey = i;
+			LeaderboardController.writeToSettings("itemKeyXInput", String.valueOf(i));
+			game.getLeaderboard().changePressXImageEmulated();
+			break;
+		case -16:
+			XInputDevice.pauseKey = i;
+			LeaderboardController.writeToSettings("pauseKeyXInput", String.valueOf(i));
+			break;
+		case -17:
+			XInputDevice.cancelKey = i;
+			LeaderboardController.writeToSettings("cancelKeyXInput", String.valueOf(i));
+			break;
+		default:
+			break;
+		}
+		tex.changeBufferedImagesXInput(upKeyXDevice, XInputDevice.upKey);
+		tex.changeBufferedImagesXInput(downKeyXDevice,  XInputDevice.downKey);
+		tex.changeBufferedImagesXInput(leftKeyXDevice,  XInputDevice.leftKey);
+		tex.changeBufferedImagesXInput(rightKeyXDevice,  XInputDevice.rightKey);
+		tex.changeBufferedImagesXInput(shootKeyXDevice,  XInputDevice.shootKey);
+		tex.changeBufferedImagesXInput(itemKeyXDevice,  XInputDevice.itemKey);
+		tex.changeBufferedImagesXInput(pauseKeyXDevice,  XInputDevice.pauseKey);
+		tex.changeBufferedImagesXInput(cancelKeyXDevice,  XInputDevice.cancelKey);
+		XInputDevice.reset();
+		Game.enterButtonPushedDown = false;
+		Game.escapePressedNegateAction = false;
+		buttonChangeTimer = 0;
+		Game.settingsSetup = false;
+	}
+	
 	public void changeButtonDirectInputHelper() {
 		return;
 	}

@@ -14,7 +14,10 @@ public class GreenShell extends GameObject implements EntityC{
 	private Textures tex;
 	private Game game;
 	private String entityName = "GreenShell";
+	private boolean flicker = false;
 	private boolean greenShellisDead = false;
+	private long flickerTimer1 = 0;
+	private long flickerTimer2 = 0;
 	Animation anim;
 	Animation animDead;
 	SoundLoops shellHit;
@@ -45,6 +48,7 @@ public class GreenShell extends GameObject implements EntityC{
 					EntityA tempEnt = game.ea.get(i);
 					
 					if(Physics.Collision(this, tempEnt)){
+						game.getHUD().setScore(200);
 						greenShellisDead = true;
 						if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
 							game.ea.remove(game.ea.getLast());
@@ -54,7 +58,7 @@ public class GreenShell extends GameObject implements EntityC{
 			}
 			else
 				y += 0.75;
-			if (y+this.getHeight() >= game.getHeight())
+			if (y >= game.getHeight())
 				game.ec.remove(this);
 			/*
 			if(Physics.Collision(this, game.eb)){
@@ -102,6 +106,20 @@ public class GreenShell extends GameObject implements EntityC{
 	}
 	
 	public void render(Graphics g){
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
 		if(greenShellisDead)
 			animDead.drawAnimation(g, x, y, 0);
 		else
@@ -148,6 +166,10 @@ public class GreenShell extends GameObject implements EntityC{
 		greenShellisDead = dead;
 	}
 
+	public void renderFlicker() {
+		flicker = true;
+	}
+	
 	public void close() {
 		shellHit.close();
 	}

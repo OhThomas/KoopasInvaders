@@ -11,5 +11,8 @@ public interface EntityF {
 	
 	public double getX();
 	public double getY();
+	public double getVelY();
+	public double getVelX();
+	public String entityName();
 	public void close();
 }

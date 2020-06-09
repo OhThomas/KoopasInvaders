@@ -207,6 +207,33 @@ public class BombOmbShrapnel2 extends GameObject implements EntityE  {
 	public double getY() {
 		return y;
 	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return velX;
+	}
+
+	public double getVelY() {
+		return velY;
+	}
+
+	public void setVelX(double velX) {
+		this.velX = velX;
+	}
+
+	public void setVelY(double velY) {
+		this.velY = velY;
+	}
+	
+	public void setScoreFollowMe(boolean b) {
+	}
 
 	public String entityName() {
 		return "bombOmbShrapnel2";

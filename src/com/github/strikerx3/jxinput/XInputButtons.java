@@ -14,6 +14,7 @@ public class XInputButtons {
     public boolean lThumb, rThumb;
     public boolean up, down, left, right;
     public boolean guide, unknown;
+    public boolean lTrigger, rTrigger;
 
     protected XInputButtons() {
         reset();
@@ -29,6 +30,7 @@ public class XInputButtons {
         lThumb = rThumb = false;
         up = down = left = right = false;
         guide = unknown = false;
+        lTrigger = rTrigger = false;
     }
 
     /**
@@ -50,6 +52,9 @@ public class XInputButtons {
 
         lThumb = buttons.lThumb;
         rThumb = buttons.rThumb;
+        
+        lTrigger = buttons.lTrigger;
+        rTrigger = buttons.rTrigger;
         /*
         switch(XInputDevice.a) {
     	case XInputConstants.XINPUT_GAMEPAD_A:

@@ -5,6 +5,9 @@ import java.nio.ByteOrder;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.game.src.main.ControlsController;
+import com.game.src.main.Game;
+import com.game.src.main.Game.STATE;
 import com.github.strikerx3.jxinput.enums.XInputButton;
 import com.github.strikerx3.jxinput.exceptions.XInputNotLoadedException;
 import com.github.strikerx3.jxinput.listener.XInputDeviceListener;
@@ -39,10 +42,35 @@ public class XInputDevice {
     private static boolean defaultControls = true;
 
     private static XInputStateReader stateReader = XInputStatePreProcessedReader.INSTANCE;
+    public static Game game;
     public static boolean upHeld = false;
     public static boolean downHeld = false;
     public static boolean leftHeld = false;
     public static boolean rightHeld = false;
+    public static boolean shootPressed = false;
+    public static boolean itemPressed = false;
+    public static boolean pausePressed = false;
+    public static boolean cancelPressed = false;
+    public static boolean upReleased = false;
+    public static boolean downReleased = false;
+    public static boolean leftReleased = false;
+    public static boolean rightReleased = false;
+    public static boolean shootReleased = false;
+    public static boolean itemReleased = false;
+    public static boolean pauseReleased = false;
+    public static boolean cancelReleased = false;
+    public static boolean lTriggerPressed = false;
+    public static boolean lTriggerReleased = false;
+    public static boolean rTriggerPressed = false;
+    public static boolean rTriggerReleased = false;
+	public static short upKey = XInputConstants.XINPUT_GAMEPAD_DPAD_UP;
+	public static short downKey = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
+	public static short leftKey = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
+	public static short rightKey = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+	public static short shootKey = XInputConstants.XINPUT_GAMEPAD_A;
+	public static short itemKey = XInputConstants.XINPUT_GAMEPAD_X;
+	public static short pauseKey = XInputConstants.XINPUT_GAMEPAD_START;
+	public static short cancelKey = XInputConstants.XINPUT_GAMEPAD_B;
     public static short a = XInputConstants.XINPUT_GAMEPAD_A;
     public static short b = XInputConstants.XINPUT_GAMEPAD_B;
     public static short x = XInputConstants.XINPUT_GAMEPAD_X;
@@ -59,6 +87,8 @@ public class XInputDevice {
     public static short down = XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN;
     public static short left = XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT;
     public static short right = XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT;
+    public static short lTrigger = XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER;
+    public static short rTrigger = XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER;
     public static short aFake = 0;
     public static short bFake = 0;
     public static short xFake = 0;
@@ -75,6 +105,9 @@ public class XInputDevice {
     public static short downFake = 0;
     public static short leftFake = 0;
     public static short rightFake = 0;
+    public static short lTriggerFake = 0;
+    public static short rTriggerFake = 0;
+    private boolean controllerWasConnected = false;
     static {
         XInputDevice[] devices;
         if (XInputNatives.isLoaded()) {
@@ -206,7 +239,21 @@ public class XInputDevice {
      */
     public boolean poll() {
         if (!checkReturnCode(XInputNatives.pollDevice(playerNum, buffer))) {
-            return false;
+        	//Controller disconnected
+        	if(controllerWasConnected) {
+        		reset();
+        		if(Game.gameControllerInUse && !Game.gameControllerInUseDI) {
+        			//reset player controls now
+        			game.getPlayer().reset();
+        			if(Game.State != STATE.GAME && 
+        					!(Game.State == STATE.CONTROLS && System.currentTimeMillis() <ControlsController.buttonChangeTimer) &&
+        					!(Game.State == STATE.SET_SCORE && Game.selectorButtonPosition == 0)) 
+        					Game.keysAreInUse = false;
+        			Game.gameControllerInUse = false;
+        		}
+        		controllerWasConnected = false;
+        	}
+        	return false;
         }
         setConnected(true);
 
@@ -215,6 +262,8 @@ public class XInputDevice {
         stateReader.read(buffer, components);
 
         processDelta();
+        if(!controllerWasConnected)
+        	controllerWasConnected = true;
         return true;
     }
 
@@ -472,6 +521,8 @@ public class XInputDevice {
 	            buttons.rThumb = (btns & rThumb) != 0;
 	            buttons.guide = (btns & guide) != 0;
 	            buttons.unknown = (btns & unknown) != 0;
+//	            buttons.lTrigger = (btns & lTrigger) != 0;
+//	            buttons.rTrigger = (btns & rTrigger) != 0;
 	            /*
 	            switch(XInputDevice.up) {
 	        	case XInputConstants.XINPUT_GAMEPAD_A:
@@ -558,7 +609,24 @@ public class XInputDevice {
             axes.rt = (axes.rtRaw & 0xff) / 255f;
         }
     }
-    
+    public static void reset() {
+    	upHeld = false;
+    	downHeld = false;
+    	leftHeld = false;
+    	rightHeld = false;
+    	shootPressed = false;
+    	itemPressed = false;
+    	pausePressed = false;
+    	cancelPressed = false;
+    	upReleased = false;
+    	downReleased = false;
+    	leftReleased = false;
+    	rightReleased = false;
+    	shootReleased = false;
+    	itemReleased = false;
+    	pauseReleased = false;
+    	cancelReleased = false;
+    }
     public void changeButton(String s, short btn) {
     	switch(s) {
 	    	case "a":
@@ -609,9 +677,1393 @@ public class XInputDevice {
 	    	case "right":
 	    		this.right = btn;
 	    		break;
+	    	case "lTrigger":
+	    		this.lTrigger = btn;
+	    		break;
+	    	case "rTrigger":
+	    		this.rTrigger = btn;
+	    		break;
 	    	default:
 	    		break;
     	}
     	defaultControls = false;
+    }
+    public static void emulatedControls(Game game, int lTrigger, int rTrigger) {
+    	switch(upKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			upHeld = true;
+    			upReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			upHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!upHeld)
+    				upHeld = true;
+    			if(!upReleased)
+    				upReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(upHeld)
+    	    		upHeld = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!upHeld)
+    				upHeld = true;
+    			if(!upReleased)
+    				upReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(upHeld)
+    	    		upHeld = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
+    	switch(downKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			downHeld = true;
+    			downReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			downHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!downHeld)
+    				downHeld = true;
+    			if(!downReleased)
+    				downReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(downHeld)
+    	    		downHeld = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!downHeld)
+    				downHeld = true;
+    			if(!downReleased)
+    				downReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(downHeld)
+    	    		downHeld = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
+    	switch(leftKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			leftHeld = true;
+    			leftReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			leftHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!leftHeld)
+    				leftHeld = true;
+    			if(!leftReleased)
+    				leftReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(leftHeld)
+    	    		leftHeld = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!leftHeld)
+    				leftHeld = true;
+    			if(!leftReleased)
+    				leftReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(leftHeld)
+    	    		leftHeld = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
+    	switch(rightKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			rightHeld = true;
+    			rightReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			rightHeld = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!rightHeld)
+    				rightHeld = true;
+    			if(!rightReleased)
+    				rightReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(rightHeld)
+    	    		rightHeld = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!rightHeld)
+    				rightHeld = true;
+    			if(!rightReleased)
+    				rightReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(rightHeld)
+    	    		rightHeld = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
+    	switch(shootKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			shootPressed = true;
+    			shootReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			shootPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!shootPressed)
+    				shootPressed = true;
+    			if(!shootReleased)
+    				shootReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(shootPressed)
+    	    		shootPressed = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!shootPressed)
+    				shootPressed = true;
+    			if(!shootReleased)
+    				shootReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(shootPressed)
+    	    		shootPressed = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
+    	switch(itemKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			itemPressed = true;
+    			itemReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			itemPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!itemPressed)
+    				itemPressed = true;
+    			if(!itemReleased)
+    				itemReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(itemPressed)
+    	    		itemPressed = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!itemPressed)
+    				itemPressed = true;
+    			if(!itemReleased)
+    				itemReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(itemPressed)
+    	    		itemPressed = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
+    	switch(pauseKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			pausePressed = true;
+    			pauseReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			pausePressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!pausePressed)
+    				pausePressed = true;
+    			if(!pauseReleased)
+    				pauseReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(pausePressed)
+    	    		pausePressed = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!pausePressed)
+    				pausePressed = true;
+    			if(!pauseReleased)
+    				pauseReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(pausePressed)
+    	    		pausePressed = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
+    	switch(cancelKey) {
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_UP:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_UP)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_UP)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_DOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_DOWN)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_DOWN)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_LEFT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_LEFT)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_LEFT)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_DPAD_RIGHT:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.DPAD_RIGHT)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.DPAD_RIGHT)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_A:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.A)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.A)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_B:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.B)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.B)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_X:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.X)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.X)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_Y:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.Y)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.Y)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_BACK:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.BACK)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.BACK)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_START:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.START)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.START)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_SHOULDER)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_SHOULDER)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_SHOULDER:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_SHOULDER)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_SHOULDER)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.LEFT_THUMBSTICK)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.LEFT_THUMBSTICK)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_THUMB:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.RIGHT_THUMBSTICK)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.RIGHT_THUMBSTICK)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_GUIDE_BUTTON:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.GUIDE_BUTTON)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.GUIDE_BUTTON)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_UNKNOWN:
+    		if(game.getDevice().getDelta().getButtons().isPressed(XInputButton.UNKNOWN)) {
+    			cancelPressed = true;
+    	    	cancelReleased = true;
+    		}
+    		if(game.getDevice().getDelta().getButtons().isReleased(XInputButton.UNKNOWN)) {
+    			cancelPressed = false;
+    		}
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_LEFT_TRIGGER:
+    		if(0.3 < lTrigger) {
+    			if(!cancelPressed)
+    				cancelPressed = true;
+    			if(!cancelReleased)
+    				cancelReleased = true;
+    	    }
+    	    else if(lTrigger == 0 && XInputDevice.lTriggerReleased){
+    	    	if(cancelPressed)
+    	    		cancelPressed = false;
+    	    }
+    		break;
+    	case XInputConstants.XINPUT_GAMEPAD_RIGHT_TRIGGER:
+    		if(0.3 < rTrigger) {
+    			if(!cancelPressed)
+    				cancelPressed = true;
+    			if(!cancelReleased)
+    				cancelReleased = true;
+    	    }
+    	    else if(rTrigger == 0 && XInputDevice.rTriggerReleased){
+    	    	if(cancelPressed)
+    	    		cancelPressed = false;
+    	    }
+    		break;
+    	default:
+    		break;
+    	}
     }
 }

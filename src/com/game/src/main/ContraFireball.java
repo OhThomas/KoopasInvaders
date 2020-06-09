@@ -12,6 +12,7 @@ public class ContraFireball extends GameObject implements EntityA {
 	
 	private Textures tex;
 	private Game game;
+	double starVel = 1;
 	
 	Animation anim;
 	
@@ -19,13 +20,14 @@ public class ContraFireball extends GameObject implements EntityA {
 		super(x, y);
 		this.tex = tex;
 		this.game = game;
-		
+		if(game.getPlayer().getMarioInvincible())
+			starVel = 1.5;
 		anim = new Animation(5,tex.fireballContra[0],tex.fireballContra[1],tex.fireballContra[2],tex.fireballContra[3]);
 	}
 	
 	public void tick(){
 		if(!Physics.Collision(this, game.getBb())){
-			y -= 8;
+			y -= 8*starVel;
 			if (this.getY() <= -8)
 				game.ea.remove(this);
 			/*
@@ -61,7 +63,7 @@ public class ContraFireball extends GameObject implements EntityA {
 					}
 				}
 			}*/
-			y-=0.5;
+			y-=0.5*starVel;
 		}
 		anim.runAnimation();
 	}

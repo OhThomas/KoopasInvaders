@@ -23,12 +23,12 @@ public class Controller {
 	private LinkedList<EntityF> ef = new LinkedList<EntityF>();
 	private LinkedList<EntityF> efGarbageCollect = new LinkedList<EntityF>();
 	
-	EntityA enta;
-	EntityB entb;
-	EntityC entc;
-	EntityD entd;
-	EntityE ente;
-	EntityF entf;
+	EntityA enta;//player+fireballs
+	EntityB entb;//enemies
+	EntityC entc;//enemy projectiles
+	EntityD entd;//star+item balls
+	EntityE ente;//items
+	EntityF entf;//fx
 	private Textures tex;
 	private Game game;
 	private Enemy enemy;
@@ -96,11 +96,17 @@ public class Controller {
 	}
 	
 	public void render(Graphics g){
+		boolean secondRender = false;
 		//F CLASS
 		for(int i = 0; i < ef.size(); i++){
 			entf = ef.get(i);
-			
-			entf.render(g);
+
+			if(entf.entityName().equals("chainChompChainFX")) {
+				if(!secondRender)
+					secondRender = true;
+			}
+			else
+				entf.render(g);
 		}
 		//A CLASS
 		for(int i = 0; i < ea.size(); i++){
@@ -131,6 +137,14 @@ public class Controller {
 				ente = ee.get(i);
 				
 				ente.render(g);
+			}
+			if(secondRender) {
+				//F CLASS
+				for(int i = 0; i < ef.size(); i++){
+					entf = ef.get(i);
+					if(entf.entityName().equals("chainChompChainFX"))
+						entf.render(g);
+				}
 			}
 	}
 	

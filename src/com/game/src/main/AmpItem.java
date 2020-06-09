@@ -19,6 +19,9 @@ public class AmpItem extends GameObject implements EntityE {
 	Animation leftHitAnimation;
 	Animation rightHitAnimation;
 	Animation deathAnimation;
+	SoundLoops hitSound;
+	SoundLoops deadSound;
+	SoundLoops silenceSound;
 	protected double velX = 0;
 	protected double velY = 0;
 	protected double pathwayLineX = 0;
@@ -30,6 +33,7 @@ public class AmpItem extends GameObject implements EntityE {
 	private long velXActivatedTimer = 0;
 	private long hitTimer = 0;
 	private int hitDirectionInt = 0;
+	private int silenceTracker = 0;
 	public AmpItem(double x, double y, Textures tex, Game game) {
 		super(x, y);
 		this.tex = tex;
@@ -43,6 +47,30 @@ public class AmpItem extends GameObject implements EntityE {
 				tex.ampItemDeath[4],tex.ampItemDeath[5],tex.ampItemDeath[5]);
 		pathwayLineX = x + 11;
 		velX = -5;
+
+		String deathFile = "res/Sounds/SFX/ampexplosionsfx.wav";
+		SoundLoops deathSoundLoop = new SoundLoops(deathFile);
+		VolumeSlider.adjustSFX(deathSoundLoop);
+		this.deadSound = deathSoundLoop;
+		String hitFile = "res/Sounds/SFX/ampzapsfx.wav";
+		SoundLoops hitSoundLoop = new SoundLoops(hitFile);
+		VolumeSlider.adjustSFX(hitSoundLoop);
+		this.hitSound = hitSoundLoop;
+		String silenceFile = "res/Sounds/Music/10secondsofsilencee.wav";//silence
+		SoundLoops silenceSoundLoop = new SoundLoops(silenceFile);
+		this.silenceSound = silenceSoundLoop;
+		upAnimation.runAnimation();
+		upAnimation.nextFrame();
+		upAnimation.setCount(0);
+		rightHitAnimation.runAnimation();
+		rightHitAnimation.nextFrame();
+		rightHitAnimation.setCount(0);
+		leftHitAnimation.runAnimation();
+		leftHitAnimation.nextFrame();
+		leftHitAnimation.setCount(0);
+		deathAnimation.runAnimation();
+		deathAnimation.nextFrame();
+		deathAnimation.setCount(0);
 	}
 
 	public void tick() {
@@ -58,14 +86,20 @@ public class AmpItem extends GameObject implements EntityE {
 			Game.currentEECollisionWidth = this.getBounds().getWidth();
 		}
 		if(ampIsDead) {
-			deathAnimation.runAnimation();
+			if(!deadSound.getSoundLoopBoolean()) {
+				deadSound.play();
+				deadSound.setSoundLoopBoolean(true);
+			}
+			if(deathAnimation.getCount() != 7)
+				deathAnimation.runAnimation();
 			if(deathAnimation.getCount() == 7) {
 				if(scoreFollowMe) {
 					game.getHUD().setEnemyHitPauseTimer(0);
 					scoreFollowMe = false;
 					Game.scoreFollowingBoolean = false;
 				}
-				game.ee.remove(this);//remove
+				if(!deadSound.clipIsActive())
+					game.ee.remove(this);//remove
 			}
 		}
 		else {
@@ -79,6 +113,8 @@ public class AmpItem extends GameObject implements EntityE {
 							game.ea.remove(tempEnt);
 						else
 							ampIsDead = true;
+						if(!hitSound.clipIsActive())
+							hitSound.play();
 						return;
 					}
 				}
@@ -94,10 +130,13 @@ public class AmpItem extends GameObject implements EntityE {
 							if(game.getWaitToPause() < System.currentTimeMillis()) {
 								game.setEnemyHitPauseTimer(System.currentTimeMillis() + 500);
 								game.setWaitToPause(System.currentTimeMillis() + 4000);
+								if(!Game.itemPauseSoundLoop.clipIsActive()) {
+									Game.itemPauseSoundLoop.setFramePosition(0);
+									Game.itemPauseSoundLoop.play();
+								}
 							}
 							else {
-								scoreFollowMe = true;
-								Game.scoreFollowingBoolean = true;
+								setScoreFollowersFalse();
 								game.setWaitToPause(System.currentTimeMillis() + 2000);
 							}
 							game.getHUD().setEnemyHitPauseTimer(System.currentTimeMillis() + 300);
@@ -118,6 +157,8 @@ public class AmpItem extends GameObject implements EntityE {
 							zapper = new Zap(game.eb.get(i).getX(),game.eb.get(i).getY(),x,y,tex,game);
 							game.getController().addEntity(zapper);
 							game.eb.remove(i);
+							if(!hitSound.clipIsActive())
+								hitSound.play();
 							//add zap
 						}
 						else {
@@ -133,7 +174,7 @@ public class AmpItem extends GameObject implements EntityE {
 				for(int i = 0; i < game.ec.size(); i++){
 					EntityC tempEnt = game.ec.get(i);
 					if(Physics.Collision(this, tempEnt) && !tempEnt.getEntityCDead()){
-						if(tempEnt.entityName().equals("BuzzyBeetleShell")) {
+						if(tempEnt.entityName().equals("BuzzyBeetleShell") || tempEnt.entityName().equals("Thwimp")) {
 							ampIsDead = true;
 							//spawn zaps
 							//makesound
@@ -145,10 +186,13 @@ public class AmpItem extends GameObject implements EntityE {
 							if(game.getWaitToPause() < System.currentTimeMillis()) {
 								game.setEnemyHitPauseTimer(System.currentTimeMillis() + 500);
 								game.setWaitToPause(System.currentTimeMillis() + 4000);
+								if(!Game.itemPauseSoundLoop.clipIsActive()) {
+									Game.itemPauseSoundLoop.setFramePosition(0);
+									Game.itemPauseSoundLoop.play();
+								}
 							}
 							else {
-								scoreFollowMe = true;
-								Game.scoreFollowingBoolean = true;
+								setScoreFollowersFalse();
 								game.setWaitToPause(System.currentTimeMillis() + 2000);
 							}
 							game.getHUD().setEnemyHitPauseTimer(System.currentTimeMillis() + 300);
@@ -171,6 +215,8 @@ public class AmpItem extends GameObject implements EntityE {
 							game.getController().addEntity(zapper);
 							game.ec.remove(i);
 							//add zap
+							if(!hitSound.clipIsActive())
+								hitSound.play();
 						}
 					}
 				}
@@ -179,13 +225,16 @@ public class AmpItem extends GameObject implements EntityE {
 			for(int i = 0; i < game.ee.size(); i++){
 				EntityE tempEnt = game.ee.get(i);
 				if(Physics.Collision(this, tempEnt) && !tempEnt.getEntityEDead() && tempEnt != this){
+					if(i < game.ee.size()) {
+						zapper = new Zap(game.ee.get(i).getX(),game.ee.get(i).getY(),x,y,tex,game);
+						game.getController().addEntity(zapper);
+					}
 					if(tempEnt.entityName().equals("cheepCheeps") || tempEnt.entityName().equals("bombOmb") ||
 							tempEnt.entityName().equals("bombOmbShrapnel1") || tempEnt.entityName().equals("bombOmbShrapnel2") ||
 							tempEnt.entityName().equals("bulletBill")){
 						game.ee.get(i).setEntityEDead(true);
 					}
-					zapper = new Zap(game.ee.get(i).getX(),game.ee.get(i).getY(),x,y,tex,game);
-					game.getController().addEntity(zapper);
+					
 				}
 			}
 			
@@ -250,12 +299,23 @@ public class AmpItem extends GameObject implements EntityE {
 				else
 					upAnimation.runAnimation();
 			}
+			if(silenceSound.getSoundLoopBoolean() == true) {
+				leftHitAnimation.setCount(0);
+				rightHitAnimation.setCount(0);
+				silenceSound.stop();
+				silenceSound.setFramePosition(0);
+				silenceSound.setSoundLoopBoolean(false);
+				silenceTracker = 0;
+			}
 		}
+		if(y < -118) 
+			game.ee.remove(this);
 	}
 
 	public void render(Graphics g) {
 		if(ampIsDead) {
-			deathAnimation.drawAnimation(g, x, y, 0);
+			if(deathAnimation.getCount() != 7)
+				deathAnimation.drawAnimation(g, x, y, 0);
 		}
 		else {
 			if(hitTimer < System.currentTimeMillis()) {
@@ -265,10 +325,29 @@ public class AmpItem extends GameObject implements EntityE {
 					upAnimation.drawAnimation(g, x, y, 0);
 			}
 			else {
-				if(System.currentTimeMillis() % 60 == 0) {
+				int i = 0;
+				if(silenceSound.getLongFramePosition() != 0)
+					i = (int)silenceSound.getLongFramePosition() / (int)(2368);//(4736);
+				//if(System.currentTimeMillis() % 60 == 0) {
+				if(i != silenceTracker ) {//&& (leftHitAnimation.getCount() != 4 || rightHitAnimation.getCount() != 4 || 
+						//upAnimation.getCount() != 4))
+//					leftHitAnimation.runAnimation();
+//					rightHitAnimation.runAnimation();
+//					upAnimation.runAnimation();
+					upAnimation.runAnimation();
 					leftHitAnimation.runAnimation();
 					rightHitAnimation.runAnimation();
 					upAnimation.runAnimation();
+					leftHitAnimation.runAnimation();
+					rightHitAnimation.runAnimation();
+					upAnimation.runAnimation();
+					leftHitAnimation.runAnimation();
+					rightHitAnimation.runAnimation();
+					upAnimation.runAnimation();
+					leftHitAnimation.runAnimation();
+					rightHitAnimation.runAnimation();
+					leftHitAnimation.nextFrame();
+					rightHitAnimation.nextFrame();
 				}
 				if(hitDirectionInt == -1) {
 					if(leftHitAnimation.getCount() ==2)
@@ -290,8 +369,24 @@ public class AmpItem extends GameObject implements EntityE {
 					else
 						upAnimation.drawAnimation(g, x, y, 0);
 				}
+				if(silenceTracker != i)
+					silenceTracker = i;
 			}
 		}
+	}
+
+	public void setScoreFollowersFalse() {
+		for(int e = 0; e < game.ee.size(); e++){
+			EntityE tempEntE = game.ee.get(e);
+			if(this == tempEntE)
+				game.ee.get(e).setScoreFollowMe(true);
+			else
+				game.ee.get(e).setScoreFollowMe(false);
+		}
+		Game.scoreFollowingBoolean = true;
+		if(hitSound.clipIsActive())
+			hitSound.stop();
+		hitSound.play();
 	}
 
 	public Rectangle getBounds() {
@@ -356,6 +451,34 @@ public class AmpItem extends GameObject implements EntityE {
 	public double getY() {
 		return y;
 	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return velX;
+	}
+
+	public double getVelY() {
+		return velY;
+	}
+
+	public void setVelX(double velX) {
+		this.velX = velX;
+	}
+
+	public void setVelY(double velY) {
+		this.velY = velY;
+	}
+	
+	public void setScoreFollowMe(boolean b) {
+		this.scoreFollowMe = b;
+	}
 
 	public String entityName() {
 		return "amp";
@@ -378,7 +501,8 @@ public class AmpItem extends GameObject implements EntityE {
 	}
 	
 	public void close() {
-		
+		deadSound.close();
+		hitSound.close();
 	}
 
 }

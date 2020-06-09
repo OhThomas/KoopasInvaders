@@ -11,6 +11,7 @@ import com.game.src.main.classes.EntityB;
 import com.game.src.main.classes.EntityC;
 import com.game.src.main.classes.EntityD;
 import com.game.src.main.classes.EntityE;
+import com.game.src.main.classes.EntityF;
 import com.game.src.main.libs.Animation;
 
 public class Player extends GameObject implements EntityA{
@@ -22,6 +23,7 @@ public class Player extends GameObject implements EntityA{
 	private double velY = 0;
 	
 	private Textures tex;
+	private ChompFX chomped;
 	private BufferedImage player;
 	private BufferedImage playerSmall;
 	private BufferedImage playerSmallDancePose;
@@ -48,9 +50,12 @@ public class Player extends GameObject implements EntityA{
 	private boolean marioInvincible = false;	//To make Player invincible w/ star
 	private int timer1 = 100;					//Timer for how long Player is invincible
 	private int timer2 = 0;
+	private int deathAnimationTracker = 0;
 	private double runningStartUp = 0;
 	private int danceProgressionCount = 0;
 	private long animationTimer1 = 0;
+	private long spinningTimer = 0;
+	private long turnAroundTimer = 0;
 	private long marioDeathTimer1 = 0;
 	private long marioDeathTimer2 = 0;
 	private long marioDeathTimer3 = 0;
@@ -59,6 +64,7 @@ public class Player extends GameObject implements EntityA{
 	private long marioGravityTimer3 = 0;
 	private long marioGravityTimer4 = 0;
 	private long marioGravityTimer5 = 0;
+	private long turnAroundTimerAnimation = 0;
 	private long traverseTime = 0;
 	public long playerWinTimer = 0;
 	Random r = new Random();
@@ -66,12 +72,12 @@ public class Player extends GameObject implements EntityA{
 	
 	Game game;
 	Controller controller;
-	Animation anim;
-	Animation animl;
-	Animation animr;
-	Animation animd;
-	Animation animSlowingDownl;
-	Animation animSlowingDownr;
+	public Animation anim;
+	public Animation animl;
+	public Animation animr;
+	public Animation animd;
+	public Animation animSlowingDownl;
+	public Animation animSlowingDownr;
 	Animation starAnim1;
 	Animation starAnim1l;
 	Animation starAnim1r;
@@ -156,6 +162,31 @@ public class Player extends GameObject implements EntityA{
 				tex.marioEntrance[18],tex.marioEntrance[19],tex.marioEntrance[20],tex.marioEntrance[20]);
 		animl.nextFrame();
 		animr.nextFrame();
+		animl.setCount(0);
+		animr.setCount(0);
+		anim.nextFrame();
+		anim.setCount(0);
+		marioDeathAnim.nextFrame();
+		marioDeathAnim.setCount(1);
+		marioEntranceDancingAnim.nextFrame();
+		marioEntranceDancingAnim.setCount(0);
+		marioEntranceGrowingAnim.nextFrame();
+		marioEntranceGrowingAnim.setCount(0);
+		marioEntranceTurningAroundAnim.nextFrame();
+		marioEntranceTurningAroundAnim.setCount(0);
+	}
+	
+	public void reset() {
+//		System.out.println("RESET PLAYER");
+		game.setxLBoolean(false);
+		game.setxRBoolean(false);
+		game.setIsShooting(false);
+		Game.enterButtonPushedDown = false;
+		Game.escapePressedNegateAction = false;
+		this.velX = 0;
+		this.runningStartL = false;
+		this.runningStartR = false;
+		this.runningStartUp = 0;
 	}
 	
 	public void tick(){
@@ -216,9 +247,57 @@ public class Player extends GameObject implements EntityA{
 		if(marioInvincible == true){
 			timer1--;
 			timer2++;
+			if(timer1 % 2 == 0) {
+				Random rand = new Random();
+				int randInt = rand.nextInt(10);
+				switch(randInt) {
+				case 0:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"Fireball");
+					break;
+				case 1:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"Flower");
+					break;
+				case 2:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"Goomba");
+					break;
+				case 3:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"GreenShell");
+					break;
+				case 4:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"BuzzyBeetleShell");
+					break;
+				case 5:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"GloveFireball");
+					break;
+				case 6:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"Wiggler");
+					break;
+				case 7:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"Cloud");
+					break;
+				case 8:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"CheepCheeps");
+					break;
+				case 9:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"Lakitu");
+					break;
+				default:
+					chomped = new ChompFX(game,x+(getBounds().width/2)-1,y+(getBounds().height/2),"Flower");
+					break;
+				}
+				game.getController().addEntity(chomped);
+			}
 		}
 		if(timer1 <= 0){
 			marioInvincible = false;
+//			for(int i = 0; i < game.getController().getEntityF().size(); i ++){
+//				EntityF tempEnt = game.getController().getEntityF().get(i);
+//				if(game.getController().getEntityF().get(i).getY() > ((Game.HEIGHT * Game.SCALE) - MARIO_HEIGHT - 30) && 
+//						game.getController().getEntityF().get(i).entityName().equals("chompFX")) {
+//					game.getController().getEntityF().remove(tempEnt);
+//				}
+//			}
+			//game.getController().getEntityF().clear();
 		}
 		if (timer2 == 5)
 		{
@@ -231,18 +310,56 @@ public class Player extends GameObject implements EntityA{
 			EntityB tempEnt = game.eb.get(i);
 			
 			if(Physics.Collision(this, tempEnt)){
-				controller.removeEntity(tempEnt);
-				if(marioInvincible == false && tempEnt.getEntityBDead() == false)
-					game.Health -= 100;
+				if(marioInvincible == false && tempEnt.getEntityBDead() == false) {
+					Game.Health -= 100;
+					controller.getEntityB().get(i).renderFlicker();
+				}
+				else if(marioInvincible == true) {
+					if(tempEnt.enemyType().equals("Bowser")) {
+						chomped = new ChompFX(game,tempEnt.getX()+(tempEnt.getWidth()/2),tempEnt.getY()+(tempEnt.getHeight()/2),"Cloud");
+						game.getController().addEntity(chomped);
+					}
+					else {
+						chomped = new ChompFX(game,tempEnt.getX()+(tempEnt.getWidth()/2),tempEnt.getY()+(tempEnt.getHeight()/2),"Cloud");
+						game.getController().addEntity(chomped);
+						if(tempEnt.getEntityBDead() == false) {
+							game.getHUD().setScore(200);
+							controller.getEntityB().remove(tempEnt);
+						}
+					}
+				}
+//				controller.removeEntity(tempEnt);
 			}
 		}
 		for(int i = 0; i < game.ec.size(); i ++){
 			EntityC tempEnt = game.ec.get(i);
 			
 			if(Physics.Collision(this, tempEnt)){
-				if(marioInvincible == false && tempEnt.getEntityCDead() == false)
+				if(marioInvincible == false && tempEnt.getEntityCDead() == false) {
 					game.Health -= 100;
-				controller.removeEntity(tempEnt);
+					controller.getEntityC().get(i).renderFlicker();
+				}
+				else if(marioInvincible == true) {
+					chomped = new ChompFX(game,tempEnt.getX()+(tempEnt.getWidth()/2),tempEnt.getY()+(tempEnt.getHeight()/2),tempEnt.entityName());
+					game.getController().addEntity(chomped);
+					if(tempEnt.getEntityCDead() == false) {
+						if(game.getController().getEntityC().get(i).entityName().equals("BulletBill") || 
+								game.getController().getEntityC().get(i).entityName().equals("Mechakoopa"))
+							game.getController().getEntityC().get(i).setEntityCDead(true);
+						else if(game.getController().getEntityC().get(i).entityName().equals("BuzzyBeetleShell")) {
+							game.getHUD().setScore(500);
+							game.getController().getEntityC().remove(tempEnt);
+						}
+						else if(game.getController().getEntityC().get(i).entityName().equals("Swoop")) {
+							game.getController().getEntityC().get(i).setEntityCDead(true);
+						}
+						else {
+							game.getHUD().setScore(200);
+							game.getController().getEntityC().remove(tempEnt);
+						}
+					}
+				}
+//				controller.removeEntity(tempEnt);
 			}
 		}
 		for(int i = 0; i < game.ed.size(); i ++){
@@ -255,26 +372,39 @@ public class Player extends GameObject implements EntityA{
 					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "wigglerItem" ||
 					Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "lakituItem"){
 				tempEnt.getItemSoundLoop().play();
-				controller.removeEntity(tempEnt);
 				game.getHUD().setItemObtained(true);
 				game.getHUD().setItemName(tempEnt.getItemName());
-			}
-			else if(Physics.Collision(this, tempEnt) && tempEnt.getItemName() == "mario1Star"){
 				controller.removeEntity(tempEnt);
+			}
+			else if(Physics.Collision(this, tempEnt) && (tempEnt.getItemName() == "mario1Star" || tempEnt.getItemName().equals("lakituStar"))){
 				marioInvincible = true;
 				timer1 = 646;
 				timer2 = 0;
+				controller.removeEntity(tempEnt);
 			}
 		}
 		for(int i = 0; i < game.ee.size(); i ++){
 			EntityE tempEnt = game.ee.get(i);
 			
 			if(Physics.Collision(this, tempEnt)){
-				if(marioInvincible == false && tempEnt.entityName().equals("bombOmbShrapnel2")) {
+				if(marioInvincible == false && ((tempEnt.entityName().equals("bombOmbShrapnel1"))||
+						(tempEnt.entityName().equals("bombOmbShrapnel2")||
+						(tempEnt.entityName().equals("lakituFish") && tempEnt.getEntityEDead() == false) ||
+						(tempEnt.entityName().equals("lakituSpike")) || 
+						(tempEnt.entityName().equals("lakituRedShell") && tempEnt.getEntityEDead() == false)))) {
 					game.Health -= 100;
 					game.ee.get(i).setHitIndicator(true);
 				}
-				else
+				else if(tempEnt.entityName().equals("lakituFish")) {
+					if(tempEnt.getEntityEDead() == false)
+						game.ee.get(i).setEntityEDead(true);
+				}
+				else if(tempEnt.entityName().equals("lakituRedShell") || tempEnt.entityName().equals("lakituSpike")) {
+					game.getController().addEntity(new ChompFX(game,tempEnt.getX()+4,tempEnt.getY()+4,tempEnt.entityName()));
+					controller.removeEntity(tempEnt);
+				}
+				else if(!tempEnt.entityName().equals("lakituBombOmb") && !tempEnt.entityName().equals("wiggler") &&
+						!tempEnt.entityName().equals("wigglerBody"))
 					controller.removeEntity(tempEnt);
 			}
 		}
@@ -298,29 +428,222 @@ public class Player extends GameObject implements EntityA{
 			starAnim3r.runAnimation();
 			starAnim3d.runAnimation();
 	}
-	
+	private void spinningCheck() {
+		int i = (int)Game.marioSpinningSoundLoop.getLongFramePosition() / (int)(1427*1.58);
+		if(Game.marioSpinningSoundLoop.getLongFramePosition() >= 22824)
+			i = 16;
+		if(i <= 16) {
+			if(marioEntranceSpinningAnim.getCount() != i) {
+				marioEntranceSpinningAnim.nextFrame();
+				marioEntranceSpinningAnim.setCount(i);
+			}
+		}
+		if(playerEntranceSpinningSetup == false) {
+			playerEntranceSpinningSetup = true;
+		}
+		if(i == 16 && spinningTimer == 0)
+			spinningTimer = System.currentTimeMillis() + 333;
+//		if(System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis()){
+//			animationTimer1 = System.currentTimeMillis();
+//			marioEntranceSpinningAnim.runAnimation();
+//			if(playerEntranceSpinningSetup == false)
+//				playerEntranceSpinningSetup = true;
+//		}
+	}
+	private void growingCheck() {
+		int i = (int)Game.soundFXClip2SoundLoop.getLongFramePosition() / (int)(2181);
+		if(Game.soundFXClip2SoundLoop.getLongFramePosition() >= 21811)
+			i = 10;
+		if(i <= 10) {
+			if(marioEntranceGrowingAnim.getCount() != i) {
+				marioEntranceGrowingAnim.nextFrame();
+				marioEntranceGrowingAnim.setCount(i);
+			}
+		}
+		if(playerEntranceGrowingSetup == false && marioEntranceGrowingAnim.getCount() >= 1)
+			playerEntranceGrowingSetup = true;
+//		if(System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis()){
+//			animationTimer1 = System.currentTimeMillis();
+//			marioEntranceGrowingAnim.runAnimation();
+//			if(playerEntranceGrowingSetup == false && marioEntranceGrowingAnim.getCount() == 1)
+//				playerEntranceGrowingSetup = true;
+//		}
+	}
+	private boolean turningAroundCheck() {
+//		System.out.println("FRAME LENGHT = "+Game.marioVoices.get(Game.marioVoiceRandomizer).getFrameLength());
+		if(Game.marioVoices.get(Game.marioVoiceRandomizer).getLongFramePosition() == 0 ||
+				Game.marioVoices.get(Game.marioVoiceRandomizer).getLongFramePosition()/14 == 0)
+			return false;
+		int i = 0;
+		if(20000 < Game.marioVoices.get(Game.marioVoiceRandomizer).getFrameLength()) {
+			i = (int)Game.marioVoices.get(Game.marioVoiceRandomizer).getLongFramePosition() / (int)(Game.marioVoices.get(Game.marioVoiceRandomizer).getFrameLength()/14);
+			if(Game.marioVoices.get(Game.marioVoiceRandomizer).getLongFramePosition() >= Game.marioVoices.get(Game.marioVoiceRandomizer).getFrameLength())
+				i = 14;
+			if(i <= 14) {
+				if(marioEntranceTurningAroundAnim.getCount() != i) {
+					marioEntranceTurningAroundAnim.nextFrame();
+					marioEntranceTurningAroundAnim.setCount(i);
+				}
+			}
+		}
+		else {
+			if(turnAroundTimerAnimation < System.currentTimeMillis()) {
+				marioEntranceTurningAroundAnim.nextFrame();
+				marioEntranceTurningAroundAnim.setCount(marioEntranceTurningAroundAnim.getCount()+1);
+				turnAroundTimerAnimation = System.currentTimeMillis() +170;
+			}
+		}
+		if(firstTimeAnimationRun == false) {
+			firstTimeAnimationRun = true;
+		}
+		if((i == 13 || i == 14) && turnAroundTimer == 0)
+			turnAroundTimer = System.currentTimeMillis()+200;
+		return true;
+//		if(game.getMarioGrowthPosePause() == false && (System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis())){
+//			if(firstTimeAnimationRun == false) {
+//				marioEntranceTurningAroundAnim.nextFrame();
+//				firstTimeAnimationRun = true;
+//			}
+//			animationTimer1 = System.currentTimeMillis();
+//			marioEntranceTurningAroundAnim.runAnimation();
+//		}
+//		else if(firstTimeAnimationRun == false)
+//			g.drawImage(playerGrowthPose,(int)x, (int)y, null);
+	}
+	private void deathAnimation() {
+		if(Game.marioDeathSoundLoop.getLongFramePosition() == 0 ||
+				Game.marioDeathSoundLoop.getLongFramePosition()/14 == 0)
+			return;
+		//2401 = 72037(frame length of sound) / 30 (number of frames to animate)
+		int i = (int)Game.marioDeathSoundLoop.getLongFramePosition() / (int)(2401);
+		int ii = (int)Game.marioDeathSoundLoop.getLongFramePosition() / (int)(800);
+		if(Game.marioDeathSoundLoop.getLongFramePosition() >= 72037)
+			i = 30;
+		if(i <= 30) {
+			if(this.marioDeathAnim.getCount() != i) {
+				marioDeathAnim.runAnimation();
+				marioDeathAnim.nextFrame();
+				if(i % 2 == 0)
+					marioDeathAnim.setCount(2);
+				else
+					marioDeathAnim.setCount(1);
+			}
+		}
+		if(17992 < Game.marioDeathSoundLoop.getLongFramePosition() && Game.marioDeathSoundLoop.getLongFramePosition() < 32678 &&
+				deathAnimationTracker != ii) {
+			if(-0.04 < velY)
+				velY-=0.005;
+			/*switch(i) {
+			case 7:
+				velY = -0.039;
+				break;
+			case 8:
+				velY = -0.034;
+				break;
+			case 9:
+				velY = -0.030;
+				break;
+			case 10:
+				velY = -0.026;
+				break;
+			case 11:
+				velY = -0.020;
+				break;
+			case 12:
+				velY = -0.015;
+				break;
+			case 13:
+				velY = -0.002;
+				break;
+			default:
+				velY = -0.002;
+				break;
+			}*/
+		}
+		else if(30678 < Game.marioDeathSoundLoop.getLongFramePosition() &&//32678
+				deathAnimationTracker != ii) {
+			if(velY < 0.15)
+				velY+=0.008;
+			/*switch(i) {
+			case 13:
+				velY = 0;
+				break;
+			case 14:
+				velY = 0.04;
+				break;
+			case 15:
+				velY = 0.08;
+				break;
+			case 16:
+				velY = 0.1;
+				break;
+			case 17:
+				velY = 0.12;
+				break;
+			case 18:
+				velY = 0.19;
+				break;
+			case 19:
+				velY = 0.25;
+				break;
+			case 20:
+				velY = 0.29;
+				break;
+			case 21:
+				velY = 0.32;
+				break;
+			case 22:
+				velY = 0.38;
+				break;
+			case 23:
+				velY = 0.4;
+				break;
+			case 24:
+				velY = 0.42;
+				break;
+			case 25:
+				velY = 0.44;
+				break;
+			case 26:
+				velY = 0.45;
+				break;
+			case 27:
+				velY = 0.48;
+				break;
+			case 28:
+				velY = 0.48;
+				break;
+			case 29:
+				velY = 0.48;
+				break;
+			default:
+				velY = 0;
+				break;
+			}
+			velY *= 0.5;*/
+		}
+//		if(Game.marioDeathSoundLoop.getLongFramePosition() % 15 == 0)
+//			marioDeathAnim.runAnimation();
+		deathAnimationTracker = ii;
+		this.yProgression();
+		return;
+	}
 	public Rectangle getBounds(){
 		return new Rectangle((int)x, (int)y, MARIO_WIDTH, MARIO_HEIGHT);
 	}
-	
 	public void render(Graphics g){
 		if(game.State == STATE.TRANSITION_ENTRANCE){
 			if(spinningAnimationFinished == false){
-				if(playerEntranceSpinningSetup == false)
+				if(marioEntranceSpinningAnim.getCount() == 0 || playerEntranceSpinningSetup == false)
 					g.drawImage(playerSmall, (int)x, (int)y, null);
 				marioEntranceSpinningAnim.drawAnimation(g, x, y, 0);
-				if(System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis()){
-					animationTimer1 = System.currentTimeMillis();
-					marioEntranceSpinningAnim.runAnimation();
-					if(playerEntranceSpinningSetup == false)
-						playerEntranceSpinningSetup = true;
-				}
-				if(marioEntranceSpinningAnim.getCount() > 15)//|| if sfx ends
+				spinningCheck();
+				if(marioEntranceSpinningAnim.getCount() > 15 && spinningTimer < System.currentTimeMillis())//|| if sfx ends
 					spinningAnimationFinished = true;
 				return;//maybe delete
 			}
 			else if(dancingAnimationFinished == false){
-				if(playerEntranceDancingSetup == false)
+				if(marioEntranceDancingAnim.getCount() == 0 || playerEntranceDancingSetup == false)
 					g.drawImage(playerSmallDancePose,(int)x, (int)y, null);
 				marioEntranceDancingAnim.drawAnimation(g, x, y, 0);
 				if(danceProgressionCount < 26 && game.marioDanceSoundLoops.get(danceProgressionCount).clipIsActive() == true){
@@ -343,29 +666,20 @@ public class Player extends GameObject implements EntityA{
 				if(playerEntranceGrowingSetup == false)
 					g.drawImage(playerSmallDancePose,(int)x, (int)y, null);
 				marioEntranceGrowingAnim.drawAnimation(g, x, y, 0);
-				if(System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis()){
-					animationTimer1 = System.currentTimeMillis();
-					marioEntranceGrowingAnim.runAnimation();
-					if(playerEntranceGrowingSetup == false && marioEntranceGrowingAnim.getCount() == 1)
-						playerEntranceGrowingSetup = true;
-				}
+				growingCheck();
 				if(marioEntranceGrowingAnim.getCount() > 8)//|| if sfx ends
 					growingAnimationFinished = true;
 				return;//maybe delete
 			}
 			else if(turningAroundAnimationFinished == false){
+				if(marioEntranceTurningAroundAnim.getCount() == 0)
+					g.drawImage(playerGrowthPose,(int)x, (int)y, null);
 				marioEntranceTurningAroundAnim.drawAnimation(g, x, y, 0);
-				if(game.getMarioGrowthPosePause() == false && (System.currentTimeMillis() % 50 == 0 && animationTimer1 < System.currentTimeMillis())){
-					if(firstTimeAnimationRun == false) {
-						marioEntranceTurningAroundAnim.nextFrame();
-						firstTimeAnimationRun = true;
-					}
-					animationTimer1 = System.currentTimeMillis();
-					marioEntranceTurningAroundAnim.runAnimation();
-				}
+				if(turningAroundCheck()) {}
 				else if(firstTimeAnimationRun == false)
 					g.drawImage(playerGrowthPose,(int)x, (int)y, null);
-				if(marioEntranceTurningAroundAnim.getCount() > 13)
+				if(marioEntranceTurningAroundAnim.getCount() > 13 && turnAroundTimer < System.currentTimeMillis() && 
+						!Game.marioVoices.get(Game.marioVoiceRandomizer).clipIsActive())
 					turningAroundAnimationFinished = true;
 				return;//maybe delete
 			}
@@ -381,68 +695,77 @@ public class Player extends GameObject implements EntityA{
 			}
 		}
 		else if(game.State == STATE.TRANSITION_DEATH){
-			marioDeathAnim.drawAnimation(g, x, y, 0);
-			if(playerDeathSetup == false || (System.currentTimeMillis() % 15 == 0 && animationTimer1 < System.currentTimeMillis())){
-				if(playerDeathSetup == false){
-					marioDeathAnim.nextFrame();
-					marioDeathTimer1 = System.currentTimeMillis() + 300;
-					marioDeathTimer2 = System.currentTimeMillis() + 650;
-					marioGravityTimer = System.currentTimeMillis() + 850;
-					marioGravityTimer2 = System.currentTimeMillis() + 950;
-					marioGravityTimer3 = System.currentTimeMillis() + 1000;
-					marioGravityTimer4 = System.currentTimeMillis() + 1300;
-					marioGravityTimer5 = System.currentTimeMillis() + 1500;
-					marioDeathTimer3 = System.currentTimeMillis() + 2000;
-				}
+			if(Game.marioDeathSoundLoop.getLongFramePosition() == 0) {
 				marioDeathAnim.runAnimation();
-				animationTimer1 = System.currentTimeMillis();
-				playerDeathSetup = true;
+				marioDeathAnim.runAnimation();
+				marioDeathAnim.runAnimation();
+				marioDeathAnim.runAnimation();
+				marioDeathAnim.runAnimation();//5 times because speed is 5
 			}
-			if(System.currentTimeMillis() <= marioDeathTimer1){
-			}
-			else if(System.currentTimeMillis() <= marioDeathTimer2 && traverseTime != System.currentTimeMillis()){
-				if(System.currentTimeMillis() % 5 == 0)
-					y-= 0.39;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 200) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.34;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 180) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.30;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 150) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.26;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 120) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.22;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 100) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.20;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 80) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.15;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 40) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.12;
-				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 10) && System.currentTimeMillis() % 5 == 0)
-					y-= 0.02;
-				traverseTime = System.currentTimeMillis();
-			}
-			else if(System.currentTimeMillis() <= marioDeathTimer3){/*
-				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
-					y += 0.00;
-				else if(System.currentTimeMillis() <= marioGravityTimer2 && System.currentTimeMillis() % 5 == 0)
-					y+=0.08;
-				else if(System.currentTimeMillis() <= marioGravityTimer3 && System.currentTimeMillis() % 5 == 0)
-					y+=0.12;
-				else if(System.currentTimeMillis() <= marioGravityTimer4 && System.currentTimeMillis() % 5 == 0)
-					y+=0.25;
-				else if(System.currentTimeMillis() <= marioGravityTimer5 && System.currentTimeMillis() % 5 == 0)
-					y+=0.38;
-				else if(System.currentTimeMillis() % 5 == 0)
-					y+=0.45;*/
-				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
-					y += 0.00;
-				else if(System.currentTimeMillis() % 100 == 0 && traverseTime != System.currentTimeMillis()){
-					velY += 0.01;
-					traverseTime = System.currentTimeMillis();
-				}
-				else
-					this.yProgression();
-			}
+			deathAnimation();
+			marioDeathAnim.drawAnimation(g, x, y, 0);
+//			marioDeathAnim.drawAnimation(g, x, y, 0);
+//			if(playerDeathSetup == false || (System.currentTimeMillis() % 15 == 0 && animationTimer1 < System.currentTimeMillis())){
+//				if(playerDeathSetup == false){
+//					marioDeathAnim.nextFrame();
+//					marioDeathTimer1 = System.currentTimeMillis() + 300;
+//					marioDeathTimer2 = System.currentTimeMillis() + 650;
+//					marioGravityTimer = System.currentTimeMillis() + 850;
+//					marioGravityTimer2 = System.currentTimeMillis() + 950;
+//					marioGravityTimer3 = System.currentTimeMillis() + 1000;
+//					marioGravityTimer4 = System.currentTimeMillis() + 1300;
+//					marioGravityTimer5 = System.currentTimeMillis() + 1500;
+//					marioDeathTimer3 = System.currentTimeMillis() + 2000;
+//				}
+//				marioDeathAnim.runAnimation();
+//				animationTimer1 = System.currentTimeMillis();
+//				playerDeathSetup = true;
+//			}
+//			if(System.currentTimeMillis() <= marioDeathTimer1){
+//			}
+//			else if(System.currentTimeMillis() <= marioDeathTimer2 && traverseTime != System.currentTimeMillis()){
+//				if(System.currentTimeMillis() % 5 == 0)
+//					y-= 0.39;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 200) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.34;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 180) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.30;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 150) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.26;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 120) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.22;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 100) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.20;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 80) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.15;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 40) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.12;
+//				else if (((marioDeathTimer2 - System.currentTimeMillis()) < 10) && System.currentTimeMillis() % 5 == 0)
+//					y-= 0.02;
+//				traverseTime = System.currentTimeMillis();
+//			}
+//			else if(System.currentTimeMillis() <= marioDeathTimer3){/*
+//				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
+//					y += 0.00;
+//				else if(System.currentTimeMillis() <= marioGravityTimer2 && System.currentTimeMillis() % 5 == 0)
+//					y+=0.08;
+//				else if(System.currentTimeMillis() <= marioGravityTimer3 && System.currentTimeMillis() % 5 == 0)
+//					y+=0.12;
+//				else if(System.currentTimeMillis() <= marioGravityTimer4 && System.currentTimeMillis() % 5 == 0)
+//					y+=0.25;
+//				else if(System.currentTimeMillis() <= marioGravityTimer5 && System.currentTimeMillis() % 5 == 0)
+//					y+=0.38;
+//				else if(System.currentTimeMillis() % 5 == 0)
+//					y+=0.45;*/
+//				if(System.currentTimeMillis() <= marioGravityTimer && System.currentTimeMillis() % 5 == 0)
+//					y += 0.00;
+//				else if(System.currentTimeMillis() % 100 == 0 && traverseTime != System.currentTimeMillis()){
+//					velY += 0.01;
+//					traverseTime = System.currentTimeMillis();
+//				}
+//				else
+//					this.yProgression();
+//			}
 		}
 		else if(game.State == STATE.TRANSITION_WIN) {
 			g.drawImage(playerGrowthPose,(int)x, (int)y, null);
@@ -452,7 +775,8 @@ public class Player extends GameObject implements EntityA{
 			}
 			if(playerWinTimer < System.currentTimeMillis()) {
 				gameOver = true;
-				Game.State = Game.STATE.GAMEOVER;
+				//if(game.getBb().wall.isEmpty())
+					//Game.State = Game.STATE.GAMEOVER;
 				if(Game.gameControllerInUse) {
 					game.setJoystickTimer(0);
 					Game.keysAreInUse = true;
@@ -877,6 +1201,30 @@ public class Player extends GameObject implements EntityA{
 
 	public void setAnimationTimer1(long animationTimer1) {
 		this.animationTimer1 = animationTimer1;
+	}
+
+	public long getSpinningTimer() {
+		return spinningTimer;
+	}
+
+	public void setSpinningTimer(long spinningTimer) {
+		this.spinningTimer = spinningTimer;
+	}
+
+	public long getTurnAroundTimerAnimation() {
+		return turnAroundTimerAnimation;
+	}
+
+	public void setTurnAroundTimerAnimation(long turnAroundTimerAnimation) {
+		this.turnAroundTimerAnimation = turnAroundTimerAnimation;
+	}
+
+	public long getTurnAroundTimer() {
+		return turnAroundTimer;
+	}
+
+	public void setTurnAroundTimer(long turnAroundTimer) {
+		this.turnAroundTimer = turnAroundTimer;
 	}
 
 	public long getMarioDeathTimer1() {

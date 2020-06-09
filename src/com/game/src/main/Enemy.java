@@ -16,6 +16,9 @@ public class Enemy extends GameObject implements EntityB{
 	private Game game;
 	private Controller c;
 	public double speedIncrease = 0.1;
+	private long flickerTimer1 = 0;
+	private long flickerTimer2 = 0;
+	private boolean flicker = false;
 	public boolean goombaisDead = false;
 	public String enemyType = "Goomba1";
 	
@@ -274,6 +277,20 @@ public class Enemy extends GameObject implements EntityB{
 	}
 	
 	public void render(Graphics g){
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
 		if(goombaisDead && animExplosion.getCount() != 3)
 			animExplosion.drawAnimation(g, x, y, 0);
 		else if(animExplosion.getCount() == 3)
@@ -377,6 +394,10 @@ public class Enemy extends GameObject implements EntityB{
 
 	public void setX(double x) {
 		this.x = x;
+	}
+	
+	public void renderFlicker() {
+		flicker = true;
 	}
 	
 	public void close() {

@@ -14,10 +14,13 @@ import com.game.src.main.libs.Animation;
 public class BombOmbShrapnel extends GameObject implements EntityE  {
 	Textures tex;
 	Game game;
+	long flickerTimer1 = 0;
+	long flickerTimer2 = 0;
 	double velX = 0;
 	double velY = -2;
 	boolean goingLeft = false;
 	boolean noX = false;
+	boolean hitIndicator = false;
 	Animation shrapnel;
 	public BombOmbShrapnel(double x, double y, Textures tex, Game game,boolean left) {
 		super(x, y);
@@ -92,6 +95,20 @@ public class BombOmbShrapnel extends GameObject implements EntityE  {
 	}
 
 	public void render(Graphics g) {
+		if(hitIndicator) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
 		shrapnel.drawAnimation(g, x, y, 0);
 	}
 
@@ -106,17 +123,45 @@ public class BombOmbShrapnel extends GameObject implements EntityE  {
 	public double getY() {
 		return y;
 	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return velX;
+	}
+
+	public double getVelY() {
+		return velY;
+	}
+
+	public void setVelX(double velX) {
+		this.velX = velX;
+	}
+
+	public void setVelY(double velY) {
+		this.velY = velY;
+	}
+	
+	public void setScoreFollowMe(boolean b) {
+	}
 
 	public String entityName() {
 		return "bombOmbShrapnel1";
 	}
 	
 	public void setHitIndicator(boolean b) {
+		this.hitIndicator = b;
 		return;
 	}
 	
 	public boolean getHitIndicator() {
-		return false;
+		return hitIndicator;
 	}
 	
 	public void setEntityEDead(boolean dead) {

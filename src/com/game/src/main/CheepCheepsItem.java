@@ -16,6 +16,7 @@ public class CheepCheepsItem extends GameObject implements EntityE   {
 	Game game;
 	Animation floppy;
 	Animation floppyDead;
+	SoundLoops deadSound;
 	private int setup = 0;
 	private double velX = 0;
 	private double velY = 0;
@@ -49,11 +50,50 @@ public class CheepCheepsItem extends GameObject implements EntityE   {
 		floppy.setCount(0);
 		floppyDead.nextFrame();
 		floppyDead.setCount(0);
+
+		String deathFile = "res/Sounds/SFX/smw_kick.wav";
+		SoundLoops deathSoundLoop = new SoundLoops(deathFile);
+		VolumeSlider.adjustSFX(deathSoundLoop);
+		this.deadSound = deathSoundLoop;
 	}
 
 	public void tick() {
 		if(dead) {
+			if(!deadSound.getSoundLoopBoolean()) {
+				if(!deadSound.clipIsActive())
+					deadSound.play();
+				deadSound.setSoundLoopBoolean(true);
+			}
 			y+=4;
+			if(game.getPlayer().getBounds().intersects(this.getBounds())) {
+				Game.soundPop();
+				game.getController().addEntity(new ChompFX(game,x+4,y,"CheepCheeps"));
+				game.getController().removeEntity(this);
+			}
+			for(int i = 0; i < game.ea.size(); i++){
+				EntityA tempEnt = game.ea.get(i);
+				if(Physics.Collision(this, tempEnt)){
+					Game.soundPop();
+					game.getController().addEntity(new ChompFX(game,x+4,y,"CheepCheeps"));
+					game.getController().removeEntity(this);
+				}
+			}
+			for(int i = 0; i < game.ec.size(); i++) {
+				EntityC tempEnt = game.ec.get(i);
+				if(Physics.Collision(this, tempEnt) && !tempEnt.getEntityCDead()){
+					Game.soundPop();
+					game.getController().addEntity(new ChompFX(game,x+4,y,"CheepCheeps"));
+					game.getController().removeEntity(this);
+				}
+			}
+			for(int i = 0; i < game.ee.size(); i++) {
+				EntityE tempEnt = game.ee.get(i);
+				if(Physics.Collision(this, tempEnt) && !tempEnt.getEntityEDead() && !tempEnt.entityName().equals("chainChomp")){
+					Game.soundPop();
+					game.getController().addEntity(new ChompFX(game,x+4,y,"CheepCheeps"));
+					game.getController().removeEntity(this);
+				}
+			}
 			if(y > Game.HEIGHT * Game.SCALE || y < -16 || x+16 < 0 || x > Game.WIDTH * Game.SCALE)
 				game.ee.remove(this);
 		}
@@ -108,8 +148,10 @@ public class CheepCheepsItem extends GameObject implements EntityE   {
 				if(Physics.Collision(this, tempEnt)){
 					dead = true;
 					floppyDead.setCount(floppy.getCount());
-					if(Game.currentlySelectedFireball != 3)
+					if(Game.currentlySelectedFireball != 3) {
 						game.ea.remove(tempEnt);
+						Game.soundFireballPop();
+					}
 				}
 			}
 			
@@ -194,6 +236,33 @@ public class CheepCheepsItem extends GameObject implements EntityE   {
 	public double getY() {
 		return y;
 	}
+	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getVelX() {
+		return velX;
+	}
+
+	public double getVelY() {
+		return velY;
+	}
+
+	public void setVelX(double velX) {
+		this.velX = velX;
+	}
+
+	public void setVelY(double velY) {
+		this.velY = velY;
+	}
+	
+	public void setScoreFollowMe(boolean b) {
+	}
 
 	public String entityName() {
 		return "cheepCheeps";
@@ -218,7 +287,7 @@ public class CheepCheepsItem extends GameObject implements EntityE   {
 	}
 	
 	public void close() {
-		
+		deadSound.close();
 	}
 
 }

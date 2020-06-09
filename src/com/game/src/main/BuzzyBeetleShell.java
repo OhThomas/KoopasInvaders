@@ -19,8 +19,11 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 	private boolean yDirectionSet = false;
 	private boolean buzzyBeetleShellisDead = false;
 	private boolean pauseSoundLoop = false;
+	private boolean flicker = false;
 	private double velX = 0;
 	private double velY = 0;
+	private long flickerTimer1 = 0;
+	private long flickerTimer2 = 0;
 	private String entityName = "BuzzyBeetleShell";
 	Animation anim;
 	Animation animDead;
@@ -89,12 +92,24 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 			for(int i = 0; i < game.ea.size(); i ++){
 				EntityA tempEnt = game.ea.get(i);
 				
-				if(Physics.Collision(this, tempEnt)){
-					buzzyBeetleShellisDead = true;
-					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
-						game.ea.remove(game.ea.getLast());
-					game.getHUD().setScore(500);
-					shellHit.play();
+				if(Physics.Collision(this, tempEnt) && !buzzyBeetleShellisDead){
+					if(Game.currentlySelectedFireball == 3) {
+						buzzyBeetleShellisDead = true;
+						game.getHUD().setScore(500);
+						shellHit.play();
+					}
+					else {
+						game.fireballSplash(tempEnt.getX(), tempEnt.getY());
+						if(!game.ea.isEmpty()) {
+							game.ea.remove(game.ea.getLast());
+							Game.soundFireballPop();
+						}
+					}
+//					buzzyBeetleShellisDead = true;
+//					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
+//						game.ea.remove(game.ea.getLast());
+//					game.getHUD().setScore(500);
+//					shellHit.play();
 				}
 			}
 			for(int i = 0; i < game.eb.size(); i ++){
@@ -154,12 +169,24 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 			for(int i = 0; i < game.ea.size(); i ++){
 				EntityA tempEnt = game.ea.get(i);
 				
-				if(Physics.Collision(this, tempEnt)){
-					buzzyBeetleShellisDead = true;
-					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
-						game.ea.remove(game.ea.getLast());
-					game.getHUD().setScore(500);
-					shellHit.play();
+				if(Physics.Collision(this, tempEnt) && !buzzyBeetleShellisDead){
+					if(Game.currentlySelectedFireball == 3) {
+						buzzyBeetleShellisDead = true;
+						game.getHUD().setScore(500);
+						shellHit.play();
+					}
+					else {
+						game.fireballSplash(tempEnt.getX(), tempEnt.getY());
+						if(!game.ea.isEmpty()) {
+							game.ea.remove(game.ea.getLast());
+							Game.soundFireballPop();
+						}
+					}
+//					buzzyBeetleShellisDead = true;
+//					if(!game.ea.isEmpty() && Game.currentlySelectedFireball != 3)
+//						game.ea.remove(game.ea.getLast());
+//					game.getHUD().setScore(500);
+//					shellHit.play();
 				}
 			}
 
@@ -256,6 +283,20 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 	}
 	
 	public void render(Graphics g){
+		if(flicker) {
+			if(flickerTimer1 == 0 && flickerTimer2 == 0)
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			if(flickerTimer1 < System.currentTimeMillis() && flickerTimer2 == 0) {
+				flickerTimer1 = 0;
+				flickerTimer2 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer2 < System.currentTimeMillis() && flickerTimer1 == 0) {
+				flickerTimer2 = 0;
+				flickerTimer1 = System.currentTimeMillis() + 250;
+			}
+			if(flickerTimer1 < flickerTimer2) 
+				return;
+		}
 		if(buzzyBeetleShellisDead)
 			animDead.drawAnimation(g, x, y, 0);
 		else
@@ -314,6 +355,10 @@ public class BuzzyBeetleShell extends GameObject implements EntityC{
 		buzzyBeetleShellisDead = dead;
 	}
 
+	public void renderFlicker() {
+		flicker = true;
+	}
+	
 	public void close() {
 		shellHit.close();
 		shellHitShell.close();

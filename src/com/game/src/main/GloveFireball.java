@@ -12,6 +12,7 @@ public class GloveFireball extends GameObject implements EntityA {
 	
 	private Textures tex;
 	private Game game;
+	double starVel = 1;
 	
 	Animation anim;
 	
@@ -19,13 +20,16 @@ public class GloveFireball extends GameObject implements EntityA {
 		super(x, y);
 		this.tex = tex;
 		this.game = game;
-		
+		if(game.getPlayer().getMarioInvincible())
+			starVel = 1.5;
+		else if(game.characterSkinPosition == 4)
+			starVel = 1.2;
 		anim = new Animation(5,tex.fireballMikeTyson[0],tex.fireballMikeTyson[1],tex.fireballMikeTyson[2],tex.fireballMikeTyson[3]);
 	}
 	
 	public void tick(){
 		if(!Physics.Collision(this, game.getBb())){
-			y -= 8;
+			y -= 8*starVel;
 			if (this.getY() <= -8)
 				game.ea.remove(this);
 			/*
@@ -61,7 +65,7 @@ public class GloveFireball extends GameObject implements EntityA {
 					}
 				}
 			}*/
-			y-=0.5;
+			y-=0.5*starVel;
 		}
 		anim.runAnimation();
 	}

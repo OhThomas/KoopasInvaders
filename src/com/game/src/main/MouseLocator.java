@@ -13,6 +13,8 @@ public class MouseLocator {
 	}
 	
 	public void locateMouse(){
+		if(Game.connectingToServer || Game.allUnlockedScreen)
+			return;
 		Point mousePos = game.getMousePosition();
 		if(mousePos != null) {
 			int mx = (int)mousePos.getX();
@@ -451,7 +453,8 @@ public class MouseLocator {
 					Game.backOnLeaderboard = false;
 				
 				//Skip Button
-				if(mx >= Game.WIDTH-73 && mx <= Game.WIDTH+93 && (Game.State == Game.STATE.TRANSITION_ENTRANCE || Game.State == Game.STATE.TRANSITION_ITEM || Game.State == Game.STATE.TRANSITION_WIN)) {
+				if(mx >= Game.WIDTH-73 && mx <= Game.WIDTH+93 && (Game.State == Game.STATE.TRANSITION_ENTRANCE || Game.State == Game.STATE.TRANSITION_ITEM || Game.State == Game.STATE.TRANSITION_WIN ||
+						Game.State == Game.STATE.CREDITS)) {
 					if(my >= Game.HEIGHT-32 && my <= Game.HEIGHT+32 && Game.askToSkipSequence) {
 						if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.skipClicked)
 							Game.backOnSkip = true;
@@ -1480,9 +1483,311 @@ public class MouseLocator {
 					}
 					else if(Game.backOnSubmit)
 						Game.backOnSubmit = false;
+					
+					//Checkmark Button in Set Score Menu
+					if(mx >=  304 && mx <= 336) {
+						if(my >= 410 && my <= 442) {
+							if(Game.selectorButtonPosition != 2) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = 2;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.checkMarkClicked )
+									Game.backOnCheckMark = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.checkMarkHighlighted = true;
+						}
+						else if(Game.checkMarkHighlighted == true || Game.checkMarkClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.checkMarkClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.checkMarkHighlighted = false;
+							Game.backOnCheckMark = false;
+						}
+						else if(Game.backOnCheckMark) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnCheckMark = false;
+						}
+					}
+					else if(Game.checkMarkHighlighted == true || Game.checkMarkClicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.checkMarkClicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.checkMarkHighlighted = false;
+						Game.backOnCheckMark = false;
+					}
+					else if(Game.backOnCheckMark)
+						Game.backOnCheckMark = false;
+				}
+
+				if(Game.State == STATE.LEADERBOARD) {
+					if(Game.areYouSureBoolean) {
+						if(Game.resetLeaderboardHighlighted || Game.resetLeaderboardClicked || Game.backOnResetLeaderboard) {
+							Game.resetLeaderboardHighlighted = false;
+							Game.resetLeaderboardClicked = false;
+							Game.backOnResetLeaderboard = false;
+						}
+							
+						//Yes Button in Leaderboard Menu
+						if(mx >=  Game.WIDTH  + 18 && mx <= Game.WIDTH + 18 + 96 && Game.State == Game.STATE.LEADERBOARD) {
+							if(my >= 375 && my <= 439) {
+								if(Game.selectorButtonPosition != 1) {
+									Game.selectorBPMP = Game.selectorButtonPosition;
+									Game.selectorButtonPosition = 1;
+								}
+								if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.yesClicked )
+									Game.backOnYes = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.yesHighlighted = true;
+						}
+						else if(Game.yesHighlighted == true || Game.yesClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.yesClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.yesHighlighted = false;
+							Game.backOnYes = false;
+						}
+						else if(Game.backOnYes) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnYes = false;
+						}
+					}
+					else if(Game.yesHighlighted == true || Game.yesClicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.yesClicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.yesHighlighted = false;
+						Game.backOnYes = false;
+					}
+					else if(Game.backOnYes)
+						Game.backOnYes = false;
+						//No Button in Leaderboard Menu
+						if(mx >=  Game.WIDTH - 64 - 18 && mx <= Game.WIDTH - 18 && Game.State == Game.STATE.LEADERBOARD) {
+							if(my >= 375 && my <= 439) {
+								if(Game.selectorButtonPosition != 0 && !Game.mouseIsClickedDown) {
+									Game.selectorBPMP = Game.selectorButtonPosition;
+									Game.selectorButtonPosition = 0;
+								}
+								if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.noClicked )
+									Game.backOnNo = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.noHighlighted = true;
+						}
+						else if(Game.noHighlighted == true || Game.noClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.noClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.noHighlighted = false;
+							Game.backOnNo = false;
+						}
+						else if(Game.backOnNo) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnNo = false;
+						}
+					}
+					else if(Game.noHighlighted == true || Game.noClicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.noClicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.noHighlighted = false;
+						Game.backOnNo = false;
+					}
+					else if(Game.backOnNo)
+						Game.backOnNo = false;
+					}
+					else {
+						if(!LeaderboardController.globalList && mx >=  537 && mx <= 633) {
+							if(my >= 50 && my <= 82) {
+								if(Game.selectorButtonPosition != 1) {
+									Game.selectorBPMP = Game.selectorButtonPosition;
+									Game.selectorButtonPosition = 1;
+								}
+								if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.globalClicked )
+										Game.backOnGlobal = true;
+								else if(!Game.mouseIsClickedDown)
+									Game.globalHighlighted = true;
+							}
+							else if(Game.globalHighlighted == true || Game.globalClicked == true) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								if(Game.globalClicked == true) 
+									Game.mouseIsOffClickedObjectAndHeldDown = true;
+								Game.globalHighlighted = false;
+								Game.backOnGlobal = false;
+							}
+							else if(Game.backOnGlobal) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								Game.backOnGlobal = false;
+							}
+						}
+						else if(Game.globalHighlighted == true || Game.globalClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.globalClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.globalHighlighted = false;
+							Game.backOnGlobal = false;
+						}
+						else if(Game.backOnGlobal)
+							Game.backOnGlobal = false;
+	
+						if(!LeaderboardController.globalList && mx >=  40 && mx <= 122) {
+							if(my >= 50 && my <= 82) {
+								if(Game.selectorButtonPosition != 0) {
+									Game.selectorBPMP = Game.selectorButtonPosition;
+									Game.selectorButtonPosition = 0;
+								}
+								if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.resetLeaderboardClicked )
+										Game.backOnResetLeaderboard = true;
+								else if(!Game.mouseIsClickedDown)
+									Game.resetLeaderboardHighlighted = true;
+							}
+							else if(Game.resetLeaderboardHighlighted == true || Game.resetLeaderboardClicked == true) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								if(Game.resetLeaderboardClicked == true) 
+									Game.mouseIsOffClickedObjectAndHeldDown = true;
+								Game.resetLeaderboardHighlighted = false;
+								Game.backOnResetLeaderboard = false;
+							}
+							else if(Game.backOnResetLeaderboard) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								Game.backOnResetLeaderboard = false;
+							}
+						}
+						else if(Game.resetLeaderboardHighlighted == true || Game.resetLeaderboardClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.resetLeaderboardClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.resetLeaderboardHighlighted = false;
+							Game.backOnResetLeaderboard = false;
+						}
+						else if(Game.backOnResetLeaderboard)
+							Game.backOnResetLeaderboard = false;
+						
+						if(LeaderboardController.globalList && mx >=  537 && mx <= 633) {
+							if(my >= 50 && my <= 82) {
+								if(Game.selectorButtonPosition != 1) {
+									Game.selectorBPMP = Game.selectorButtonPosition;
+									Game.selectorButtonPosition = 1;
+								}
+								if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.uploadClicked )
+										Game.backOnUpload = true;
+								else if(!Game.mouseIsClickedDown)
+									Game.uploadHighlighted = true;
+							}
+							else if(Game.uploadHighlighted == true || Game.uploadClicked == true) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								if(Game.uploadClicked == true) 
+									Game.mouseIsOffClickedObjectAndHeldDown = true;
+								Game.uploadHighlighted = false;
+								Game.backOnUpload = false;
+							}
+							else if(Game.backOnUpload) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								Game.backOnUpload = false;
+							}
+						}
+						else if(Game.uploadHighlighted == true || Game.uploadClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.uploadClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.uploadHighlighted = false;
+							Game.backOnUpload = false;
+						}
+						else if(Game.backOnUpload)
+							Game.backOnUpload = false;
+						
+						if(LeaderboardController.globalList && mx >=  40 && mx <= 120) {
+							if(my >= 50 && my <= 82) {
+								if(Game.selectorButtonPosition != 0) {
+									Game.selectorBPMP = Game.selectorButtonPosition;
+									Game.selectorButtonPosition = 0;
+								}
+								if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.localClicked )
+										Game.backOnLocal = true;
+								else if(!Game.mouseIsClickedDown)
+									Game.localHighlighted = true;
+							}
+							else if(Game.localHighlighted == true || Game.localClicked == true) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								if(Game.localClicked == true) 
+									Game.mouseIsOffClickedObjectAndHeldDown = true;
+								Game.localHighlighted = false;
+								Game.backOnLocal = false;
+							}
+							else if(Game.backOnLocal) {
+								if(Game.selectorButtonPosition != Game.selectorBPMP)
+									Game.selectorButtonPosition = Game.selectorBPMP;
+								Game.backOnLocal = false;
+							}
+						}
+						else if(Game.localHighlighted == true || Game.localClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.localClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.localHighlighted = false;
+							Game.backOnLocal = false;
+						}
+						else if(Game.backOnLocal)
+							Game.backOnLocal = false;
+					}
 				}
 				
 				if(Game.State == STATE.CONTROLS) {
+					//Rescan Button
+					if(mx >=  489 && mx <= 538) {
+						if(my >= 65 && my <= 74) {
+							if(Game.selectorButtonPosition != 0) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = 0;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.rescanClicked )
+								Game.backOnRescan = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.rescanHighlighted = true;
+						}
+						else if(Game.rescanHighlighted == true || Game.rescanClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.rescanClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.rescanHighlighted = false;
+							Game.backOnRescan = false;
+						}
+						else if(Game.backOnRescan) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnRescan = false;
+						}
+					}
+					else if(Game.rescanHighlighted == true || Game.rescanClicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.rescanClicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.rescanHighlighted = false;
+						Game.backOnRescan = false;
+					}
+					else if(Game.backOnRescan)
+						Game.backOnRescan = false;
+
 					//Up WASD Button
 					if(mx >=  Game.WIDTH - 51 && mx <= Game.WIDTH - 28) {
 						if(my >= 125 && my <= 147) {
@@ -2409,6 +2714,417 @@ public class MouseLocator {
 						Game.backOnReset = false;
 				}
 				
+				if(Game.State == STATE.TRACKLIST) {
+					//Left Arrow1 in Tracklist Menu
+					if(mx >= Game.WIDTH  - 185 && mx <= Game.WIDTH  - 169) {
+						if(my >= 150 && my <= 182) {
+							if(Game.selectorButtonPosition != -2) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -2;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.arrowL1Clicked )
+									Game.backOnArrowL1 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.arrowL1Highlighted = true;
+						}
+						else if(Game.arrowL1Highlighted == true || Game.arrowL1Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.arrowL1Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.arrowL1Highlighted = false;
+							Game.backOnArrowL1 = false;
+						}
+						else if(Game.backOnArrowL1) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnArrowL1 = false;
+						}
+					}
+					else if(Game.arrowL1Highlighted == true || Game.arrowL1Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.arrowL1Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.arrowL1Highlighted = false;
+						Game.backOnArrowL1 = false;
+					}
+					else if(Game.backOnArrowL1)
+						Game.backOnArrowL1 = false;
+					
+					//Right Arrow1 in Tracklist Menu
+					if(mx >= Game.WIDTH  - 129 && mx <= Game.WIDTH  - 113) {
+						if(my >= 150 && my <= 182) {
+							if(Game.selectorButtonPosition != -4) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -4;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.arrowR1Clicked )
+									Game.backOnArrowR1 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.arrowR1Highlighted = true;
+						}
+						else if(Game.arrowR1Highlighted == true || Game.arrowR1Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.arrowR1Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.arrowR1Highlighted = false;
+							Game.backOnArrowR1 = false;
+						}
+						else if(Game.backOnArrowR1) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnArrowR1 = false;
+						}
+					}
+					else if(Game.arrowR1Highlighted == true || Game.arrowR1Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.arrowR1Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.arrowR1Highlighted = false;
+						Game.backOnArrowR1 = false;
+					}
+					else if(Game.backOnArrowR1)
+						Game.backOnArrowR1 = false;
+					
+					//Left Arrow2 in Tracklist Menu
+					if(mx >= Game.WIDTH  - 185 && mx <= Game.WIDTH  - 169) {
+						if(my >= 350 && my <= 382) {
+							if(Game.selectorButtonPosition != -3) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -3;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.arrowL2Clicked )
+									Game.backOnArrowL2 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.arrowL2Highlighted = true;
+						}
+						else if(Game.arrowL2Highlighted == true || Game.arrowL2Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.arrowL2Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.arrowL2Highlighted = false;
+							Game.backOnArrowL2 = false;
+						}
+						else if(Game.backOnArrowL2) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnArrowL2 = false;
+						}
+					}
+					else if(Game.arrowL2Highlighted == true || Game.arrowL2Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.arrowL2Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.arrowL2Highlighted = false;
+						Game.backOnArrowL2 = false;
+					}
+					else if(Game.backOnArrowL2)
+						Game.backOnArrowL2 = false;
+					
+					//Right Arrow2 in Tracklist Menu
+					if(mx >= Game.WIDTH  - 129 && mx <= Game.WIDTH  - 113) {
+						if(my >= 350 && my <= 382) {
+							if(Game.selectorButtonPosition != -5) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -5;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.arrowR2Clicked )
+									Game.backOnArrowR2 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.arrowR2Highlighted = true;
+						}
+						else if(Game.arrowR2Highlighted == true || Game.arrowR2Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.arrowR2Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.arrowR2Highlighted = false;
+							Game.backOnArrowR2 = false;
+						}
+						else if(Game.backOnArrowR2) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnArrowR2 = false;
+						}
+					}
+					else if(Game.arrowR2Highlighted == true || Game.arrowR2Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.arrowR2Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.arrowR2Highlighted = false;
+						Game.backOnArrowR2 = false;
+					}
+					else if(Game.backOnArrowR2)
+						Game.backOnArrowR2 = false;
+				
+					//Set Button1 in Tracklist Menu
+					if(mx >= Game.WIDTH  + 18 && mx <= Game.WIDTH  + 42) {
+						if(my >= 158 && my <= 174) {
+							if(Game.selectorButtonPosition != -10) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -10;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.set1Clicked )
+									Game.backOnSet1 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.set1Highlighted = true;
+						}
+						else if(Game.set1Highlighted == true || Game.set1Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.set1Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.set1Highlighted = false;
+							Game.backOnSet1 = false;
+						}
+						else if(Game.backOnSet1) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnSet1 = false;
+						}
+					}
+					else if(Game.set1Highlighted == true || Game.set1Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.set1Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.set1Highlighted = false;
+						Game.backOnSet1 = false;
+					}
+					else if(Game.backOnSet1)
+						Game.backOnSet1 = false;
+					
+					//Set Button2 in Tracklist Menu
+					if(mx >= Game.WIDTH  + 18 && mx <= Game.WIDTH  + 42) {
+						if(my >= 358 && my <= 374) {
+							if(Game.selectorButtonPosition != -11) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -11;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.set2Clicked )
+									Game.backOnSet2 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.set2Highlighted = true;
+						}
+						else if(Game.set2Highlighted == true || Game.set2Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.set2Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.set2Highlighted = false;
+							Game.backOnSet2 = false;
+						}
+						else if(Game.backOnSet2) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnSet2 = false;
+						}
+					}
+					else if(Game.set2Highlighted == true || Game.set2Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.set2Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.set2Highlighted = false;
+						Game.backOnSet2 = false;
+					}
+					else if(Game.backOnSet2)
+						Game.backOnSet2 = false;
+					
+					//Play Button1 in Tracklist Menu
+					if(mx >= 250 && mx <= 266) {
+						if(my >= 158 && my <= 174) {
+							if(Game.selectorButtonPosition != -6) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -6;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.trackPlayButton1Clicked )
+									Game.backOnTrackPlayButton1 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.trackPlayButton1Highlighted = true;
+						}
+						else if(Game.trackPlayButton1Highlighted == true || Game.trackPlayButton1Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.trackPlayButton1Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.trackPlayButton1Highlighted = false;
+							Game.backOnTrackPlayButton1 = false;
+						}
+						else if(Game.backOnTrackPlayButton1) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnTrackPlayButton1 = false;
+						}
+					}
+					else if(Game.trackPlayButton1Highlighted == true || Game.trackPlayButton1Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.trackPlayButton1Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.trackPlayButton1Highlighted = false;
+						Game.backOnTrackPlayButton1 = false;
+					}
+					else if(Game.backOnTrackPlayButton1)
+						Game.backOnTrackPlayButton1 = false;
+					
+					//Pause Button1 in Tracklist Menu
+					if(mx >= 280 && mx <= 296) {
+						if(my >= 158 && my <= 174) {
+							if(Game.selectorButtonPosition != -8) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -8;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.trackPauseButton1Clicked )
+									Game.backOnTrackPauseButton1 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.trackPauseButton1Highlighted = true;
+						}
+						else if(Game.trackPauseButton1Highlighted == true || Game.trackPauseButton1Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.trackPauseButton1Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.trackPauseButton1Highlighted = false;
+							Game.backOnTrackPauseButton1 = false;
+						}
+						else if(Game.backOnTrackPauseButton1) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnTrackPauseButton1 = false;
+						}
+					}
+					else if(Game.trackPauseButton1Highlighted == true || Game.trackPauseButton1Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.trackPauseButton1Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.trackPauseButton1Highlighted = false;
+						Game.backOnTrackPauseButton1 = false;
+					}
+					else if(Game.backOnTrackPauseButton1)
+						Game.backOnTrackPauseButton1 = false;
+					
+					//Play Button2 in Tracklist Menu
+					if(mx >= 250 && mx <= 266) {
+						if(my >= 358 && my <= 374) {
+							if(Game.selectorButtonPosition != -7) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -7;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.trackPlayButton2Clicked )
+									Game.backOnTrackPlayButton2 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.trackPlayButton2Highlighted = true;
+						}
+						else if(Game.trackPlayButton2Highlighted == true || Game.trackPlayButton2Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.trackPlayButton2Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.trackPlayButton2Highlighted = false;
+							Game.backOnTrackPlayButton2 = false;
+						}
+						else if(Game.backOnTrackPlayButton2) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnTrackPlayButton2 = false;
+						}
+					}
+					else if(Game.trackPlayButton2Highlighted == true || Game.trackPlayButton2Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.trackPlayButton2Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.trackPlayButton2Highlighted = false;
+						Game.backOnTrackPlayButton2 = false;
+					}
+					else if(Game.backOnTrackPlayButton2)
+						Game.backOnTrackPlayButton2 = false;
+					
+					//Pause Button2 in Tracklist Menu
+					if(mx >= 280 && mx <= 296) {
+						if(my >= 358 && my <= 374) {
+							if(Game.selectorButtonPosition != -9) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = -9;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.trackPauseButton2Clicked )
+									Game.backOnTrackPauseButton2 = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.trackPauseButton2Highlighted = true;
+						}
+						else if(Game.trackPauseButton2Highlighted == true || Game.trackPauseButton2Clicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.trackPauseButton2Clicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.trackPauseButton2Highlighted = false;
+							Game.backOnTrackPauseButton2 = false;
+						}
+						else if(Game.backOnTrackPauseButton2) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnTrackPauseButton2 = false;
+						}
+					}
+					else if(Game.trackPauseButton2Highlighted == true || Game.trackPauseButton2Clicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.trackPauseButton2Clicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.trackPauseButton2Highlighted = false;
+						Game.backOnTrackPauseButton2 = false;
+					}
+					else if(Game.backOnTrackPauseButton2)
+						Game.backOnTrackPauseButton2 = false;
+				}
+				
+				if(Game.State == STATE.HELP) {
+					//Credits Button in Help Menu
+					if(mx >= 477 && mx <= 591) {
+						if(my >= 38 && my <= 70) {
+							if(Game.selectorButtonPosition != 0) {
+								Game.selectorBPMP = Game.selectorButtonPosition;
+								Game.selectorButtonPosition = 0;
+							}
+							if(Game.mouseIsOffClickedObjectAndHeldDown == true && Game.creditsClicked )
+									Game.backOnCredits = true;
+							else if(!Game.mouseIsClickedDown)
+								Game.creditsHighlighted = true;
+						}
+						else if(Game.creditsHighlighted == true || Game.creditsClicked == true) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							if(Game.creditsClicked == true) 
+								Game.mouseIsOffClickedObjectAndHeldDown = true;
+							Game.creditsHighlighted = false;
+							Game.backOnCredits = false;
+						}
+						else if(Game.backOnCredits) {
+							if(Game.selectorButtonPosition != Game.selectorBPMP)
+								Game.selectorButtonPosition = Game.selectorBPMP;
+							Game.backOnCredits = false;
+						}
+					}
+					else if(Game.creditsHighlighted == true || Game.creditsClicked == true) {
+						if(Game.selectorButtonPosition != Game.selectorBPMP)
+							Game.selectorButtonPosition = Game.selectorBPMP;
+						if(Game.creditsClicked == true) 
+							Game.mouseIsOffClickedObjectAndHeldDown = true;
+						Game.creditsHighlighted = false;
+						Game.backOnCredits = false;
+					}
+					else if(Game.backOnCredits)
+						Game.backOnCredits = false;
+				}
+				
 				/*
 					//Help Button Highlighted
 					if (mx >= Game.WIDTH / 2 + 120 && mx <= Game.WIDTH / 2 + 248 && Game.State == Game.STATE.MENU ||
@@ -2502,10 +3218,14 @@ public class MouseLocator {
 			Game.arrowR1Highlighted = false;
 			Game.buy1Highlighted = false;
 			Game.set1Highlighted = false;
+			Game.trackPlayButton1Highlighted = false;
+			Game.trackPauseButton1Highlighted = false;
 			Game.arrowL2Highlighted = false;
 			Game.arrowR2Highlighted = false;
 			Game.buy2Highlighted = false;
 			Game.set2Highlighted = false;
+			Game.trackPlayButton2Highlighted = false;
+			Game.trackPauseButton2Highlighted = false;
 			Game.arrowL3Highlighted = false;
 			Game.arrowR3Highlighted = false;
 			Game.buy3Highlighted = false;
@@ -2519,6 +3239,12 @@ public class MouseLocator {
 			Game.submitHighlighted = false;
 			Game.gamepadImageHighlighted = false;
 			Game.noteImageHighlighted = false;
+			Game.localHighlighted = false;
+			Game.globalHighlighted = false;
+			Game.uploadHighlighted = false;
+			Game.creditsHighlighted = false;
+			Game.resetLeaderboardHighlighted = false;
+			Game.rescanHighlighted = false;
 			for(int i = 0; i <= ControlsController.gamepadButtonHolderHighlighted.length-1; i++) {
 				ControlsController.gamepadButtonHolderHighlighted[i] = false;
 			}

@@ -53,6 +53,8 @@ public class BasicBlocks {
 					game.ea.remove(game.ea.getLast());
 					keepDestroyingBlock = 0;
 				}
+				game.getController().addEntity(new BlockBreakingFX(tempEnt.getX(),tempEnt.getY(),game,true));
+				game.getController().addEntity(new BlockBreakingFX(tempEnt.getX()+tempEnt.getBounds().width,tempEnt.getY(),game,false));
 				for(int j = game.brickBreakingSFX.size(); j > 0; j--){
 					if(game.brickBreakingSFX.get(j-1) != null && !game.brickBreakingSFX.get(j-1).clipIsActive()){
 						game.brickBreakingSFX.remove(j-1);
@@ -119,9 +121,13 @@ public class BasicBlocks {
 				int r = rand.nextInt(3);
 				keepDestroyingBlock += r;
 				if(keepDestroyingBlock > 8){
-					game.eb.remove(tempEnt);
+					if(!game.eb.get(i).enemyType().equals("Bowser"))
+						game.eb.remove(tempEnt);
 					keepDestroyingBlock = 0;
 				}
+				game.getController().addEntity(new BlockBreakingFX(tempEnt.getX(),tempEnt.getY()+tempEnt.getBounds().height,game,true));
+				game.getController().addEntity(new BlockBreakingFX(tempEnt.getX()+tempEnt.getBounds().width,tempEnt.getY()+tempEnt.getBounds().height,game,false));
+				
 				for(int j = game.brickBreakingSFX.size(); j > 0; j--){
 					if(game.brickBreakingSFX.get(j-1) != null && !game.brickBreakingSFX.get(j-1).clipIsActive()){
 						game.brickBreakingSFX.remove(j-1);
@@ -165,8 +171,13 @@ public class BasicBlocks {
 							j--;
 					}
 				}
-				if(!game.ec.isEmpty() && r == 0 && !game.ec.get(i).entityName().equals("BuzzyBeetleShell"))
+				if(!game.ec.isEmpty() && r == 0 && !game.ec.get(i).entityName().equals("BuzzyBeetleShell")&& !game.ec.get(i).entityName().equals("LavaBubble")
+						&& !game.ec.get(i).entityName().equals("ZigzagLavaBubble") && !game.ec.get(i).entityName().equals("Thwimp")
+						 && !game.ec.get(i).entityName().equals("Mechakoopa"))
 					game.ec.remove(tempEnt);
+				game.getController().addEntity(new BlockBreakingFX(tempEnt.getX(),tempEnt.getY()+tempEnt.getHeight(),game,true));
+				game.getController().addEntity(new BlockBreakingFX(tempEnt.getX()+tempEnt.getWidth(),tempEnt.getY()+tempEnt.getHeight(),game,false));
+				
 				for(int j = game.brickBreakingSFX.size(); j > 0; j--){
 					if(game.brickBreakingSFX.get(j-1) != null && !game.brickBreakingSFX.get(j-1).clipIsActive()){
 						game.brickBreakingSFX.remove(j-1);
@@ -195,7 +206,8 @@ public class BasicBlocks {
 		}
 		for(int i = 0; i < game.ee.size(); i++){
 			EntityE tempEnt = game.ee.get(i);
-			if(tempEnt.entityName().equals("bombOmbShrapnel1") || tempEnt.entityName().equals("bombOmbShrapnel2")) {
+			if(tempEnt.entityName().equals("bombOmbShrapnel1") || tempEnt.entityName().equals("bombOmbShrapnel2") || tempEnt.entityName().equals("lakituFish")
+					 || tempEnt.entityName().equals("lakituSpike") || tempEnt.entityName().equals("lakituBombOmb")) {
 				blockHit = Physics.BlockCollisionBackwards(this, tempEnt);
 				if(blockHit != -1){
 					if(wall.size() > blockHit) {
@@ -205,10 +217,16 @@ public class BasicBlocks {
 					Random rand = new Random();
 					int r = rand.nextInt(5);
 					keepDestroyingBlock += r;
-					if(!game.ee.isEmpty() && r == 0 && keepDestroyingBlock > 20){
-						game.ee.remove(tempEnt);
+					if(!game.ee.isEmpty() && r == 0 && keepDestroyingBlock > 20 && !tempEnt.entityName().equals("lakituSpike")){
+						if(tempEnt.entityName().equals("lakituFish") || tempEnt.entityName().equals("lakituBombOmb"))
+							game.ee.get(i).setEntityEDead(true);
+						else
+							game.ee.remove(tempEnt);
 						keepDestroyingBlock = 0;
 					}
+					game.getController().addEntity(new BlockBreakingFX(tempEnt.getX(),tempEnt.getY()+tempEnt.getBounds().height,game,true));
+					game.getController().addEntity(new BlockBreakingFX(tempEnt.getX()+tempEnt.getBounds().width,tempEnt.getY()+tempEnt.getBounds().height,game,false));
+					
 					for(int j = game.brickBreakingSFX.size(); j > 0; j--){
 						if(game.brickBreakingSFX.get(j-1) != null && !game.brickBreakingSFX.get(j-1).clipIsActive()){
 							game.brickBreakingSFX.remove(j-1);
@@ -295,7 +313,7 @@ public class BasicBlocks {
 			return;
 		}
 		else if(game.getPlayer().marioEntranceGrowingAnim.getCount() >= 1 && game.getPlayer().marioEntranceGrowingAnim.getCount()< 4) {
-			int j = (int)game.soundFXClip2SoundLoop.getLongFramePosition()/20 - 185;
+			int j = (int)(game.soundFXClip2SoundLoop.getLongFramePosition()*2)/20 - 185;
 			if(j > 395)
 				j = 395;
 			for(int i = 0; i < j; i++){
@@ -305,7 +323,7 @@ public class BasicBlocks {
 		}
 		else if(game.getPlayer().marioEntranceGrowingAnim.getCount() >= 3 && game.getPlayer().marioEntranceGrowingAnim.getCount() < 6) {
 			if(entranceInt3==0)
-				entranceInt3 = (int)game.soundFXClip2SoundLoop.getLongFramePosition()/20 + 608;
+				entranceInt3 = (int)(game.soundFXClip2SoundLoop.getLongFramePosition()*2)/20 + 608;
 			entranceInt3--;
 			//int k = (int)game.soundFXClip2SoundLoop.getLongFramePosition()/20 + 208;
 			//System.out.println(k);
