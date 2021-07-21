@@ -16307,6 +16307,33 @@ public class Game extends Canvas implements Runnable {
 			return t;
 		}
     }
+	public String getIP() {
+		java.net.URL url = null;
+		String username = "user";
+        String password = "gitpwd";
+        String file = "";
+        try {
+            url = new java.net.URL("https://raw.githubusercontent.com/OhThomas/data/main/KoopasInvaders/serverIP");
+            java.net.URLConnection uc;
+            uc = url.openConnection();
+
+            uc.setRequestProperty("X-Requested-With", "Curl");
+            java.util.ArrayList<String> list = new java.util.ArrayList<String>();
+            String userpass = username + ":" + password;
+            String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));//needs Base64 encoder, apache.commons.codec
+            uc.setRequestProperty("Authorization", basicAuth);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+            String line = null;
+            while ((line = reader.readLine()) != null)
+            	file = file + line;//file = file + line + "\n";
+            return file;
+
+        } catch (IOException e) {
+            //System.out.println("Wrong username and password");
+            return "75.1.199.32"; 
+        }
+	}
 	public void clientToServer(String s) throws UnknownHostException, IOException {
 		//if(s.length() <= 60) {
 		final Thread outThread = new Thread() {
@@ -16323,7 +16350,7 @@ public class Game extends Canvas implements Runnable {
 			boolean versionCheck = false;
 			String line = "";
 			//String ip = "192.168.1.235";
-			String ip = "23.127.171.17";
+			String ip = getIP();
 			int port = 8591;
 			int i = 0;
 			int j = 0;
