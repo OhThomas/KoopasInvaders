@@ -1435,7 +1435,7 @@ public class Game extends Canvas implements Runnable {
 					//hud.render(g);
 					if((int)HUD.getTimer1() <= 0){
 						//SPAWN BULLET BILLS
-						if(bowserBulletBillSpawningTimer < System.currentTimeMillis() && c.getEntityB().get(0).getEntityBDead() == false) {
+						if(bowserBulletBillSpawningTimer < System.currentTimeMillis() && (c.getEntityB().size() <= 0 || c.getEntityB().get(0).getEntityBDead() == false)) {
 							Random rand = new Random();
 							int i = rand.nextInt(2);//20000
 							if(i == 1 && ec.size() < 6 && !spawnBulletBill){
@@ -3531,8 +3531,9 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 			hud.stringToScore(g, String.valueOf(hud.getScore()));
-			if(State == STATE.GAMEOVER && firstTimeBeating == false) {
-				firstTimeBeating = true;
+//			if(State == STATE.GAMEOVER && firstTimeBeating == false) {
+			if(firstTimeBeating == false && !(System.currentTimeMillis() < julian && (!bb.wall.isEmpty() || hud.getScore() > 100000))) {
+//				firstTimeBeating = true;
 				if(!backToGameOver)
 					backToGameOver = true;
 				State = STATE.CREDITS;
@@ -3560,6 +3561,10 @@ public class Game extends Canvas implements Runnable {
 				this.marioStarSoundLoop.stop();
 				this.marioStarSoundLoop.setFramePosition(0);
 				this.marioStarSoundLoop.setSoundLoopBoolean(false);
+			}
+			if(!firstTimeBeating) {
+				firstTimeBeating = true;
+				LeaderboardController.writeToSettings("firstTimeBeating", "true");
 			}
 			creditsController.render(g);
 			if(askToSkipSequence) {
@@ -16327,6 +16332,7 @@ public class Game extends Canvas implements Runnable {
             String line = null;
             while ((line = reader.readLine()) != null)
             	file = file + line;//file = file + line + "\n";
+            System.out.println(file);
             return file;
 
         } catch (IOException e) {
